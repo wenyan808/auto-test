@@ -1,0 +1,22 @@
+##测试环境 13530199600
+URL : http://test-5.dm.huobiapps.com
+#URL : http://test5-linear-ingress.bitfanssim.com
+ACCESS_KEY : 52f8e21a-mjlpdje3ld-972bbdb5-1be46
+SECRET_KEY : 39980666-fac7eaab-5b336bbd-0ce17
+hbsession : 63118660-1996-4fb7-b18c-bba3c00554c2
+
+#测20
+#URL : http://172.18.6.99 # http://test-20.dm.huobiapps.com
+#URL : http://test20-delivery-ingress.bitfanssim.com
+#URL : http://test20-swap-ingress.bitfanssim.com
+#URL : http://test20-linear-ingress.bitfanssim.com
+#ACCESS_KEY : 73bd96b2-3660fc17-9694d805-vfd5ghr532
+#SECRET_KEY : 4db7e4ec-cdd54a36-651c0e68-b7d5b
+
+##新加坡环境
+#URL : http://api.test-6.dm.huobiapps.com
+#ACCESS_KEY : 3971fc46-cfff7a55-ur2fg6h2gf-2a741
+#SECRET_KEY : c7adb634-f45a89b6-d3ed3b50-474c4
+
+
+

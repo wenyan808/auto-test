@@ -1,0 +1,4 @@
+name：分类名称
+matchedStatuses：测试用例的运行状态，默认["failed", "broken", "passed", "skipped", "unknown"]
+messageRegex：测试用例运行的错误信息，默认是 .* ，是通过正则去匹配的哦！
+traceRegex：测试用例运行的错误堆栈信息，默认是  .*  ，也是通过正则去匹配的哦！
