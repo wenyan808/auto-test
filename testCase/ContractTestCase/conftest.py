@@ -21,6 +21,12 @@ def symbol():
     return symbol
 
 
+@pytest.fixture()
+def test():
+    test = 'testtest'
+    return test
+
+
 
 @pytest.fixture()
 def symbol_period():

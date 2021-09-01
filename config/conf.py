@@ -15,6 +15,7 @@ with open('{}/application.yml'.format(path),'rb') as f:
     ACCESS_KEY = conf['ACCESS_KEY']
     SECRET_KEY = conf['SECRET_KEY']
     hbsession = conf['hbsession']
+    ATPHost = conf['ATPHost']
     f.close()
 
 

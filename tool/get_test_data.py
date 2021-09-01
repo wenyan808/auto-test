@@ -10,7 +10,7 @@ from pprint import pprint
 import json
 from pathlib import Path,PurePath
 import pandas as pd
-from testFile.__init__ import root
+from config.conf import ATPHost
 
 # 已废弃从Excel读取数据的方法
 # #根据传入的接口名组装文件路径
@@ -60,16 +60,24 @@ from testFile.__init__ import root
 
 
 
-def case_data():
+def case_data(priority="P0"):
+    #通过反射取回用例文件名作为入参去atp取回对应的测试数据
     caller_frame = inspect.stack()[1]
-    file_name = caller_frame.filename.split('_',1)[1][:-3]
-    # file_name = caller_frame.filename
-    # print(file_name)
-    # name = PurePath(file_name).stem
-    # print(name)
-    response = requests.get('http://10.151.110.63:8000/api_case/get_api_test_data_by_case_id/?case_id=5')
-    r = response.json()[0]['request']['symbol']
-    return [r]
+    file_name = caller_frame.filename.split('/')[7]
+    atp_url = ATPHost + "/api_case/get_pytest_api_test_data_by_script_path"
+    header = {'accept' : 'application/json','Content-Type' : 'application/json'}
+    params = {"script_path": file_name}
+              # "priority_list": [priority],
+              # "tags": ["Health testing","V1.2.3","2.18上线"]}
+    data = json.dumps(params)
+    response = requests.post(atp_url,data,header)
+    data_keys = response.json()['variables_keys_str']
+    variables_values_list = response.json()['variables_values_list']
+    data_values = []
+    for i in range(len(variables_values_list)):
+        data_values.append(tuple(variables_values_list[i]))
+    return data_keys,data_values
+
 
 
 
