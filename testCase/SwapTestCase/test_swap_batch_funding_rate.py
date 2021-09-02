@@ -20,7 +20,6 @@ class TestSwapBatchFundingRate:
     def test_swap_batch_funding_rate(self,contract_code):
 
         r = t.swap_batch_funding_rate(contract_code=contract_code)
-        pprint(r)
         assert r['status'] == 'ok'
 
 

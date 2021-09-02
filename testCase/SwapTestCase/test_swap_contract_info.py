@@ -20,7 +20,6 @@ class TestSwapContractInfo:
     def test_swap_contract_info(self,contract_code):
 
         r = t.swap_contract_info(contract_code=contract_code)
-        pprint(r)
         assert r['status'] == 'ok'
 
 

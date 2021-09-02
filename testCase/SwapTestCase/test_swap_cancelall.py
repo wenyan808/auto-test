@@ -30,7 +30,6 @@ class TestSwapCancelall:
         time.sleep(1)
 
         r = t.swap_cancelall(contract_code=contract_code)
-        pprint(r)
         assert r['status'] == 'ok'
 
 

@@ -20,7 +20,6 @@ class TestSwapApiState:
     def test_swap_api_state(self,contract_code):
 
         r = t.swap_api_state(contract_code=contract_code)
-        pprint(r)
         assert r['status'] == 'ok'
 
 

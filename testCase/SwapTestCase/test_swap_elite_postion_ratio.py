@@ -22,9 +22,7 @@ class TestSwapElitePositionRatio:
     def test_swap_elite_position_ratio(self,contract_code):
 
         r = t.swap_elite_position_ratio(contract_code=contract_code,period='12hour')
-        pprint(r)
         assert r['status'] == 'ok'
-
 
 
 if __name__ == '__main__':

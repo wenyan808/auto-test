@@ -21,7 +21,6 @@ class TestSwapBasis:
     def test_swap_basis(self,contract_code):
 
         r = t.swap_basis(contract_code=contract_code,period='1min',basis_price_type='open',size='20')
-        pprint(r)
         assert r['status'] == 'ok'
 
 

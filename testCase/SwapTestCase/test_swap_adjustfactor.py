@@ -21,7 +21,6 @@ class TestSwapAdjustfactor:
     def test_swap_adjustfactor(self,contract_code):
 
         r = t.swap_adjustfactor(contract_code=contract_code)
-        pprint(r)
         assert r['status'] == 'ok'
 
 
