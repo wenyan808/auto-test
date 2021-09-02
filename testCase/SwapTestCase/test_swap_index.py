@@ -18,18 +18,7 @@ class TestSwapIndex:
 
     def test_swap_index(self, contract_code):
         r = t.swap_index(contract_code=contract_code)
-        schema = {
-            "status": "ok",
-            "data": [
-                {
-                    "contract_code": contract_code,
-                    "index_price": Or(int, float),
-                    "index_ts": int
-                }
-            ],
-            "ts": int
-        }
-        Schema(schema).validate(r)
+
 
 
 if __name__ == '__main__':

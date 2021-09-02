@@ -18,26 +18,6 @@ class TestSwapSettlementRecords:
 
     def test_swap_settlement_records(self, contract_code):
         r = t.swap_settlement_records(contract_code=contract_code)
-        schema = {
-            "status": "ok",
-            "ts": int,
-            "data": {
-                "settlement_record": [
-                    {
-                        "symbol": "BTC",
-                        "contract_code": "BTC-USD",
-                        "settlement_time": int,
-                        "clawback_ratio": Or(float, 0),
-                        "settlement_price": float,
-                        "settlement_type": "settlement"
-                    }
-                ],
-                "current_page": int,
-                "total_page": int,
-                "total_size": int
-            }
-        }
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

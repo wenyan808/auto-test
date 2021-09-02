@@ -18,18 +18,6 @@ class TestSwapRiskInfo:
 
     def test_swap_risk_info(self, contract_code):
         r = t.swap_risk_info(contract_code=contract_code)
-        schema = {
-            "status": "ok",
-            "ts": int,
-            "data": [
-                {
-                    "contract_code": "BTC-USD",
-                    "insurance_fund": float,
-                    "estimated_clawback": float
-                }
-            ]
-        }
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

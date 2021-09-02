@@ -31,21 +31,6 @@ class TestSwapTriggerOrderCancel:
         r = t.swap_trigger_cancel(contract_code=contract_code,
                                   order_id=a['data']['order_id'])
         pprint(r)
-        schema = {
-            "status": "ok",
-            "data": {
-                "errors": [
-                    {
-                        "order_id": str,
-                        "err_code": int,
-                        "err_msg": str
-                    }
-                ],
-                "successes": str
-            },
-            "ts": int
-        }
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

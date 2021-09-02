@@ -14,23 +14,31 @@ import base64
 import hashlib
 import gzip
 import time
+import redis
 
 # timeout in 5 seconds:
 TIMEOUT = 15
 
 
-#各种请求,获取数据方式
+def redis_config():
+    # coon = redis.Redis(host="172.18.6.50", port=6386, password="rNEAz9uFwHoymy5i", decode_responses=True)
+    coon = redis.Redis(host="172.18.6.243", port=6384, password="rNEAz9uFwHoymy5i", decode_responses=True)
+    # coon = redis.Redis(host="172.18.6.244", port=6379, password="rNEAz9uFwHoymy5i", decode_responses=True)
+    return coon
+
+
+# 各种请求,获取数据方式
 def api_http_get(url, params, add_to_headers=None):
     headers = {
         "Content-type": "application/x-www-form-urlencoded",
         "Accept-language": "zh-CN",
-        'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0'
     }
     if add_to_headers:
         headers.update(add_to_headers)
     postdata = urllib.parse.urlencode(params)
     # # #新加坡环境经常超时，重试到成功为止
-    #Retry_times = 0
+    # Retry_times = 0
     # while True:
     #     response = requests.get(url, postdata, headers=headers, timeout=TIMEOUT)
     #     try:
@@ -58,20 +66,21 @@ def api_http_get(url, params, add_to_headers=None):
             return response.text
     except Exception as e:
         print("httpPost failed, detail is:%s" % e)
-        return {"status":"fail","msg": "%s"%e}
+        return {"status": "fail", "msg": "%s" % e}
+
 
 def api_http_post(url, params, add_to_headers=None):
     headers = {
         "Accept": "application/json",
         'Content-Type': 'application/json',
         "Accept-language": "zh-CN",
-        'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0'
     }
     if add_to_headers:
         headers.update(add_to_headers)
     postdata = json.dumps(params)
-    #新加坡环境经常超时，重试到成功为止
-    #Retry_times = 0
+    # 新加坡环境经常超时，重试到成功为止
+    # Retry_times = 0
     # while True:
     #     response = requests.post(url, postdata, headers=headers, timeout=TIMEOUT)
     #     try:
@@ -100,7 +109,7 @@ def api_http_post(url, params, add_to_headers=None):
             return response.text
     except Exception as e:
         print("httpPost failed, detail is:%s" % e)
-        return {"status":"fail","msg": "%s"%e}
+        return {"status": "fail", "msg": "%s" % e}
 
 
 def api_key_get(url, request_path, params, ACCESS_KEY, SECRET_KEY):
@@ -133,8 +142,7 @@ def api_key_post(url, request_path, params, ACCESS_KEY, SECRET_KEY):
     return api_http_post(url, params)
 
 
-
-def order_http_get(host,request_path,params,hbsession):
+def order_http_get(host, request_path, params, hbsession):
     headers = {
         "Content-type": "application/json; charset=UTF-8",
         "Accept-language": "zh-CN",
@@ -151,11 +159,10 @@ def order_http_get(host,request_path,params,hbsession):
             return response.text
     except Exception as e:
         print("httpPost failed, detail is:%s" % e)
-        return {"status":"fail","msg": "%s"%e}
+        return {"status": "fail", "msg": "%s" % e}
 
 
-
-def order_http_post(host,request_path,params,hbsession):
+def order_http_post(host, request_path, params, hbsession):
     headers = {
         "Content-type": "application/json; charset=UTF-8",
         "Accept-language": "zh-CN",
@@ -173,8 +180,7 @@ def order_http_post(host,request_path,params,hbsession):
             return response.text
     except Exception as e:
         print("httpPost failed, detail is:%s" % e)
-        return {"status":"fail","msg": "%s"%e}
-
+        return {"status": "fail", "msg": "%s" % e}
 
 
 def createSign(pParams, method, host_url, request_path, secret_key):
@@ -190,22 +196,10 @@ def createSign(pParams, method, host_url, request_path, secret_key):
     return signature
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 """ 下面的方法是ws用的 """
-#鉴权订阅
+
+
+# 鉴权订阅
 def api_key_sub(url, access_key, secret_key, subs):
     host_url = urllib.parse.urlparse(url).hostname.lower()
     print(host_url)
@@ -225,23 +219,24 @@ def api_key_sub(url, access_key, secret_key, subs):
     try:
         ws = websocket.create_connection(url)
         msg_str = json.dumps(data)
-        print("msg_str is:",msg_str)
+        print("msg_str is:", msg_str)
         ws.send(msg_str)
-        msg_result =json.loads(gzip.decompress(ws.recv()).decode())
-        print("msg_result is:",msg_result)
+        msg_result = json.loads(gzip.decompress(ws.recv()).decode())
+        print("msg_result is:", msg_result)
         sub_str = json.dumps(subs)
-        print("sub_str is:",sub_str)
+        print("sub_str is:", sub_str)
         ws.send(sub_str)
         sub_result = json.loads(gzip.decompress(ws.recv()).decode())
-        print("sub_result is :",sub_result)
+        print("sub_result is :", sub_result)
         ws.close()
         return sub_result
     except Exception as e:
         print("Sub failed, detail is:%s" % e)
         return {"status": "fail", "msg": "%s" % e}
 
-#普通订阅
-def sub(url,subs):
+
+# 普通订阅
+def sub(url, subs):
     try:
         ws = websocket.create_connection(url)
         sub_str = json.dumps(subs)
@@ -252,6 +247,3 @@ def sub(url,subs):
     except Exception as e:
         print("Sub failed, detail is:%s" % e)
         return {"status": "fail", "msg": "%s" % e}
-
-
-

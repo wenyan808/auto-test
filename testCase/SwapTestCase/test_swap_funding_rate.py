@@ -18,22 +18,7 @@ class TestSwapFundingRate:
 
     def test_swap_funding_rate(self, contract_code):
         r = t.swap_funding_rate(contract_code=contract_code)
-        schema = {
-            "status": "ok",
-            "data":
-                {
-                    "symbol": str,
-                    "contract_code": contract_code,
-                    "fee_asset": str,
-                    "funding_time": str,
-                    "funding_rate": str,
-                    "estimated_rate": str,
-                    "next_funding_time": str
-                }
-            ,
-            "ts": int
-        }
-        Schema(schema).validate(r)
+
 
 
 if __name__ == '__main__':

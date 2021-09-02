@@ -7,6 +7,7 @@
 from common.SwapServiceAPI import t
 from tool.get_test_data import case_data
 from schema import Schema, And, Or, Regex, SchemaError
+from common.util import redis_config
 
 from pprint import pprint
 import pytest, allure, random, time
@@ -25,15 +26,13 @@ class TestSwapOrder:
                          offset='open',
                          lever_rate='5',
                          order_price_type='limit')
-        schema = {
-            "status": "ok",
-            "data": {
-                "order_id": int,
-                "order_id_str": str
-            },
-            "ts": int
-        }
-        Schema(schema).validate(r)
+        coon = redis_config()
+        field = "Order:#" + str(r['data']['order_id']) + "#1"
+
+        if coon.hexists("RsT:APO:11448964#BTC-USD", field):
+            pprint("下单APO更新验证成功")
+        else:
+            pprint("下单APO更新验证失败")
 
 
 if __name__ == '__main__':

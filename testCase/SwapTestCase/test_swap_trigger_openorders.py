@@ -31,36 +31,6 @@ class TestSwapTriggerOpenorders:
                                       page_index='',
                                       page_size='')
 
-        schema = {
-            "status": "ok",
-            "data": {
-                "orders": [
-                    {
-                        "symbol": "BTC",
-                        "contract_code": "BTC-USD",
-                        "trigger_type": "ge",
-                        "volume": 4,
-                        "order_type": 1,
-                        "direction": "sell",
-                        "offset": "open",
-                        "lever_rate": 1,
-                        "order_id": 23,
-                        "order_id_str": "161251",
-                        "order_source": "web",
-                        "trigger_price": 2,
-                        "order_price": 2,
-                        "created_at": int,
-                        "order_price_type": str,
-                        "status": int
-                    }],
-                "total_page": int,
-                "current_page": int,
-                "total_size": int
-            },
-            "ts": int
-        }
-
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

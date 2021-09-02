@@ -22,36 +22,6 @@ class TestSwapMatchresults:
                                 create_date='7',
                                 page_index='',
                                 page_size='')
-        schema = {
-            "data": {
-                "current_page": int,
-                "total_page": int,
-                "total_size": int,
-                "trades": [{
-                    "contract_code": contract_code,
-                    "create_date": Or(float, int),
-                    "direction": str,
-                    "match_id": Or(float, int),
-                    "id": Or(str, None),
-                    "offset": str,
-                    "offset_profitloss": Or(float, int),
-                    "real_profit": Or(float, int),
-                    "order_id": Or(float, int),
-                    "order_id_str": str,
-                    "symbol": str,
-                    "order_source": str,
-                    "trade_fee": Or(float, int),
-                    "fee_asset": str,
-                    "trade_price": Or(float, int),
-                    "trade_turnover": Or(float, int),
-                    "role": str,
-                    "trade_volume": Or(float, int)
-                }]
-            },
-            "status": "ok",
-            "ts": int
-        }
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

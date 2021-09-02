@@ -18,18 +18,6 @@ class TestSwapPriceLimit:
 
     def test_swap_price_limit(self, contract_code):
         r = t.swap_price_limit(contract_code=contract_code)
-        schema = {
-            "status": "ok",
-            "data":
-                [{
-                    "symbol": "BTC",
-                    "high_limit": Or(float, int),
-                    "low_limit": Or(float, int),
-                    "contract_code": "BTC-USD"
-                }],
-            "ts": int
-        }
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

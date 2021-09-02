@@ -18,28 +18,7 @@ class TestSwapHistoryTrade:
 
     def test_swap_history_trade(self, contract_code):
         r = t.swap_history_trade(contract_code=contract_code, size='1')
-        schema = {
-            "ch": str,
-            "status": "ok",
-            "ts": int,
-            "data": [
-                {
-                    "id": Or(int, None),
-                    "ts": int,
-                    "data": [
-                        {
-                            "amount": Or(int, float),
-                            "quantity": Or(int, float, None),
-                            "direction": str,
-                            "id": Or(int, None),
-                            "price": Or(int, float),
-                            "ts": int
-                        }
-                    ]
-                }
-            ]
-        }
-        Schema(schema).validate(r)
+
 
 
 if __name__ == '__main__':

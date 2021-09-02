@@ -29,26 +29,6 @@ class TestSwapTriggerOrderCancelall:
         time.sleep(1)
 
         r = t.swap_trigger_cancelall(contract_code=contract_code)
-        schema = {
-            "status": "ok",
-            "data": {
-                "errors": [
-                    {
-                        "order_id": str,
-                        "err_code": int,
-                        "err_msg": str
-                    },
-                    {
-                        "order_id": str,
-                        "err_code": int,
-                        "err_msg": str
-                    }
-                ],
-                "successes": str
-            },
-            "ts": int
-        }
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

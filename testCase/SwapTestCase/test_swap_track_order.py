@@ -25,15 +25,6 @@ class TestSwapTrackOrder:
                                callback_rate='0.01',
                                active_price='20000',
                                order_price_type='formula_price')
-        schema = {
-            "status": "ok",
-            "data": {
-                "order_id": int,
-                "order_id_str": str
-            },
-            "ts": int
-        }
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

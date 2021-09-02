@@ -18,24 +18,7 @@ class TestSwapHistoryIndex:
 
     def test_swap_history_index(self, contract_code):
         r = t.swap_history_index(symbol=contract_code, period='1min', size='1')
-        schema = {
-            "ch": str,
-            "status": "ok",
-            "ts": int,
-            "data": [
-                {
-                    "id": Or(int, None),
-                    "vol": Or(int, float, None),
-                    "count":  Or(int, float, None),
-                    "open":  Or(int, float, None),
-                    "close":  Or(int, float, None),
-                    "low":  Or(int, float, None),
-                    "high":  Or(int, float, None),
-                    "amount":  Or(int, float, None)
-                }
-            ]
-        }
-        Schema(schema).validate(r)
+
 
 
 if __name__ == '__main__':

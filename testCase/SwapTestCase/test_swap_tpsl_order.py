@@ -23,21 +23,6 @@ class TestSwapTpslOrder:
                               tp_trigger_price='20000',
                               tp_order_price_type='limit',
                               tp_order_price='20000')
-        schema = {
-            "status": "ok",
-            "data": {
-                "tp_order": {
-                    "order_id": int,
-                    "order_id_str": str
-                },
-                "sl_order": Or({
-                    "order_id": int,
-                    "order_id_str": str
-                }, None)
-            },
-            "ts": int
-        }
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

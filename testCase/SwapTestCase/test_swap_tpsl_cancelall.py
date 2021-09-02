@@ -24,19 +24,6 @@ class TestSwapTpslCancelall:
                           tp_order_price_type='limit',
                           tp_order_price='50000')
         r = t.swap_tpsl_cancelall(contract_code=contract_code)
-        schema = {
-            "status": "ok",
-            "data": {
-                "errors": [{
-                    'err_code': int,
-                    'err_msg': str,
-                    'order_id': str
-                }],
-                "successes": str
-            },
-            "ts": int
-        }
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

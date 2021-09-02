@@ -19,27 +19,6 @@ class TestSwapLiquidationOrders:
     def test_swap_liquidation_orders(self, contract_code):
         r = t.swap_liquidation_orders(contract_code=contract_code, trade_type='0', create_date='7', page_index='',
                                       page_size='')
-        schema = {
-            "status": "ok",
-            "data": {
-                "orders": [
-                    {
-                        "symbol": str,
-                        "contract_code": contract_code,
-                        "direction": str,
-                        "offset": str,
-                        "volume": Or(float, int),
-                        "price": Or(float, int),
-                        "created_at": int,
-                    }
-                ],
-                "total_page": int,
-                "current_page": int,
-                "total_size": int
-            },
-            "ts": int
-        }
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

@@ -31,16 +31,7 @@ class TestSwapLightningClosePosition:
                                             direction='sell',
                                             client_order_id='',
                                             order_price_type='')
-        schema = {
-            "status": "ok",
-            "data": {
-                "order_id": int,
-                "order_id_str": str
-             #   "client_order_id": int
-            },
-            "ts": int
-        }
-        Schema(schema).validate(r)
+
 
 
 if __name__ == '__main__':

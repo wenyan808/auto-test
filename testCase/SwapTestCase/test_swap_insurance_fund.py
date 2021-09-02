@@ -18,24 +18,7 @@ class TestSwapTrade:
 
     def test_swap_trade(self, contract_code):
         r = t.swap_insurance_fund(contract_code=contract_code, page_index='', page_size='')
-        schema = {
-            "status": "ok",
-            "ts": int,
-            "data": {
-                "symbol": str,
-                "contract_code": contract_code,
-                "tick": [
-                    {
-                        "insurance_fund": Or(float, int),
-                        "ts": int
-                    }
-                ],
-                "total_page": int,
-                "current_page": int,
-                "total_size": int
-            }
-        }
-        Schema(schema).validate(r)
+
 
 
 if __name__ == '__main__':
