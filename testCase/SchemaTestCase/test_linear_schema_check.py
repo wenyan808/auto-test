@@ -13,7 +13,7 @@ import pytest,allure
 
 
 
-@allure.feature('获取合约用户账户持仓信息')
+@allure.feature('正向永续字段校验')
 class TestLinearSchemaCheck:
 
     @allure.title('获取合约用户账户信息')
