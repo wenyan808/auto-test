@@ -20,9 +20,7 @@ class TestSwapEstimatedSettlementPrice:
     def test_swap_estimated_settlement_price(self,contract_code):
 
         r = t.swap_estimated_settlement_price(contract_code=contract_code)
-        pprint(r)
         assert r['status'] == 'ok'
-
 
 
 if __name__ == '__main__':

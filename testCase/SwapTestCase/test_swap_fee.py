@@ -21,9 +21,7 @@ class TestSwapFee:
     def test_swap_fee(self,contract_code):
 
         r = t.swap_fee(contract_code=contract_code)
-        pprint(r)
         assert r['status'] == 'ok'
-
 
 
 if __name__ == '__main__':

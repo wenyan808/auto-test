@@ -37,9 +37,7 @@ class TestSwapOrderDetail:
                                 order_type='1',
                                 page_index='',
                                 page_size='')
-        pprint(r)
         assert r['status'] == 'ok'
-
 
 
 if __name__ == '__main__':

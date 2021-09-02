@@ -29,9 +29,15 @@ class TestSwapTriggerOrder:
                                  direction='buy',
                                  offset='open',
                                  lever_rate='5')
-        pprint(r)
-        assert r['status'] == 'ok'
-
+        schema = {
+                    "status": "ok",
+                    "data": {
+                        "order_id": int,
+                        "order_id_str": str,
+                    },
+                    "ts": int
+                }
+        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

@@ -6,23 +6,37 @@
 
 from common.SwapServiceAPI import t
 from tool.get_test_data import case_data
-from schema import Schema,And,Or,Regex,SchemaError
+from schema import Schema, And, Or, Regex, SchemaError
 
 from pprint import pprint
-import pytest,allure,random,time
+import pytest, allure, random, time
 
 
 @allure.epic('反向永续')
 @allure.feature('获取平台阶梯保证金')
 class TestSwapLadderMargin:
 
-
-    def test_swap_ladder_margin(self,contract_code):
-
+    def test_swap_ladder_margin(self, contract_code):
         r = t.swap_ladder_margin(contract_code=contract_code)
-        pprint(r)
-        assert r['status'] == 'ok'
-
+        schema = {
+            "status": "ok",
+            "data": [{
+                "symbol": str,
+                "contract_code": contract_code,
+                "list": [{
+                    "lever_rate": Or(int, float),
+                    "ladders": [{
+                        "min_margin_balance": Or(int, float, None),
+                        "max_margin_balance": Or(int, float, None),
+                        "min_margin_available": Or(int, float, None),
+                        "max_margin_available": Or(int, float, None)
+                    }
+                    ]
+                }]
+            }],
+            "ts": int
+        }
+        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

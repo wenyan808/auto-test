@@ -30,9 +30,7 @@ class TestSwapBatchorder:
                                         "order_price_type": 'limit'
                                       }]
                                     })
-        pprint(r)
         assert r['status'] == 'ok'
-
 
 
 if __name__ == '__main__':

@@ -22,9 +22,7 @@ class TestSwapFinancialRecordExact:
     def test_swap_financial_record_exact(self,contract_code):
 
         r = t.swap_financial_record_exact(contract_code=contract_code,type='5',start_time='',end_time='',from_id='',size='',direct='')
-        pprint(r)
         assert r['status'] == 'ok'
-
 
 
 if __name__ == '__main__':

@@ -20,7 +20,6 @@ class TestSwapApiTradingStatus:
     def test_swap_api_trading_status(self):
 
         r = t.swap_api_trading_status()
-        pprint(r)
         assert r['status'] == 'ok'
 
 

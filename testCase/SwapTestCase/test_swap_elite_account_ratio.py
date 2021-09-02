@@ -21,9 +21,7 @@ class TestSwapEliteAccountRatio:
     def test_swap_elite_account_ratio(self,contract_code):
 
         r = t.swap_elite_account_ratio(contract_code=contract_code,period='60min')
-        pprint(r)
         assert r['status'] == 'ok'
-
 
 
 if __name__ == '__main__':

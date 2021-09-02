@@ -21,9 +21,7 @@ class TestSwapFinancialRecord:
     def test_swap_financial_record(self,contract_code):
 
         r = t.swap_financial_record(contract_code=contract_code,type='0',create_date='90',page_index='',page_size='')
-        pprint(r)
         assert r['status'] == 'ok'
-
 
 
 if __name__ == '__main__':

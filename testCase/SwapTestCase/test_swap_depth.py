@@ -21,9 +21,7 @@ class TestSwapDepth:
     def test_swap_depth(self,contract_code):
 
         r = t.swap_depth(contract_code=contract_code,type='step0')
-        pprint(r)
         assert r['status'] == 'ok'
-
 
 
 if __name__ == '__main__':

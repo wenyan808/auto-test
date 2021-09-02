@@ -21,9 +21,7 @@ class TestSwapEstimatedRateKline:
     def test_swap_estimated_rate_kline(self,contract_code):
 
         r = t.swap_estimated_rate_kline(contract_code=contract_code,period='1min',size='20')
-        pprint(r)
         assert r['status'] == 'ok'
-
 
 
 if __name__ == '__main__':

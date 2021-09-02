@@ -21,8 +21,21 @@ class TestSwapSubAuth:
     def test_swap_sub_auth(self,sub_uid):
 
         r = t.swap_sub_auth(sub_uid=sub_uid,sub_auth='1')
-        pprint(r)
-        assert r['status'] == 'ok'
+        schema = {
+            "status": "ok",
+            "data": {
+                "errors": [
+                    {
+                        "sub_uid": str,
+                        "err_code": int,
+                        "err_msg": str
+                    }
+                ],
+                "successes": str
+            },
+            "ts": int
+        }
+        Schema(schema).validate(r)
 
 
 

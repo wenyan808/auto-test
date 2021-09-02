@@ -21,7 +21,6 @@ class TestSwapBatchMerged:
     def test_swap_batch_merged(self,contract_code):
 
         r = t.swap_batch_merged(contract_code=contract_code)
-        pprint(r)
         assert r['status'] == 'ok'
 
 

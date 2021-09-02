@@ -22,7 +22,6 @@ class TestSwapAvailableLevelRate:
     def test_swap_available_level_rate(self,contract_code):
 
         r = t.swap_available_level_rate(contract_code=contract_code)
-        pprint(r)
         assert r['status'] == 'ok'
 
 

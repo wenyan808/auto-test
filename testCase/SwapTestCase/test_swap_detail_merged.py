@@ -22,9 +22,7 @@ class TestSwapDetailMerged:
     def test_swap_detail_merged(self,contract_code):
 
         r = t.swap_detail_merged(contract_code=contract_code)
-        pprint(r)
         assert r['status'] == 'ok'
-
 
 
 if __name__ == '__main__':

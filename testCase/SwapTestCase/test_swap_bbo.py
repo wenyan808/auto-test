@@ -21,9 +21,7 @@ class TestSwapBBO:
     def test_swap_bbo(self,contract_code):
 
         r = t.swap_bbo(contract_code=contract_code)
-        pprint(r)
         assert r['status'] == 'ok'
-
 
 
 if __name__ == '__main__':
