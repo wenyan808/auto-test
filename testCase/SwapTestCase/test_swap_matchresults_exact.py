@@ -24,38 +24,6 @@ class TestSwapMatchresultsExact:
                                       from_id='',
                                       size='',
                                       direct='')
-        schema = {
-            "status": "ok",
-            "data": {
-                "trades": [
-                    {
-                        "id": Or(str, None),
-                        "query_id": int,
-                        "match_id": int,
-                        "order_id": int,
-                        "order_id_str": str,
-                        "symbol": str,
-                        "contract_code": contract_code,
-                        "direction": str,
-                        "offset": str,
-                        "trade_volume": Or(float, int),
-                        "trade_price": Or(float, int),
-                        "trade_turnover": Or(float, int),
-                        "create_date": int,
-                        "offset_profitloss": Or(float, int),
-                        "real_profit": Or(float, int),
-                        "trade_fee": Or(float, int),
-                        "role": str,
-                        "fee_asset": str,
-                        "order_source": str
-                    }
-                ],
-                "remain_size": int,
-                "next_id": Or(int, None)
-            },
-            "ts": int
-        }
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

@@ -18,25 +18,6 @@ class TestSwapSubAccountList:
 
     def test_swap_sub_account_list(self, contract_code):
         r = t.swap_sub_account_list(contract_code=contract_code)
-        schema = {
-            "status": "ok",
-            "ts": int,
-            "data": [
-                {
-                    "sub_uid": int,
-                    "list": [
-                        {
-                            "symbol": str,
-                            "contract_code": str,
-                            "margin_balance": Or(float, 0),
-                            "liquidation_price": Or(float, None),
-                            "risk_rate": Or(float, None)
-                        }
-                    ]
-                }
-            ]
-        }
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

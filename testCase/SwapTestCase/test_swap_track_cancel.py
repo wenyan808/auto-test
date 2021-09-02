@@ -27,19 +27,6 @@ class TestSwapTrackCancel:
                                order_price_type='formula_price')
         r = t.swap_track_cancel(contract_code=contract_code,
                                 order_id=a['data']['order_id'])
-        schema = {
-            'status': 'ok',
-            'ts': int,
-            'data': {
-                'errors': [{
-                    'err_code': int,
-                    'err_msg': str,
-                    'order_id': str
-                }],
-                'successes': str
-            }
-        }
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

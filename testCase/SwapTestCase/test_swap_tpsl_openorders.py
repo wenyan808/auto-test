@@ -24,35 +24,6 @@ class TestSwapTpslOpenorders:
                           tp_order_price_type='limit',
                           tp_order_price='20000')
         r = t.swap_tpsl_openorders(contract_code=contract_code)
-        schema = {
-            "status": "ok",
-            "data": {
-                "total_page": int,
-                "total_size": int,
-                "current_page": int,
-                "orders": [{
-                    "symbol": "BTC",
-                    "contract_code": "BTC-USD",
-                    "volume": float,
-                    "order_type": int,
-                    "tpsl_order_type": str,
-                    "direction": str,
-                    "order_id": int,
-                    "order_id_str": str,
-                    "order_source": str,
-                    "order_price": float,
-                    "trigger_type": str,
-                    "trigger_price": float,
-                    "created_at": int,
-                    "order_price_type": str,
-                    "status": int,
-                    "source_order_id": Or(str, None),
-                    "relation_tpsl_order_id": str
-                }]
-            },
-            "ts": int
-        }
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

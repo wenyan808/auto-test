@@ -18,10 +18,6 @@ class TestSwapMasterSubTransfer:
 
     def test_swap_master_sub_transfer(self, sub_uid, contract_code):
         r = t.swap_master_sub_transfer(sub_uid=sub_uid, contract_code=contract_code, amount='1', type='master_to_sub')
-        schema = {'data': {'order_id': str},
-                  'status': 'ok',
-                  'ts': int}
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

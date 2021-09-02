@@ -18,25 +18,6 @@ class TestSwapMarkPriceKilne:
 
     def test_swap_mark_price_kline(self, contract_code):
         r = t.swap_mark_price_kline(contract_code=contract_code, period='1min', size='20')
-        schema = {
-            "ch": str,
-            "data": [
-                {
-                    "vol": str,
-                    "close": str,
-                    "count": str,
-                    "high": str,
-                    "id": int,
-                    "low": str,
-                    "open": str,
-                    "trade_turnover": str,
-                    "amount": str
-                }
-            ],
-            "status": "ok",
-            "ts": int
-        }
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

@@ -19,26 +19,6 @@ class TestSwapMasterSubTransferRecord:
     def test_swap_master_sub_transfer_record(self, contract_code):
         r = t.swap_master_sub_transfer_record(contract_code=contract_code, transfer_type='34', create_date='7',
                                               page_index='', page_size='')
-        schema = {
-            'data': {
-                'current_page': int,
-                'total_page': int,
-                'total_size': int,
-                'transfer_record': [{
-                    'amount': float,
-                    'contract_code': contract_code,
-                    'id': int,
-                    'sub_account_name': str,
-                    'sub_uid': str,
-                    'symbol': str,
-                    'transfer_type': int,
-                    'ts': int
-                }]
-            },
-            'status': 'ok',
-            'ts': int
-        }
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

@@ -18,15 +18,6 @@ class TestSwapSwitchLeverRate:
 
     def test_swap_switch_lever_rate(self, contract_code):
         r = t.swap_switch_lever_rate(contract_code=contract_code, lever_rate='5')
-        schema = {
-            "status": "ok",
-            "ts": int,
-            "data": {
-                "contract_code": str,
-                "lever_rate": int
-            }
-        }
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

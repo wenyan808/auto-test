@@ -16,7 +16,7 @@ def sub_uid():
 
 @pytest.fixture()
 def contract_code():
-    contract_code = 'BTC-USDT'
+    contract_code = 'BTC-USD'
     return contract_code
 
 
