@@ -33,6 +33,7 @@ class TestSwapOrder:
             pprint("下单APO更新验证成功")
         else:
             pprint("下单APO更新验证失败")
+        # print(r)
 
 
 if __name__ == '__main__':

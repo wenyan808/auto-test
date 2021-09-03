@@ -20,12 +20,6 @@ import redis
 TIMEOUT = 15
 
 
-def redis_config():
-    # coon = redis.Redis(host="172.18.6.50", port=6386, password="rNEAz9uFwHoymy5i", decode_responses=True)
-    coon = redis.Redis(host="172.18.6.243", port=6384, password="rNEAz9uFwHoymy5i", decode_responses=True)
-    # coon = redis.Redis(host="172.18.6.244", port=6379, password="rNEAz9uFwHoymy5i", decode_responses=True)
-    return coon
-
 
 # 各种请求,获取数据方式
 def api_http_get(url, params, add_to_headers=None):
@@ -37,27 +31,6 @@ def api_http_get(url, params, add_to_headers=None):
     if add_to_headers:
         headers.update(add_to_headers)
     postdata = urllib.parse.urlencode(params)
-    # # #新加坡环境经常超时，重试到成功为止
-    # Retry_times = 0
-    # while True:
-    #     response = requests.get(url, postdata, headers=headers, timeout=TIMEOUT)
-    #     try:
-    #         if response.json()['err_code'] == 403:
-    #             Retry_times = Retry_times + 1
-    #             continue
-    #     except:
-    #         try:
-    #             if response.status_code == 200:
-    #                 print('重试次数：', Retry_times)
-    #                 return response.json()
-    #             else:
-    #                 print('重试次数：', Retry_times)
-    #                 return response.text
-    #         except Exception as e:
-    #             print('重试次数：', Retry_times)
-    #             return e
-    #     break
-    # 不重试
     try:
         response = requests.get(url, postdata, headers=headers, timeout=TIMEOUT)
         if response.status_code == 200:
@@ -79,28 +52,6 @@ def api_http_post(url, params, add_to_headers=None):
     if add_to_headers:
         headers.update(add_to_headers)
     postdata = json.dumps(params)
-    # 新加坡环境经常超时，重试到成功为止
-    # Retry_times = 0
-    # while True:
-    #     response = requests.post(url, postdata, headers=headers, timeout=TIMEOUT)
-    #     try:
-    #         if response.json()['err_code'] == 403:
-    #             Retry_times = Retry_times + 1
-    #
-    #             continue
-    #     except:
-    #         try:
-    #             if response.status_code == 200:
-    #                 print('重试次数：', Retry_times)
-    #                 return response.json()
-    #             else:
-    #                 print('重试次数：', Retry_times)
-    #                 return response.text
-    #         except Exception as e:
-    #             print('重试次数：', Retry_times)
-    #             return e
-    #     break
-    # 不重试
     try:
         response = requests.post(url, postdata, headers=headers, timeout=TIMEOUT)
         if response.status_code == 200:

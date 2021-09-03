@@ -17,14 +17,18 @@ import pytest,allure
 class TestLinearSchemaCheck:
 
     @allure.title('获取合约用户账户信息')
-    def test_linear_account_info(self,contract_code,symbol):
-        r = t.linear_account_info(contract_code=contract_code)
+    @allure.description('这是注释1')
+    def test_linear_account_info(self):
+        """
+        这是注释2
+        """
+        r = t.linear_account_info(contract_code='btc-usdt')
         pprint(r)
         schema = {
             'data': [
                 {
                     'adjust_factor': Or(float,int),
-                    'contract_code': contract_code,
+                    'contract_code': 'BTC-USDT',
                     'lever_rate': int,
                     'margin_account': str,
                     'liquidation_price': Or(float,None),
@@ -38,7 +42,7 @@ class TestLinearSchemaCheck:
                     'profit_real': Or(float,None),
                     'profit_unreal': Or(float,None),
                     'risk_rate': Or(float,None),
-                    'symbol': symbol,
+                    'symbol': 'BTC',
                     'withdraw_available': Or(float,None)
                 }
             ],

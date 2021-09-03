@@ -44,7 +44,7 @@ def run(argu=None):
     if argu == 'ALL':
         os.system('pytest --alluredir report/allure testCase/')
     elif type(argu) == str:
-        if argu.capitalize() in ['Contract','Swap','Linear','Option']:
+        if argu.capitalize() in ['Contract','Swap','Linear','Option','Schema']:
             os.system('pytest --alluredir report/allure testCase/{}TestCase'.format(argu.capitalize()))
         else:
             print('输入错误')
