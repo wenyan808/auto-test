@@ -5,11 +5,12 @@
 
 import pytest
 from common.SwapServiceAPI import t as st
+from common.LinearServiceAPI import t as lt
 
 
 @pytest.fixture()
 def sub_uid():
-    sub_uid_list = st.swap_sub_account_list()
+    sub_uid_list = lt.linear_sub_account_list()
     sub_uid = sub_uid_list['data'][0]['sub_uid']
     return sub_uid
 
@@ -24,3 +25,10 @@ def contract_code():
 def symbol():
     symbol = 'BTC'
     return symbol
+
+
+
+@pytest.fixture()
+def linear_contract_code():
+    contract_code = 'BTC-USDT'
+    return contract_code

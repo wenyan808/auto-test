@@ -41,7 +41,6 @@ class TestLinearOrder:
                     'status': 'ok',
                     'ts': int
                 }
-
         Schema(schema).validate(r)
 
 

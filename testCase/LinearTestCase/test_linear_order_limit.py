@@ -20,7 +20,7 @@ class TestLinearOrderLimit:
 
 
 
-    def test_linear_order_info(self,contract_code,symbol):
+    def test_linear_order_limit(self,contract_code,symbol):
         r = t.linear_order_limit(contract_code=contract_code,order_price_type='limit')
         pprint(r)
         schema = {
