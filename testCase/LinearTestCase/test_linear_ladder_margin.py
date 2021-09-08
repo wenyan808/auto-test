@@ -19,25 +19,12 @@ import pytest,allure,random,time
 @allure.feature('获取平台阶梯保证金（逐仓）')
 class TestLinearLadderMargin:
 
-
-
-    def test_linear_ladder_margin(self,contract_code,symbol):
-
-
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_ladder_margin(self,title,contract_code,status):
         r = t.linear_ladder_margin(contract_code=contract_code)
         pprint(r)
-        schema = {'data': [{'contract_code': contract_code,
-                           'list': [{'ladders': [{'max_margin_available': Or(int,float,None),
-                                                  'max_margin_balance': Or(int,float,None),
-                                                  'min_margin_available': Or(int,float,None),
-                                                  'min_margin_balance': Or(int,float)},None],
-                                     'lever_rate': int},],
-                                   'margin_account': contract_code,
-                                   'margin_mode': 'isolated',
-                                   'symbol': symbol}],
-                         'status': 'ok',
-                         'ts': int}
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 

@@ -20,24 +20,12 @@ import pytest,allure,random,time
 class TestLinearCrossLadderMargin:
 
 
-
-    def test_linear_cross_ladder_margin(self,contract_code,symbol):
-
-
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_cross_ladder_margin(self,title,contract_code,status):
         r = t.linear_cross_ladder_margin(contract_code=contract_code)
         pprint(r)
-        schema = {'data': [{'contract_code': contract_code,
-                           'list': [{'ladders': [{'max_margin_available': Or(int,float,None),
-                                                  'max_margin_balance': Or(int,float,None),
-                                                  'min_margin_available': Or(int,float,None),
-                                                  'min_margin_balance': Or(int,float)},None],
-                                     'lever_rate': int},],
-                                   'margin_account': 'USDT',
-                                   'margin_mode': 'cross',
-                                   'symbol': symbol}],
-                         'status': 'ok',
-                         'ts': int}
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 if __name__ == '__main__':
     pytest.main()

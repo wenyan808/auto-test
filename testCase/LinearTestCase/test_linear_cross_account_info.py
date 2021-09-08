@@ -13,17 +13,23 @@ from pprint import pprint
 import pytest,allure,random,time
 
 
+
 @allure.epic('正向永续')
-@allure.feature('获取用户的合约手续费费率')
-class TestLinearFee:
+@allure.feature('获取合约用户账户信息（全仓）')
+class TestLinearCrossAccountInfo:
+
+
 
     @allure.title('{title}')
     @pytest.mark.parametrize(*case_data())
-    def test_linear_fee(self,title,contract_code,status):
-        r = t.linear_fee(contract_code=contract_code)
+    def test_linear_cross_account_info(self,title,margin_account,status):
+        r = t.linear_cross_account_info(margin_account=margin_account)
         pprint(r)
         assert r['status'] == status
 
 
 if __name__ == '__main__':
     pytest.main()
+
+
+

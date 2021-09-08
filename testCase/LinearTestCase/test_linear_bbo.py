@@ -19,18 +19,13 @@ import pytest,allure,random,time
 class TestLinearBBO:
 
 
-    def test_linear_bbo(self,contract_code):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_bbo(self,title,contract_code,status):
         r = t.linear_bbo(contract_code=contract_code)
         pprint(r)
-        schema = {
-                    'ticks': [{'contract_code': contract_code,
-                               'ask': list,
-                               'bid': list,
-                               'mrid': int,
-                               'ts': int}],
-                    'status': 'ok',
-                    'ts': int}
-        Schema(schema).validate(r)
+        assert r['status'] == status
+
 
 
 if __name__ == '__main__':

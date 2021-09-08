@@ -12,7 +12,7 @@ import pytest,allure,random,time
 
 
 
-@allure.feature('正向永续字段校验')
+@allure.feature('正向永续schema校验')
 class TestLinearSchemaCheck:
 
     def setup_class(self):

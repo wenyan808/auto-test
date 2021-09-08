@@ -19,36 +19,16 @@ import pytest,allure,random,time
 class TestLinearLiquidationOrders:
 
 
-    def test_linear_liquidation_orders(self,contract_code,symbol):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_liquidation_orders(self,title,contract_code,trade_type,create_date,page_index,page_size,status):
         r = t.linear_liquidation_orders(contract_code=contract_code,
-                                        trade_type='0',
-                                        create_date='7',
-                                        page_index='',
-                                        page_size='50')
+                                        trade_type=trade_type,
+                                        create_date=create_date,
+                                        page_index=page_index,
+                                        page_size=page_size)
         pprint(r)
-        schema = {
-                    'data': {
-                        'current_page': int,
-                        'orders': [
-                            {
-                                'contract_code': contract_code,
-                                'amount': float,
-                                'trade_turnover': float,
-                                'created_at': int,
-                                'direction': str,
-                                'offset': str,
-                                'price': float,
-                                'symbol': symbol,
-                                'volume': Or(float,int,None)
-                            }
-                        ],
-                        'total_page': int,
-                        'total_size': int
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 if __name__ == '__main__':

@@ -21,23 +21,12 @@ import pytest,allure,random,time
 class TestLinearTrade:
 
 
-    def test_linear_trade(self,contract_code):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_trade(self,title,contract_code,status):
         r = t.linear_trade(contract_code=contract_code)
         pprint(r)
-        schema = {'ch': 'market.{}.trade.detail'.format(contract_code),
-                  'tick': {'data': [{'amount': str,
-                                     'contract_code': contract_code,
-                                     'direction': str,
-                                     'id': int,
-                                     'price': str,
-                                     'quantity': str,
-                                     'trade_turnover': str,
-                                     'ts': int}],
-                             'id':int,
-                              'ts': int},
-                      'status': 'ok',
-                      'ts': int}
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 

@@ -63,7 +63,7 @@ from config.conf import ATPHost
 def case_data(priority="P0"):
     #通过反射取回用例文件名作为入参去atp取回对应的测试数据
     caller_frame = inspect.stack()[1]
-    file_name = caller_frame.filename.split('/')[7]
+    file_name = caller_frame.filename.split('/')[7][:-3]
     atp_url = ATPHost + "/api_case/get_pytest_api_test_data_by_script_path"
     header = {'accept' : 'application/json','Content-Type' : 'application/json'}
     params = {"script_path": file_name}
@@ -78,9 +78,5 @@ def case_data(priority="P0"):
         data_values.append(tuple(variables_values_list[i]))
     return data_keys,data_values
 
-
-
-
-#("test_input,expected",[ ("3+5", 8),("2+4", 6),("6 * 9", 42),])
 
 

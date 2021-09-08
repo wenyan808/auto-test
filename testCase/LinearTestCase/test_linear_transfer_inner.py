@@ -20,18 +20,12 @@ import pytest,allure,random,time
 class TestLinearTransferInner:
 
 
-    def test_linear_transfer_inner(self,contract_code):
-        r = t.linear_transfer_inner(asset='usdt',from_margin_account=contract_code,to_margin_account='eth-usdt',amount='1')
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_transfer_inner(self,title,asset,from_margin_account,to_margin_account,amount,status):
+        r = t.linear_transfer_inner(asset=asset,from_margin_account=from_margin_account,to_margin_account=to_margin_account,amount=amount)
         pprint(r)
-        schema = {
-                    'data': {
-                        'order_id': str
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 

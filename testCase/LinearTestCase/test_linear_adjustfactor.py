@@ -19,38 +19,12 @@ import pytest,allure,random,time
 @allure.feature('查询平台阶梯调整系数')
 class TestLinearAdjustfactor:
 
-
-    def test_linear_adjustfactor(self,contract_code,symbol):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_adjustfactor(self,title,contract_code,status):
         r = t.linear_adjustfactor(contract_code=contract_code)
         pprint(r)
-        schema = {
-                    'data': [
-                        {
-                            'contract_code': contract_code,
-                            'list': [
-                                {
-                                    'ladders': [
-                                        {
-                                            'adjust_factor': float,
-                                            'ladder': int,
-                                            'max_size': Or(int,None),
-                                            'min_size': Or(int,None)
-                                        }
-                                    ],
-                                    'lever_rate': int
-                                }
-                            ],
-                            'margin_mode': 'isolated',
-                            'symbol': symbol
-                        }
-                    ],
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
-
-
+        assert r['status'] == status
 
 
 

@@ -17,28 +17,12 @@ import pytest,allure,random,time
 class TestLinearContractInfo:
 
 
-    def test_linear_contract_info1(self,contract_code,symbol):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_contract_info(self,title,contract_code,status):
         r = t.linear_contract_info(contract_code=contract_code)
         pprint(r)
-        schema = {
-                    'data': [
-                        {
-                            'contract_code': contract_code,
-                            'contract_size': Or(float,int),
-                            'contract_status': int,
-                            'create_date': str,
-                            'delivery_time': str,
-                            'price_tick': Or(float,int),
-                            'settlement_date': str,
-                            'support_margin_mode': Or('cross','isolated','all'),
-                            'symbol': symbol
-                        }
-                    ],
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 if __name__ == '__main__':

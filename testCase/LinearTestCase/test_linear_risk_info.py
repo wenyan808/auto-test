@@ -19,22 +19,13 @@ import pytest,allure,random,time
 @allure.feature('查询合约风险准备金和预估分摊比例')
 class TestLinearRiskInfo:
 
-    def test_linear_risk_info(self,contract_code):
+
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_risk_info(self,title,contract_code,status):
         r = t.linear_risk_info(contract_code=contract_code)
         pprint(r)
-        schema = {
-                    'data': [
-                        {
-                            'contract_code': contract_code,
-                            'estimated_clawback': float,
-                            'insurance_fund': float
-                        }
-                    ],
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 

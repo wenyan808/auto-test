@@ -20,20 +20,12 @@ import pytest,allure,random,time
 @allure.feature('查询系统交易权限（全仓）')
 class TestLinearCrossTradeState:
 
-
-    def test_linear_cross_trade_state(self,contract_code,symbol):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_cross_trade_state(self,title,contract_code,status):
         r = t.linear_cross_trade_state(contract_code=contract_code)
         pprint(r)
-        schema = {'data': [{'cancel': int,
-                           'close': int,
-                           'contract_code': contract_code,
-                           'margin_account': 'USDT',
-                           'margin_mode': 'cross',
-                           'open': int,
-                           'symbol': symbol}],
-                 'status': 'ok',
-                 'ts': int}
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 

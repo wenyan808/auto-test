@@ -20,36 +20,26 @@ import pytest,allure,random,time
 class TestLinearCrossLightningClosePosition:
 
 
-
-    def test_linear_cross_lightning_close_position(self,contract_code):
-        a = t.linear_cross_order(contract_code=contract_code,
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_cross_lightning_close_position(self,title,contract_code,sell_price,lever_rate,volume,direction,client_order_id,order_price_type,status):
+        t.linear_cross_order(contract_code=contract_code,
                        client_order_id='',
-                       price='',
+                       price=sell_price,
                        volume='1',
                        direction='buy',
                        offset='open',
-                       lever_rate='5',
-                       order_price_type='opponent')
+                       lever_rate=lever_rate,
+                       order_price_type='limit')
         time.sleep(1)
 
         r = t.linear_cross_lightning_close_position(contract_code=contract_code,
-                                              volume='1',
-                                              direction='sell',
-                                              client_order_id='',
-                                              order_price_type='lightning')
+                                              volume=volume,
+                                              direction=direction,
+                                              client_order_id=client_order_id,
+                                              order_price_type=order_price_type)
         pprint(r)
-        schema = {
-                    'data': {
-                        'order_id': int,
-                        'order_id_str': str
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-
-
-        Schema(schema).validate(r)
-
+        assert r['status'] == status
 
 
 

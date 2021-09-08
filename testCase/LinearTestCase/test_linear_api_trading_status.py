@@ -19,38 +19,13 @@ import pytest,allure,random,time
 @allure.feature('获取用户API指标禁用信息')
 class TestLinearApiTradingStatus:
 
-
-    def test_linear_api_trading_status(self):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_api_trading_status(self,title,status):
         r = t.linear_api_trading_status()
         pprint(r)
-        schema = {
-            'data': {
-                'COR': {
-                    'cancel_ratio': Or(float,int),
-                    'cancel_ratio_threshold': Or(float,int),
-                    'invalid_cancel_orders': int,
-                    'is_active': int,
-                    'is_trigger': int,
-                    'orders': int,
-                    'orders_threshold': int
-                },
-                'TDN': {
-                    'disables': int,
-                    'disables_threshold': int,
-                    'is_active': int,
-                    'is_trigger': int
-                },
-                'disable_interval': int,
-                'disable_reason': Or(str,None),
-                'is_disable': int,
-                'order_price_types': Or(str,None),
-                'recovery_time': int
-            },
-            'status': 'ok',
-            'ts': int
-        }
+        assert r['status'] == status
 
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

@@ -20,48 +20,16 @@ import pytest,allure,random,time
 class TestLinearMatchresults:
 
 
-    def test_linear_matchresults(self,contract_code,symbol):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_matchresults(self,title,contract_code,trade_type,create_date,page_index,page_size,status):
         r = t.linear_matchresults(contract_code=contract_code,
-                                  trade_type='0',
-                                  create_date='7',
-                                  page_index='',
-                                  page_size='')
+                                  trade_type=trade_type,
+                                  create_date=create_date,
+                                  page_index=page_index,
+                                  page_size=page_size)
         pprint(r)
-        schema = {
-                    'data': {
-                        'current_page': int,
-                        'total_page': int,
-                        'total_size': int,
-                        'trades': [
-                            {
-                                'contract_code': contract_code,
-                                'create_date': int,
-                                'direction': str,
-                                'fee_asset': 'USDT',
-                                'id': str,
-                                'margin_account': str,
-                                'margin_mode': 'isolated',
-                                'match_id': int,
-                                'offset': str,
-                                'offset_profitloss': float,
-                                'order_id': int,
-                                'order_id_str': str,
-                                'order_source': str,
-                                'real_profit': float,
-                                'role': str,
-                                'symbol': symbol,
-                                'trade_fee': float,
-                                'trade_price': float,
-                                'trade_turnover': float,
-                                'trade_volume': float
-                            }
-                        ]
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 

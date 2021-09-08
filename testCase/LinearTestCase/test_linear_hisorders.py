@@ -16,57 +16,19 @@ import pytest,allure,random,time
 @allure.feature('获取用户的合约历史委托')
 class TestLinearHisorders:
 
-    def test_linear_hisorders(self,contract_code,symbol):
+
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_hisorders(self,title,contract_code,trade_type,type,status,create_date,page_index,page_size,STATUS):
         r = t.linear_hisorders(contract_code=contract_code,
-                               trade_type='0',
-                               type='1',
-                               status='0',
-                               create_date='7',
-                               page_index='',
-                               page_size='')
+                               trade_type=trade_type,
+                               type=type,
+                               status=status,
+                               create_date=create_date,
+                               page_index=page_index,
+                               page_size=page_size)
         pprint(r)
-        schema = {
-                    'data': {
-                        'current_page': int,
-                        'orders': [Or(
-                            {
-                                'contract_code': contract_code,
-                                'create_date': int,
-                                'direction': str,
-                                'fee': float,
-                                'fee_asset': 'USDT',
-                                'is_tpsl': Or(0,1),
-                                'lever_rate': int,
-                                'liquidation_type': str,
-                                'margin_account': str,
-                                'margin_asset': 'USDT',
-                                'margin_frozen': Or(float,None),
-                                'margin_mode': 'isolated',
-                                'offset': str,
-                                'order_id': int,
-                                'order_id_str': str,
-                                'order_price_type': int,
-                                'order_source': str,
-                                'order_type': int,
-                                'price': float,
-                                'profit': float,
-                                'real_profit':Or(float,int),
-                                'status': int,
-                                'symbol': symbol,
-                                'trade_avg_price': Or(float,int),
-                                'trade_turnover': float,
-                                'trade_volume': float,
-                                'update_time': int,
-                                'volume': float
-                            },None)
-                        ],
-                        'total_page': int,
-                        'total_size': int
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-        Schema(schema).validate(r)
+        assert r['status'] == STATUS
 
 
 

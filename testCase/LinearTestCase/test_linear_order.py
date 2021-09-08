@@ -19,55 +19,20 @@ import pytest,allure,random,time
 @allure.feature('合约下单')
 class TestLinearOrder:
 
-    def setup(self):
-        self.client_order_id = random.randint(1,999999)
 
-    @allure.title('校验返回所有的字段及数据格式(包含client_order_id)')
-    def test_linear_order1(self,contract_code):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_order(self,title,contract_code,client_order_id,volume,direction,offset,lever_rate,order_price_type,buy_price,status):
         r = t.linear_order(contract_code=contract_code,
-                           client_order_id='',
-                           price='50000',
-                           volume='1',
-                           direction='buy',
-                           offset='open',
-                           lever_rate='5',
-                           order_price_type='limit')
+                               client_order_id=client_order_id,
+                               price=buy_price-1,
+                               volume=volume,
+                               direction=direction,
+                               offset=offset,
+                               lever_rate=lever_rate,
+                               order_price_type=order_price_type)
         pprint(r)
-        schema = {
-                    'data': {
-                        'order_id': int,
-                        'order_id_str': str
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-        Schema(schema).validate(r)
-
-
-    @pytest.mark.schema
-    @allure.story('字段校验')
-    @allure.title('校验返回所有的字段及数据格式(不含client_order_id)')
-    def test_linear_order2(self,contract_code):
-        r = t.linear_order(contract_code=contract_code,
-                           client_order_id=self.client_order_id,
-                           price='50000',
-                           volume='1',
-                           direction='buy',
-                           offset='open',
-                           lever_rate='5',
-                           order_price_type='limit')
-        pprint(r)
-        schema = {
-                    'data': {
-                        'order_id': int,
-                        'order_id_str': str,
-                        'client_order_id': int
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 

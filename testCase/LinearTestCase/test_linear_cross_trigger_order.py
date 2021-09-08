@@ -19,28 +19,20 @@ import pytest,allure,random,time
 @allure.feature('合约计划委托下单(全仓)')
 class TestLinearCrossTriggerOrder:
 
-
-    def test_linear_cross_trigger_order(self,contract_code):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_cross_trigger_order(self,title,contract_code,trigger_type,last_price,order_price_type,volume,direction,offset,lever_rate,status):
         r = t.linear_cross_trigger_order(contract_code=contract_code,
-                                   trigger_type='le',
-                                   trigger_price='10000',
-                                   order_price='10000',
-                                   order_price_type='limit',
-                                   volume='1',
-                                   direction='buy',
-                                   offset='open',
-                                   lever_rate='5')
+                                       trigger_type=trigger_type,
+                                       trigger_price=last_price-100,
+                                       order_price=last_price-100,
+                                       order_price_type=order_price_type,
+                                       volume=volume,
+                                       direction=direction,
+                                       offset=offset,
+                                       lever_rate=lever_rate)
         pprint(r)
-        schema = {
-                    'data': {
-                        'order_id': int,
-                        'order_id_str': str
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 if __name__ == '__main__':

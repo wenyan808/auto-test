@@ -14,7 +14,6 @@ import base64
 import hashlib
 import gzip
 import time
-import redis
 
 # timeout in 5 seconds:
 TIMEOUT = 15

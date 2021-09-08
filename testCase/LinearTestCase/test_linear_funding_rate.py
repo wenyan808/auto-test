@@ -20,24 +20,12 @@ import pytest,allure,random,time
 class TestLinearFundingRate:
 
 
-    def test_linear_funding_rate1(self,contract_code,symbol):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_funding_rate(self,title,contract_code,status):
         r = t.linear_funding_rate(contract_code=contract_code)
         pprint(r)
-        schema = {
-                    'data': {
-                        'contract_code': contract_code,
-                        'estimated_rate': str,
-                        'fee_asset': 'USDT',
-                        'funding_rate': str,
-                        'funding_time': str,
-                        'next_funding_time': str,
-                        'symbol': symbol
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 if __name__ == '__main__':

@@ -20,38 +20,12 @@ import pytest,allure,random,time
 class TestLinearAdjustfactor:
 
 
-    def test_linear_cross_adjustfactor(self):
-        r = t.linear_cross_adjustfactor()
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_cross_adjustfactor(self,title,contract_code,status):
+        r = t.linear_cross_adjustfactor(contract_code=contract_code)
         pprint(r)
-        schema = {
-                    'data': [
-                        {
-                            'contract_code': str,
-                            'list': [
-                                {
-                                    'ladders': [
-                                        {
-                                            'adjust_factor': Or(float,int,None),
-                                            'ladder': Or(float,int,None),
-                                            'max_size': Or(float,int,None),
-                                            'min_size': Or(float,int,None),
-                                        }
-                                    ],
-                                    'lever_rate': int
-                                },
-
-                            ],
-                            'margin_mode': str,
-                            'symbol': str
-                        },
-
-                    ],
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
-
+        assert r['status'] == status
 
 
 

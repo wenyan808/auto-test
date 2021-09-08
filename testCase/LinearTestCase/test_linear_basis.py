@@ -18,19 +18,13 @@ import pytest,allure,random,time
 @allure.feature('获取基差数据')
 class TestLinearBasis:
 
-
-    def test_linear_basis(self,contract_code):
-        r = t.linear_basis(contract_code=contract_code,period='1min',basis_price_type='open',size='200')
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_basis(self,title,contract_code,period,basis_price_type,size,status):
+        print(case_data())
+        r = t.linear_basis(contract_code=contract_code,period=period,basis_price_type=basis_price_type,size=size)
         pprint(r)
-        schema = {'ch': 'market.{}.basis.1min.open'.format(contract_code),
-                    'data': [{'basis': str,
-                           'basis_rate':str,
-                           'contract_price': str,
-                           'id': int,
-                           'index_price': str}],
-                    'status': 'ok',
-                    'ts': int}
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 if __name__ == '__main__':

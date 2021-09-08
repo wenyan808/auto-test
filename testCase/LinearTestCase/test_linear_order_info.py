@@ -20,61 +20,25 @@ import pytest,allure,random,time
 class TestLinearOrderInfo:
 
 
-    def test_linear_order_info(self,contract_code,symbol):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_order_info(self,title,contract_code,sell_price,lever_rate,status):
         a = t.linear_order(contract_code=contract_code,
-                       client_order_id='',
-                       price='50000',
-                       volume='1',
-                       direction='buy',
-                       offset='open',
-                       lever_rate='5',
-                       order_price_type='limit')
+                               client_order_id='',
+                               price=sell_price,
+                               volume='1',
+                               direction='buy',
+                               offset='open',
+                               lever_rate=lever_rate,
+                               order_price_type='limit')
         time.sleep(1)
         order_id = a['data']['order_id']
 
         r = t.linear_order_info(contract_code=contract_code,
                                 order_id=order_id)
         pprint(r)
-        schema = {
-                    'data': [
-                        {
-                            'canceled_at': int,
-                            'client_order_id': Or(None,int),
-                            'contract_code': contract_code,
-                            'created_at': int,
-                            'direction': str,
-                            'fee': Or(int,float),
-                            'fee_asset': 'USDT',
-                            'is_tpsl': Or(0,1),
-                            'lever_rate': int,
-                            'liquidation_type': str,
-                            'margin_account': str,
-                            'margin_asset': 'USDT',
-                            'margin_frozen': Or(float,None),
-                            'margin_mode': 'isolated',
-                            'offset': str,
-                            'order_id': int,
-                            'order_id_str': str,
-                            'order_price_type': str,
-                            'order_source': str,
-                            'order_type': int,
-                            'price': Or(int,float),
-                            'profit': Or(int,float),
-                            'real_profit': Or(int,float),
-                            'status': int,
-                            'symbol': symbol,
-                            'trade_avg_price': Or(int,float,None),
-                            'trade_turnover': Or(float,int),
-                            'trade_volume': int,
-                            'update_time': Or(int,None),
-                            'volume': int
-                        }
-                    ],
-                    'status': 'ok',
-                    'ts': int
-                }
+        assert r['status'] == status
 
-        Schema(schema).validate(r)
 
 
 

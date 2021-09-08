@@ -20,55 +20,17 @@ import pytest,allure,random,time
 class TestLinearCrossTriggerHisorders:
 
 
-    def test_linear_cross_trigger_hisorders(self,contract_code,symbol):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_cross_trigger_hisorders(self,title,contract_code,trade_type,status,create_date,page_index,page_size,STATUS):
         r = t.linear_cross_trigger_hisorders(contract_code=contract_code,
-                                       trade_type='1',
-                                       status='0',
-                                       create_date='7',
-                                       page_index='',
-                                       page_size='')
+                                           trade_type=trade_type,
+                                           status=status,
+                                           create_date=create_date,
+                                           page_index=page_index,
+                                           page_size=page_size)
         pprint(r)
-        schema = {
-                    'data': {
-                        'current_page': int,
-                        'orders': [
-                            {
-                                'canceled_at': Or(int,None),
-                                'contract_code': contract_code,
-                                'created_at': int,
-                                'direction': 'buy',
-                                'fail_code': Or(int,None),
-                                'fail_reason': Or(str,None),
-                                'lever_rate': int,
-                                'margin_account': str,
-                                'margin_mode': 'cross',
-                                'offset': str,
-                                'order_id': int,
-                                'order_id_str': str,
-                                'order_insert_at': int,
-                                'order_price': float,
-                                'order_price_type': str,
-                                'order_source': str,
-                                'order_type': int,
-                                'relation_order_id': str,
-                                'status': int,
-                                'symbol': symbol,
-                                'trigger_price': float,
-                                'trigger_type': Or('ge','le'),
-                                'triggered_at': Or(int,None),
-                                'triggered_price': Or(int,float,None),
-                                'update_time': int,
-                                'volume': float
-                            }
-                        ],
-                        'total_page': int,
-                        'total_size': int
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
+        assert r['status'] == STATUS
 
 
 

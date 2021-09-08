@@ -19,33 +19,12 @@ import pytest,allure,random,time
 @allure.feature('查询系统划转权限--全仓')
 class TestLinearAdjustfactor:
 
-
-    def test_linear_cross_transfer_state(self):
-        r = t.linear_cross_transfer_state()
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_cross_transfer_state(self,title,margin_account,status):
+        r = t.linear_cross_transfer_state(margin_account=margin_account)
         pprint(r)
-        schema = {
-                    "status": str,
-                    "data": [
-                        {
-                            "margin_mode": str,
-                            "margin_account": str,
-                            "transfer_in": Or(None,int),
-                            "transfer_out": Or(None,int),
-                            "master_transfer_sub": Or(None,int),
-                            "sub_transfer_master": Or(None,int),
-                            "master_transfer_sub_inner_in": Or(None,int),
-                            "master_transfer_sub_inner_out": Or(None,int),
-                            "sub_transfer_master_inner_in": Or(None,int),
-                            "sub_transfer_master_inner_out": Or(None,int),
-                            "transfer_inner_in": Or(None,int),
-                            "transfer_inner_out": Or(None,int),
-
-                        }
-                    ],
-                    "ts": int
-                }
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 

@@ -18,24 +18,17 @@ import pytest,allure,random,time
 @allure.feature('母子账户划转')
 class TestLinearMasterSubTransfer:
 
-
-    def test_linear_master_sub_transfer(self,sub_uid,contract_code):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_master_sub_transfer(self,title,sub_uid,asset,from_margin_account,to_margin_account,amount,type,status):
         r = t.linear_master_sub_transfer(sub_uid=sub_uid,
-                                         asset='usdt',
-                                         from_margin_account=contract_code,
-                                         to_margin_account='eth-usdt',
-                                         amount='1',
-                                         type='master_to_sub')
+                                         asset=asset,
+                                         from_margin_account=from_margin_account,
+                                         to_margin_account=to_margin_account,
+                                         amount=amount,
+                                         type=type)
         pprint(r)
-        schema = {
-                    'data': {
-                        'order_id': str
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 if __name__ == '__main__':

@@ -17,37 +17,12 @@ import pytest,allure,random,time
 @allure.feature('查询系统状态')
 class TestLinearApiState:
 
-
-    def test_linear_api_state(self,contract_code,symbol):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_api_state(self,title,contract_code,status):
         r = t.linear_api_state(contract_code=contract_code)
         pprint(r)
-        schema = {
-            'data': [
-                {
-                    'cancel': int,
-                    'close': int,
-                    'contract_code': contract_code,
-                    'margin_account': str,
-                    'margin_mode': 'isolated',
-                    'master_transfer_sub': int,
-                    'master_transfer_sub_inner_in': int,
-                    'master_transfer_sub_inner_out': int,
-                    'open':int,
-                    'sub_transfer_master': int,
-                    'sub_transfer_master_inner_in': int,
-                    'sub_transfer_master_inner_out': int,
-                    'symbol': symbol,
-                    'transfer_in': int,
-                    'transfer_inner_in': int,
-                    'transfer_inner_out': int,
-                    'transfer_out': int
-                }
-            ],
-            'status': 'ok',
-            'ts': int
-        }
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 

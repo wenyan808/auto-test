@@ -18,37 +18,12 @@ import pytest,allure,random,time
 @allure.feature('获取用户资产和持仓信息（全仓）')
 class TestLinearCrossPositionInfo:
 
-
-    def test_linear_cross_position_info(self,contract_code,symbol):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_cross_position_info(self,title,contract_code,status):
         r = t.linear_cross_position_info(contract_code=contract_code)
         pprint(r)
-        schema = {
-            'data': [
-                {
-                    'symbol': symbol,
-                    'contract_code': contract_code,
-                    'volume': float,
-                    'available': float,
-                    'frozen': Or(float,None),
-                    'cost_open': float,
-                    'cost_hold': float,
-                    'profit_unreal': float,
-                    'profit_rate': float,
-                    'profit': float,
-                    'margin_asset': 'USDT',
-                    'position_margin': float,
-                    'lever_rate': int,
-                    'margin_account': str,
-                    'margin_mode': 'cross',
-                    'direction': str,
-                    'last_price': Or(float,int)
-                }
-            ],
-            'status': 'ok',
-            'ts': int
-        }
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 

@@ -19,25 +19,13 @@ import pytest,allure,random,time
 @allure.feature('获取用户的合约持仓量限制（全仓）')
 class TestLinearCrossPositionLimit:
 
-
-    def test_linear_cross_position_limit(self,contract_code,symbol):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_cross_position_limit(self,title,contract_code,status):
         r = t.linear_cross_position_limit(contract_code=contract_code)
         pprint(r)
-        schema = {
-                    'data': [
-                        {
-                            'buy_limit': Or(float,None),
-                            'contract_code': contract_code,
-                            'margin_mode': 'cross',
-                            'sell_limit': Or(float,None),
-                            'symbol': symbol
-                        }
-                    ],
-                    'status': 'ok',
-                    'ts': int
-                }
+        assert r['status'] == status
 
-        Schema(schema).validate(r)
 
 
 

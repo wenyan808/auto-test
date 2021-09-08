@@ -20,35 +20,29 @@ import pytest,allure,random,time
 class TestLinearCrossTpslOrder:
 
 
-
-    def test_linear_cross_tpsl_order(self,contract_code):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_cross_tpsl_order(self,title,contract_code,sell_price,lever_rate,last_price,direction,volume,status):
         t.linear_cross_order(contract_code=contract_code,
                            client_order_id='',
-                           price='',
+                           price=sell_price,
                            volume='1',
                            direction='buy',
                            offset='open',
-                           lever_rate='5',
-                           order_price_type='opponent')
+                           lever_rate=lever_rate,
+                           order_price_type='limit')
 
         r = t.linear_cross_tpsl_order(contract_code=contract_code,
-                                direction='sell',
-                                volume='1',
-                                tp_trigger_price='80000',
-                                tp_order_price='80000',
+                                direction=direction,
+                                volume=volume,
+                                tp_trigger_price=last_price+100,
+                                tp_order_price=last_price+100,
                                 tp_order_price_type='limit',
-                                sl_order_price='20000',
+                                sl_order_price=last_price-100,
                                 sl_order_price_type='limit',
-                                sl_trigger_price='20000')
+                                sl_trigger_price=last_price-100)
         pprint(r)
-        schema = {'data': {'sl_order': {'order_id': int,
-                            'order_id_str': str},
-                          'tp_order': {'order_id': int,
-                                       'order_id_str': str}},
-                         'status': 'ok',
-                         'ts': int}
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 if __name__ == '__main__':

@@ -18,27 +18,12 @@ import pytest,allure,random,time
 @allure.feature('批量获取聚合行情')
 class TestLinearDetailBatchMerged:
 
-
-    def test_linear_detail_batch_merged(self,contract_code):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_detail_batch_merged(self,title,contract_code,status):
         r = t.linear_detail_batch_merged(contract_code=contract_code)
         pprint(r)
-        schema = {
-                     'status': 'ok',
-                     'ticks': [{  'contract_code': contract_code,
-                                  'amount': str,
-                                  'ask': list,
-                                  'bid': list,
-                                  'close': str,
-                                  'count': int,
-                                  'high': str,
-                                  'id': int,
-                                  'low': str,
-                                  'open': str,
-                                  'trade_turnover': str,
-                                  'ts': int,
-                                  'vol': str}],
-                     'ts': int}
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 if __name__ == '__main__':

@@ -19,25 +19,13 @@ import pytest,allure,random,time
 @allure.feature('批量获取子账户资产信息（逐仓）')
 class TestLinearSubAccountInfoList:
 
-    def test_linear_sub_account_info_list(self,contract_code,symbol):
-        r = t.linear_sub_account_info_list(contract_code=contract_code,page_index='',page_size='')
-        pprint(r)
-        schema = {'data': {'current_page': int,
-          'sub_list': [{'account_info_list': [{'contract_code': contract_code,
-                                               'liquidation_price': Or(float,None),
-                                               'margin_account': contract_code,
-                                               'margin_asset': 'USDT',
-                                               'margin_balance': Or(float,None),
-                                               'margin_mode': 'isolated',
-                                               'risk_rate': Or(float,None),
-                                               'symbol': symbol}],
-                                                'sub_uid': int}],
-                                  'total_page': int,
-                                  'total_size': int},
-                         'status': 'ok',
-                         'ts': int}
 
-        Schema(schema).validate(r)
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_sub_account_info_list(self,title,contract_code,page_index,page_size,status):
+        r = t.linear_sub_account_info_list(contract_code=contract_code,page_index=page_index,page_size=page_size)
+        pprint(r)
+        assert r['status'] == status
 
 
 

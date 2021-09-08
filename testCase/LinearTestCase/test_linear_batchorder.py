@@ -18,74 +18,23 @@ import pytest,allure,random,time
 @allure.feature('合约批量下单')
 class TestLinearBatchorder:
 
-    def setup(self):
-        self.client_order_id = random.randint(1,999999)
 
-
-    def test_linear_batchorder1(self,contract_code):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_batchorder(self,title,contract_code,client_order_id,volume,direction,offset,order_price_type,buy_price,lever_rate,status):
         r = t.linear_batchorder({"orders_data": [{
                                         "contract_code": contract_code,
-                                        "client_order_id": '',
-                                        "price": '50000',
-                                        "volume": '1',
-                                        "direction": 'buy',
-                                        "offset": 'open',
-                                        "lever_rate": '5',
-                                        "order_price_type": 'limit'}]})
+                                        "client_order_id": client_order_id,
+                                        "price": buy_price-1,
+                                        "volume": volume,
+                                        "direction": direction,
+                                        "offset": offset,
+                                        "lever_rate": lever_rate,
+                                        "order_price_type": order_price_type}]})
         pprint(r)
-        schema = {
-                    'data': {
-                        'errors': [
-
-                        ],
-                        'success': [
-                            {
-                                'index': int,
-                                'order_id': int,
-                                'order_id_str': str
-                            }
-                        ]
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
-    @pytest.mark.schema
-    @allure.story('字段校验')
-    @allure.title('校验返回所有的字段及数据格式(包含client_order_id)')
-    def test_linear_batchorder2(self,contract_code):
-        r = t.linear_batchorder({"orders_data": [{
-                                        "contract_code": contract_code,
-                                        "client_order_id": self.client_order_id,
-                                        "price": '50000',
-                                        "volume": '1',
-                                        "direction": 'buy',
-                                        "offset": 'open',
-                                        "lever_rate": '5',
-                                        "order_price_type": 'limit'}]})
-        pprint(r)
-        schema = {
-                    'data': {
-                        'errors': [
-
-                        ],
-                        'success': [
-                            {
-                                'index': int,
-                                'order_id': int,
-                                'order_id_str': str,
-                                'client_order_id': int
-                            }
-                        ]
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
 
 
 if __name__ == '__main__':

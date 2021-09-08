@@ -19,22 +19,12 @@ import pytest,allure,random,time
 class TestLinearHistoryIndex:
 
 
-    def test_linear_history_index(self,contract_code):
-        r = t.linear_history_index(symbol=contract_code,period='1min',size='10')
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_history_index(self,title,contract_code,period,size,status):
+        r = t.linear_history_index(symbol=contract_code,period=period,size=size)
         pprint(r)
-        schema = {'ch': 'market.{}.index.{}'.format(contract_code,'1min'),
-                    'data':[
-                        {'amount': Or(float,int),
-                         'close': Or(int,float),
-                         'count': int,
-                         'high': Or(int,float),
-                         'id':int,
-                         'low': Or(int,float),
-                         'open': Or(int,float),
-                         'vol':Or(int,float)}],
-                     'status': 'ok',
-                     'ts': int}
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 if __name__ == '__main__':

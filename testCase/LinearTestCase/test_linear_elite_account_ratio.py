@@ -19,28 +19,13 @@ import pytest,allure,random,time
 class TestLinearEliteAccountRatio:
 
 
-    def test_linear_elite_account_ratio1(self,contract_code,symbol):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_elite_account_ratio(self,title,contract_code,period,status):
         r = t.linear_elite_account_ratio(contract_code=contract_code,
-                                         period='60min')
+                                         period=period)
         pprint(r)
-        schema = {
-                    'data': {
-                        'contract_code': contract_code,
-                        'list': [
-                            {
-                                'buy_ratio': float,
-                                'locked_ratio': float,
-                                'sell_ratio': float,
-                                'ts': int
-                            }
-                        ],
-                        'symbol': symbol
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 

@@ -19,35 +19,14 @@ import pytest,allure,random,time
 class TestLinearHistoricalFundingRate:
 
 
-    def test_linear_historical_funding_rate(self,contract_code,symbol):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_historical_funding_rate(self,title,contract_code,page_index,page_size,status):
         r = t.linear_historical_funding_rate(contract_code=contract_code,
-                                             page_index='',
-                                             page_size='')
+                                             page_index=page_index,
+                                             page_size=page_size)
         pprint(r)
-        schema = {
-                    'data': {
-                        'current_page': int,
-                        'data': [
-                            {
-                                'avg_premium_index': str,
-                                'contract_code': contract_code,
-                                'fee_asset': 'USDT',
-                                'funding_rate': str,
-                                'funding_time': str,
-                                'realized_rate': str,
-                                'symbol': symbol
-                            }
-                        ],
-                        'total_page': int,
-                        'total_size': int
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-
-
-        Schema(schema).validate(r)
-
+        assert r['status'] == status
 
 
 if __name__ == '__main__':

@@ -19,51 +19,21 @@ import pytest,allure,random,time
 @allure.feature('获取跟踪委托历史委托(全仓)')
 class TestLinearCrossTrackHisorders:
 
-    def test_linear_cross_track_hisorders(self,contract_code,symbol):
 
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_cross_track_hisorders(self,title,contract_code,status,trade_type,create_date,page_size,page_index,sort_by,STATUS):
         r = t.linear_cross_track_hisorders(contract_code=contract_code,
-                                     status='0',
-                                     trade_type='0',
-                                     create_date='7',
-                                     page_size='',
-                                     page_index='',
-                                     sort_by='')
-
+                                             status=status,
+                                             trade_type=trade_type,
+                                             create_date=create_date,
+                                             page_size=page_size,
+                                             page_index=page_index,
+                                             sort_by=sort_by)
         pprint(r)
-        schema = {'data': {'current_page': int,
-                          'orders': [{'active_price': float,
-                                      'callback_rate': float,
-                                      'canceled_at': int,
-                                      'contract_code': contract_code,
-                                      'created_at': int,
-                                      'direction': str,
-                                      'fail_code': Or(None,str),
-                                      'fail_reason': Or(None,str),
-                                      'formula_price': Or(None,str,int,float),
-                                      'is_active': int,
-                                      'lever_rate': int,
-                                      'margin_account': 'USDT',
-                                      'margin_mode': 'cross',
-                                      'market_limit_price': Or(None,int,float,str),
-                                      'offset': str,
-                                      'order_id': int,
-                                      'order_id_str': str,
-                                      'order_price_type': str,
-                                      'order_source': str,
-                                      'order_type': int,
-                                      'real_volume': Or(int,float),
-                                      'relation_order_id': str,
-                                      'status': int,
-                                      'symbol': symbol,
-                                      'triggered_price': Or(None,int,str,float),
-                                      'update_time': int,
-                                      'volume': float},],
-                          'total_page': int,
-                          'total_size': int},
-                 'status': 'ok',
-                 'ts': int}
+        assert r['status'] == STATUS
 
-        Schema(schema).validate(r)
+
 
 if __name__ == '__main__':
     pytest.main()

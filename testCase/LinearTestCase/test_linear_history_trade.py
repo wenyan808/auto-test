@@ -19,22 +19,12 @@ import pytest,allure,random,time
 class TestLinearHistoryTrade:
 
 
-    def test_linear_history_trade(self,contract_code):
-        r = t.linear_history_trade(contract_code=contract_code,size='10')
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_history_trade(self,title,contract_code,size,status):
+        r = t.linear_history_trade(contract_code=contract_code,size=size)
         pprint(r)
-        schema = {'ch': 'market.{}.trade.detail'.format(contract_code),
-                  'data':[{'data': [{'amount': Or(float,int),
-                                     'direction': str,
-                                     'id': int,
-                                     'price': Or(int,float),
-                                     'quantity':Or(float,int),
-                                     'trade_turnover': Or(int,float),
-                                     'ts': int}],
-                               'id': int,
-                               'ts': int}],
-                     'status': 'ok',
-                     'ts': int}
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 if __name__ == '__main__':

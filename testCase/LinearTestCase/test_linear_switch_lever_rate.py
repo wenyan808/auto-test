@@ -18,17 +18,12 @@ import pytest,allure,random,time
 @allure.feature('切换杠杆倍数 （逐仓）')
 class TestLinearSwitchLeverRate:
 
-
-    def test_linear_switch_lever_rate(self,contract_code,symbol):
-        r = t.linear_switch_lever_rate(contract_code=contract_code,lever_rate='5')
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_switch_lever_rate(self,title,contract_code,lever_rate,status):
+        r = t.linear_switch_lever_rate(contract_code=contract_code,lever_rate=lever_rate)
         pprint(r)
-        schema = {'data': {'contract_code': contract_code,
-                          'lever_rate': int,
-                          'margin_mode': 'isolated'},
-                 'status': 'ok',
-                 'ts': int}
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 if __name__ == '__main__':

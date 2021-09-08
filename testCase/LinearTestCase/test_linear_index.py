@@ -19,22 +19,12 @@ import pytest,allure,random,time
 class TestLinearIndex:
 
 
-    def test_linear_index(self,contract_code):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_index(self,title,contract_code,status):
         r = t.linear_index(contract_code=contract_code)
         pprint(r)
-        schema = {
-                    'data': [
-                        {
-                            'contract_code': contract_code,
-                            'index_price': float,
-                            'index_ts': int
-                        }
-                    ],
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 

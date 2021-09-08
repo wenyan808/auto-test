@@ -20,56 +20,24 @@ import pytest,allure,random,time
 class TestLinearCrossTriggerOpenorders:
 
 
-    def test_linear_cross_trigger_openorders(self,contract_code,symbol):
-        a = t.linear_cross_trigger_order(contract_code=contract_code,
-                                   trigger_type='le',
-                                   trigger_price='10000',
-                                   order_price='10000',
-                                   order_price_type='limit',
-                                   volume='1',
-                                   direction='buy',
-                                   offset='open',
-                                   lever_rate='5')
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_cross_trigger_openorders(self,title,contract_code,last_price,lever_rate,page_index,page_size,status):
+        t.linear_cross_trigger_order(contract_code=contract_code,
+                                     trigger_type='le',
+                                     trigger_price=last_price-100,
+                                     order_price=last_price-100,
+                                     order_price_type='limit',
+                                     volume='1',
+                                     direction='buy',
+                                     offset='open',
+                                     lever_rate=lever_rate)
         time.sleep(1)
-
-
         r = t.linear_cross_trigger_openorders(contract_code=contract_code,
-                                       page_index='',
-                                       page_size='')
+                                           page_index=page_index,
+                                           page_size=page_size)
         pprint(r)
-        schema = {
-                    'data': {
-                        'current_page': int,
-                        'orders': [
-                            {
-                                'contract_code': contract_code,
-                                'created_at': int,
-                                'direction': str,
-                                'lever_rate': int,
-                                'margin_account': str,
-                                'margin_mode': 'cross',
-                                'offset': str,
-                                'order_id': int,
-                                'order_id_str': str,
-                                'order_price': float,
-                                'order_price_type': str,
-                                'order_source': str,
-                                'order_type': int,
-                                'status': int,
-                                'symbol': symbol,
-                                'trigger_price': float,
-                                'trigger_type': str,
-                                'volume': float
-                            }
-                        ],
-                        'total_page': int,
-                        'total_size': int
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 if __name__ == '__main__':

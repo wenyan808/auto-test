@@ -18,29 +18,12 @@ import pytest,allure,random,time
 class TestLinearInsuranceFund:
 
 
-    def test_linear_insurance_fund(self,contract_code,symbol):
-        r = t.linear_insurance_fund(contract_code=contract_code,page_size='',page_index='')
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_insurance_fund(self,title,contract_code,page_size,page_index,status):
+        r = t.linear_insurance_fund(contract_code=contract_code,page_size=page_size,page_index=page_index)
         pprint(r)
-        schema = {
-                    'data': {
-                        'contract_code': contract_code,
-                        'current_page': int,
-                        'symbol': symbol,
-                        'tick': [
-                            {
-                                'insurance_fund': float,
-                                'ts': int
-                            }
-                        ],
-                        'total_page': int,
-                        'total_size': int
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 if __name__ == '__main__':

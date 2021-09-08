@@ -19,25 +19,12 @@ import pytest,allure,random,time
 class TestLinearDetailMerged:
 
 
-    def test_linear_detail_merged(self,contract_code):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_detail_merged(self,title,contract_code,status):
         r = t.linear_detail_merged(contract_code=contract_code)
         pprint(r)
-        schema = {'ch': 'market.{}.detail.merged'.format(contract_code),
-                     'status': 'ok',
-                     'tick': {'amount': str,
-                          'ask': list,
-                          'bid': list,
-                          'close': str,
-                          'count': int,
-                          'high': str,
-                          'id': int,
-                          'low': str,
-                          'open': str,
-                          'trade_turnover': str,
-                          'ts': int,
-                          'vol': str},
-                     'ts': int}
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 if __name__ == '__main__':

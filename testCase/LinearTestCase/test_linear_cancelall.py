@@ -19,31 +19,23 @@ import pytest,allure,random,time
 class TestLinearCancelall:
 
 
-    def test_linear_cancelall(self,contract_code):
-        t.linear_order(contract_code=contract_code,
+
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_cancelall(self,title,contract_code,status,buy_price,lever_rate):
+        a = t.linear_order(contract_code=contract_code,
                        client_order_id='',
-                       price='50000',
+                       price=buy_price-1,
                        volume='1',
                        direction='buy',
                        offset='open',
-                       lever_rate='5',
+                       lever_rate=lever_rate,
                        order_price_type='limit')
         time.sleep(1)
 
         r = t.linear_cancelall(contract_code=contract_code)
         pprint(r)
-        schema = {
-                    'data': {
-                        'errors': [
-
-                        ],
-                        'successes': str
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 

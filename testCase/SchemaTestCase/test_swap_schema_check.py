@@ -5,12 +5,12 @@ from pprint import pprint
 import pytest, allure, random, time
 
 
-@allure.epic('反向永续')
+@allure.feature('反向永续')
 class TestSwapCancelall:
     if __name__ == '__main__':
         pytest.main()
 
-    @allure.feature('获取用户账户信息')
+    @allure.title('获取用户账户信息')
     def test_swap_account_info(self, contract_code):
         r = t.swap_account_info(contract_code=contract_code)
         schema = {
@@ -38,7 +38,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取用户资产和持仓信息')
+    @allure.title('获取用户资产和持仓信息')
     def test_swap_account_position_info(self, contract_code):
         r = t.swap_account_position_info(contract_code=contract_code)
         schema = {
@@ -79,7 +79,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('查询平台阶梯调整系数')
+    @allure.title('查询平台阶梯调整系数')
     def test_swap_adjustfactor(self, contract_code):
         r = t.swap_adjustfactor(contract_code=contract_code)
         schema = {
@@ -107,7 +107,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('查询系统状态')
+    @allure.title('查询系统状态')
     def test_swap_api_state(self, contract_code):
         r = t.swap_api_state(contract_code=contract_code)
         pprint(r)
@@ -130,7 +130,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取用户的API指标禁用信息')
+    @allure.title('获取用户的API指标禁用信息')
     def test_swap_api_trading_status(self):
         r = t.swap_api_trading_status()
         pprint(r)
@@ -164,7 +164,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('查询用户品种实际可用杠杆倍数')
+    @allure.title('查询用户品种实际可用杠杆倍数')
     def test_swap_available_level_rate(self, contract_code):
         r = t.swap_available_level_rate(contract_code=contract_code)
         schema = {
@@ -179,7 +179,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取基差数据')
+    @allure.title('获取基差数据')
     def test_swap_basis(self, contract_code):
         r = t.swap_basis(contract_code=contract_code, period='1min', basis_price_type='open', size='20')
         schema = {
@@ -196,7 +196,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('批量获取合约的资金费率')
+    @allure.title('批量获取合约的资金费率')
     def test_swap_batch_funding_rate(self, contract_code):
         r = t.swap_batch_funding_rate(contract_code=contract_code)
         schema = {
@@ -216,7 +216,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('批量获取聚合行情')
+    @allure.title('批量获取聚合行情')
     def test_swap_batch_merged(self, contract_code):
         r = t.swap_batch_merged(contract_code=contract_code)
         schema = {
@@ -224,8 +224,8 @@ class TestSwapCancelall:
             'ticks': [{
                 'contract_code': contract_code,
                 'amount': str,
-                'ask': list,
-                'bid': list,
+                'ask': Or(list,None),
+                'bid':Or(list,None),
                 'close': str,
                 'count': int,
                 'high': str,
@@ -239,7 +239,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('合约批量下单')
+    @allure.title('合约批量下单')
     def test_swap_batchorder(self, contract_code):
         r = t.swap_batchorder({"orders_data": [{
             "contract_code": contract_code,
@@ -283,9 +283,10 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取市场最优挂单')
+    @allure.title('获取市场最优挂单')
     def test_swap_bbo(self, contract_code):
         r = t.swap_bbo(contract_code=contract_code)
+        pprint(r)
         schema = {
             'status': 'ok',
             'ticks': [{
@@ -299,7 +300,7 @@ class TestSwapCancelall:
 
         Schema(schema).validate(r)
 
-    @allure.feature('撤销订单')
+    @allure.title('撤销订单')
     def test_swap_cancel(self, contract_code):
         a = t.swap_order(contract_code=contract_code,
                          client_order_id='',
@@ -328,7 +329,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('全部撤单')
+    @allure.title('全部撤单')
     def test_swap_cancelall(self, contract_code):
         i = 0
         while i < 12:
@@ -359,7 +360,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取合约信息')
+    @allure.title('获取合约信息')
     def test_swap_contract_info(self, contract_code):
         r = t.swap_contract_info(contract_code=contract_code)
         schema = {
@@ -380,7 +381,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取行情深度数据')
+    @allure.title('获取行情深度数据')
     def test_swap_depth(self, contract_code):
         r = t.swap_depth(contract_code=contract_code, type='step0')
         schema = {
@@ -399,7 +400,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取聚合行情')
+    @allure.title('获取聚合行情')
     def test_swap_detail_merged(self, contract_code):
         r = t.swap_detail_merged(contract_code=contract_code)
         schema = {
@@ -422,7 +423,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('精英账户多空持仓对比-账户数')
+    @allure.title('精英账户多空持仓对比-账户数')
     def test_swap_elite_account_ratio(self, contract_code):
         r = t.swap_elite_account_ratio(contract_code=contract_code, period='60min')
         pprint(r)
@@ -445,7 +446,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('精英账户多空持仓对比-持仓量')
+    @allure.title('精英账户多空持仓对比-持仓量')
     def test_swap_elite_position_ratio(self, contract_code):
         r = t.swap_elite_position_ratio(contract_code=contract_code, period='12hour')
         schema = {
@@ -465,7 +466,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取预估结算价')
+    @allure.title('获取预估结算价')
     def test_swap_estimated_rate_kline(self, contract_code):
         r = t.swap_estimated_settlement_price(contract_code=contract_code)
         schema = {
@@ -479,7 +480,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取预测资金费率的K线')
+    @allure.title('获取预测资金费率的K线')
     def test_swap_estimated_rate_kline(self, contract_code):
         schema = {
             "ch": str,
@@ -501,7 +502,7 @@ class TestSwapCancelall:
         r = t.swap_estimated_rate_kline(contract_code=contract_code, period='1min', size='20')
         Schema(schema).validate(r)
 
-    @allure.feature('查询用户当前的手续费费率')
+    @allure.title('查询用户当前的手续费费率')
     def test_swap_fee(self, contract_code):
         r = t.swap_fee(contract_code=contract_code)
         schema = {
@@ -521,7 +522,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('查询用户财务记录')
+    @allure.title('查询用户财务记录')
     def test_swap_financial_record(self, contract_code):
         r = t.swap_financial_record(contract_code=contract_code, type='0', create_date='90', page_index='',
                                     page_size='')
@@ -546,7 +547,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('组合查询用户财务记录')
+    @allure.title('组合查询用户财务记录')
     def test_swap_financial_record_exact(self, contract_code):
         r = t.swap_financial_record_exact(contract_code=contract_code, type='5', start_time='', end_time='', from_id='',
                                           size='', direct='')
@@ -570,7 +571,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取合约的资金费率')
+    @allure.title('获取合约的资金费率')
     def test_swap_funding_rate(self, contract_code):
         r = t.swap_funding_rate(contract_code=contract_code)
         schema = {
@@ -590,7 +591,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('平台持仓量的查询')
+    @allure.title('平台持仓量的查询')
     def test_swap_his_open_interest(self, contract_code):
         r = t.swap_his_open_interest(contract_code=contract_code, period='60min', size='20', amount_type='1')
         schema = {
@@ -611,7 +612,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取合约历史委托')
+    @allure.title('获取合约历史委托')
     def test_swap_hisorders(self, contract_code):
         r = t.swap_hisorders(contract_code=contract_code,
                              trade_type='0',
@@ -660,7 +661,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('组合查询合约历史委托')
+    @allure.title('组合查询合约历史委托')
     def test_swap_hisorders_exact(self, contract_code):
         r = t.swap_hisorders_exact(contract_code=contract_code,
                                    trade_type='0',
@@ -710,7 +711,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取合约的历史资金费率')
+    @allure.title('获取合约的历史资金费率')
     def test_swap_historical_funding_rate(self, contract_code):
         r = t.swap_historical_funding_rate(contract_code=contract_code, page_index='', page_size='')
         schema = {
@@ -735,7 +736,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取指数的K线数据')
+    @allure.title('获取指数的K线数据')
     def test_swap_history_index(self, contract_code):
         r = t.swap_history_index(symbol=contract_code, period='1min', size='1')
         schema = {
@@ -757,7 +758,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('批量获取最近的交易记录')
+    @allure.title('批量获取最近的交易记录')
     def test_swap_history_trade(self, contract_code):
         r = t.swap_history_trade(contract_code=contract_code, size='1')
         schema = {
@@ -783,7 +784,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取合约指数信息')
+    @allure.title('获取合约指数信息')
     def test_swap_index(self, contract_code):
         r = t.swap_index(contract_code=contract_code)
         schema = {
@@ -799,7 +800,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('查询合约风险准备金余额历史数据')
+    @allure.title('查询合约风险准备金余额历史数据')
     def test_swap_trade(self, contract_code):
         r = t.swap_insurance_fund(contract_code=contract_code, page_index='', page_size='')
         schema = {
@@ -821,7 +822,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取K线数据')
+    @allure.title('获取K线数据')
     def test_swap_kline(self, contract_code):
         r = t.swap_kline(contract_code=contract_code, period='1min', size='20', From='', to='')
         schema = {
@@ -843,7 +844,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取平台阶梯保证金')
+    @allure.title('获取平台阶梯保证金')
     def test_swap_ladder_margin(self, contract_code):
         r = t.swap_ladder_margin(contract_code=contract_code)
         schema = {
@@ -866,7 +867,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('闪电平仓下单')
+    @allure.title('闪电平仓下单')
     def test_swap_lightning_close_position(self, contract_code):
         t.swap_order(contract_code=contract_code,
                      client_order_id='',
@@ -893,7 +894,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取强平订单')
+    @allure.title('获取强平订单')
     def test_swap_liquidation_orders(self, contract_code):
         r = t.swap_liquidation_orders(contract_code=contract_code, trade_type='0', create_date='7', page_index='',
                                       page_size='')
@@ -919,7 +920,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取标记价格的K线数据')
+    @allure.title('获取标记价格的K线数据')
     def test_swap_mark_price_kline(self, contract_code):
         r = t.swap_mark_price_kline(contract_code=contract_code, period='1min', size='20')
         schema = {
@@ -942,7 +943,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('母子账户划转')
+    @allure.title('母子账户划转')
     def test_swap_master_sub_transfer(self, sub_uid, contract_code):
         r = t.swap_master_sub_transfer(sub_uid=sub_uid, contract_code=contract_code, amount='1', type='master_to_sub')
         schema = {'data': {'order_id': str},
@@ -950,7 +951,7 @@ class TestSwapCancelall:
                   'ts': int}
         Schema(schema).validate(r)
 
-    @allure.feature('获取母账户下的所有母子账户的划转记录')
+    @allure.title('获取母账户下的所有母子账户的划转记录')
     def test_swap_master_sub_transfer_record(self, contract_code):
         r = t.swap_master_sub_transfer_record(contract_code=contract_code, transfer_type='34', create_date='7',
                                               page_index='', page_size='')
@@ -975,7 +976,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取历史成交记录')
+    @allure.title('获取历史成交记录')
     def test_swap_matchresults(self, contract_code):
         r = t.swap_matchresults(contract_code=contract_code,
                                 trade_type='0',
@@ -1013,7 +1014,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('组合查询用户历史成交记录')
+    @allure.title('组合查询用户历史成交记录')
     def test_swap_matchresults_exact(self, contract_code):
         r = t.swap_matchresults_exact(contract_code=contract_code,
                                       trade_type='0',
@@ -1055,7 +1056,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('量获取当前可用合约总持仓')
+    @allure.title('量获取当前可用合约总持仓')
     def test_swap_open_interest(self, contract_code):
         r = t.swap_open_interest(contract_code=contract_code)
         schema = {
@@ -1074,7 +1075,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取合约当前未成交委托')
+    @allure.title('获取合约当前未成交委托')
     def test_swap_openorders(self, contract_code):
         t.swap_order(contract_code=contract_code,
                      client_order_id='',
@@ -1129,7 +1130,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('合约下单')
+    @allure.title('合约下单')
     def test_swap_order(self, contract_code):
         r = t.swap_order(contract_code=contract_code,
                          client_order_id='',
@@ -1150,7 +1151,7 @@ class TestSwapCancelall:
         pprint(r)
         Schema(schema).validate(r)
 
-    @allure.feature('获取订单明细信息')
+    @allure.title('获取订单明细信息')
     def test_swap_order_detail(self, contract_code):
         a = t.swap_order(contract_code=contract_code,
                          client_order_id='',
@@ -1225,7 +1226,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取合约订单信息')
+    @allure.title('获取合约订单信息')
     def test_swap_order_info(self, contract_code):
         a = t.swap_order(contract_code=contract_code,
                          client_order_id='',
@@ -1274,7 +1275,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('查询用户当前的下单量限制')
+    @allure.title('查询用户当前的下单量限制')
     def test_swap_order_limit(self, contract_code):
         r = t.swap_order_limit(contract_code=contract_code,
                                order_price_type='limit')
@@ -1295,7 +1296,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取用户持仓信息')
+    @allure.title('获取用户持仓信息')
     def test_swap_position_info(self, contract_code):
         r = t.swap_position_info(contract_code=contract_code)
         schema = {
@@ -1322,7 +1323,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('用户持仓量限制的查询')
+    @allure.title('用户持仓量限制的查询')
     def test_swap_position_limit(self, contract_code):
         r = t.swap_position_limit(contract_code=contract_code)
         schema = {
@@ -1339,7 +1340,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取溢价指数K线')
+    @allure.title('获取溢价指数K线')
     def test_swap_premium_index_kline(self, contract_code):
         r = t.swap_premium_index_kline(contract_code=contract_code, period='1min', size='20')
         schema = {
@@ -1361,7 +1362,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取合约最高限价和最低限价')
+    @allure.title('获取合约最高限价和最低限价')
     def test_swap_price_limit(self, contract_code):
         r = t.swap_price_limit(contract_code=contract_code)
         schema = {
@@ -1377,7 +1378,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('查询开仓单关联的止盈止损订单详情')
+    @allure.title('查询开仓单关联的止盈止损订单详情')
     def test_swap_relation_tpsl_order(self, contract_code):
         a = t.swap_order(contract_code=contract_code,
                          client_order_id='',
@@ -1439,7 +1440,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('查询合约风险准备金余额和预估分摊比例')
+    @allure.title('查询合约风险准备金余额和预估分摊比例')
     def test_swap_risk_info(self, contract_code):
         r = t.swap_risk_info(contract_code=contract_code)
         schema = {
@@ -1455,7 +1456,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取平台历史结算记录')
+    @allure.title('获取平台历史结算记录')
     def test_swap_settlement_records(self, contract_code):
         r = t.swap_settlement_records(contract_code=contract_code)
         schema = {
@@ -1479,7 +1480,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('查询单个子账户资产信息')
+    @allure.title('查询单个子账户资产信息')
     def test_swap_sub_account_info(self, sub_uid, contract_code):
         r = t.swap_sub_account_info(contract_code=contract_code, sub_uid=sub_uid)
         schema = {
@@ -1507,7 +1508,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('批量获取子账户资产信息')
+    @allure.title('批量获取子账户资产信息')
     def test_swap_sub_account_info_list(self, contract_code):
         r = t.swap_sub_account_info_list(contract_code=contract_code)
         schema = {
@@ -1532,7 +1533,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('查询母账户下所有子账户资产信息')
+    @allure.title('查询母账户下所有子账户资产信息')
     def test_swap_sub_account_list(self, contract_code):
         r = t.swap_sub_account_list(contract_code=contract_code)
         schema = {
@@ -1555,7 +1556,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('批量设置子账户交易权限')
+    @allure.title('批量设置子账户交易权限')
     def test_swap_sub_auth(self, sub_uid):
         r = t.swap_sub_auth(sub_uid=sub_uid, sub_auth='1')
         schema = {
@@ -1574,7 +1575,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('查询单个子账户持仓信息')
+    @allure.title('查询单个子账户持仓信息')
     def test_swap_sub_position_info(self, contract_code, sub_uid):
         r = t.swap_sub_position_info(contract_code=contract_code, sub_uid=sub_uid)
         schema = {
@@ -1601,7 +1602,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('切换杠杆倍数')
+    @allure.title('切换杠杆倍数')
     def test_swap_switch_lever_rate(self, contract_code):
         r = t.swap_switch_lever_rate(contract_code=contract_code, lever_rate='5')
         schema = {
@@ -1614,7 +1615,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('止盈止损订单撤单')
+    @allure.title('止盈止损订单撤单')
     def test_swap_tpsl_order(self, contract_code):
         a = t.swap_tpsl_order(contract_code=contract_code,
                               direction='buy',
@@ -1638,7 +1639,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('止盈止损订单全部撤单')
+    @allure.title('止盈止损订单全部撤单')
     def test_swap_tpsl_cancelall(self, contract_code):
         t.swap_tpsl_order(contract_code=contract_code,
                           direction='buy',
@@ -1661,7 +1662,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('查询止盈止损订单历史委托')
+    @allure.title('查询止盈止损订单历史委托')
     def test_swap_tpsl_hisorders(self, contract_code):
         r = t.swap_tpsl_hisorders(contract_code=contract_code, status='0', create_date='7')
         schema = {
@@ -1701,7 +1702,7 @@ class TestSwapCancelall:
 
         Schema(schema).validate(r)
 
-    @allure.feature('查询止盈止损订单当前委托')
+    @allure.title('查询止盈止损订单当前委托')
     def test_swap_tpsl_openorders(self, contract_code):
         t.swap_tpsl_order(contract_code=contract_code,
                           direction='buy',
@@ -1740,7 +1741,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('对仓位设置止盈止损订单')
+    @allure.title('对仓位设置止盈止损订单')
     def test_swap_tpsl_order(self, contract_code):
         r = t.swap_tpsl_order(contract_code=contract_code,
                               direction='buy',
@@ -1764,7 +1765,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('跟踪委托撤单')
+    @allure.title('跟踪委托撤单')
     def test_swap_track_cancel(self, contract_code):
         a = t.swap_track_order(contract_code=contract_code,
                                direction='buy',
@@ -1790,7 +1791,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('跟踪委托全部撤单')
+    @allure.title('跟踪委托全部撤单')
     def test_swap_track_cancelall(self, contract_code):
         t.swap_track_order(contract_code=contract_code,
                            direction='buy',
@@ -1816,7 +1817,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取跟踪委托历史委托')
+    @allure.title('获取跟踪委托历史委托')
     def test_swap_track_hisorders(self, contract_code):
         r = t.swap_track_hisorders(contract_code=contract_code, status='0', trade_type='0', create_date='7')
         schema = {
@@ -1857,7 +1858,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取跟踪委托当前委托')
+    @allure.title('获取跟踪委托当前委托')
     def test_swap_track_openorders(self, contract_code):
         t.swap_track_order(contract_code=contract_code,
                            direction='buy',
@@ -1897,7 +1898,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('跟踪委托下单')
+    @allure.title('跟踪委托下单')
     def test_swap_track_order(self, contract_code):
         r = t.swap_track_order(contract_code=contract_code,
                                direction='buy',
@@ -1917,7 +1918,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取市场最近成交记录')
+    @allure.title('获取市场最近成交记录')
     def test_swap_trade(self, contract_code):
         r = t.swap_trade(contract_code=contract_code)
         schema = {
@@ -1942,7 +1943,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('查询用户当前的划转限制')
+    @allure.title('查询用户当前的划转限制')
     def test_swap_transfer_limit(self, contract_code):
         r = t.swap_transfer_limit(contract_code=contract_code)
         schema = {
@@ -1965,7 +1966,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('合约计划委托撤单')
+    @allure.title('合约计划委托撤单')
     def test_swap_trigger_cancel(self, contract_code):
         a = t.swap_trigger_order(contract_code=contract_code,
                                  trigger_type='le',
@@ -1997,7 +1998,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('合约计划委托全部撤单')
+    @allure.title('合约计划委托全部撤单')
     def test_swap_trigger_cancelall(self, contract_code):
         t.swap_trigger_order(contract_code=contract_code,
                              trigger_type='le',
@@ -2032,7 +2033,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取计划委托历史委托')
+    @allure.title('获取计划委托历史委托')
     def test_swap_trigger_hisorders(self, contract_code):
         r = t.swap_trigger_hisorders(contract_code=contract_code,
                                      trade_type='0',
@@ -2079,7 +2080,7 @@ class TestSwapCancelall:
         }
         Schema(schema).validate(r)
 
-    @allure.feature('获取计划委托当前委托')
+    @allure.title('获取计划委托当前委托')
     def test_swap_trigger_openorders(self, contract_code):
         t.swap_trigger_order(contract_code=contract_code,
                              trigger_type='le',
@@ -2126,7 +2127,7 @@ class TestSwapCancelall:
 
         Schema(schema).validate(r)
 
-    @allure.feature('合约计划委托下单')
+    @allure.title('合约计划委托下单')
     def test_swap_trigger_order(self,contract_code):
 
         r = t.swap_trigger_order(contract_code=contract_code,
@@ -2148,7 +2149,7 @@ class TestSwapCancelall:
                 }
         Schema(schema).validate(r)
 
-    @allure.feature('查询用户结算记录')
+    @allure.title('查询用户结算记录')
     def test_swap_user_settlement_records(self, contract_code):
         r = t.swap_user_settlement_records(contract_code=contract_code, start_time='', end_time='', page_index='1',
                                            page_size='10')

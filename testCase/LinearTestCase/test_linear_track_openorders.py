@@ -19,45 +19,23 @@ import pytest,allure,random,time
 @allure.feature('获取跟踪委托当前委托')
 class TestLinearTrackOpenorders:
 
-    def test_linear_track_openorders(self,contract_code,symbol):
-        t.linear_track_order(contract_code=contract_code,
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_track_openorders(self,title,contract_code,lever_rate,last_price,page_index,page_size,status):
+        t.linear_cross_track_order(contract_code=contract_code,
                                  direction='buy',
                                  offset='open',
-                                 lever_rate='5',
+                                 lever_rate=lever_rate,
                                  volume='1',
                                  callback_rate='0.01',
-                                 active_price='50000',
+                                 active_price=last_price-100,
                                  order_price_type='formula_price')
         time.sleep(1)
         r = t.linear_track_openorders(contract_code=contract_code,
-                                      page_index='',
-                                      page_size='')
+                                      page_index=page_index,
+                                      page_size=page_size)
         pprint(r)
-        schema = {'data': {'current_page': int,
-                          'orders': [{'active_price': float,
-                                      'callback_rate': float,
-                                      'contract_code': contract_code,
-                                      'created_at': int,
-                                      'direction': str,
-                                      'is_active': int,
-                                      'lever_rate': int,
-                                      'margin_account': contract_code,
-                                      'margin_mode': 'isolated',
-                                      'offset': str,
-                                      'order_id': int,
-                                      'order_id_str': str,
-                                      'order_price_type': str,
-                                      'order_source': str,
-                                      'order_type': int,
-                                      'status': int,
-                                      'symbol': symbol,
-                                      'volume': float}],
-                          'total_page': int,
-                          'total_size': int},
-                 'status': 'ok',
-                 'ts': int}
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 if __name__ == '__main__':
     pytest.main()

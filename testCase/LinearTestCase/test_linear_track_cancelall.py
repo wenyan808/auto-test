@@ -19,24 +19,21 @@ import pytest,allure,random,time
 @allure.feature('跟踪委托全部撤单')
 class TestLinearTrackCancelall:
 
-    def test_linear_track_cancelall(self,contract_code):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_track_cancelall(self,title,contract_code,lever_rate,last_price,status):
         t.linear_track_order(contract_code=contract_code,
                                  direction='buy',
                                  offset='open',
-                                 lever_rate='5',
+                                 lever_rate=lever_rate,
                                  volume='1',
                                  callback_rate='0.01',
-                                 active_price='50000',
+                                 active_price=last_price-100,
                                  order_price_type='formula_price')
         time.sleep(1)
         r = t.linear_track_cancelall(contract_code=contract_code)
         pprint(r)
-        schema = {'data': {'errors': list,
-                           'successes': str},
-                         'status': 'ok',
-                         'ts': int}
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 if __name__ == '__main__':
     pytest.main()

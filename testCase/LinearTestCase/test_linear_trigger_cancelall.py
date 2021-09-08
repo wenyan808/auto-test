@@ -20,32 +20,24 @@ import pytest,allure,random,time
 class TestLinearTriggerCancelall:
 
 
-    def test_linear_trigger_cancelall(self,contract_code):
-        t.linear_trigger_order(contract_code=contract_code,
-                                   trigger_type='le',
-                                   trigger_price='10000',
-                                   order_price='10000',
-                                   order_price_type='limit',
-                                   volume='1',
-                                   direction='buy',
-                                   offset='open',
-                                   lever_rate='5')
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_trigger_cancelall(self,title,contract_code,last_price,lever_rate,status):
+        a = t.linear_trigger_order(contract_code=contract_code,
+                                         trigger_type='le',
+                                         trigger_price=last_price-100,
+                                         order_price=last_price-100,
+                                         order_price_type='limit',
+                                         volume='1',
+                                         direction='buy',
+                                         offset='open',
+                                         lever_rate=lever_rate)
         time.sleep(1)
-
-        r = t.linear_trigger_cancelall(contract_code=contract_code)
+        order_id = a['data']['order_id']
+        r = t.linear_trigger_cancel(contract_code=contract_code,
+                                    order_id=order_id)
         pprint(r)
-        schema = {
-                    'data': {
-                        'errors': [
-
-                        ],
-                        'successes': str
-                    },
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 

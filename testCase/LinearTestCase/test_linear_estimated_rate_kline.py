@@ -20,21 +20,12 @@ import pytest,allure,random,time
 class TestLinearEstimatedRateKline:
 
 
-    def test_linear_estimated_rate_kline(self,contract_code):
-        r = t.linear_estimated_rate_kline(contract_code=contract_code,period='1min',size='200')
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_estimated_rate_kline(self,title,contract_code,period,size,status):
+        r = t.linear_estimated_rate_kline(contract_code=contract_code,period=period,size=size)
         pprint(r)
-        schema = {'ch': 'market.{}.estimated_rate.{}'.format(contract_code,'1min'),
-                  'status': 'ok',
-                  'data': [{'amount': str,
-                           'close': str,
-                           'count': str,
-                           'high': str,
-                           'id': int,
-                           'low': str,
-                           'open': str,
-                           'vol': str}],
-                  'ts': int}
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 if __name__ == '__main__':

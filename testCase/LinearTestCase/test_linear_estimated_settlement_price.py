@@ -18,18 +18,12 @@ import pytest,allure,random,time
 @allure.feature('获取预估结算价（全逐通用）')
 class TestLinearEstimatedSettlementPrice:
 
-
-    def test_linear_estimated_settlement_price(self,contract_code,symbol):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_estimated_settlement_price(self,title,contract_code,status):
         r = t.linear_estimated_settlement_price(contract_code=contract_code)
         pprint(r)
-        schema = {'data': [{'contract_code': contract_code,
-                               'estimated_settlement_price': Or(float,int,None),
-                               'settlement_type': 'settlement'}],
-                     'status': 'ok',
-                     'ts': int}
-
-        Schema(schema).validate(r)
-
+        assert r['status'] == status
 
 if __name__ == '__main__':
     pytest.main()

@@ -19,46 +19,18 @@ import pytest,allure,random,time
 @allure.feature('查询止盈止损订单历史委托（全仓）')
 class TestLinearCrossTpslHisorders:
 
-    def test_linear_cross_tpsl_hisorders(self,contract_code,symbol):
-        r = t.linear_cross_tpsl_hisorders(contract_code=contract_code,
-                                    status='0',
-                                    create_date='7',
-                                    page_size='',
-                                    page_index='',
-                                    sort_by='')
-        pprint(r)
-        schema = {'data': {'current_page': int,
-                          'orders': [{'canceled_at': int,
-                                      'contract_code': contract_code,
-                                      'created_at': int,
-                                      'direction': str,
-                                      'fail_code': Or(str,None),
-                                      'fail_reason': Or(str,None),
-                                      'margin_account': 'USDT',
-                                      'margin_mode': 'cross',
-                                      'order_id': int,
-                                      'order_id_str': str,
-                                      'order_price': float,
-                                      'order_price_type': str,
-                                      'order_source': str,
-                                      'order_type': int,
-                                      'relation_order_id': str,
-                                      'relation_tpsl_order_id': str,
-                                      'source_order_id': Or(int,None,str),
-                                      'status': int,
-                                      'symbol': str,
-                                      'tpsl_order_type': str,
-                                      'trigger_price': float,
-                                      'trigger_type': str,
-                                      'triggered_price': Or(str,None),
-                                      'update_time': int,
-                                      'volume': float},],
-                          'total_page': int,
-                          'total_size': int},
-                 'status': 'ok',
-                 'ts': int}
 
-        Schema(schema).validate(r)
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_cross_tpsl_hisorders(self,title,contract_code,status,create_date,page_size,page_index,sort_by,STATUS):
+        r = t.linear_cross_tpsl_hisorders(contract_code=contract_code,
+                                            status=status,
+                                            create_date=create_date,
+                                            page_size=page_size,
+                                            page_index=page_index,
+                                            sort_by=sort_by)
+        pprint(r)
+        assert r['status'] == STATUS
 
 
 if __name__ == '__main__':

@@ -20,27 +20,12 @@ import pytest,allure,random,time
 @allure.feature('获取当前可用合约总持仓量')
 class TestLinearOpenInterset:
 
-
-    def test_linear_open_interest(self,contract_code,symbol):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_open_interest(self,title,contract_code,status):
         r = t.linear_open_interest(contract_code=contract_code)
         pprint(r)
-        schema = {
-            'data': [
-                {
-                    'symbol': symbol,
-                    'contract_code': contract_code,
-                    'trade_amount': float,
-                    'trade_turnover': float,
-                    'trade_volume': int,
-                    'volume': float,
-                    'value': float,
-                    'amount': float
-                    }
-                ],
-            'status': 'ok',
-            'ts': int
-        }
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 

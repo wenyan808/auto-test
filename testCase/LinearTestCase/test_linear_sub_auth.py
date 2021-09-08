@@ -19,15 +19,13 @@ import pytest,allure,random,time
 @allure.feature('批量设置子账户交易权限（全逐通用）')
 class TestLinearSubAuth:
 
-    def test_linear_sub_auth(self,sub_uid):
-        r = t.linear_sub_auth(sub_uid=sub_uid,sub_auth='1')
-        pprint(r)
-        schema = {'data': {'errors': list,
-                           'successes': str},
-                         'status': 'ok',
-                         'ts': int}
 
-        Schema(schema).validate(r)
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_sub_auth(self,title,sub_uid,sub_auth,status):
+        r = t.linear_sub_auth(sub_uid=sub_uid,sub_auth=sub_auth)
+        pprint(r)
+        assert r['status'] == status
 
 
 

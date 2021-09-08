@@ -18,17 +18,12 @@ import pytest,allure,random,time
 @allure.feature('查询用户品种实际可用杠杆倍数（逐仓）')
 class TestLinearAvailableLevelRate:
 
-
-    def test_linear_available_level_rate(self,contract_code,symbol):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_available_level_rate(self,title,contract_code,status):
         r = t.linear_available_level_rate(contract_code=contract_code)
         pprint(r)
-        schema = {'data': [{'available_level_rate': str,
-                           'contract_code': contract_code,
-                           'margin_mode': 'isolated'}],
-                 'status': 'ok',
-                 'ts': int}
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 if __name__ == '__main__':

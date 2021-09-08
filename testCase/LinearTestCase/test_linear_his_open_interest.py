@@ -17,27 +17,16 @@ import pytest,allure,random,time
 @allure.feature('获取平台持仓量（全逐通用）')
 class TestLinearHisOpenInterest:
 
-    def test_linear_his_open_interest(self,contract_code,symbol):
-        r = t.linear_his_open_interest(contract_code=contract_code,period='60min',size='48',amount_type='1')
-        pprint(r)
-        schema = {
-            'data':
-                {
-                    'symbol': symbol,
-                    'contract_code': contract_code,
-                    'tick': [
-                        {'volume': float,
-                        'amount_type' : int,
-                         'value' : float,
-                         'ts' : int
-                         }
-                    ]
-                },
 
-            'status': 'ok',
-            'ts': int
-        }
-        Schema(schema).validate(r)
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_his_open_interest(self,title,contract_code,period,size,amount_type,status):
+        r = t.linear_his_open_interest(contract_code=contract_code,
+                                       period=period,
+                                       size=size,
+                                       amount_type=amount_type)
+        pprint(r)
+        assert r['status'] == status
 
 
 

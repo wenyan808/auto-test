@@ -18,15 +18,12 @@ import pytest,allure,random,time
 class TestLinearDepth:
 
 
-
-    def test_linear_depth(self,contract_code):
-        r = t.linear_depth(contract_code=contract_code,type='setp0')
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_depth(self,title,contract_code,type,status):
+        r = t.linear_depth(contract_code=contract_code,type=type)
         pprint(r)
-        schema = {'ch': 'market.{}.depth.setp0'.format(contract_code),
-                     'status': 'ok',
-                     'tick': Or(None,dict),
-                     'ts': int}
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 if __name__ == '__main__':
     pytest.main()

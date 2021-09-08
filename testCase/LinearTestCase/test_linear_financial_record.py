@@ -17,32 +17,18 @@ import pytest,allure,random,time
 @allure.feature('查询用户财务记录')
 class TestLinearFinancialRecord:
 
-    def test_linear_financial_record(self,contract_code):
-        r = t.linear_financial_record(margin_account=contract_code,type='',create_date='7',page_index='',page_size='')
-        pprint(r)
-        schema = {
-            'data': {
-                'financial_record': [
-                    {
-                        'id':int,
-                        'ts':int,
-                        'asset': 'USDT',
-                        'contract_code': contract_code,
-                        'margin_account': contract_code,
-                        'face_margin_account': Or(str,None),
-                        'type':int,
-                        'amount':float
-                    }
-                ],
-                'total_page':int,
-                'current_page':int,
-                'total_size':int
-            },
-            'status': 'ok',
-            'ts': int
-        }
 
-        Schema(schema).validate(r)
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_financial_record(self,title,contract_code,type,create_date,page_index,page_size,status):
+        r = t.linear_financial_record(margin_account=contract_code,
+                                      type=type,
+                                      create_date=create_date,
+                                      page_index=page_index,
+                                      page_size=page_size)
+        pprint(r)
+        assert r['status'] == status
+
 
 
 

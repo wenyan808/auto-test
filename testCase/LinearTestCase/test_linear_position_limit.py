@@ -20,24 +20,12 @@ import pytest,allure,random,time
 class TestLinearPositionLimit:
 
 
-    def test_linear_position_limit(self,contract_code,symbol):
+    @allure.title('{title}')
+    @pytest.mark.parametrize(*case_data())
+    def test_linear_position_limit(self,title,contract_code,status):
         r = t.linear_position_limit(contract_code=contract_code)
         pprint(r)
-        schema = {
-                    'data': [
-                        {
-                            'buy_limit': Or(float,None),
-                            'contract_code': contract_code,
-                            'margin_mode': 'isolated',
-                            'sell_limit': Or(float,None),
-                            'symbol': symbol
-                        }
-                    ],
-                    'status': 'ok',
-                    'ts': int
-                }
-
-        Schema(schema).validate(r)
+        assert r['status'] == status
 
 
 
