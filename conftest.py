@@ -2,10 +2,13 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2020/8/19
 # @Author  : zhangranghan
-
+import json
 import os
+
+import requests
 import yaml
 
+from config.conf import ATPHost
 
 """
 conftest.py文件名字是固定的，不可以做任何修改
@@ -72,6 +75,28 @@ def pytest_report_teststatus(report, config):
 
 
 
+def pytest_generate_tests(metafunc: "Metafunc"):
+    # allure.dynamic.title("aaa")
+    # allure.dynamic.description("")
+    # allure.dynamic.severity()
+    """ generate (multiple) parametrized calls to a test function."""
+    if "api_test_data" in metafunc.fixturenames:
+        file_name = metafunc.definition.name
+        priority = "P0"
+        # 通过反射取回用例文件名作为入参去atp取回对应的测试数据
+        atp_url = ATPHost + "/api_case/get_pytest_api_test_data_by_script_path"
+        header = {'accept': 'application/json', 'Content-Type': 'application/json'}
+        params = {"script_path": file_name}
+        # "priority_list": [priority],
+        # "tags": ["Health testing","V1.2.3","2.18上线"]}
+        data = json.dumps(params)
+        response = requests.post(atp_url, data, header)
+        data_keys = response.json()['variables_keys_str'].split(",")
+        variables_values_list = response.json()['variables_values_list']
+        api_test_data_list = [dict(zip(data_keys, variables_values)) for variables_values in variables_values_list]
+        # api_test_data_list = [dict_to_object(data) for data in api_test_data_list]
+        metafunc.parametrize("api_test_data", api_test_data_list,
+                             scope="function")
 
 
 
