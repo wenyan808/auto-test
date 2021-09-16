@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2020/8/19
 # @Author  : zhangranghan
-
-import requests
+import os
 import pytest
 import yaml
 from _pytest.nose import teardown_nose
-from config.conf import ATPHost
+from tool.atp import ATP
 
 """
 conftest.py文件名字是固定的，不可以做任何修改
@@ -79,11 +78,6 @@ def pytest_generate_tests(metafunc: "Metafunc"):
         metafunc.parametrize("api_test_data", api_test_data_list,
                              scope="function")
 
-@pytest.mark.hookwrapper
-def pytest_runtest_setup(item):
-    outcome = yield
-    if outcome.excinfo:
-        item.session._setupstate.addfinalizer((lambda: teardown_nose(item)), item)
 
 @pytest.mark.hookwrapper
 def pytest_runtest_setup(item):
