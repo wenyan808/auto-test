@@ -4,8 +4,12 @@
 # @Author  : zhangranghan
 
 
-from common.util import api_http_get, api_key_post, api_key_get
-from config.conf import URL, ACCESS_KEY, SECRET_KEY
+
+from common.util import api_http_get, api_key_post,api_key_get
+from config.conf  import URL2,ACCESS_KEY,SECRET_KEY
+import time
+
+
 
 
 class LinearServiceAPI:
@@ -2271,6 +2275,20 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_batch_funding_rate'
         return api_http_get(url, params)
 
+    # 自买自卖调节最新价
+    def linear_control_price(self, contract_code='', price=None, lever_rate='1'):
 
-# 定义t并传入公私钥和URL,供用例直接调用
-t = LinearServiceAPI(URL, ACCESS_KEY, SECRET_KEY)
+        self.linear_cross_order(contract_code=contract_code, price=price, volume='1', direction='buy',
+                        offset='open', lever_rate=lever_rate, order_price_type='limit')
+        time.sleep(0.5)
+        self.linear_cross_order(contract_code=contract_code, price=price, volume='1', direction='sell',
+                        offset='open', lever_rate=lever_rate, order_price_type='limit')
+        time.sleep(2)
+        self.linear_cross_order(contract_code=contract_code, price=price, volume='1', direction='buy',
+                        offset='close', lever_rate=lever_rate, order_price_type='limit')
+        time.sleep(0.5)
+        self.linear_cross_order(contract_code=contract_code, price=price, volume='1', direction='sell',
+                        offset='close', lever_rate=lever_rate, order_price_type='limit')
+
+#定义t并传入公私钥和URL,供用例直接调用
+t = LinearServiceAPI(URL2,ACCESS_KEY,SECRET_KEY)

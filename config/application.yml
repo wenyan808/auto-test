@@ -1,11 +1,16 @@
 ##测试环境 13530199600
-#URL : http://test-5.dm.huobiapps.com
-URL : http://test5-linear-ingress.bitfanssim.com
-ACCESS_KEY : 52f8e21a-mjlpdje3ld-972bbdb5-1be46
-SECRET_KEY : 39980666-fac7eaab-5b336bbd-0ce17
+URL : http://test-5.dm.huobiapps.com
+MULANURL : http://mulan-asset.test-5.huobiapps.com
+URL2 : http://test5-linear-ingress.bitfanssim.com
+ACCESS_KEY : a2d50841-b1rkuf4drg-c14e3276-3db18
+SECRET_KEY : 74f221f5-4712ceee-53f31309-0c8d3
 
-#ACCESS_KEY : 94d25c02-f903133d-vftwcr5tnh-bd3e8
-#SECRET_KEY : 879a9ee3-a6ba7972-27b4dffe-99682
+##测试环境6 13249866834  lanhuisi
+#URL : http://test-6.dm.huobiapps.com
+#URL2 : http://test5-linear-ingress.bitfanssim.com
+#ACCESS_KEY : 7a85a4a8-4e64b825-dab4c45e6f-ab68a
+#SECRET_KEY : 131a58bb-a853a500-922610ea-d94ce
+
 
 
 #测20
@@ -24,7 +29,7 @@ SECRET_KEY : 39980666-fac7eaab-5b336bbd-0ce17
 
 
 #order接口使用的hbsession
-hbsession : 63118660-1996-4fb7-b18c-bba3c00554c2
+hbsession : 3e190fff-4dc6-44e1-8fe5-92ec24a731ac
 
 #FastAPI的地址
 ATPHost : http://10.151.110.63:8000

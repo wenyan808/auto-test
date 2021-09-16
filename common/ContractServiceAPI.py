@@ -6,6 +6,7 @@
 
 from common.util import api_http_get, api_key_post ,api_key_get
 from config.conf import URL,ACCESS_KEY,SECRET_KEY
+import time
 
 
 class ContractServiceAPI:
@@ -1416,7 +1417,20 @@ class ContractServiceAPI:
         request_path = '/api/v1/contract_track_hisorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
+    # 自买自卖调节最新价
+    def contract_control_price(self, symbol='', price=None, contract_type=None, lever_rate='1'):
 
+        self.contract_order(symbol=symbol, contract_type=contract_type, price=price, volume='1', direction='buy',
+                            offset='open', lever_rate=lever_rate, order_price_type='limit')
+        time.sleep(0.5)
+        self.contract_order(symbol=symbol, contract_type=contract_type, price=price, volume='1', direction='sell',
+                            offset='open', lever_rate=lever_rate, order_price_type='limit')
+        time.sleep(2)
+        self.contract_order(symbol=symbol, contract_type=contract_type, price=price, volume='1', direction='buy',
+                            offset='close', lever_rate=lever_rate, order_price_type='limit')
+        time.sleep(0.5)
+        self.contract_order(symbol=symbol, contract_type=contract_type, price=price, volume='1', direction='sell',
+                            offset='close', lever_rate=lever_rate, order_price_type='limit')
 
 #定义t并传入公私钥和URL,供用例直接调用
 t = ContractServiceAPI(URL,ACCESS_KEY,SECRET_KEY)

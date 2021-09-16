@@ -118,7 +118,8 @@ def order_http_post(host, request_path, params, hbsession):
         "Accept-language": "zh-CN",
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0",
         "source": "web",
-        "hbsession": hbsession
+        "hbsession": hbsession,
+        "HB-PRO-TOKEN": "vk9w87vqyVg74DLLDwhnIqzwOH-KsLVkYgEc6-QFoqAY-uOP2m0-gvjE57ad1qDF",
     }
     url = host + request_path
     data = json.dumps(params)
@@ -197,3 +198,23 @@ def sub(url, subs):
     except Exception as e:
         print("Sub failed, detail is:%s" % e)
         return {"status": "fail", "msg": "%s" % e}
+
+
+""" 公共常用函数 """
+
+
+def compare_dict(expected, result):
+    err = 0
+    for key in expected:
+        if key not in result:
+            print('结果里没有预期的项：', key)
+            print(result)
+            err = err + 1
+            continue
+        if str(result[key]) != str(expected[key]):
+            print('%s的值实际和预期不一致，实际：%s，预期：%s' % (key, result[key], expected[key]))
+            err = err + 1
+    if err == 0:
+        return True
+    else:
+        return False

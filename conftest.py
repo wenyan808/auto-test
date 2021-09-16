@@ -3,12 +3,11 @@
 # @Date    : 2020/8/19
 # @Author  : zhangranghan
 
-import os
-import allure
+import requests
 import pytest
 import yaml
 from _pytest.nose import teardown_nose
-from tool.atp import ATP
+from config.conf import ATPHost
 
 """
 conftest.py文件名字是固定的，不可以做任何修改
@@ -80,16 +79,11 @@ def pytest_generate_tests(metafunc: "Metafunc"):
         metafunc.parametrize("api_test_data", api_test_data_list,
                              scope="function")
 
-
 @pytest.mark.hookwrapper
-def pytest_runtest_makereport(item):
+def pytest_runtest_setup(item):
     outcome = yield
-    report = outcome.get_result()
-    if report.when == 'call':
-        api_test_data = item.funcargs.get("api_test_data", {})
-        if api_test_data:
-            allure.dynamic.title(api_test_data.get("title", "没找到标题"))
-
+    if outcome.excinfo:
+        item.session._setupstate.addfinalizer((lambda: teardown_nose(item)), item)
 
 @pytest.mark.hookwrapper
 def pytest_runtest_setup(item):
