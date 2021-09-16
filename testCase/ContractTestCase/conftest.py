@@ -17,7 +17,7 @@ def sub_uid():
 
 @pytest.fixture()
 def symbol():
-    symbol = 'BTC'
+    symbol = 'LTC'
     return symbol
 
 
@@ -30,5 +30,5 @@ def test():
 
 @pytest.fixture()
 def symbol_period():
-    symbol_period = 'BTC_CW'
+    symbol_period = 'LTC_CW'
     return symbol_period

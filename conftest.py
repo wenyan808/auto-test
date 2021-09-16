@@ -6,8 +6,9 @@ import json
 import os
 
 import requests
+import pytest
 import yaml
-
+from _pytest.nose import teardown_nose
 from config.conf import ATPHost
 
 """
@@ -98,5 +99,9 @@ def pytest_generate_tests(metafunc: "Metafunc"):
         metafunc.parametrize("api_test_data", api_test_data_list,
                              scope="function")
 
-
+@pytest.mark.hookwrapper
+def pytest_runtest_setup(item):
+    outcome = yield
+    if outcome.excinfo:
+        item.session._setupstate.addfinalizer((lambda: teardown_nose(item)), item)
 
