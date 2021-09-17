@@ -3,6 +3,8 @@
 # @Date    : 2020/8/19
 # @Author  : zhangranghan
 import os
+
+import allure
 import pytest
 import yaml
 from _pytest.nose import teardown_nose
@@ -84,3 +86,15 @@ def pytest_runtest_setup(item):
     outcome = yield
     if outcome.excinfo:
         item.session._setupstate.addfinalizer((lambda: teardown_nose(item)), item)
+
+
+@pytest.mark.hookwrapper
+def pytest_runtest_makereport(item):
+    outcome = yield
+    report = outcome.get_result()
+    if report.when == 'call':
+        api_test_data = item.funcargs.get("api_test_data", {})
+        if api_test_data:
+            title = api_test_data.get("title", "")
+            if title:
+                allure.dynamic.title(title)
