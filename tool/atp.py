@@ -10,13 +10,9 @@ class ATP:
 
     @classmethod
     def get_api_test_data(cls, script_path, priority_list=[], tags=[]):
-        atp_url = cls.ATPHost + "/api_case/get_pytest_api_test_data_by_script_path"
-        body = {"script_path": script_path,
-                "priority_list": priority_list,
-                "tags": tags}
-        response = requests.post(atp_url, headers=cls.header, json=body)
-        data_keys = response.json()['variables_keys_str'].split(",")
-        variables_values_list = response.json()['variables_values_list']
+        data_keys, variables_values_list = cls.get_api_test_data_old(script_path,
+                                                                     priority_list=priority_list,
+                                                                     tags=tags)
         api_test_data_list = [dict(zip(data_keys, variables_values)) for variables_values in variables_values_list]
         return api_test_data_list
 
