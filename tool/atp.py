@@ -5,6 +5,7 @@ import requests
 
 class ATP:
     ATPHost = 'http://10.151.110.63:8000'
+    # ATPHost = 'http://0.0.0.0:8000'
     header = {'accept': 'application/json', 'Content-Type': 'application/json'}
 
     @classmethod
