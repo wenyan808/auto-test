@@ -4,7 +4,10 @@
 # @Author  : zhangranghan
 
 
-import os,sys
+import os, sys
+
+from config.conf import set_run_env_and_system_type
+
 """
 pytest 命令中加入 '-n 数字'可实现分布式执行测试用例，数字表示执行用例的机器数，但是由于速度过快被api接口限频，如果需要可考虑调大测试环境限频
 pytest 命令中加入 --html=./report/html/TestReoprt%s.html  --self-contained-html  可生成htlm测试报告
@@ -34,28 +37,38 @@ allure generate ./report -o ./html_report --clean
 # os.system('allure open report/html')
 """
 
-def run(argu=None):
+
+def run(argu=None, run_env='Test5'):
     """
     新执行脚本由jenkins中的shell传入执行模块，执行方式为
     python3 run.py 模块名
     exit 0
     """
+    system_types = {
+        'Contract': 'Delivery',
+        'Swap': 'Swap',
+        'Linear': 'LinearSwap',
+        'Option': 'Option',
+        'Schema': 'Schema'
+    }
 
     if argu == 'ALL':
+        set_run_env_and_system_type(run_env)
         os.system('pytest --alluredir report/allure testCase/')
     elif type(argu) == str:
-        if argu.capitalize() in ['Contract','Swap','Linear','Option','Schema']:
+        if argu.capitalize() in ['Contract', 'Swap', 'Linear', 'Option', 'Schema']:
+            set_run_env_and_system_type(run_env, system_types[argu.capitalize()])
             os.system('pytest --alluredir report/allure testCase/{}TestCase'.format(argu.capitalize()))
         else:
             print('输入错误')
     else:
         print('输入错误')
+
+
 if __name__ == '__main__':
-    #由jenkins传入执行参数时使用此方式
-    for i in range(1,len(sys.argv)):
+    # 由jenkins传入执行参数时使用此方式
+    for i in range(1, len(sys.argv)):
         run(sys.argv[i])
 
-    #普通调用使用此方式
+    # 普通调用使用此方式
     # run('contract')
-
-
