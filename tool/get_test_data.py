@@ -11,6 +11,7 @@ import json
 from pathlib import Path,PurePath
 import pandas as pd
 
+
 # 已废弃从Excel读取数据的方法
 # #根据传入的接口名组装文件路径
 # def file_path(api_name):
@@ -62,7 +63,8 @@ from tool.atp import ATP
 def case_data(priority="P0"):
     #通过反射取回用例文件名作为入参去atp取回对应的测试数据
     caller_frame = inspect.stack()[1]
-    file_name = caller_frame.filename.split('/')[7][:-3]
+    # file_name = caller_frame.filename.split('/')[7][:-3]
+    file_name = Path(caller_frame.filename).stem
     return ATP.get_api_test_data_old(file_name)
 
 
