@@ -38,11 +38,11 @@
 
 from common.ContractServiceAPI import t as contract_api
 from common.ContractServiceOrder import t as contract_order
-from common.LinearServiceAPI import t as linear_api
+from common.LinearServiceAPI import t as linear_api,LinearServiceAPI
 from common.LinearServiceOrder import t as linear_order
 from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
-
+from config.conf import COMMON_ACCESS_KEY, COMMON_SECRET_KEY, URL
 from pprint import pprint
 import pytest, allure, random, time
 
@@ -63,11 +63,51 @@ class TestUSDTSwapLimitOrder_010:
 
 	@allure.title('对手价卖出开空买盘无数据自动撤单')
 	@allure.step('测试执行')
-	def test_execute(self, symbol):
+	def test_execute(self, contract_code):
+		lever_rate = 5
+
+		self.setup()
+		pprint('\n步骤一:获取盘口(买)\n')
+		r_trend_req = linear_api.linear_depth(contract_code=contract_code, type="step0")
+		pprint(r_trend_req)
+		current_bids = r_trend_req.get("tick").get("bids")
+		# 如果有买单，则吃掉所有买单;如果没有，则不需要吃盘，直接卖出
+		if current_bids:
+			total_bids = 0
+			lowest_price = []
+			for each_bids in current_bids:
+				each_price, each_amount = each_bids[0], each_bids[1]
+				total_bids += each_amount
+				lowest_price.append(each_price)
+			lowest_price = min(lowest_price)
+			pprint("\n步骤二：用操作账号以当前最低价吃掉所有买单(卖出)\n")
+			service = LinearServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
+			r = service.linear_order(contract_code=contract_code,
+										client_order_id='',
+										price=lowest_price,
+										volume=total_bids,
+										direction='sell',
+										offset='open',
+										lever_rate=lever_rate,
+										order_price_type='limit')
+			pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有买单\n")
+			r_trend_req_confirm = linear_api.linear_depth(contract_code=contract_code, type="step0")
+			current_bids = r_trend_req_confirm.get("tick").get("bids")
+			assert not current_bids, "买盘不为空! 当前买盘: {current_bids}".format(current_bids=current_bids)
 		with allure.step('1、盘口无买盘，对手价卖出开空'):
-			pass
+			r_sell_opponent = service.linear_order(contract_code=contract_code,
+									 client_order_id='',
+									 price="",
+									 volume=1,
+									 direction='sell',
+									 offset='open',
+									 lever_rate=lever_rate,
+									 order_price_type='opponent')
 		with allure.step('2、观察下单是否成功有结果A'):
-			pass
+			actual_status = r_sell_opponent.get("status")
+			actual_msg = r_sell_opponent.get("err_msg")
+			assert actual_status == 'error' and actual_msg == "对手价不存在", "预期: `error`+`对手价不存在`, 实际: `{actual_status}+{actual_msg}`".format(
+				actual_status=actual_status, actual_msg=actual_msg)
 		with allure.step('3、观察历史委托-限价委托有结果B'):
 			pass
 		with allure.step('4、观察资产信息有结果C'):

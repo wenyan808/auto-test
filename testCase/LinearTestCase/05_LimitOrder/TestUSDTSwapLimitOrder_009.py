@@ -69,7 +69,7 @@ class TestUSDTSwapLimitOrder_009:
 
 		self.setup()
 		pprint('\n步骤一:获取盘口(卖)\n')
-		r_trend_req = contract_api.contract_depth(contract_code=contract_code, type="step0")
+		r_trend_req = linear_api.linear_depth(contract_code=contract_code, type="step0")
 		pprint(r_trend_req)
 		current_asks = r_trend_req.get("tick").get("asks")
 		# 如果有卖单，则吃掉所有卖单
@@ -82,18 +82,36 @@ class TestUSDTSwapLimitOrder_009:
 				highest_price = max(highest_price, each_price)
 			pprint("\n步骤二：用操作账号以当前最高价吃掉(买入)所有卖单\n")
 			service = LinearServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
-			service.contract_order(symbol=symbol, contract_type='this_week', price=highest_price, volume=total_asks,
-								   direction='buy', offset='open', lever_rate=lever_rate, order_price_type='limit')
+			r = service.linear_order(contract_code=contract_code,
+										client_order_id='',
+										price=highest_price,
+										volume='1',
+										direction='buy',
+										offset='open',
+										lever_rate=lever_rate,
+										order_price_type='limit')
 			pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有卖单\n")
-			r_trend_req_confirm = contract_api.contract_depth(symbol=symbol_period, type="step0")
+			r_trend_req_confirm = linear_api.linear_depth(contract_code=contract_code, type="step0")
 			current_asks = r_trend_req_confirm.get("tick").get("asks")
 			assert not current_asks, "卖盘不为空! 当前卖盘: {current_asks}".format(current_asks=current_asks)
 		with allure.step('1、盘口无卖盘，对手价买入开多'):
-			pass
+			# 买入开多限价
+			r_buy_opponent = linear_api.linear_order(contract_code=contract_code,
+										client_order_id='',
+										price="",
+										volume='1',
+										direction='buy',
+										offset='open',
+										lever_rate=lever_rate,
+										order_price_type='opponent')
 		with allure.step('2、观察下单是否成功有结果A'):
-			pass
+			actual_status = r_buy_opponent.get("status")
+			actual_msg = r_buy_opponent.get("err_msg")
 		with allure.step('3、观察历史委托-限价委托有结果B'):
-			pass
+			r = linear_api.linear_openorders(contract_code=contract_code, page_index='', page_size='')
+			pprint(r)
+			totalsize2 = r['data']['total_size']
+			actual_orderinfo = r['data']['orders'][0]
 		with allure.step('4、观察资产信息有结果C'):
 			pass
 

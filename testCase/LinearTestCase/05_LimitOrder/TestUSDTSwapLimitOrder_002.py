@@ -76,21 +76,21 @@ class TestUSDTSwapLimitOrder_002:
 		pprint(r)
 		#得到最近的价格
 		lastprice = r['data'][0]['data'][0]['price']
-		print('\n下一个卖单\n')
+		print('\n下一个买单\n')
 		r = linear_api.linear_order(contract_code=contract_code,
 									client_order_id='',
 									price=lastprice,
 									volume='1',
-									direction='sell',
+									direction='buy',
 									offset='open',
 									lever_rate=leverrate,
 									order_price_type='limit')
 		pprint(r)
-		orderid1 = r['data']['order_id']
+		orderid1 = r['data']['order_id'] #890261793653673984
 		"""获取当前冻结保证金"""
 		r = linear_api.linear_account_info(contract_code=contract_code)
 		pprint(r)
-		frozen1 = r['data'][0]['margin_frozen']
+		frozen1 = r['data'][0]['margin_frozen'] #15832.73774
 
 		"""获取当前委托数量及详情"""
 		r = linear_api.linear_openorders(contract_code=contract_code, page_index='', page_size='')
@@ -110,12 +110,12 @@ class TestUSDTSwapLimitOrder_002:
 										order_price_type='limit')
 			pprint(r)
 			time.sleep(0.5)
-			orderid2 = r['data']['order_id']
+			orderid2 = r['data']['order_id'] #890261795566276608
 		with allure.step('2、观察盘口有结果A'):
 			"""获取当前冻结保证金"""
 			r = linear_api.linear_account_info(contract_code=contract_code)
 			pprint(r)
-			frozen2 = r['data'][0]['margin_frozen']
+			frozen2 = r['data'][0]['margin_frozen'] #15832.9633
 			if frozen2 <= frozen1:
 				print("冻结资金没有增加，不符合预期")
 				flag = False
@@ -144,16 +144,13 @@ class TestUSDTSwapLimitOrder_002:
 			"""获取当前冻结保证金"""
 			r = linear_api.linear_account_info(contract_code=contract_code)
 			pprint(r)
-			frozen3 = r['data'][0]['margin_frozen']
+			frozen3 = r['data'][0]['margin_frozen'] #15821.46
 			if frozen3 != frozen1:
 				print("冻结资金没有恢复到初始状态，不符合预期")
 				flag = False
 			print('\n恢复环境:撤单\n')
 			# 回撤卖单
 			r = linear_api.linear_cancel(contract_code=contract_code, order_id=orderid1)
-			pprint(r)
-			# 回撤买单
-			r = linear_api.linear_cancel(contract_code=contract_code, order_id=orderid2)
 			pprint(r)
 			assert flag == True
 

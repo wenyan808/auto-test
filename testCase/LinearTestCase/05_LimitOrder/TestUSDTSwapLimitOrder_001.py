@@ -167,9 +167,6 @@ class TestUSDTSwapLimitOrder_001:
 			#回撤卖单
 			r = linear_api.linear_cancel(contract_code=contract_code, order_id=orderid1)
 			pprint(r)
-			#回撤买单
-			r = linear_api.linear_cancel(contract_code=contract_code, order_id=orderid2)
-			pprint(r)
 			assert flag == True
 
 	@allure.step('恢复环境')
