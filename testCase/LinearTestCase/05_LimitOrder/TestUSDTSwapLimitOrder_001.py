@@ -90,6 +90,8 @@ class TestUSDTSwapLimitOrder_001:
 		orderid1 = r['data']['order_id']
 		"""获取当前冻结保证金"""
 		r = linear_api.linear_account_info(contract_code=contract_code)
+		"""frozen1:"""
+		pprint(r)
 		frozen1 = r['data'][0]['margin_frozen']
 
 		"""获取当前委托数量及详情"""
@@ -123,6 +125,7 @@ class TestUSDTSwapLimitOrder_001:
 		with allure.step('3、观察当前委托-限价委托页面有结果B'):
 			"""获取当前委托数量及详情"""
 			r = linear_api.linear_openorders(contract_code=contract_code, page_index='', page_size='')
+			pprint(r)
 			totalsize2 = r['data']['total_size']
 			actual_orderinfo = r['data']['orders'][0]
 	# expectdic = {'contract_code': contract_code,
