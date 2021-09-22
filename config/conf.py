@@ -14,7 +14,7 @@ URL2 = GLOBAL_DATA['linear_swap_api_base_url']
 ACCESS_KEY = GLOBAL_DATA['AT_DEFAULT_ACCESS_KEY']
 SECRET_KEY = GLOBAL_DATA['AT_DEFAULT_SECRET_KEY']
 hbsession = GLOBAL_DATA['AT_DEFAULT_HBSESSION']
-
+MULANURL = GLOBAL_DATA['MULANURL']
 
 def set_run_env_and_system_type(run_env, system_type=None):
     global ENV, SYSTEM_TYPE, GLOBAL_DATA
