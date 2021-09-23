@@ -21,7 +21,7 @@ class TestUSDTSwapLever_004:
         r = linear_api.linear_cancelall(contract_code=contract_code)
         pprint(r)
 
-    # @allure.title('{title}')
+    @allure.title('title')
     def test_contract_account_position_info(self, contract_code):
         self.setUp(contract_code)
         '''查询支持的全部杠杆率，取随机一种下单，再切换另一种，预期失败'''

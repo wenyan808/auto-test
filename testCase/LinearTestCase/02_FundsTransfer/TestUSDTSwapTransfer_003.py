@@ -20,7 +20,7 @@ class TestUSDTSwapTransfer_003:
     def setUp(self):
         print('\n前置条件')
 
-    # @allure.title('{title}')
+    @allure.title('title')
     def test_contract_account_position_info(self, symbol, contract_code):
         currency = "USDT"
         margin_account = contract_code

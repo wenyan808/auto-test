@@ -21,7 +21,7 @@ class TestContractLever_001:
         print('\n全部撤单')
         r = swap_api.swap_cancelall(contract_code=contract_code)
         pprint(r)
-    # @allure.title('{title}')
+    @allure.title('title')
     def test_contract_account_position_info(self, contract_code):
 
         self.setUp(contract_code)
