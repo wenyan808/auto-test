@@ -16,7 +16,7 @@ from tool.get_test_data import case_data
 
 @allure.epic('合约自动化测试')
 @allure.feature('')
-@allure.title('{title}')
+# @allure.title('{title}')
 class TestContractLimitOrder_001:
 
     def setUp(self):

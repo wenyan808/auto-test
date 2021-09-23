@@ -21,7 +21,7 @@ class TestContractLever_001:
         print('\n全部撤单')
         r = contranct_api.contract_cancelall(symbol=symbol)
         pprint(r)
-    @allure.title('{title}')
+    # @allure.title('{title}')
     def test_contract_account_position_info(self, symbol):
 
         self.setUp(symbol)
