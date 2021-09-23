@@ -6,6 +6,7 @@
 
 from common.util import api_http_get, api_key_post,api_key_get
 from config.conf  import URL,ACCESS_KEY,SECRET_KEY
+import time
 
 class SwapService:
 
@@ -1476,6 +1477,45 @@ class SwapService:
         self.swap_order(contract_code=contract_code, price=price, volume='1', direction='sell',
                         offset='close', lever_rate=lever_rate, order_price_type='limit')
 
+    # 清空当前持仓
+    def swap_empty_position(self, contract_code='', price=None):#恢复环境时用
+
+        r = self.swap_position_info(contract_code=contract_code)
+        count = len(r["data"])
+
+        if count == 0:
+            print("当前没有持仓，无需清空")
+            return True
+        elif count == 1:
+            print("当前只持仓一种单，无法通过自我成交清空，请人工处理")
+            return False
+        elif count == 2:
+            volume1 = str(int(r["data"][0]['volume']))
+            volume2 = str(int(r["data"][1]['volume']))
+
+            leverrate = r["data"][0]['lever_rate']
+
+            if volume1 == volume2:
+                self.swap_order(contract_code=contract_code, price=price, volume=str(volume1),
+                                    direction='buy', offset='close', lever_rate=leverrate, order_price_type='limit')
+                time.sleep(0.5)
+                self.swap_order(contract_code=contract_code, price=price, volume=str(volume1),
+                                    direction='sell', offset='close', lever_rate=leverrate, order_price_type='limit')
+                time.sleep(2)
+                r = self.swap_position_info(contract_code=contract_code)
+                count = len(r["data"])
+                if count == 0:
+                    print("清除持仓成功")
+                    return True
+                else:
+                    print("清除持仓失败")
+                    return False
+            else:
+                print("当前持仓量不匹配，无法通过自我成交清空，请人工处理")
+                return False
+        else:
+            print("当前持仓状况复杂，无法通过自我成交清空，请人工处理")
+            return False
 
 # 定义t并传入公私钥和URL,供用例直接调用
 t = SwapService(URL, ACCESS_KEY, SECRET_KEY)

@@ -4,7 +4,7 @@
 # @Author  : zhangranghan
 
 
-from common.ContractServiceAPI import t as contranct_api
+from common.ContractServiceAPI import t as contract_api
 from common.ContractServiceOrder import t as contranct_order
 
 from schema import Schema, And, Or, Regex, SchemaError
@@ -26,7 +26,7 @@ class TestContractTrackOrder_004:
 
         self.setUp()
         print('\n步骤一:获取最近价\n')
-        r = contranct_api.contract_history_trade(symbol=symbol_period, size='1')
+        r = contract_api.contract_history_trade(symbol=symbol_period, size='1')
         pprint(r)
         price = r['data'][0]['data'][0]['price']
         activationprice = round((price * 1.02), 1)
@@ -37,21 +37,21 @@ class TestContractTrackOrder_004:
 
         print('\n步骤二:按激活价下单\n')
 
-        r = contranct_api.contract_track_order(symbol=symbol,
-                                               contract_type='this_week',
-                                               direction='sell',
-                                               offset='open',
-                                               lever_rate='5',
-                                               volume='1',
-                                               callback_rate=callbackrate,
-                                               active_price=str(activationprice),
-                                               order_price_type='formula_price')
+        r = contract_api.contract_track_order(symbol=symbol,
+                                              contract_type='this_week',
+                                              direction='sell',
+                                              offset='open',
+                                              lever_rate='5',
+                                              volume='1',
+                                              callback_rate=callbackrate,
+                                              active_price=str(activationprice),
+                                              order_price_type='formula_price')
         pprint(r)
         time.sleep(0.5)
         orderid = r['data']['order_id']
         print('\n步骤三:查询跟踪委托当前委托状态为未激活\n')
 
-        r = contranct_api.contract_track_openorders(symbol=symbol)
+        r = contract_api.contract_track_openorders(symbol=symbol)
         pprint(r)
 
         actual_activestate = r['data']['orders'][0]['is_active']
@@ -65,12 +65,12 @@ class TestContractTrackOrder_004:
 
         print('\n步骤四:控制现价到激活价格\n')
 
-        contranct_api.contract_control_price(symbol=symbol, price=activationprice,
-                                             contract_type='this_week', lever_rate='5')
+        contract_api.contract_control_price(symbol=symbol, price=activationprice,
+                                            contract_type='this_week', lever_rate='5')
 
         print('\n步骤五:查询跟踪委托当前委托状态为已激活\n')
 
-        r = contranct_api.contract_track_openorders(symbol=symbol)
+        r = contract_api.contract_track_openorders(symbol=symbol)
         pprint(r)
 
         actual_activestate2 = r['data']['orders'][0]['is_active']
@@ -85,14 +85,14 @@ class TestContractTrackOrder_004:
 
         print('\n步骤六:控制现价到触发价格\n')
 
-        contranct_api.contract_control_price(symbol=symbol, price=triggerprice,
-                                             contract_type='this_week', lever_rate='5')
+        contract_api.contract_control_price(symbol=symbol, price=triggerprice,
+                                            contract_type='this_week', lever_rate='5')
 
         time.sleep(1)
 
         print('\n步骤七:查询当前未成交委托\n')
 
-        r = contranct_api.contract_openorders(symbol=symbol, page_index='', page_size='')
+        r = contract_api.contract_openorders(symbol=symbol, page_index='', page_size='')
         pprint(r)
 
         ordersource = r['data']['orders'][0]['order_source']
@@ -106,7 +106,7 @@ class TestContractTrackOrder_004:
 
         print('\n步骤八: 查询跟踪委托历史委托\n')
 
-        r = contranct_api.contract_track_hisorders(symbol=symbol,status='0',trade_type='0',create_date='1')
+        r = contract_api.contract_track_hisorders(symbol=symbol, status='0', trade_type='0', create_date='1')
         pprint(r['data']['orders'][0])
 
         status3 = r['data']['orders'][0]['status']
@@ -127,7 +127,7 @@ class TestContractTrackOrder_004:
 
         print('\n恢复环境:撤单\n')
 
-        r = contranct_api.contract_cancel(symbol=symbol, order_id=limitorderid)
+        r = contract_api.contract_cancel(symbol=symbol, order_id=limitorderid)
         pprint(r)
 
 
