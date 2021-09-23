@@ -5,6 +5,7 @@
 
 
 import os, sys
+from string import Template
 
 from config.conf import set_run_env_and_system_type
 
@@ -38,7 +39,7 @@ allure generate ./report -o ./html_report --clean
 """
 
 
-def run(argu=None, run_env='Test5'):
+def run(system_type=None, run_env='Test5', build_num=0):
     """
     新执行脚本由jenkins中的shell传入执行模块，执行方式为
     python3 run.py 模块名
@@ -51,14 +52,20 @@ def run(argu=None, run_env='Test5'):
         'Option': 'Option',
         'Schema': 'Schema'
     }
-
-    if argu == 'ALL':
+    dingding_msg = '''{
+        "msgtype": "text",
+        "text": {
+        "content": "report url: http://172.18.6.183:8080/jenkins/view/autotest(%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95)/job/auto-test/${build_num}/allure/"
+        }}'''
+    if system_type == 'ALL':
         set_run_env_and_system_type(run_env)
         os.system('pytest --alluredir report/allure testCase/')
-    elif type(argu) == str:
-        if argu.capitalize() in ['Contract', 'Swap', 'Linear', 'Option', 'Schema']:
-            set_run_env_and_system_type(run_env, system_types[argu.capitalize()])
-            os.system('pytest --alluredir report/allure testCase/{}TestCase'.format(argu.capitalize()))
+    elif type(system_type) == str:
+        if system_type.capitalize() in ['Contract', 'Swap', 'Linear', 'Option', 'Schema']:
+            set_run_env_and_system_type(run_env, system_types[system_type.capitalize()])
+            os.system('pytest --alluredir report/allure testCase/{}TestCase'.format(system_type.capitalize()))
+            with open('report/dingding.json', 'w') as dingding_json_f:
+                dingding_json_f.write(Template(dingding_msg).safe_substitute(build_num=build_num))
         else:
             print('输入错误')
     else:
@@ -67,8 +74,8 @@ def run(argu=None, run_env='Test5'):
 
 if __name__ == '__main__':
     # 由jenkins传入执行参数时使用此方式
-    for i in range(1, len(sys.argv)):
-        run(sys.argv[i])
+    # for i in range(1, len(sys.argv)):
+    run(sys.argv[1], build_num=sys.argv[2])
 
     # 普通调用使用此方式
-    # run('contract')
+    # run('contract', build_num=10)
