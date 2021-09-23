@@ -107,10 +107,11 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     '''收集测试结果'''
     duration = time.time() - terminalreporter._sessionstarttime
     result = {}
-    result['total'] = terminalreporter._numcollected
+    # result['total'] = terminalreporter._numcollected
     result['passed'] = len(terminalreporter.stats.get('passed', []))
     result['failed'] = len(terminalreporter.stats.get('failed', []))
     result['error'] = len(terminalreporter.stats.get('error', []))
     result['skipped'] = len(terminalreporter.stats.get('skipped', []))
     result['run_time'] = duration
-    DingDingMsg.set_result(**result)
+    result['total'] = result['passed'] + result['failed'] + result['error'] + result['skipped']
+    DingDingMsg.update_result(**result)

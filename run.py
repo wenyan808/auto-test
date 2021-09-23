@@ -40,7 +40,7 @@ allure generate ./report -o ./html_report --clean
 """
 
 
-def run(system_type=None, run_env='Test5', build_num=0):
+def run(system_type=None, run_env='Test5', test_type=''):
     """
     新执行脚本由jenkins中的shell传入执行模块，执行方式为
     python3 run.py 模块名
@@ -55,12 +55,19 @@ def run(system_type=None, run_env='Test5', build_num=0):
     }
     if system_type == 'ALL':
         set_run_env_and_system_type(run_env)
-        os.system('pytest --alluredir report/allure testCase/')
+        if test_type:
+            os.system(f'pytest --alluredir report/allure testCase/ -m "{test_type}"')
+        else:
+            os.system('pytest --alluredir report/allure testCase/')
     elif type(system_type) == str:
         if system_type.capitalize() in ['Contract', 'Swap', 'Linear', 'Option', 'Schema']:
             set_run_env_and_system_type(run_env, system_types[system_type.capitalize()])
-            os.system('pytest --alluredir report/allure testCase/{}TestCase'.format(system_type.capitalize()))
-            DingDingMsg.update_json_file(build_num)
+            if test_type:
+                os.system('pytest --alluredir report/allure testCase/{}TestCase -m "{}"'.format(system_type.capitalize(),
+                                                                                              test_type))
+            else:
+                os.system(
+                    'pytest --alluredir report/allure testCase/{}TestCase'.format(system_type.capitalize()))
         else:
             print('输入错误')
     else:
@@ -68,9 +75,17 @@ def run(system_type=None, run_env='Test5', build_num=0):
 
 
 if __name__ == '__main__':
-    # 由jenkins传入执行参数时使用此方式
-    # for i in range(1, len(sys.argv)):
-    run(sys.argv[1], build_num=sys.argv[2])
+    system_type = sys.argv[1]
+    build_num = sys.argv[2]
+    test_type = sys.argv[3]
 
-    # 普通调用使用此方式
-    # run('contract', build_num=10)
+    # for debug
+    # system_type = 'Linear'
+    # build_num = 10
+    # test_type = 'stable'
+
+    DingDingMsg.init_result(env='Test5', system_type=system_type, test_type=test_type)
+    run(system_type, test_type=test_type)
+    DingDingMsg.update_json_file(build_num)
+
+
