@@ -80,10 +80,13 @@ def run(system_type=None, run_env='Test5', test_type=''):
 
 
 if __name__ == '__main__':
+
     system_type = sys.argv[1]
     build_num = sys.argv[2]
-    test_type = sys.argv[3]
-
+    if len(sys.argv) > 3:
+        test_type = sys.argv[3]
+    else:
+        test_type = ''
     # for debug
     # system_type = 'Linear'
     # build_num = 10
