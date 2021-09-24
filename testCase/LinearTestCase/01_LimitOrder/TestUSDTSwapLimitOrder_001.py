@@ -55,6 +55,7 @@ from common.util import compare_dict
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
 class TestUSDTSwapLimitOrder_001:
 	@allure.step('前置条件')
 	def setup(self):
@@ -154,6 +155,7 @@ class TestUSDTSwapLimitOrder_001:
 		with allure.step('5、在当前委托-限价委托点击撤单'):
 			print('\n撤掉刚才下的买入单\n')
 			r = linear_api.linear_cancel(order_id=orderid2, contract_code=contract_code)
+			pprint(r)
 			time.sleep(1)
 		with allure.step('6、观察历史委托-限价委托有结果D'):
 			"""获取历史订单"""

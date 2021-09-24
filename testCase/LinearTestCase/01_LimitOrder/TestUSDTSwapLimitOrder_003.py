@@ -51,6 +51,7 @@ import pytest, allure, random, time
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
 class TestUSDTSwapLimitOrder_003:
 
 	@allure.step('前置条件')
@@ -69,6 +70,22 @@ class TestUSDTSwapLimitOrder_003:
 		lever_rate = 5
 		self.setup()
 		print('\n步骤一:获取盘口卖一价\n')
+		r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
+		pprint(r)
+		# 得到最近的价格
+		lastprice = r['data'][0]['data'][0]['price']
+		r = linear_api.linear_order(contract_code=contract_code,
+											  client_order_id='',
+											  price=lastprice,
+											  volume='1',
+											  direction='sell',
+											  offset='open',
+											  lever_rate=lever_rate,
+											  order_price_type="limit")
+		pprint(r)
+		print('\n步骤一:获取盘口卖一价\n')
+		pprint(r)
+		time.sleep(2)
 		r_trend_req = linear_api.linear_depth(contract_code=contract_code, type="step5")
 		pprint(r_trend_req)
 		data_r_trade_res = r_trend_req.get("tick").get("asks")

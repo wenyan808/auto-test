@@ -50,7 +50,6 @@ import pytest, allure, random, time
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
-@pytest.mark.stable
 class TestCoinswapLimitOrder_009:
 
 	@allure.step('前置条件')
@@ -81,7 +80,8 @@ class TestCoinswapLimitOrder_009:
 											  direction='sell',
 											  offset='open',
 											  lever_rate=lever_rate,
-											  order_price_type="fok")
+											  order_price_type="limit")
+		time.sleep(4)
 		pprint('\n步骤一:获取盘口(卖)\n')
 		r_trend_req = swap_api.swap_depth(contract_code=contract_code, type="step0")
 		pprint(r_trend_req)
