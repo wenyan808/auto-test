@@ -1,13 +1,13 @@
 '''#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 20210916
-# @Author : 
+# @Author : chenwei
 	用例Id
 		
 	所属分组
 		限价委托
 	用例标题
-		只做maker 卖出开空下单后自动撤单测试
+		对手价买入开多卖盘无数据自动撤单
 	前置条件
 		初始化环境准备
 		1、建议准备两个账户，一个用于初始化环境，一个用于测试下单验证。
@@ -18,20 +18,22 @@
 	类型
 		文本
 	步骤/文本
-		1、下单只做maker 卖出开空，设置的挂单价格盘口已存在
+		1、盘口无卖盘，对手价买入开多
 		2、观察下单是否成功有结果A
 		3、观察历史委托-限价委托有结果B
 		4、观察资产信息有结果C
 	预期结果
-		A)系统会自动取消下单
-		B)历史委托-限价委托最新数据展示的为刚撤单信息，信息置灰，状态为已撤销，列表信息展示合约，倍数，交易类型，委托类型，时间，委托数量，委托价信息和下单数值一致
+		A)订单未成交，盘口买方不展示挂单数据
+		B)当前委托-限价委托统计数量无变化
 		C)无冻结担保资产
+		
+		
 	标签
 		P0
 	优先级
 		0
 	用例别名
-		TestCoinswapLimitOrder_004
+		TestCoinswapLimitOrder_009
 '''
 
 from common.ContractServiceAPI import t as contract_api
@@ -48,7 +50,8 @@ import pytest, allure, random, time
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
-class TestCoinswapLimitOrder_004:
+@pytest.mark.stable
+class TestCoinswapLimitOrder_009:
 
 	@allure.step('前置条件')
 	def setup(self):
@@ -59,13 +62,13 @@ class TestCoinswapLimitOrder_004:
 		3、每次完成测试后再还原环境
 		4、本次用例场景为无成交下撤单场景 ''')
 
-	@allure.title('只做maker 卖出开空下单后自动撤单测试')
+	@allure.title('对手价买入开多卖盘无数据自动撤单')
 	@allure.step('测试执行')
 	def test_execute(self, contract_code):
-		""" 只做maker 卖出开空下单后自动撤单测试 """
+		""" 对手价买入开多卖盘无数据以对手价买入会报对手价不存在 """
 		lever_rate = 5
+
 		self.setup()
-		print('\n新建一个买单\n')
 		r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
 		pprint(r)
 		# 得到最近的价格
@@ -75,57 +78,62 @@ class TestCoinswapLimitOrder_004:
 											  client_order_id='',
 											  price=lastprice,
 											  volume='1',
-											  direction='buy',
+											  direction='sell',
 											  offset='open',
 											  lever_rate=lever_rate,
-											  order_price_type="post_only")
-		pprint(r)
-		print('\n步骤一:获取盘口买一价\n')
-		time.sleep(3)
-		r_trend_req = swap_api.swap_depth(contract_code=contract_code, type="step5")
+											  order_price_type="fok")
+		pprint('\n步骤一:获取盘口(卖)\n')
+		r_trend_req = swap_api.swap_depth(contract_code=contract_code, type="step0")
 		pprint(r_trend_req)
-		data_r_trade_res = r_trend_req.get("tick").get("bids")
-		assert len(data_r_trade_res) > 0, "盘口(买入盘)无数据"
-		highest_price_buy = min([i[0] for i in data_r_trade_res])
-		with allure.step('1、下单只做maker 卖出开空，设置的挂单价格盘口已存在'):
-			order_price_type = "post_only"
-			r_order_seller = swap_api.swap_order(contract_code=contract_code,
+		current_asks = r_trend_req.get("tick").get("asks")
+		# 如果有卖单，则吃掉所有卖单
+		if current_asks:
+			total_asks = 0
+			highest_price = 0
+			for each_ask in current_asks:
+				each_price, each_amount = each_ask[0], each_ask[1]
+				total_asks += each_amount
+				highest_price = max(highest_price, each_price)
+			pprint("\n步骤二：用操作账号以当前最高价吃掉(买入)所有卖单\n")
+			# service = swapServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
+			r = swap_api.swap_order(contract_code=contract_code,
+										client_order_id='',
+										price=highest_price,
+										volume=total_asks,
+										direction='buy',
+										offset='open',
+										lever_rate=lever_rate,
+										order_price_type='limit')
+			pprint(r)
+			time.sleep(2)
+			pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有卖单\n")
+			r_trend_req_confirm = swap_api.swap_depth(contract_code=contract_code, type="step0")
+			current_asks = r_trend_req_confirm.get("tick").get("asks")
+			assert not current_asks, "卖盘不为空! 当前卖盘: {current_asks}".format(current_asks=current_asks)
+		with allure.step('1、盘口无卖盘，对手价买入开多'):
+			# 买入开多限价
+			r_buy_opponent = swap_api.swap_order(contract_code=contract_code,
 													 client_order_id='',
-													 price=highest_price_buy,
+													 price="",
 													 volume='1',
-													 direction='sell',
+													 direction='buy',
 													 offset='open',
 													 lever_rate=lever_rate,
-													 order_price_type=order_price_type)
-			pprint(r_order_seller)
-			current_time = int(str(time.time()).split(".")[0])
-			time.sleep(5)
+													 order_price_type='opponent')
 		with allure.step('2、观察下单是否成功有结果A'):
-			generated_order_id = r_order_seller['data']['order_id']
+			actual_status = r_buy_opponent.get("status")
+			actual_msg = r_buy_opponent.get("err_msg")
 		with allure.step('3、观察历史委托-限价委托有结果B'):
-			history_orders = swap_api.swap_hisorders(contract_code=contract_code, trade_type=0, type=1, status=0,
-														 create_date=7)
-			pprint(history_orders)
-			all_orders = history_orders.get("data").get("orders")
-			all_order_ids = [i.get("order_id") for i in all_orders]
+			r = swap_api.swap_openorders(contract_code=contract_code, page_index='', page_size='')
+			pprint(r)
+			totalsize2 = r['data']['total_size']
+			actual_orderinfo = r['data']['orders'][0]
 		with allure.step('4、观察资产信息有结果C'):
-			for order in all_orders:
-				current_order_id = order.get("order_id")
-				if current_order_id == generated_order_id:
-					expected_info_dic = {"status": 7, "lever_rate": 5, "order_type": 1, "volume": 1,
-										 "price": highest_price_buy}
-					actual_time_from_query = int(str(order.get("create_date"))[0:10])
-					assert (actual_time_from_query - current_time) <= 180, "时间不一致, 限价单%d创建时间: %s, 查询到的时间: %s" % (
-						generated_order_id, current_time, actual_time_from_query)
-					# assert compare_dict(expected_info_dic, order)
-					return
-			raise BaseException(
-				"在{all_order_ids}中未找到历史订单含有订单号: {generated_order_id}".format(all_order_ids=all_order_ids,
-																			 generated_order_id=generated_order_id))
+			pass
 
 	@allure.step('恢复环境')
 	def teardown(self):
 		print('\n恢复环境操作')
 
 if __name__ == '__main__':
-    pytest.main()
+	pytest.main()
