@@ -89,6 +89,8 @@ class TestCoinswapLimitOrder_001:
 		orderid1 = r['data']['order_id']
 		self.orderid1 = orderid1;
 		time.sleep(3)
+		r_trend_req = swap_api.swap_depth(contract_code=contract_code, type="step5")
+		pprint(r_trend_req)
 		"""获取当前冻结保证金"""
 		r = swap_api.swap_account_info(contract_code=contract_code)
 		"""frozen1:"""

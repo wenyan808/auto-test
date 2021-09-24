@@ -79,7 +79,9 @@ class TestCoinswapLimitOrder_004:
 											  offset='open',
 											  lever_rate=lever_rate,
 											  order_price_type="post_only")
+		pprint(r)
 		print('\n步骤一:获取盘口买一价\n')
+		time.sleep(3)
 		r_trend_req = swap_api.swap_depth(contract_code=contract_code, type="step5")
 		pprint(r_trend_req)
 		data_r_trade_res = r_trend_req.get("tick").get("bids")
