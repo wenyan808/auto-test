@@ -4,7 +4,7 @@ import requests
 
 
 class ATP:
-    ATPHost = 'http://178.128.212.196:8000'
+    ATPHost = 'http://172.18.6.52:8000'
     # ATPHost = 'http://0.0.0.0:8000'
     header = {'accept': 'application/json', 'Content-Type': 'application/json'}
 
@@ -29,7 +29,7 @@ class ATP:
 
     @classmethod
     def get_global_data(cls, env=None, system_type=None):
-        atp_url = cls.ATPHost + "/api_case/get_all_global_data_by_env_and_system_type"
+        atp_url = cls.ATPHost + "/global_data/get_all_global_data_by_env_and_system_type"
         params = {"env": env,
                   "system_type": system_type}
         response = requests.get(atp_url, headers=cls.header, params=params)
