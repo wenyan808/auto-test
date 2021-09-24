@@ -7,6 +7,8 @@
 import os, sys
 from string import Template
 
+import pytest
+
 from config.conf import set_run_env_and_system_type
 from tool.DingDingMsg import DingDingMsg
 
@@ -53,21 +55,24 @@ def run(system_type=None, run_env='Test5', test_type=''):
         'Option': 'Option',
         'Schema': 'Schema'
     }
+    args = ["--alluredir=report/allure"]
+    if test_type:
+        args.append(f'-m={test_type}')
+
     if system_type == 'ALL':
         set_run_env_and_system_type(run_env)
-        if test_type:
-            os.system(f'pytest --alluredir report/allure testCase/ -m "{test_type}"')
-        else:
-            os.system('pytest --alluredir report/allure testCase/')
+        args.append('testCase/')
+        pytest.main(args=args)
+        # os.system('pytest --alluredir report/allure testCase/')
+
     elif type(system_type) == str:
         if system_type.capitalize() in ['Contract', 'Swap', 'Linear', 'Option', 'Schema']:
             set_run_env_and_system_type(run_env, system_types[system_type.capitalize()])
-            if test_type:
-                os.system('pytest --alluredir report/allure testCase/{}TestCase -m "{}"'.format(system_type.capitalize(),
-                                                                                              test_type))
-            else:
-                os.system(
-                    'pytest --alluredir report/allure testCase/{}TestCase'.format(system_type.capitalize()))
+            args.append(f"testCase/{system_type.capitalize()}TestCase")
+            pytest.main(args=args)
+            # os.system(
+            #     'pytest --alluredir report/allure testCase/{}TestCase'.format(system_type.capitalize()))
+
         else:
             print('输入错误')
     else:
@@ -84,8 +89,6 @@ if __name__ == '__main__':
     # build_num = 10
     # test_type = 'stable'
 
-    DingDingMsg.init_result(env='Test5', system_type=system_type, test_type=test_type)
+    DingDingMsg.update_result(env='Test5', system_type=system_type, test_type=test_type)
     run(system_type, test_type=test_type)
     DingDingMsg.update_json_file(build_num)
-
-
