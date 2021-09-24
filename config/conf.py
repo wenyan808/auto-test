@@ -16,9 +16,7 @@ URL2 = GLOBAL_DATA['linear_swap_api_base_url']
 ACCESS_KEY = "ddde0717-c71a2fa2-ntmuw4rrsr-2c562"
 SECRET_KEY = "9e090305-11ffacb5-cfd55719-8cffa"
 hbsession = GLOBAL_DATA['AT_DEFAULT_HBSESSION']
-MULANURL = "http://mulan-asset.test-5.huobiapps.com"
-COMMON_ACCESS_KEY = "a2d50841-b1rkuf4drg-c14e3276-3db18"
-COMMON_SECRET_KEY = "74f221f5-4712ceee-53f31309-0c8d3"
+MULANURL = GLOBAL_DATA['MULANURL']
 
 def set_run_env_and_system_type(run_env, system_type=None):
     global ENV, SYSTEM_TYPE, GLOBAL_DATA

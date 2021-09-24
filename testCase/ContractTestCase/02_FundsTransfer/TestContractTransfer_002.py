@@ -20,7 +20,7 @@ class TestContractTransfer_002:
     def setUp(self):
         print('\n前置条件')
 
-    @allure.title('{title}')
+
     def test_contract_account_position_info(self, symbol):
         amount = "0.12"
 

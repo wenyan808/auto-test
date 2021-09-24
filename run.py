@@ -5,8 +5,12 @@
 
 
 import os, sys
+from string import Template
+
+import pytest
 
 from config.conf import set_run_env_and_system_type
+from tool.DingDingMsg import DingDingMsg
 
 """
 pytest 命令中加入 '-n 数字'可实现分布式执行测试用例，数字表示执行用例的机器数，但是由于速度过快被api接口限频，如果需要可考虑调大测试环境限频
@@ -38,7 +42,7 @@ allure generate ./report -o ./html_report --clean
 """
 
 
-def run(argu=None, run_env='Test5'):
+def run(system_type=None, run_env='Test5', test_type=''):
     """
     新执行脚本由jenkins中的shell传入执行模块，执行方式为
     python3 run.py 模块名
@@ -51,14 +55,24 @@ def run(argu=None, run_env='Test5'):
         'Option': 'Option',
         'Schema': 'Schema'
     }
+    args = ["--alluredir=report/allure"]
+    if test_type:
+        args.append(f'-m={test_type}')
 
-    if argu == 'ALL':
+    if system_type == 'ALL':
         set_run_env_and_system_type(run_env)
-        os.system('pytest --alluredir report/allure testCase/')
-    elif type(argu) == str:
-        if argu.capitalize() in ['Contract', 'Swap', 'Linear', 'Option', 'Schema']:
-            set_run_env_and_system_type(run_env, system_types[argu.capitalize()])
-            os.system('pytest --alluredir report/allure testCase/{}TestCase'.format(argu.capitalize()))
+        args.append('testCase/')
+        pytest.main(args=args)
+        # os.system('pytest --alluredir report/allure testCase/')
+
+    elif type(system_type) == str:
+        if system_type.capitalize() in ['Contract', 'Swap', 'Linear', 'Option', 'Schema']:
+            set_run_env_and_system_type(run_env, system_types[system_type.capitalize()])
+            args.append(f"testCase/{system_type.capitalize()}TestCase")
+            pytest.main(args=args)
+            # os.system(
+            #     'pytest --alluredir report/allure testCase/{}TestCase'.format(system_type.capitalize()))
+
         else:
             print('输入错误')
     else:
@@ -66,9 +80,15 @@ def run(argu=None, run_env='Test5'):
 
 
 if __name__ == '__main__':
-    # 由jenkins传入执行参数时使用此方式
-    for i in range(1, len(sys.argv)):
-        run(sys.argv[i])
+    system_type = sys.argv[1]
+    build_num = sys.argv[2]
+    test_type = sys.argv[3]
 
-    # 普通调用使用此方式
-    # run('contract')
+    # for debug
+    # system_type = 'Linear'
+    # build_num = 10
+    # test_type = 'stable'
+
+    DingDingMsg.update_result(env='Test5', system_type=system_type, test_type=test_type)
+    run(system_type, test_type=test_type)
+    DingDingMsg.update_json_file(build_num)

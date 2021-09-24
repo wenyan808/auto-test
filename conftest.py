@@ -3,11 +3,14 @@
 # @Date    : 2020/8/19
 # @Author  : zhangranghan
 import os
+import time
 
 import allure
 import pytest
 import yaml
 from _pytest.nose import teardown_nose
+
+from tool.DingDingMsg import DingDingMsg
 from tool.atp import ATP
 
 """
@@ -98,3 +101,17 @@ def pytest_runtest_makereport(item):
             title = api_test_data.get("title", "")
             if title:
                 allure.dynamic.title(title)
+
+
+def pytest_terminal_summary(terminalreporter, exitstatus, config):
+    '''收集测试结果'''
+    duration = time.time() - terminalreporter._sessionstarttime
+    result = {}
+    # result['total'] = terminalreporter._numcollected
+    result['passed'] = len(terminalreporter.stats.get('passed', []))
+    result['failed'] = len(terminalreporter.stats.get('failed', []))
+    result['error'] = len(terminalreporter.stats.get('error', []))
+    result['skipped'] = len(terminalreporter.stats.get('skipped', []))
+    result['run_time'] = duration
+    result['total'] = result['passed'] + result['failed'] + result['error'] + result['skipped']
+    DingDingMsg.update_result(**result)

@@ -4,7 +4,7 @@
 # @Author  : zhangranghan
 
 
-from common.ContractServiceAPI import t as contranct_api
+from common.ContractServiceAPI import t as contract_api
 from common.ContractServiceOrder import t as contranct_order
 
 from schema import Schema, And, Or, Regex, SchemaError
@@ -20,20 +20,20 @@ class TestContractTrackOrder_002:
     def setUp(self):
         print('\n前置条件')
 
-    @allure.title('{title}')
+    @allure.title('title')
     def test_contract_account_position_info(self, symbol, symbol_period):
         flag = True
 
         self.setUp()
         print('\n步骤一:获取最近价\n')
-        r = contranct_api.contract_history_trade(symbol=symbol_period, size='1')
+        r = contract_api.contract_history_trade(symbol=symbol_period, size='1')
         pprint(r)
         price = r['data'][0]['data'][0]['price']
         activationprice = round((price * 0.98), 1)
 
         print('\n步骤二:按激活价下单\n')
 
-        r = contranct_api.contract_track_order(symbol=symbol,
+        r = contract_api.contract_track_order(symbol=symbol,
                                                contract_type='this_week',
                                                direction='buy',
                                                offset='open',
@@ -47,7 +47,7 @@ class TestContractTrackOrder_002:
         orderid = r['data']['order_id']
         print('\n步骤三:查询跟踪委托当前委托\n')
 
-        r = contranct_api.contract_track_openorders(symbol=symbol)
+        r = contract_api.contract_track_openorders(symbol=symbol)
         pprint(r)
 
         actual_price = r['data']['orders'][0]['active_price']
@@ -62,12 +62,12 @@ class TestContractTrackOrder_002:
 
         print('\n步骤四:撤单\n')
 
-        r = contranct_api.contract_track_cancel(symbol=symbol, order_id=orderid)
+        r = contract_api.contract_track_cancel(symbol=symbol, order_id=orderid)
         pprint(r)
         time.sleep(0.5)
         print('\n步骤五:查询跟踪委托历史委托\n')
 
-        r = contranct_api.contract_track_hisorders(symbol=symbol,status='0',trade_type='0',create_date='1')
+        r = contract_api.contract_track_hisorders(symbol=symbol,status='0',trade_type='0',create_date='1')
         pprint(r['data']['orders'][0])
 
         actual_price2 = r['data']['orders'][0]['active_price']

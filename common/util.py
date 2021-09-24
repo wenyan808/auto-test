@@ -30,6 +30,7 @@ def api_http_get(url, params, add_to_headers=None):
     if add_to_headers:
         headers.update(add_to_headers)
     postdata = urllib.parse.urlencode(params)
+
     try:
         response = requests.get(url, postdata, headers=headers, timeout=TIMEOUT)
         if response.status_code == 200:
@@ -211,9 +212,14 @@ def compare_dict(expected, result):
             print(result)
             err = err + 1
             continue
-        if str(result[key]) != str(expected[key]):
-            print('%s的值实际和预期不一致，实际：%s，预期：%s' % (key, result[key], expected[key]))
-            err = err + 1
+        if key in ["price", "volume"]:
+            if float(result[key]) != float(expected[key]):
+                print('%s的值实际和预期不一致，实际：%s，预期：%s' % (key, result[key], expected[key]))
+                err = err + 1
+        else:
+            if str(result[key]) != str(expected[key]):
+                print('%s的值实际和预期不一致，实际：%s，预期：%s' % (key, result[key], expected[key]))
+                err = err + 1
     if err == 0:
         return True
     else:
