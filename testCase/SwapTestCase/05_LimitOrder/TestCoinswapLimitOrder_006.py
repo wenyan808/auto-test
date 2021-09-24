@@ -1,6 +1,6 @@
 '''#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# @Date    : 20210917
+# @Date    : 20210916
 # @Author : 
 	用例Id
 		
@@ -33,7 +33,7 @@
 	优先级
 		0
 	用例别名
-		TestUSDTSwapLimitOrder_006
+		TestCoinswapLimitOrder_006
 '''
 
 from common.ContractServiceAPI import t as contract_api
@@ -42,7 +42,7 @@ from common.LinearServiceAPI import t as linear_api
 from common.LinearServiceOrder import t as linear_order
 from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
-from common.util import compare_dict
+
 from pprint import pprint
 import pytest, allure, random, time
 
@@ -50,7 +50,7 @@ import pytest, allure, random, time
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
-class TestUSDTSwapLimitOrder_006:
+class TestCoinswapLimitOrder_006:
 
 	@allure.step('前置条件')
 	def setup(self):
@@ -66,23 +66,38 @@ class TestUSDTSwapLimitOrder_006:
 	def test_execute(self, contract_code):
 		lever_rate = 5
 		self.setup()
+		print('\n新建一个买单\n')
+		order_price_type = "ioc"
+		r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
+		pprint(r)
+		# 得到最近的价格
+		lastprice = r['data'][0]['data'][0]['price']
+		#挂一个买单
+		r = swap_api.swap_order(contract_code=contract_code,
+											  client_order_id='',
+											  price=lastprice,
+											  volume='1',
+											  direction='buy',
+											  offset='open',
+											  lever_rate=lever_rate,
+											  order_price_type=order_price_type)
 		print('\n步骤一:获取盘口买一价\n')
-		r_trend_req = linear_api.linear_depth(contract_code=contract_code, type="step5")
+		r_trend_req = swap_api.swap_depth(contract_code=contract_code, type="step5")
 		pprint(r_trend_req)
 		data_r_trade_res = r_trend_req.get("tick").get("bids")
 		assert len(data_r_trade_res) > 0, "盘口(买入盘)无数据"
 		highest_price_buy = max([i[0] for i in data_r_trade_res])
 		with allure.step('1、下单IOC卖出开空 ，设置价格低于卖一价'):
-			order_price_type = "ioc"
+
 			higher_price = round((highest_price_buy * 1.1), 1)
-			r_order_sell = linear_api.linear_order(contract_code=contract_code,
-												  client_order_id='',
-												  price=higher_price,
-												  volume='1',
-												  direction='sell',
-												  offset='open',
-												  lever_rate=lever_rate,
-												  order_price_type=order_price_type)
+			r_order_sell = swap_api.swap_order(contract_code=contract_code,
+												   client_order_id='',
+												   price=higher_price,
+												   volume='1',
+												   direction='sell',
+												   offset='open',
+												   lever_rate=lever_rate,
+												   order_price_type=order_price_type)
 			pprint(r_order_sell)
 		with allure.step('2、观察下单是否成功有结果A'):
 			current_time = int(str(time.time()).split(".")[0])
@@ -90,7 +105,7 @@ class TestUSDTSwapLimitOrder_006:
 			generated_order_id = r_order_sell['data']['order_id']
 			time.sleep(2)
 		with allure.step('3、观察历史委托-限价委托有结果B'):
-			history_orders = linear_api.linear_hisorders(contract_code=contract_code, trade_type=0, type=1, status=0,
+			history_orders = swap_api.swap_hisorders(contract_code=contract_code, trade_type=0, type=1, status=0,
 														 create_date=7)
 			pprint(history_orders)
 			all_orders = history_orders.get("data").get("orders")

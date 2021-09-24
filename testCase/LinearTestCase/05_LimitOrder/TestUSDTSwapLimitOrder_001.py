@@ -56,7 +56,6 @@ from common.util import compare_dict
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
 class TestUSDTSwapLimitOrder_001:
-
 	@allure.step('前置条件')
 	def setup(self):
 		print(''' 初始化环境准备
@@ -69,11 +68,14 @@ class TestUSDTSwapLimitOrder_001:
 	@allure.title('限价委托输入价格下单买入开多后撤单测试')
 	@allure.step('测试执行')
 	def test_execute(self, contract_code):
+		self.contract_code = contract_code;
+		self.orderid1 = 0;
+		self.orderid2 = 0;
 		flag = True
 		self.setup()
 		leverrate = '5'
 		print('\n获取最近价\n')
-		r = linear_api.contract_history_trade(contract_code=contract_code, size='1')
+		r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
 		pprint(r)
 		#得到最近的价格
 		lastprice = r['data'][0]['data'][0]['price']
@@ -88,6 +90,8 @@ class TestUSDTSwapLimitOrder_001:
 									order_price_type='limit')
 		pprint(r)
 		orderid1 = r['data']['order_id']
+		self.orderid1 = orderid1;
+		time.sleep(5)
 		"""获取当前冻结保证金"""
 		r = linear_api.linear_account_info(contract_code=contract_code)
 		"""frozen1:"""
@@ -96,11 +100,13 @@ class TestUSDTSwapLimitOrder_001:
 
 		"""获取当前委托数量及详情"""
 		r = linear_api.linear_openorders(contract_code=contract_code, page_index='', page_size='')
+		pprint(r)
 		totalsize1 = r['data']['total_size']
 		pprint(totalsize1)
 		with allure.step('1、买入开多限价手动输入价格低于卖一价'):
 			#生成一个买入下单价(低于卖一价)
 			orderprice = round((lastprice * 0.98), 1)
+			print('\n买入开多限价\n')
 			#买入开多限价
 			r = linear_api.linear_order(contract_code=contract_code,
 										client_order_id='',
@@ -111,8 +117,9 @@ class TestUSDTSwapLimitOrder_001:
 										lever_rate=leverrate,
 										order_price_type='limit')
 			pprint(r)
-			time.sleep(0.5)
+			time.sleep(5)
 			orderid2 = r['data']['order_id']
+			self.orderid2 = orderid2;
 		with allure.step('2、观察盘口有结果A'):
 			"""获取当前冻结保证金"""
 			r = linear_api.linear_account_info(contract_code=contract_code)
@@ -137,7 +144,7 @@ class TestUSDTSwapLimitOrder_001:
 		with allure.step('4、观察资产信息有结果C'):
 			pprint(totalsize1)
 			pprint(totalsize2)
-			if totalsize2 - totalsize1 != 1:
+			if totalsize2 - totalsize1 !=1:
 				print("当前委托数量增量不为1，不符合预期")
 				flag = False
 				print(actual_orderinfo)
@@ -171,6 +178,8 @@ class TestUSDTSwapLimitOrder_001:
 
 	@allure.step('恢复环境')
 	def teardown(self):
+		r = linear_api.linear_cancel(contract_code=self.contract_code, order_id=self.orderid1)
+		pprint(r)
 		print('\n恢复环境操作')
 
 

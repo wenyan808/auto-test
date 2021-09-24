@@ -2290,17 +2290,5 @@ class LinearServiceAPI:
         self.linear_cross_order(contract_code=contract_code, price=price, volume='1', direction='sell',
                         offset='close', lever_rate=lever_rate, order_price_type='limit')
 
-    # 批量获取最近的交易记录
-    def contract_history_trade(self, contract_code=None, size=None):
-        """
-        :param symbol: 可选值：{ BTC_CW, BTC_NW, BTC_CQ, etc. }, size: int
-        :return:
-        """
-        params = {'contract_code': contract_code,
-                  'size' : size}
-
-        url = self.__url + '/linear-swap-ex/market/history/trade'
-        return api_http_get(url, params)
-
 #定义t并传入公私钥和URL,供用例直接调用
 t = LinearServiceAPI(URL2,ACCESS_KEY,SECRET_KEY)

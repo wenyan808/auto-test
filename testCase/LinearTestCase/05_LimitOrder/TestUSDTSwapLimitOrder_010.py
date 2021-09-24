@@ -81,8 +81,8 @@ class TestUSDTSwapLimitOrder_010:
 				lowest_price.append(each_price)
 			lowest_price = min(lowest_price)
 			pprint("\n步骤二：用操作账号以当前最低价吃掉所有买单(卖出)\n")
-			service = LinearServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
-			r = service.linear_order(contract_code=contract_code,
+			# service = LinearServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
+			r = linear_api.linear_order(contract_code=contract_code,
 										client_order_id='',
 										price=lowest_price,
 										volume=total_bids,
@@ -90,12 +90,13 @@ class TestUSDTSwapLimitOrder_010:
 										offset='open',
 										lever_rate=lever_rate,
 										order_price_type='limit')
+			pprint(r)
 			pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有买单\n")
 			r_trend_req_confirm = linear_api.linear_depth(contract_code=contract_code, type="step0")
 			current_bids = r_trend_req_confirm.get("tick").get("bids")
 			assert not current_bids, "买盘不为空! 当前买盘: {current_bids}".format(current_bids=current_bids)
 		with allure.step('1、盘口无买盘，对手价卖出开空'):
-			r_sell_opponent = service.linear_order(contract_code=contract_code,
+			r_sell_opponent = linear_api.linear_order(contract_code=contract_code,
 									 client_order_id='',
 									 price="",
 									 volume=1,
