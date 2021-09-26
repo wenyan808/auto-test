@@ -104,7 +104,7 @@ class TestContractTriggerOrder_006:
                 assert common.util.compare_dict(expected_did, r)
                 pprint("\n步骤三: 撤单\n")
                 r_cancel = contract_api.contract_cancel(symbol=symbol, order_id=order_id)
-                assert r_cancel.get("status") == "ok"
+                assert r_cancel.get("status") == "ok", "撤单失败"
                 return
         raise BaseException("在{res_all_his_orders}中未找到历史订单含有订单号: {order_id}".format(res_all_his_orders=res_all_his_orders, order_id=order_id))
 

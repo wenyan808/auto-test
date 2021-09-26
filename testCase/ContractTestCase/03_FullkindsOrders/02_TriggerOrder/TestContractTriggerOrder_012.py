@@ -26,7 +26,7 @@ class TestContractTriggerOrder_0012:
     def test_contract_account_position_info(self, symbol, symbol_period):
         """ 撤销计划委托订单开仓测试 """
         self.setUp()
-        c = ContractServiceAPI(url=URL, access_key=LSS_ACCESS_KEY, secret_key=LSS_SECRET_KEY)
+        c = ContractServiceAPI(url=URL, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
         #     获取最新价
         r_contract_trade = c.contract_trade(symbol=symbol_period)
         data_r_tract_trade = r_contract_trade.get("tick").get("data")
@@ -65,13 +65,6 @@ class TestContractTriggerOrder_0012:
             assert r_cancel.get("status") == "ok"
             assert not r_cancel.get("data").get("errors"), "撤单时，发生错误: {r_cancel}".format(r_cancel=r_cancel)
             time.sleep(3)
-            """
-            symbol	             True    String	品种代码	"BTC","ETH"...
-            contract_code	     false   String	合约代码,"BTC180914" ...
-            trade_type	         true	 number	交易类型		0:全部,1:买入开多,2: 卖出开空,3: 买入平空,4: 卖出平多；后台是根据该值转换为offset和direction，然后去查询的； 其他值无法查询出结果
-            status	             true	 String	订单状态		多个以英文逗号隔开，计划委托单状态：0:全部（表示全部结束状态的订单）、4:已委托、5:委托失败、6:已撤单
-            create_date        	 true	 number	日期		可随意输入正整数，如果参数超过90则默认查询90天的数据
-            """
             res_all_orders = c.contract_trigger_hisorders(symbol=symbol, trade_type=0, contract_code=contract_code, status=0, create_date=7).get("data").get("orders")
             print("步骤三: 确认订单存在历史订单中且是已撤销状态")
             expected_dic = {"symbol": symbol, "order_price_type": order_price_type, "trigger_price": trigger_price, "lever_rate": lever_rate, "volume": volume, "order_price": order_price, "status": 6}
