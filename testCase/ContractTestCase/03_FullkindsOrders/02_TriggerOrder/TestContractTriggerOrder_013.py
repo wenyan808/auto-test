@@ -38,7 +38,7 @@ import common.util
 from pprint import pprint
 import pytest, allure, random, time
 
-from config.conf import URL, LSS_ACCESS_KEY, LSS_SECRET_KEY
+from config.conf import URL, ACCESS_KEY, SECRET_KEY
 
 
 @allure.epic('交割')  # 这里填业务线
@@ -54,7 +54,7 @@ class TestContractTriggerOrder_013:
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
         with allure.step('1、登录交割合约界面'):
-            c = ContractServiceAPI(url=URL, access_key=LSS_ACCESS_KEY, secret_key=LSS_SECRET_KEY)
+            c = ContractServiceAPI(url=URL, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
         with allure.step('2、选择BTC当周，选择杠杆5X，点击平仓-计划按钮'):
             contract_ltc_info = c.contract_contract_info(symbol=symbol).get("data")
             contract_type = "this_week"

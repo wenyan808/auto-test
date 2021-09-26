@@ -37,7 +37,7 @@ from common.SwapServiceOrder import t as swap_order
 from pprint import pprint
 import pytest, allure, random, time
 
-from config.conf import URL, LSS_ACCESS_KEY, LSS_SECRET_KEY
+from config.conf import URL, ACCESS_KEY, SECRET_KEY
 
 
 @allure.epic('交割')  # 这里填业务线
@@ -47,7 +47,7 @@ class TestContractTriggerOrder_019:
 
     @allure.step('前置条件')
     def setup(self):
-        self.c = ContractServiceAPI(url=URL, access_key=LSS_ACCESS_KEY, secret_key=LSS_SECRET_KEY)
+        self.c = ContractServiceAPI(url=URL, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
         print(''' 有持仓且大于等于10张''')
         self.contract_type = "this_week"
         symbol, symbol_period = "LTC", "LTC_CW"
