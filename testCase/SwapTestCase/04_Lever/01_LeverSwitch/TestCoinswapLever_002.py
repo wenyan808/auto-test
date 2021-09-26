@@ -6,7 +6,6 @@
 
 from common.SwapServiceAPI import t as swap_api
 
-
 from schema import Schema, And, Or, Regex, SchemaError
 from pprint import pprint
 import pytest, allure, random, time
@@ -15,6 +14,7 @@ from tool.get_test_data import case_data
 
 @allure.epic('反向交割')
 @allure.feature('')
+@pytest.mark.stable
 class TestContractLever_001:
 
     def setUp(self, contract_code):
@@ -34,14 +34,17 @@ class TestContractLever_001:
         availableleverlist.remove(i)
         j = random.choice(availableleverlist)
         '''下单任意一种杠杆'''
+        r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
+        pprint(r)
+        price = r['data'][0]['data'][0]['price']
         r = swap_api.swap_order(contract_code=contract_code,
-                                     client_order_id='',
-                                     price='40001',
-                                     volume='1',
-                                     direction='buy',
-                                     offset='open',
-                                     lever_rate='5',
-                                     order_price_type='limit')
+                                client_order_id='',
+                                price=price,
+                                volume='1',
+                                direction='buy',
+                                offset='open',
+                                lever_rate='5',
+                                order_price_type='limit')
         pprint(r)
         time.sleep(0.5)
         '''调整杠杆率'''
