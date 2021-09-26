@@ -72,7 +72,7 @@ class TestUSDTSwapLimitOrder_009:
 		r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
 		pprint(r)
 		# 得到最近的价格
-		lastprice = r['data'][0]['data'][0]['price']+1
+		lastprice = r['data'][0]['data'][0]['price']+0.5
 		# 挂一个买单
 		r = linear_api.linear_order(contract_code=contract_code,
 								client_order_id='',
@@ -97,8 +97,8 @@ class TestUSDTSwapLimitOrder_009:
 				total_asks += each_amount
 				highest_price = max(highest_price, each_price)
 			pprint("\n步骤二：用操作账号以当前最高价吃掉(买入)所有卖单\n")
-			# service = LinearServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
-			r = linear_api.linear_order(contract_code=contract_code,
+			service = LinearServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
+			r = service.linear_order(contract_code=contract_code,
 										client_order_id='',
 										price=highest_price,
 										volume=total_asks,
@@ -107,7 +107,7 @@ class TestUSDTSwapLimitOrder_009:
 										lever_rate=lever_rate,
 										order_price_type='limit')
 			pprint(r)
-			time.sleep(5)
+			time.sleep(3)
 			pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有卖单\n")
 			r_trend_req_confirm = linear_api.linear_depth(contract_code=contract_code, type="step0")
 			pprint(r_trend_req_confirm)

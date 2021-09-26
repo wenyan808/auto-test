@@ -76,7 +76,7 @@ class TestCoinswapLimitOrder_002:
 		r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
 		pprint(r)
 		# 得到最近的价格
-		lastprice = r['data'][0]['data'][0]['price']+100
+		lastprice = r['data'][0]['data'][0]['price']+0.5
 		print('\n下一个买单\n')
 		r = swap_api.swap_order(contract_code=contract_code,
 									client_order_id='',
@@ -100,7 +100,7 @@ class TestCoinswapLimitOrder_002:
 		pprint(totalsize1)
 		with allure.step('1、卖出开空限价手动输入价格高于买一价'):
 			# 生成一个卖出开空下单价(高于买一价)
-			orderprice = round((lastprice * 1.02), 1)
+			orderprice = lastprice+0.5
 			# 卖出开空限价下单
 			r = swap_api.swap_order(contract_code=contract_code,
 										client_order_id='',

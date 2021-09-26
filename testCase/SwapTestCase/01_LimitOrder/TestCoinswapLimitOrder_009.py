@@ -72,7 +72,7 @@ class TestCoinswapLimitOrder_009:
 		r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
 		pprint(r)
 		# 得到最近的价格
-		lastprice = r['data'][0]['data'][0]['price']+1
+		lastprice = r['data'][0]['data'][0]['price']+0.5
 		#挂一个买单
 		r = swap_api.swap_order(contract_code=contract_code,
 											  client_order_id='',
@@ -122,6 +122,7 @@ class TestCoinswapLimitOrder_009:
 													 offset='open',
 													 lever_rate=lever_rate,
 													 order_price_type='opponent')
+			pprint(r_buy_opponent)
 		with allure.step('2、观察下单是否成功有结果A'):
 			actual_status = r_buy_opponent.get("status")
 			actual_msg = r_buy_opponent.get("err_msg")

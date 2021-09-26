@@ -79,7 +79,7 @@ class TestUSDTSwapLimitOrder_001:
 		r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
 		pprint(r)
 		#得到最近的价格
-		lastprice = r['data'][0]['data'][0]['price']+1
+		lastprice = r['data'][0]['data'][0]['price']+0.5
 		print('\n下一个卖单\n')
 		r = linear_api.linear_order(contract_code=contract_code,
 									client_order_id='',
@@ -92,7 +92,7 @@ class TestUSDTSwapLimitOrder_001:
 		pprint(r)
 		orderid1 = r['data']['order_id']
 		self.orderid1 = orderid1;
-		time.sleep(5)
+		time.sleep(3)
 		"""获取当前冻结保证金"""
 		r = linear_api.linear_account_info(contract_code=contract_code)
 		"""frozen1:"""

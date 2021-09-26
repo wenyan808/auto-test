@@ -72,12 +72,12 @@ class TestCoinswapLimitOrder_006:
 		r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
 		pprint(r)
 		# 得到最近的价格
-		lastprice = r['data'][0]['data'][0]['price']+100
+		lastprice = r['data'][0]['data'][0]['price']+1
 		#挂一个买单
 		r = swap_api.swap_order(contract_code=contract_code,
 											  client_order_id='',
 											  price=lastprice,
-											  volume='1',
+											  volume='2',
 											  direction='buy',
 											  offset='open',
 											  lever_rate=lever_rate,
@@ -91,7 +91,7 @@ class TestCoinswapLimitOrder_006:
 		highest_price_buy = max([i[0] for i in data_r_trade_res])
 		with allure.step('1、下单IOC卖出开空 ，设置价格低于卖一价'):
 
-			higher_price = round((highest_price_buy * 1.1), 1)
+			higher_price = highest_price_buy+0.5
 			r_order_sell = swap_api.swap_order(contract_code=contract_code,
 												   client_order_id='',
 												   price=higher_price,

@@ -76,7 +76,7 @@ class TestCoinswapLimitOrder_008:
 		r = swap_api.swap_order(contract_code=contract_code,
 											  client_order_id='',
 											  price=lastprice,
-											  volume='1',
+											  volume='2',
 											  direction='buy',
 											  offset='open',
 											  lever_rate=lever_rate,

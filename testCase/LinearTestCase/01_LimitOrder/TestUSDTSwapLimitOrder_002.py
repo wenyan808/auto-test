@@ -76,7 +76,7 @@ class TestUSDTSwapLimitOrder_002:
 		r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
 		pprint(r)
 		#得到最近的价格
-		lastprice = r['data'][0]['data'][0]['price']+1
+		lastprice = r['data'][0]['data'][0]['price']+0.5
 		print('\n下一个买单\n')
 		r = linear_api.linear_order(contract_code=contract_code,
 									client_order_id='',
@@ -87,19 +87,20 @@ class TestUSDTSwapLimitOrder_002:
 									lever_rate=leverrate,
 									order_price_type='limit')
 		pprint(r)
+		time.sleep(2)
 		orderid1 = r['data']['order_id'] #890261793653673984
 		"""获取当前冻结保证金"""
 		r = linear_api.linear_account_info(contract_code=contract_code)
 		pprint(r)
 		frozen1 = r['data'][0]['margin_frozen'] #15832.73774
-		time.sleep(1)
+		time.sleep(2)
 		"""获取当前委托数量及详情"""
 		r = linear_api.linear_openorders(contract_code=contract_code, page_index='', page_size='')
 		totalsize1 = r['data']['total_size']
 		pprint(totalsize1)
 		with allure.step('1、卖出开空限价手动输入价格高于买一价'):
 			#生成一个卖出开空下单价(高于买一价)
-			orderprice = round((lastprice * 1.02), 1)
+			orderprice = lastprice+0.5
 			#卖出开空限价下单
 			r = linear_api.linear_order(contract_code=contract_code,
 										client_order_id='',
