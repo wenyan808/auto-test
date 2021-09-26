@@ -33,7 +33,6 @@ class TestContractLimitOrder_003:
         """ 只做maker 买入开多下单后自动撤单测试 """
         lever_rate = 5
         self.setUp()
-        # todo: 目前光环test5环境不是自然周，正式运行时，需更新为动态获取
         print('\n步骤一:获取盘口卖一价\n')
         r_trend_req = contract_api.contract_depth(symbol="LTC_CW", type="step5")
         pprint(r_trend_req)
