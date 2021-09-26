@@ -14,6 +14,7 @@ from tool.get_test_data import case_data
 
 @allure.epic('反向交割')
 @allure.feature('')
+@pytest.mark.stable
 class TestUSDTSwapLever_004:
 
     def setUp(self, contract_code):
@@ -31,9 +32,11 @@ class TestUSDTSwapLever_004:
         availableleverlist.remove(i)
         j = random.choice(availableleverlist)
         '''下单任意一种杠杆'''
+        r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
+        price = r['data'][0]['data'][0]['price']
         r = linear_api.linear_order(contract_code=contract_code,
                                           client_order_id='',
-                                          price='48765',
+                                          price=price,
                                           volume='1',
                                           direction='buy',
                                           offset='open',
