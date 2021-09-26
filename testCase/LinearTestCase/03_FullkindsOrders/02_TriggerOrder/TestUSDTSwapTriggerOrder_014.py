@@ -41,7 +41,7 @@ from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
 import pytest, allure, random, time
-from config.conf import URL2, LSS_ACCESS_KEY, LSS_SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
+from config.conf import URL2, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
 
 
 @allure.epic('所属分组')  # 这里填业务线
@@ -53,11 +53,11 @@ class TestUSDTSwapTriggerOrder_014:
     def setup(self):
         print(''' 不要触发，至少2条以上订单 ''')
         self.contract_code = "BTC-USDT"
-        self.current_user = LinearServiceAPI(url=URL2, access_key=LSS_ACCESS_KEY, secret_key=LSS_SECRET_KEY)
+        self.current_user = LinearServiceAPI(url=URL2, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
 
     @allure.title('全部撤销计划委托订单')
     @allure.step('测试执行')
-    def test_execute(self, symbol, symbol_period):
+    def test_execute(self, symbol):
         with allure.step('1、登录U本位永续界面'):
             # 获取买一价, 如果买一价不存在, 则手动设置买一价为5
             contract_depth = self.current_user.linear_depth(contract_code=self.contract_code, type="step5")

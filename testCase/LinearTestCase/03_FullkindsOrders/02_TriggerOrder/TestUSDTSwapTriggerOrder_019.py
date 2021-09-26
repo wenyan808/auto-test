@@ -41,7 +41,7 @@ from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
 import pytest, allure, random, time
-from config.conf import URL2, LSS_ACCESS_KEY, LSS_SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
+from config.conf import URL2, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
 
 
 @allure.epic('所属分组')  # 这里填业务线
@@ -53,8 +53,8 @@ class TestUSDTSwapTriggerOrder_019:
     def setup(self):
         print(''' 有持仓且大于等于10张''')
         self.contract_code = "BTC-USDT"
-        self.current_user = LinearServiceAPI(url=URL2, access_key=LSS_ACCESS_KEY, secret_key=LSS_SECRET_KEY)
-        position_larger_than_10 = self.current_user.check_positions_larger_than(contract_code=self.contract_code, direction="buy", amount=10, position_type=1)
+        self.current_user = LinearServiceAPI(url=URL2, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
+        position_larger_than_10 = self.current_user.check_positions_larger_than(contract_code=self.contract_code, direction="buy", amount=10)
         price = 5
         if not position_larger_than_10:
             # 获取买一价, 以稍高与买一价的价格进行一次买->卖，制造持仓(逐仓)
@@ -72,7 +72,7 @@ class TestUSDTSwapTriggerOrder_019:
 
     @allure.title('持仓区域下止盈止损正常限价')
     @allure.step('测试执行')
-    def test_execute(self, symbol, symbol_period):
+    def test_execute(self, symbol):
         with allure.step('1、登录U本位永续界面'):
             pass
         with allure.step('2、在当前持仓tab选择持仓BTC当周多单，点击止盈止损按钮'):
