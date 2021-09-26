@@ -19,7 +19,6 @@ import time
 TIMEOUT = 15
 
 
-
 # 各种请求,获取数据方式
 def api_http_get(url, params, add_to_headers=None):
     headers = {
@@ -30,6 +29,7 @@ def api_http_get(url, params, add_to_headers=None):
     if add_to_headers:
         headers.update(add_to_headers)
     postdata = urllib.parse.urlencode(params)
+
     try:
         response = requests.get(url, postdata, headers=headers, timeout=TIMEOUT)
         if response.status_code == 200:
@@ -118,7 +118,8 @@ def order_http_post(host, request_path, params, hbsession):
         "Accept-language": "zh-CN",
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0",
         "source": "web",
-        "hbsession": hbsession
+        "hbsession": hbsession,
+        "HB-PRO-TOKEN": "vk9w87vqyVg74DLLDwhnIqzwOH-KsLVkYgEc6-QFoqAY-uOP2m0-gvjE57ad1qDF",
     }
     url = host + request_path
     data = json.dumps(params)
@@ -197,3 +198,18 @@ def sub(url, subs):
     except Exception as e:
         print("Sub failed, detail is:%s" % e)
         return {"status": "fail", "msg": "%s" % e}
+
+
+""" 公共常用函数 """
+
+
+def compare_dict(expected: dict, actual: dict) -> bool:
+    for k, v in expected.items():
+        v_actual = actual.get(k, None)
+        if not v_actual:
+            # 没找到可能是0值，也可能是None
+            if v_actual != 0:
+                raise Exception("{expected_k_v} not found in actual".format(expected_k_v={k: v}))
+        if actual.get(k) != expected.get(k):
+            raise Exception("expected: {expected_k_v}, actual: {actual_k_v}".format(expected_k_v={k: v}, actual_k_v={k: actual.get(k)}))
+    return True

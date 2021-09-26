@@ -7,7 +7,6 @@
 from common.SwapServiceAPI import t
 from tool.get_test_data import case_data
 from schema import Schema, And, Or, Regex, SchemaError
-from common.util import redis_config
 
 from pprint import pprint
 import pytest, allure, random, time

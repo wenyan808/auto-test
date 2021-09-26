@@ -45,6 +45,27 @@ class ContractServiceOrder:
 
         return order_http_post(self.__host,request_path, params,self.__hbsession)
 
+    # 交割合约划转
+    def contract_transfer(self, symbol=None, amount=None, _type=None):
+        """===========================说明=================================
+        #
+        # symbol: str  划转币种   例："BTC"，"ETH"
+        # amount: str  数量      例： "10"，"0.01"
+        # _type： str  划转方向    "1":从币币到合约  "2"：从合约到币币
+        #
+        #
+        """
+        params = {}
+        if symbol:
+            params['symbol'] = symbol
+        if amount:
+            params['amount'] = amount
+        if symbol:
+            params['type'] = _type
+
+        request_path = self.__path + '/x/v1/contract_transfer'
+
+        return order_http_post(self.__host, request_path, params, self.__hbsession)
 
 
 

@@ -4,26 +4,21 @@
 # @Author  : zhangranghan
 
 
-
-from common.util import api_http_get, api_key_post,api_key_get
-from config.conf  import URL,ACCESS_KEY,SECRET_KEY
-
-
+from common.util import api_http_get, api_key_post, api_key_get
+from config.conf import URL2, ACCESS_KEY, SECRET_KEY
+import time
 
 
 class LinearServiceAPI:
 
-    def __init__(self,url,access_key,secret_key):
+    def __init__(self, url, access_key, secret_key):
         self.__url = url
         self.__access_key = access_key
         self.__secret_key = secret_key
 
-
-
-
-
     # 获取合约信息
-    def linear_contract_info(self,  contract_code=None,support_margin_mode=None,business_type=None,pair=None,contract_type=None):
+    def linear_contract_info(self, contract_code=None, support_margin_mode=None, business_type=None, pair=None,
+                             contract_type=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
@@ -43,10 +38,8 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_contract_info'
         return api_http_get(url, params)
 
-
-
     # 获取合约指数信息
-    def linear_index(self,contract_code=None):
+    def linear_index(self, contract_code=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
@@ -58,11 +51,8 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_index'
         return api_http_get(url, params)
 
-
-
-
     # 获取合约最高限价和最低限价
-    def linear_price_limit(self, contract_code=None,business_type=None,pair=None,contract_type=None):
+    def linear_price_limit(self, contract_code=None, business_type=None, pair=None, contract_type=None):
         """
         参数名称         参数类型            必填     描述
         contract_code   string            true    BTC-USD.....
@@ -80,10 +70,8 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_price_limit'
         return api_http_get(url, params)
 
-
-
     # 获取当前可用合约总持仓量
-    def linear_open_interest(self, contract_code=None,business_type=None,pair=None,contract_type=None):
+    def linear_open_interest(self, contract_code=None, business_type=None, pair=None, contract_type=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
@@ -100,11 +88,8 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_open_interest'
         return api_http_get(url, params)
 
-
-
-
     # 查询合约风险准备金余额和预估分摊比例
-    def linear_risk_info(self,contract_code=None,business_type=None,pair=None,contract_type=None):
+    def linear_risk_info(self, contract_code=None, business_type=None, pair=None, contract_type=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
@@ -122,10 +107,8 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_risk_info'
         return api_http_get(url, params)
 
-
-
     # 查询合约风险准备金余额历史数据
-    def linear_insurance_fund(self,contract_code=None,page_size=None,page_index=None,pair=None,contract_type=None):
+    def linear_insurance_fund(self, contract_code=None, page_size=None, page_index=None, pair=None, contract_type=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            true     BTC-USD.....
@@ -143,10 +126,8 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_insurance_fund'
         return api_http_get(url, params)
 
-
-
     # 查询平台阶梯调整系数
-    def linear_adjustfactor(self,contract_code=None):
+    def linear_adjustfactor(self, contract_code=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
@@ -159,10 +140,9 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_adjustfactor'
         return api_http_get(url, params)
 
-
-
     # 平台持仓量的查询
-    def linear_his_open_interest(self, contract_code=None, period=None, size=None, amount_type=None,pair=None,contract_type=None):
+    def linear_his_open_interest(self, contract_code=None, period=None, size=None, amount_type=None, pair=None,
+                                 contract_type=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            true     BTC-USD.....
@@ -188,10 +168,8 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_his_open_interest'
         return api_http_get(url, params)
 
-
-
     # 精英账户多空持仓对比-账户数
-    def linear_elite_account_ratio(self,  contract_code=None,period=None):
+    def linear_elite_account_ratio(self, contract_code=None, period=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            true     BTC-USD.....
@@ -207,11 +185,8 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_elite_account_ratio'
         return api_http_get(url, params)
 
-
-
-
     # 精英账户多空持仓对比-持仓量
-    def linear_elite_position_ratio(self, contract_code=None,period=None):
+    def linear_elite_position_ratio(self, contract_code=None, period=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            true     BTC-USD.....
@@ -224,14 +199,12 @@ class LinearServiceAPI:
         if period:
             params['period'] = period
 
-
         url = self.__url + '/linear-swap-api/v1/swap_elite_position_ratio'
         return api_http_get(url, params)
 
-
-
     # 获取强平订单
-    def linear_liquidation_orders(self, contract_code=None, trade_type=None, create_date=None, page_index=None, page_size=None,pair=None):
+    def linear_liquidation_orders(self, contract_code=None, trade_type=None, create_date=None, page_index=None,
+                                  page_size=None, pair=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
@@ -258,9 +231,6 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_liquidation_orders'
         return api_http_get(url, params)
 
-
-
-
     # 查询系统状态
     def linear_api_state(self, contract_code=None):
         """
@@ -275,9 +245,6 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_api_state'
         return api_http_get(url, params)
 
-
-
-
     # 获取合约的资金费率
     def linear_funding_rate(self, contract_code=None):
         """
@@ -290,11 +257,8 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_funding_rate'
         return api_http_get(url, params)
 
-
-
-
     # 获取合约的历史资金费率
-    def linear_historical_funding_rate(self, contract_code=None,  page_index=None, page_size=None):
+    def linear_historical_funding_rate(self, contract_code=None, page_index=None, page_size=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
@@ -311,9 +275,6 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_historical_funding_rate'
         return api_http_get(url, params)
 
-
-
-
     # 获取行情深度数据   ##tag
     def linear_depth(self, contract_code=None, type=None):
         """
@@ -326,12 +287,10 @@ class LinearServiceAPI:
                   'type': type}
 
         url = self.__url + '/linear-swap-ex/market/depth'
-        return api_http_get(url,params)
-
-
+        return api_http_get(url, params)
 
     # 获取K线数据    ##tag
-    def linear_kline(self,contract_code=None, period=None, size=None,FROM=None,to=None):
+    def linear_kline(self, contract_code=None, period=None, size=None, FROM=None, to=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            true     BTC-USD.....
@@ -347,14 +306,11 @@ class LinearServiceAPI:
         if to:
             params['to'] = to
 
-
         url = self.__url + '/linear-swap-ex/market/history/kline'
         return api_http_get(url, params)
 
-
-
     # 获取聚合行情   ##tag
-    def linear_detail_merged(self,contract_code=None):
+    def linear_detail_merged(self, contract_code=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            true     BTC-USD.....
@@ -366,7 +322,7 @@ class LinearServiceAPI:
         return api_http_get(url, params)
 
     # 获取聚合行情   ##tag
-    def linear_detail_batch_merged(self,contract_code=None):
+    def linear_detail_batch_merged(self, contract_code=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            true     BTC-USD.....
@@ -377,48 +333,41 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-ex/market/detail/batch_merged'
         return api_http_get(url, params)
 
-
     # 获取基差数据
-    def linear_basis(self,contract_code=None,period=None,basis_price_type=None,size=None):
+    def linear_basis(self, contract_code=None, period=None, basis_price_type=None, size=None):
 
         params = {'contract_code': contract_code,
                   'period': period,
-                  'size':size}
+                  'size': size}
 
         if basis_price_type:
             params['basis_price_type'] = basis_price_type
 
         url = self.__url + '/index/market/history/linear_swap_basis'
-        return api_http_get(url,params)
-
-
+        return api_http_get(url, params)
 
     # 获取溢价指数k线
-    def linear_premium_index_kline(self,contract_code=None,period=None,size=None):
+    def linear_premium_index_kline(self, contract_code=None, period=None, size=None):
 
-        params = {'contract_code':contract_code,
-                  'period':period,
-                  'size':size}
+        params = {'contract_code': contract_code,
+                  'period': period,
+                  'size': size}
 
         url = self.__url + '/index/market/history/linear_swap_premium_index_kline'
         return api_http_get(url, params)
 
-
-
     # 获取预测资金费率的k线
-    def linear_estimated_rate_kline(self,contract_code=None,period=None,size=None):
+    def linear_estimated_rate_kline(self, contract_code=None, period=None, size=None):
 
-
-        params = {'contract_code':contract_code,
-                  'period':period,
-                  'size':size}
+        params = {'contract_code': contract_code,
+                  'period': period,
+                  'size': size}
 
         url = self.__url + '/index/market/history/linear_swap_estimated_rate_kline'
         return api_http_get(url, params)
 
-
     # 获取标记价格的K线数据
-    def linear_swap_mark_price_kline(self,contract_code=None,period=None,size=None):
+    def linear_swap_mark_price_kline(self, contract_code=None, period=None, size=None):
 
         params = {}
         if contract_code:
@@ -431,9 +380,8 @@ class LinearServiceAPI:
         url = self.__url + '/index/market/history/linear_swap_mark_price_kline'
         return api_http_get(url, params)
 
-
     # 获取指数的K线数据（全逐通用）
-    def linear_history_index(self,symbol=None,period=None,size=None):
+    def linear_history_index(self, symbol=None, period=None, size=None):
 
         params = {}
         if symbol:
@@ -446,11 +394,8 @@ class LinearServiceAPI:
         url = self.__url + '/index/market/history/index'
         return api_http_get(url, params)
 
-
-
-
     # 获取市场最近成交记录  ##tag
-    def linear_trade(self,contract_code=None,business_type=None):
+    def linear_trade(self, contract_code=None, business_type=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            true     BTC-USD.....
@@ -465,10 +410,8 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-ex/market/trade'
         return api_http_get(url, params)
 
-
-
     # 批量获取最近的交易记录   ##tag
-    def linear_history_trade(self, contract_code=None,size=None):
+    def linear_history_trade(self, contract_code=None, size=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            true     BTC-USD.....
@@ -484,7 +427,7 @@ class LinearServiceAPI:
         return api_http_get(url, params)
 
     # 获取市场最优挂单
-    def linear_bbo(self,contract_code=None,business_type=None):
+    def linear_bbo(self, contract_code=None, business_type=None):
         params = {}
         if contract_code:
             params['contract_code'] = contract_code
@@ -493,10 +436,8 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-ex/market/bbo'
         return api_http_get(url, params)
 
-
-
     # 获取用户账户信息
-    def linear_account_info(self,contract_code=None):
+    def linear_account_info(self, contract_code=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
@@ -509,11 +450,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_account_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
-
     # 获取用户持仓信息
-    def linear_position_info(self,contract_code=None):
+    def linear_position_info(self, contract_code=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
@@ -526,11 +464,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_position_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
-
     # 查询母账户下所有子账户资产信息
-    def linear_sub_account_list(self,contract_code=None):
+    def linear_sub_account_list(self, contract_code=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
@@ -543,30 +478,23 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_sub_account_list'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
-
     # 查询单个子账户资产信息
-    def linear_sub_account_info(self,contract_code=None,sub_uid=None):
+    def linear_sub_account_info(self, contract_code=None, sub_uid=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
         sub_uid         long              true     子账户UID
         """
 
-        params = {'sub_uid':sub_uid}
+        params = {'sub_uid': sub_uid}
         if contract_code:
             params['contract_code'] = contract_code
 
         request_path = '/linear-swap-api/v1/swap_sub_account_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
-
     # 批量设置子账户交易权限（全逐通用）
-    def linear_sub_auth(self,sub_uid=None,sub_auth=None):
-
+    def linear_sub_auth(self, sub_uid=None, sub_auth=None):
 
         params = {}
         if sub_uid:
@@ -577,26 +505,23 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_sub_auth'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
     # 查询单个子账户持仓信息
-    def linear_sub_position_info(self,contract_code=None,sub_uid=None):
+    def linear_sub_position_info(self, contract_code=None, sub_uid=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
         sub_uid         long              true     子账户UID
         """
 
-        params = {'sub_uid':sub_uid}
+        params = {'sub_uid': sub_uid}
         if contract_code:
             params['contract_code'] = contract_code
 
         request_path = '/linear-swap-api/v1/swap_sub_position_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 查询单个子账户资产信息
-    def linear_sub_account_info_list(self,contract_code=None,page_index=None,page_size=None):
+    def linear_sub_account_info_list(self, contract_code=None, page_index=None, page_size=None):
 
         params = {}
         if contract_code:
@@ -610,7 +535,8 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询用户财务记录
-    def linear_financial_record(self,contract_code=None,margin_account=None,type=None,create_date=None,page_index=None,page_size=None):
+    def linear_financial_record(self, contract_code=None, margin_account=None, type=None, create_date=None,
+                                page_index=None, page_size=None):
         """
         参数名称         参数类型            必填       描述
         contract_code   string            true      BTC-USD.....
@@ -636,7 +562,8 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 组合查询用户财务记录
-    def linear_financial_record_exact(self,contract_code=None,margin_account=None,type=None,start_time=None,end_time=None,from_id=None,size=None,direct=None):
+    def linear_financial_record_exact(self, contract_code=None, margin_account=None, type=None, start_time=None,
+                                      end_time=None, from_id=None, size=None, direct=None):
 
         params = {}
         if margin_account:
@@ -659,16 +586,16 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_financial_record_exact'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 查询用户当前的下单量限制
-    def linear_order_limit(self,contract_code=None,order_price_type=None,business_type=None,pair=None,contract_type=None):
+    def linear_order_limit(self, contract_code=None, order_price_type=None, business_type=None, pair=None,
+                           contract_type=None):
         """
         参数名称              参数类型       必填      描述
         contract_code        string       false    "BTC-USD",不填查询所有合约
         order_price_type     string       true     订单报价类型 | "limit":限价，"opponent":对手价，"lightning":闪电平仓，"optimal_5":最优5档，"optimal_10":最优10档，"optimal_20":最优20档，"fok":FOK订单，"ioc":IOC订单
         """
 
-        params = {'order_price_type':order_price_type}
+        params = {'order_price_type': order_price_type}
         if contract_code:
             params['contract_code'] = contract_code
         if business_type:
@@ -680,10 +607,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_order_limit'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
     # 查询用户当前的手续费费率
-    def linear_fee(self,contract_code=None,business_type=None,pair=None,contract_type=None):
+    def linear_fee(self, contract_code=None, business_type=None, pair=None, contract_type=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
@@ -701,10 +626,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_fee'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
     # 查询用户当前的划转限制
-    def linear_transfer_limit(self,contract_code=None):
+    def linear_transfer_limit(self, contract_code=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
@@ -717,10 +640,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_transfer_limit'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
     # 用户持仓量限制的查询
-    def linear_position_limit(self,contract_code=None):
+    def linear_position_limit(self, contract_code=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
@@ -733,10 +654,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_position_limit'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
     # 获取用户资产和持仓信息
-    def linear_account_position_info(self,contract_code=None):
+    def linear_account_position_info(self, contract_code=None):
         """
 
         :param contract_code:
@@ -750,10 +669,9 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_account_position_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
     # 母子划转
-    def linear_master_sub_transfer(self, sub_uid=None, asset=None, from_margin_account=None, to_margin_account=None,amount=None,type=None,client_order_id=None):
+    def linear_master_sub_transfer(self, sub_uid=None, asset=None, from_margin_account=None, to_margin_account=None,
+                                   amount=None, type=None, client_order_id=None):
         params = {}
 
         if sub_uid:
@@ -774,15 +692,13 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_master_sub_transfer'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
-
     # 母子划转记录
-    def linear_master_sub_transfer_record(self,margin_account=None,transfer_type=None,create_date=None,page_index=None,page_size=None):
+    def linear_master_sub_transfer_record(self, margin_account=None, transfer_type=None, create_date=None,
+                                          page_index=None, page_size=None):
         params = {'margin_account': margin_account,
                   'create_date': create_date}
         if transfer_type:
-            params['transfer_type']= transfer_type
+            params['transfer_type'] = transfer_type
         if page_index:
             params['page_index'] = page_index
         if page_size:
@@ -790,11 +706,9 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_master_sub_transfer_record'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
-
     # 同账号不同保证金账户的划转
-    def linear_transfer_inner(self,asset=None,from_margin_account=None,to_margin_account=None,amount=None,client_order_id=None):
+    def linear_transfer_inner(self, asset=None, from_margin_account=None, to_margin_account=None, amount=None,
+                              client_order_id=None):
         """
 
         :param asset:
@@ -820,9 +734,6 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_transfer_inner'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
-
     # 获取用户API指标禁用信息
     def linear_api_trading_status(self):
         params = {}
@@ -830,13 +741,11 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_api_trading_status'
         return api_key_get(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
-
-
     # 合约下单
-    def linear_order(self,contract_code=None,client_order_id=None,price=None,volume=None,direction=None,offset=None,lever_rate=None,order_price_type=None,tp_trigger_price=None,tp_order_price=None,tp_order_price_type=None,
-                       sl_trigger_price=None,sl_order_price=None,sl_order_price_type=None,channel_code=None):
+    def linear_order(self, contract_code=None, client_order_id=None, price=None, volume=None, direction=None,
+                     offset=None, lever_rate=None, order_price_type=None, tp_trigger_price=None, tp_order_price=None,
+                     tp_order_price_type=None,
+                     sl_trigger_price=None, sl_order_price=None, sl_order_price_type=None, channel_code=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
@@ -849,12 +758,12 @@ class LinearServiceAPI:
         order_price_type    string            true       订单报价类型 "limit":限价 "opponent":对手价 "post_only":只做maker单,post only下单只受用户持仓数量限制,optimal_5：最优5档、optimal_10：最优10档、optimal_20：最优20档，"fok":FOK订单，"ioc":IOC订单
         """
 
-        params = {'contract_code':contract_code,
-                  'volume':volume,
-                  'direction':direction,
-                  'offset':offset,
-                  'lever_rate':lever_rate,
-                  'order_price_type':order_price_type}
+        params = {'contract_code': contract_code,
+                  'volume': volume,
+                  'direction': direction,
+                  'offset': offset,
+                  'lever_rate': lever_rate,
+                  'order_price_type': order_price_type}
         if client_order_id:
             params['client_order_id'] = client_order_id
         if price:
@@ -877,11 +786,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_order'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
-
     # 合约批量下单
-    def linear_batchorder(self,orders_data=None):
+    def linear_batchorder(self, orders_data=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
@@ -899,11 +805,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_batchorder'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
-
     # 撤销订单
-    def linear_cancel(self,order_id=None,client_order_id=None,contract_code=None):
+    def linear_cancel(self, order_id=None, client_order_id=None, contract_code=None):
         """
         参数名称             参数类型            必填        描述
         order_id            string            false      订单ID(多个订单ID中间以","分隔,一次最多允许撤消20个订单)
@@ -920,8 +823,6 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cancel'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
     # 全部撤单
     def linear_cancelall(self, contract_code=None):
         """
@@ -934,10 +835,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cancelall'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
     # 获取合约订单信息
-    def linear_order_info(self,order_id=None,client_order_id=None,contract_code=None):
+    def linear_order_info(self, order_id=None, client_order_id=None, contract_code=None):
         """
         参数名称             参数类型            必填        描述
         order_id            string            false      订单ID(多个订单ID中间以","分隔,一次最多允许撤消20个订单)
@@ -954,11 +853,9 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_order_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
-
     # 获取订单明细信息
-    def linear_order_detail(self, contract_code=None,order_id=None,created_at=None,order_type=None,page_index=None,page_size=None):
+    def linear_order_detail(self, contract_code=None, order_id=None, created_at=None, order_type=None, page_index=None,
+                            page_size=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
@@ -982,10 +879,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_order_detail'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
     # 获取合约当前未成交委托
-    def linear_openorders(self,contract_code=None,page_index=None,page_size=None):
+    def linear_openorders(self, contract_code=None, page_index=None, page_size=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
@@ -1002,11 +897,9 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_openorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
-
     # 获取合约历史委托
-    def linear_hisorders(self,contract_code=None, trade_type=None,type=None,status=None,create_date=None,sort_by=None,page_index=None,page_size=None):
+    def linear_hisorders(self, contract_code=None, trade_type=None, type=None, status=None, create_date=None,
+                         sort_by=None, page_index=None, page_size=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
@@ -1033,11 +926,9 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_hisorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
-
     # 获取历史成交记录
-    def linear_matchresults(self,contract_code=None,trade_type=None,create_date=None,page_index=None,page_size=None):
+    def linear_matchresults(self, contract_code=None, trade_type=None, create_date=None, page_index=None,
+                            page_size=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
@@ -1059,7 +950,8 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 组合查询用户历史成交记录（逐仓）
-    def linear_matchresults_exact(self,contract_code=None,trade_type=None,start_time=None,end_time=None,from_id=None,size=None,direct=None):
+    def linear_matchresults_exact(self, contract_code=None, trade_type=None, start_time=None, end_time=None,
+                                  from_id=None, size=None, direct=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
@@ -1089,7 +981,8 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 闪电平仓下单
-    def linear_lightning_close_position(self,contract_code=None,volume=None,direction=None,client_order_id=None,order_price_type=None,channel_code=None):
+    def linear_lightning_close_position(self, contract_code=None, volume=None, direction=None, client_order_id=None,
+                                        order_price_type=None, channel_code=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
@@ -1102,7 +995,7 @@ class LinearServiceAPI:
                   'volume': volume,
                   'direction': direction}
         if client_order_id:
-            params['client_order_id']= client_order_id
+            params['client_order_id'] = client_order_id
         if order_price_type:
             params['order_price_type'] = order_price_type
         if channel_code:
@@ -1111,11 +1004,9 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_lightning_close_position'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
-
     # 计划委托下单接口
-    def linear_trigger_order(self,contract_code=None,trigger_type=None,trigger_price=None,order_price=None,order_price_type=None,volume=None,direction=None,offset=None,lever_rate=None):
+    def linear_trigger_order(self, contract_code=None, trigger_type=None, trigger_price=None, order_price=None,
+                             order_price_type=None, volume=None, direction=None, offset=None, lever_rate=None):
 
         params = {'contract_code': contract_code,
                   'trigger_type': trigger_type,
@@ -1130,21 +1021,16 @@ class LinearServiceAPI:
             params['order_price_type'] = order_price_type
 
         request_path = '/linear-swap-api/v1/swap_trigger_order'
-        return api_key_post(self.__url,request_path,params,self.__access_key,self.__secret_key)
-
-
+        return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 计划委托撤单接口
-    def linear_trigger_cancel(self,contract_code=None, order_id=None):
+    def linear_trigger_cancel(self, contract_code=None, order_id=None):
 
         params = {'contract_code': contract_code,
                   'order_id': order_id}
 
         request_path = '/linear-swap-api/v1/swap_trigger_cancel'
-        return api_key_post(self.__url,request_path,params,self.__access_key,self.__secret_key)
-
-
-
+        return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 计划委托全部撤单接口
     def linear_trigger_cancelall(self, contract_code=None):
@@ -1154,9 +1040,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_trigger_cancelall'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 获取计划委托当前委托接口
-    def linear_trigger_openorders(self,contract_code=None, page_index=None, page_size=None):
+    def linear_trigger_openorders(self, contract_code=None, page_index=None, page_size=None):
 
         params = {'contract_code': contract_code}
 
@@ -1166,17 +1051,16 @@ class LinearServiceAPI:
             params['page_size'] = page_size
 
         request_path = '/linear-swap-api/v1/swap_trigger_openorders'
-        return api_key_post(self.__url,request_path,params,self.__access_key,self.__secret_key)
-
-
+        return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取计划委托历史委托接口
-    def linear_trigger_hisorders(self, contract_code=None,trade_type=None,status=None,create_date=None,sort_by=None, page_index=None, page_size=None):
+    def linear_trigger_hisorders(self, contract_code=None, trade_type=None, status=None, create_date=None, sort_by=None,
+                                 page_index=None, page_size=None):
 
         params = {'contract_code': contract_code,
-                  'trade_type':trade_type,
-                  'status':status,
-                  'create_date':create_date}
+                  'trade_type': trade_type,
+                  'status': status,
+                  'create_date': create_date}
         if sort_by:
             params['sort_by'] = sort_by
         if page_index:
@@ -1187,9 +1071,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_trigger_hisorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 内部划转接口
-    def linear_transfer(self,From=None,to=None,currency=None,margin_account=None,amount=None):
+    def linear_transfer(self, From=None, to=None, currency=None, margin_account=None, amount=None):
 
         params = {}
         if From:
@@ -1206,20 +1089,18 @@ class LinearServiceAPI:
         request_path = '/v2/account/transfer'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 查询用户品种实际可用杠杆倍数
-    def linear_availavle_level_rate(self,contract_code=None):
+    def linear_availavle_level_rate(self, contract_code=None):
         params = {}
 
         if contract_code:
             params['contract_code'] = contract_code
 
-
         request_path = '/linear-swap-api/v1/swap_available_level_rate'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 切换杠杆倍数
-    def linear_switch_lever_rate(self,contract_code=None,lever_rate=None):
+    def linear_switch_lever_rate(self, contract_code=None, lever_rate=None):
         params = {}
 
         if contract_code:
@@ -1230,11 +1111,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_switch_lever_rate'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
-
     # 查询平台阶梯调整系数--全仓
-    def linear_cross_adjustfactor(self,  contract_code=None,business_type=None,pair=None,contract_type=None):
+    def linear_cross_adjustfactor(self, contract_code=None, business_type=None, pair=None, contract_type=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USDT",不填查询所有合约
@@ -1252,10 +1130,8 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_cross_adjustfactor'
         return api_http_get(url, params)
 
-
-
     # 查询系统划转权限--全仓
-    def linear_cross_transfer_state(self,  margin_account=None):
+    def linear_cross_transfer_state(self, margin_account=None):
         """
         参数名称         参数类型            必填      描述
         margin_account   string            false    "BTC-USDT",不填查询所有合约
@@ -1267,9 +1143,8 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_cross_transfer_state'
         return api_http_get(url, params)
 
-
     # 查询系统交易权限--全仓
-    def linear_cross_trade_state(self,  contract_code=None,business_type=None,pair=None,contract_type=None):
+    def linear_cross_trade_state(self, contract_code=None, business_type=None, pair=None, contract_type=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USDT",不填查询所有合约
@@ -1286,7 +1161,6 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_cross_trade_state'
         return api_http_get(url, params)
 
-
     # 获取用户的合约账户信息--全仓
     def linear_cross_account_info(self, margin_account=None):
 
@@ -1295,14 +1169,11 @@ class LinearServiceAPI:
         if margin_account:
             params['margin_account'] = margin_account
 
-
         request_path = '/linear-swap-api/v1/swap_cross_account_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
     # 获取用户的合约持仓信息--全仓
-    def linear_cross_position_info(self, contract_code=None,pair=None,contract_type=None):
+    def linear_cross_position_info(self, contract_code=None, pair=None, contract_type=None):
 
         params = {}
 
@@ -1313,10 +1184,8 @@ class LinearServiceAPI:
         if contract_type:
             params['contract_type'] = contract_type
 
-
         request_path = '/linear-swap-api/v1/swap_cross_position_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
-
 
     # 查询母账户下所有子账户资产信息--全仓
     def linear_cross_sub_account_list(self, margin_account=None):
@@ -1326,13 +1195,11 @@ class LinearServiceAPI:
         if margin_account:
             params['margin_account'] = margin_account
 
-
         request_path = '/linear-swap-api/v1/swap_cross_sub_account_list'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 查询母账户下的单个子账户资产信息--全仓
-    def linear_cross_sub_account_info(self, margin_account=None,sub_uid=None):
+    def linear_cross_sub_account_info(self, margin_account=None, sub_uid=None):
 
         params = {}
 
@@ -1341,12 +1208,11 @@ class LinearServiceAPI:
         if sub_uid:
             params['sub_uid'] = sub_uid
 
-
         request_path = '/linear-swap-api/v1/swap_cross_sub_account_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询母账户下的单个子账户资产信息--全仓
-    def linear_cross_sub_account_info_list(self, margin_account=None,page_index=None,page_size=None):
+    def linear_cross_sub_account_info_list(self, margin_account=None, page_index=None, page_size=None):
 
         params = {}
 
@@ -1361,7 +1227,7 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询母账户下的单个子账户持仓信息--全仓
-    def linear_cross_sub_position_info(self, contract_code=None,sub_uid=None,pair=None,contract_type=None):
+    def linear_cross_sub_position_info(self, contract_code=None, sub_uid=None, pair=None, contract_type=None):
 
         params = {}
 
@@ -1385,13 +1251,11 @@ class LinearServiceAPI:
         if margin_account:
             params['margin_account'] = margin_account
 
-
         request_path = '/linear-swap-api/v1/swap_cross_transfer_limit'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 获取用户的合约持仓量限制--全仓
-    def linear_cross_position_limit(self, contract_code=None,business_type=None,pair=None,contract_type=None):
+    def linear_cross_position_limit(self, contract_code=None, business_type=None, pair=None, contract_type=None):
 
         params = {}
 
@@ -1407,7 +1271,6 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_position_limit'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 获取用户资产和持仓信息--全仓
     def linear_cross_account_position_info(self, margin_account=None):
 
@@ -1416,12 +1279,12 @@ class LinearServiceAPI:
         if margin_account:
             params['margin_account'] = margin_account
 
-
         request_path = '/linear-swap-api/v1/swap_cross_account_position_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询用户结算记录（逐仓）
-    def linear_user_settlement_records(self,contract_code=None,start_time=None,end_time=None,page_index=None,page_size=None):
+    def linear_user_settlement_records(self, contract_code=None, start_time=None, end_time=None, page_index=None,
+                                       page_size=None):
 
         params = {}
         if contract_code:
@@ -1438,9 +1301,9 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_user_settlement_records'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 查询用户结算记录（全仓）
-    def linear_cross_user_settlement_records(self,margin_account=None,start_time=None,end_time=None,page_index=None,page_size=None):
+    def linear_cross_user_settlement_records(self, margin_account=None, start_time=None, end_time=None, page_index=None,
+                                             page_size=None):
 
         params = {}
         if margin_account:
@@ -1457,7 +1320,6 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_user_settlement_records'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 查询用户品种实际可用杠杆倍数--全仓
     def linear_available_level_rate(self, contract_code=None):
 
@@ -1469,9 +1331,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_available_level_rate'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 查询用户品种实际可用杠杆倍数--全仓
-    def linear_cross_available_level_rate(self, contract_code=None,business_type=None,pair=None,contract_type=None):
+    def linear_cross_available_level_rate(self, contract_code=None, business_type=None, pair=None, contract_type=None):
 
         params = {}
 
@@ -1487,9 +1348,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_available_level_rate'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 切换杠杆倍数 （逐仓）
-    def linear_switch_lever_rate(self, contract_code=None,lever_rate=None):
+    def linear_switch_lever_rate(self, contract_code=None, lever_rate=None):
 
         params = {}
 
@@ -1501,10 +1361,11 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_switch_lever_rate'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 合约下单--全仓
-    def linear_cross_order(self, contract_code=None,pair=None,contract_type=None,client_order_id=None,price = None,volume=None,direction=None,offset=None,lever_rate=None,order_price_type=None,tp_trigger_price=None,tp_order_price=None,tp_order_price_type=None,
-                       sl_trigger_price=None,sl_order_price=None,sl_order_price_type=None,channel_code=None):
+    def linear_cross_order(self, contract_code=None, pair=None, contract_type=None, client_order_id=None, price=None,
+                           volume=None, direction=None, offset=None, lever_rate=None, order_price_type=None,
+                           tp_trigger_price=None, tp_order_price=None, tp_order_price_type=None,
+                           sl_trigger_price=None, sl_order_price=None, sl_order_price_type=None, channel_code=None):
 
         params = {}
 
@@ -1543,13 +1404,11 @@ class LinearServiceAPI:
         if channel_code:
             params['channel_code'] = channel_code
 
-
         request_path = '/linear-swap-api/v1/swap_cross_order'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 合约批量下单--全仓
-    def linear_cross_batchorder(self,orders_data=None):
+    def linear_cross_batchorder(self, orders_data=None):
 
         params = orders_data
 
@@ -1557,7 +1416,7 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 合约批量下单--全仓v2
-    def linear_cross_batchorder_V2(self,orders_data=None):
+    def linear_cross_batchorder_V2(self, orders_data=None):
 
         params = orders_data
 
@@ -1565,7 +1424,8 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 撤销合约订单--全仓
-    def linear_cross_cancel(self, order_id = None,client_order_id=None,contract_code=None,pair=None,contract_type=None):
+    def linear_cross_cancel(self, order_id=None, client_order_id=None, contract_code=None, pair=None,
+                            contract_type=None):
 
         params = {}
 
@@ -1582,9 +1442,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_cancel'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 撤销全部合约订单--全仓
-    def linear_cross_cancelall(self,contract_code=None,pair=None,contract_type=None):
+    def linear_cross_cancelall(self, contract_code=None, pair=None, contract_type=None):
 
         params = {}
 
@@ -1598,9 +1457,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_cancelall'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 获取用户的合约订单信息--全仓
-    def linear_cross_order_info(self, order_id = None,client_order_id=None,contract_code=None,pair=None):
+    def linear_cross_order_info(self, order_id=None, client_order_id=None, contract_code=None, pair=None):
 
         params = {}
 
@@ -1615,9 +1473,9 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_order_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 获取用户的合约订单明细信息--全仓
-    def linear_cross_order_detail(self, order_id = None,created_at=None,contract_code=None,order_type=None,page_index=None,page_size=None,pair=None):
+    def linear_cross_order_detail(self, order_id=None, created_at=None, contract_code=None, order_type=None,
+                                  page_index=None, page_size=None, pair=None):
 
         params = {}
 
@@ -1638,9 +1496,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_order_detail'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 切换杠杆倍数--全仓
-    def linear_cross_switch_lever_rate(self, contract_code = None,lever_rate=None,pair=None,contract_type=None):
+    def linear_cross_switch_lever_rate(self, contract_code=None, lever_rate=None, pair=None, contract_type=None):
 
         params = {}
 
@@ -1656,9 +1513,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_switch_lever_rate'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 获取用户的合约当前未成交委托--全仓
-    def linear_cross_openorders(self, contract_code = None,pair=None,page_index=None,page_size=None):
+    def linear_cross_openorders(self, contract_code=None, pair=None, page_index=None, page_size=None):
 
         params = {}
 
@@ -1671,13 +1527,12 @@ class LinearServiceAPI:
         if pair:
             params['pair'] = pair
 
-
         request_path = '/linear-swap-api/v1/swap_cross_openorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 获取用户的合约历史委托--全仓
-    def linear_cross_hisorders(self, contract_code = None,pair=None,trade_type=None,type=None,status=None,create_date=None,sort_by=None,page_index=None,page_size=None):
+    def linear_cross_hisorders(self, contract_code=None, pair=None, trade_type=None, type=None, status=None,
+                               create_date=None, sort_by=None, page_index=None, page_size=None):
 
         params = {}
         if sort_by:
@@ -1699,13 +1554,12 @@ class LinearServiceAPI:
         if page_size:
             params['page_size'] = page_size
 
-
         request_path = '/linear-swap-api/v1/swap_cross_hisorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 获取用户的合约历史成交记录--全仓
-    def linear_cross_matchresults(self, contract_code = None,pair=None,trade_type=None,create_date=None,page_index=None,page_size=None):
+    def linear_cross_matchresults(self, contract_code=None, pair=None, trade_type=None, create_date=None,
+                                  page_index=None, page_size=None):
 
         params = {}
 
@@ -1722,13 +1576,12 @@ class LinearServiceAPI:
         if page_size:
             params['page_size'] = page_size
 
-
         request_path = '/linear-swap-api/v1/swap_cross_matchresults'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 组合查询用户历史成交记录（全仓）
-    def linear_cross_matchresults_exact(self, contract_code = None,pair=None,trade_type=None,start_time=None,end_time=None,from_id=None,size=None,direct=None):
+    def linear_cross_matchresults_exact(self, contract_code=None, pair=None, trade_type=None, start_time=None,
+                                        end_time=None, from_id=None, size=None, direct=None):
 
         params = {}
         if contract_code:
@@ -1752,7 +1605,9 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 合约闪电平仓下单--全仓
-    def linear_cross_lightning_close_position(self, contract_code = None,volume=None,direction=None,client_order_id=None,order_price_type=None,pair=None,contract_type=None,channel_code=None):
+    def linear_cross_lightning_close_position(self, contract_code=None, volume=None, direction=None,
+                                              client_order_id=None, order_price_type=None, pair=None,
+                                              contract_type=None, channel_code=None):
 
         params = {}
 
@@ -1776,9 +1631,10 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_lightning_close_position'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 合约计划委托下单--全仓
-    def linear_cross_trigger_order(self, contract_code = None,trigger_type=None,trigger_price=None,order_price=None,order_price_type=None,volume=None,direction=None,offset=None,lever_rate=None,pair=None,contract_type=None):
+    def linear_cross_trigger_order(self, contract_code=None, trigger_type=None, trigger_price=None, order_price=None,
+                                   order_price_type=None, volume=None, direction=None, offset=None, lever_rate=None,
+                                   pair=None, contract_type=None):
 
         params = {}
 
@@ -1809,10 +1665,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_trigger_order'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
     # 合约计划委托撤单--全仓
-    def linear_cross_trigger_cancel(self, contract_code = None,order_id =None,pair=None,contract_type=None):
+    def linear_cross_trigger_cancel(self, contract_code=None, order_id=None, pair=None, contract_type=None):
 
         params = {}
 
@@ -1828,9 +1682,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_trigger_cancel'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 合约计划委托全部撤单--全仓
-    def linear_cross_trigger_cancelall(self, contract_code = None,pair=None,contract_type=None):
+    def linear_cross_trigger_cancelall(self, contract_code=None, pair=None, contract_type=None):
 
         params = {}
 
@@ -1844,10 +1697,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_trigger_cancelall'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
     # 获取计划委托当前委托--全仓
-    def linear_cross_trigger_openorders(self, contract_code = None,pair=None,page_index=None,page_size=None):
+    def linear_cross_trigger_openorders(self, contract_code=None, pair=None, page_index=None, page_size=None):
 
         params = {}
 
@@ -1863,10 +1714,9 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_trigger_openorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
     # 获取计划委托历史委托--全仓
-    def linear_cross_trigger_hisorders(self, contract_code = None,pair=None,trade_type=None,status=None,create_date=None,sort_by=None,page_index=None,page_size=None):
+    def linear_cross_trigger_hisorders(self, contract_code=None, pair=None, trade_type=None, status=None,
+                                       create_date=None, sort_by=None, page_index=None, page_size=None):
 
         params = {}
 
@@ -1891,7 +1741,8 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 平台结算记录
-    def linear_settlement_records(self,contract_code=None,start_time=None,end_time=None,page_index=None,page_size=None):
+    def linear_settlement_records(self, contract_code=None, start_time=None, end_time=None, page_index=None,
+                                  page_size=None):
         params = {'contract_code': contract_code}
 
         if start_time:
@@ -1907,7 +1758,8 @@ class LinearServiceAPI:
         return api_http_get(url, params)
 
     # 组合查询合约历史委托看接口（逐仓）
-    def linear_hisorders_exact(self,contract_code=None,trade_type=None,type=None,status=None,order_price_type=None,start_time=None,end_time=None,from_id=None,size=None,direct=None):
+    def linear_hisorders_exact(self, contract_code=None, trade_type=None, type=None, status=None, order_price_type=None,
+                               start_time=None, end_time=None, from_id=None, size=None, direct=None):
 
         params = {}
 
@@ -1935,9 +1787,10 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_hisorders_exact'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 组合查询合约历史委托看接口（全仓）
-    def linear_cross_hisorders_exact(self,contract_code=None,pair=None,trade_type=None,type=None,status=None,order_price_type=None,start_time=None,end_time=None,from_id=None,size=None,direct=None):
+    def linear_cross_hisorders_exact(self, contract_code=None, pair=None, trade_type=None, type=None, status=None,
+                                     order_price_type=None, start_time=None, end_time=None, from_id=None, size=None,
+                                     direct=None):
 
         params = {}
 
@@ -1967,9 +1820,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_hisorders_exact'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 获取预估结算价（全逐通用）
-    def linear_estimated_settlement_price(self,contract_code=None,business_type=None,pair=None,contract_type=None):
+    def linear_estimated_settlement_price(self, contract_code=None, business_type=None, pair=None, contract_type=None):
         params = {}
         if contract_code:
             params['contract_code'] = contract_code
@@ -1984,7 +1836,7 @@ class LinearServiceAPI:
         return api_http_get(url, params)
 
     # 获取平台阶梯保证金（逐仓）
-    def linear_ladder_margin(self,contract_code=None):
+    def linear_ladder_margin(self, contract_code=None):
         params = {}
         if contract_code:
             params['contract_code'] = contract_code
@@ -1992,9 +1844,8 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_ladder_margin'
         return api_http_get(url, params)
 
-
     # 获取平台阶梯保证金（全仓）
-    def linear_cross_ladder_margin(self,contract_code=None,business_type=None,contract_type=None,pair=None):
+    def linear_cross_ladder_margin(self, contract_code=None, business_type=None, contract_type=None, pair=None):
         params = {}
         if contract_code:
             params['contract_code'] = contract_code
@@ -2008,10 +1859,10 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-api/v1/swap_cross_ladder_margin'
         return api_http_get(url, params)
 
-
     # 对仓位设置止盈止损订单（逐仓）
-    def linear_tpsl_order(self,contract_code=None,direction=None,volume=None,tp_trigger_price=None,tp_order_price=None,tp_order_price_type=None,
-                       sl_trigger_price=None,sl_order_price=None,sl_order_price_type=None):
+    def linear_tpsl_order(self, contract_code=None, direction=None, volume=None, tp_trigger_price=None,
+                          tp_order_price=None, tp_order_price_type=None,
+                          sl_trigger_price=None, sl_order_price=None, sl_order_price_type=None):
         params = {}
 
         if contract_code:
@@ -2033,14 +1884,14 @@ class LinearServiceAPI:
         if sl_order_price_type:
             params['sl_order_price_type'] = sl_order_price_type
 
-
         request_path = '/linear-swap-api/v1/swap_tpsl_order'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 对仓位设置止盈止损订单（全仓）
-    def linear_cross_tpsl_order(self,contract_code=None,direction=None,volume=None,tp_trigger_price=None,tp_order_price=None,tp_order_price_type=None,
-                       sl_trigger_price=None,sl_order_price=None,sl_order_price_type=None,pair=None,contract_type=None):
+    def linear_cross_tpsl_order(self, contract_code=None, direction=None, volume=None, tp_trigger_price=None,
+                                tp_order_price=None, tp_order_price_type=None,
+                                sl_trigger_price=None, sl_order_price=None, sl_order_price_type=None, pair=None,
+                                contract_type=None):
         params = {}
 
         if contract_code:
@@ -2069,9 +1920,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_tpsl_order'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 止盈止损订单撤单接口（逐仓）
-    def linear_tpsl_cancel(self,contract_code=None,order_id = None):
+    def linear_tpsl_cancel(self, contract_code=None, order_id=None):
 
         params = {}
 
@@ -2080,13 +1930,11 @@ class LinearServiceAPI:
         if order_id:
             params['order_id'] = order_id
 
-
         request_path = '/linear-swap-api/v1/swap_tpsl_cancel'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 止盈止损订单撤单接口（全仓）
-    def linear_cross_tpsl_cancel(self,contract_code=None,order_id = None,pair=None,contract_type=None):
+    def linear_cross_tpsl_cancel(self, contract_code=None, order_id=None, pair=None, contract_type=None):
 
         params = {}
 
@@ -2102,9 +1950,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_tpsl_cancel'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 止盈止损订单全部撤单（逐仓）
-    def linear_tpsl_cancelall(self,contract_code=None):
+    def linear_tpsl_cancelall(self, contract_code=None):
 
         params = {}
 
@@ -2115,7 +1962,7 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 止盈止损订单全部撤单（全仓）
-    def linear_cross_tpsl_cancelall(self, contract_code=None,pair=None,contract_type=None):
+    def linear_cross_tpsl_cancelall(self, contract_code=None, pair=None, contract_type=None):
 
         params = {}
 
@@ -2129,9 +1976,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_tpsl_cancelall'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 查询止盈止损订单当前委托（逐仓）
-    def linear_tpsl_openorders(self, contract_code=None,page_index=None,page_size=None):
+    def linear_tpsl_openorders(self, contract_code=None, page_index=None, page_size=None):
 
         params = {}
 
@@ -2145,9 +1991,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_tpsl_openorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 查询止盈止损订单当前委托（全仓）
-    def linear_cross_tpsl_openorders(self, contract_code=None,page_index=None,page_size=None,pair=None):
+    def linear_cross_tpsl_openorders(self, contract_code=None, page_index=None, page_size=None, pair=None):
 
         params = {}
 
@@ -2163,9 +2008,9 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_tpsl_openorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 查询止盈止损订单历史委托（逐仓）
-    def linear_tpsl_hisorders(self, contract_code=None,status=None,create_date=None,sort_by = None,page_index=None,page_size=None):
+    def linear_tpsl_hisorders(self, contract_code=None, status=None, create_date=None, sort_by=None, page_index=None,
+                              page_size=None):
 
         params = {}
 
@@ -2186,7 +2031,8 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询止盈止损订单历史委托（全仓）
-    def linear_cross_tpsl_hisorders(self, contract_code=None,status=None,create_date=None,sort_by = None,page_index=None,page_size=None,pair=None):
+    def linear_cross_tpsl_hisorders(self, contract_code=None, status=None, create_date=None, sort_by=None,
+                                    page_index=None, page_size=None, pair=None, **keywords):
 
         params = {}
 
@@ -2208,9 +2054,8 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_tpsl_hisorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 查询开仓单关联的止盈止损订单详情（逐仓）
-    def linear_relation_tpsl_order(self,contract_code=None,order_id = None):
+    def linear_relation_tpsl_order(self, contract_code=None, order_id=None):
 
         params = {}
 
@@ -2223,7 +2068,7 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询开仓单关联的止盈止损订单详情（全仓）
-    def linear_cross_relation_tpsl_order(self, contract_code=None, order_id=None,pair=None):
+    def linear_cross_relation_tpsl_order(self, contract_code=None, order_id=None, pair=None):
 
         params = {}
 
@@ -2238,7 +2083,8 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 跟踪委托订单下单接口（逐仓）
-    def linear_track_order(self, contract_code=None, direction=None, offset=None, lever_rate=None, volume=None,callback_rate=None, active_price=None, order_price_type=None):
+    def linear_track_order(self, contract_code=None, direction=None, offset=None, lever_rate=None, volume=None,
+                           callback_rate=None, active_price=None, order_price_type=None):
 
         params = {}
 
@@ -2261,8 +2107,10 @@ class LinearServiceAPI:
 
         request_path = '/linear-swap-api/v1/swap_track_order'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
+
     # 跟踪委托订单下单接口（全仓）
-    def linear_cross_track_order(self, contract_code=None, direction=None, offset=None, lever_rate=None, volume=None,callback_rate=None, active_price=None, order_price_type=None):
+    def linear_cross_track_order(self, contract_code=None, direction=None, offset=None, lever_rate=None, volume=None,
+                                 callback_rate=None, active_price=None, order_price_type=None):
 
         params = {}
 
@@ -2285,7 +2133,6 @@ class LinearServiceAPI:
 
         request_path = '/linear-swap-api/v1/swap_cross_track_order'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
-
 
     # 跟踪委托订单撤单接口（逐仓）
     def linear_track_cancel(self, contract_code=None, order_id=None):
@@ -2310,7 +2157,6 @@ class LinearServiceAPI:
 
         request_path = '/linear-swap-api/v1/swap_cross_track_cancel'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
-
 
     # 跟踪委托订单全部撤单接口（逐仓）
     def linear_track_cancelall(self, contract_code=None, direction=None, offset=None):
@@ -2356,7 +2202,6 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_track_openorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 查询跟踪委托订单当前委托接口（全仓）
     def linear_cross_track_openorders(self, contract_code=None, trade_type=None, page_index=None, page_size=None):
 
@@ -2373,10 +2218,9 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_cross_track_openorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
-
     # 查询跟踪委托订单历史委托接口（逐仓）
-    def linear_track_hisorders(self, contract_code=None, status=None, trade_type=None, create_date=None,page_index=None, page_size=None, sort_by=None):
+    def linear_track_hisorders(self, contract_code=None, status=None, trade_type=None, create_date=None,
+                               page_index=None, page_size=None, sort_by=None):
 
         params = {}
         if contract_code:
@@ -2397,9 +2241,9 @@ class LinearServiceAPI:
         request_path = '/linear-swap-api/v1/swap_track_hisorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-
     # 查询跟踪委托订单历史委托接口（全仓）
-    def linear_cross_track_hisorders(self, contract_code=None, status=None, trade_type=None, create_date=None,page_index=None, page_size=None, sort_by=None):
+    def linear_cross_track_hisorders(self, contract_code=None, status=None, trade_type=None, create_date=None,
+                                     page_index=None, page_size=None, sort_by=None):
 
         params = {}
         if contract_code:
@@ -2421,14 +2265,85 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 批量获取合约的资金费率（全逐通用）
-    def linear_batch_funding_rate(self,contract_code=None):
+    def linear_batch_funding_rate(self, contract_code=None):
         params = {}
         if contract_code:
             params['contract_code'] = contract_code
         url = self.__url + '/linear-swap-api/v1/swap_batch_funding_rate'
         return api_http_get(url, params)
 
+    # 自买自卖调节最新价
+    def linear_control_price(self, contract_code='', price=None, lever_rate='1'):
+
+        self.linear_cross_order(contract_code=contract_code, price=price, volume='1', direction='buy',
+                                offset='open', lever_rate=lever_rate, order_price_type='limit')
+        time.sleep(0.5)
+        self.linear_cross_order(contract_code=contract_code, price=price, volume='1', direction='sell',
+                                offset='open', lever_rate=lever_rate, order_price_type='limit')
+        time.sleep(2)
+        self.linear_cross_order(contract_code=contract_code, price=price, volume='1', direction='buy',
+                                offset='close', lever_rate=lever_rate, order_price_type='limit')
+        time.sleep(0.5)
+        self.linear_cross_order(contract_code=contract_code, price=price, volume='1', direction='sell',
+                                offset='close', lever_rate=lever_rate, order_price_type='limit')
+
+    # 全仓清空当前持仓
+    def linear_cross_empty_position(self, contract_code='', price=None):  # 恢复环境时用
+
+        r = self.linear_cross_position_info(contract_code=contract_code)
+        count = len(r["data"])
+
+        if count == 0:
+            print("当前没有持仓，无需清空")
+            return True
+        elif count == 1:
+            print("当前只持仓一种单，无法通过自我成交清空，请人工处理")
+            return False
+        elif count == 2:
+            volume1 = str(int(r["data"][0]['volume']))
+            volume2 = str(int(r["data"][1]['volume']))
+            leverrate = r["data"][0]['lever_rate']
+
+            if volume1 == volume2:
+                self.linear_cross_order(contract_code=contract_code, price=price, volume=str(volume1), direction='buy',
+                                        offset='close', lever_rate=leverrate, order_price_type='limit')
+                time.sleep(0.5)
+                self.linear_cross_order(contract_code=contract_code, price=price, volume=str(volume1), direction='sell',
+                                        offset='close', lever_rate=leverrate, order_price_type='limit')
+                time.sleep(2)
+                r = self.linear_cross_position_info(contract_code=contract_code)
+                count = len(r["data"])
+                if count == 0:
+                    print("清除持仓成功")
+                    return True
+                else:
+                    print("清除持仓失败")
+                    return False
+            else:
+                print("当前持仓量不匹配，无法通过自我成交清空，请人工处理")
+                return False
+        else:
+            print("当前持仓状况复杂，无法通过自我成交清空，请人工处理")
+            return False
+
+    def check_positions_larger_than(self, contract_code, direction="buy", amount=10, position_type="isolated") -> bool:
+        """
+        查询仓位是否大于某个数量
+        @param contract_code: BTC-USDT, etc.
+        @param direction: buy: 多仓, sell: 空仓
+        @param amount: 大于多少
+        @param position_type: 查询的仓位类型, isolated: 逐仓
+        @return:
+        """
+        position_info = self.linear_position_info(contract_code=contract_code).get("data")
+        if not position_info:
+            return False
+        else:
+            for p in position_info:
+                if p.get("contract_code") == contract_code and p.get("available") >= amount and p.get("direction") == direction:
+                    return True
+            return False
 
 
-#定义t并传入公私钥和URL,供用例直接调用
-t = LinearServiceAPI(URL,ACCESS_KEY,SECRET_KEY)
+# 定义t并传入公私钥和URL,供用例直接调用
+t = LinearServiceAPI(URL2, ACCESS_KEY, SECRET_KEY)
