@@ -15,6 +15,7 @@ from tool.get_test_data import case_data
 
 @allure.epic('反向交割')
 @allure.feature('')
+@pytest.mark.stable
 class TestContractLever_001:
 
     def setUp(self, contract_code):
