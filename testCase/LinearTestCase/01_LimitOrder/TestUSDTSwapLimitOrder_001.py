@@ -1,7 +1,7 @@
 '''#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 20210917
-# @Author : 
+# @Author : chenwei
 	用例Id
 		
 	所属分组
@@ -83,7 +83,7 @@ class TestUSDTSwapLimitOrder_001:
 		print('\n下一个卖单\n')
 		r = linear_api.linear_order(contract_code=contract_code,
 									client_order_id='',
-									price=lastprice,
+									price=lastprice+100,
 									volume='1',
 									direction='sell',
 									offset='open',

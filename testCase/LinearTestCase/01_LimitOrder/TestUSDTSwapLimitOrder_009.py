@@ -1,7 +1,7 @@
 '''#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 20210917
-# @Author : 
+# @Author : chenwei
 	用例Id
 		
 	所属分组
@@ -50,6 +50,7 @@ import pytest, allure, random, time
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
 class TestUSDTSwapLimitOrder_009:
 
 	@allure.step('前置条件')
@@ -99,7 +100,7 @@ class TestUSDTSwapLimitOrder_009:
 			# service = LinearServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
 			r = linear_api.linear_order(contract_code=contract_code,
 										client_order_id='',
-										price=highest_price,
+										price=highest_price+100,
 										volume=total_asks,
 										direction='buy',
 										offset='open',
