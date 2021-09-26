@@ -42,18 +42,8 @@ class TestContractTriggerOrder_001:
                                                             direction=direction, offset=offset, lever_rate=lever_rate)
         assert resp_plan_buy.get("status") == "ok"
         order_id = resp_plan_buy.get("data").get("order_id")
-        time.sleep(5)
+        time.sleep(3)
         pprint("\n步骤二: 查询所有当前委托单存在刚才下的单，并且数据校验正确\n")
-        """
-                参数名称     是否必须  类型     描述	    取值范围
-                symbol      true	    string  品种代码  "BTC","ETH"...
-                trade_type  true	    int     交易类型  0:全部,1:买入开多,2: 卖出开空,3: 买入平空,4: 卖出平多,5: 卖出强平,6: 买入强平,7:交割平多,8: 交割平空
-                type        true	    int     类型     1:所有订单、2：结束汏订单
-                status      true	    int     订单状态  0:全部,3:未成交, 4: 部分成交,5: 部分成交已撤单,6: 全部成交,7:已撤单
-                create_date true	    int     日期     7，90（7天或者90天）
-                page_index  false   int     页码，不填默认第1页
-                page_size   false   int     不填默认20，不得多于50
-        """
         res_all_his_orders = contract_api.contract_trigger_openorders(symbol=symbol, contract_code=contract_code).get("data").get("orders")
         for r in res_all_his_orders:
             if r.get("order_id") == order_id:
@@ -62,7 +52,7 @@ class TestContractTriggerOrder_001:
                 assert common.util.compare_dict(expected_did, r)
                 pprint("\n步骤三: 撤单\n")
                 r_cancel = contract_api.contract_cancel(symbol=symbol, order_id=order_id)
-                assert r_cancel.get("status") == "ok"
+                assert r_cancel.get("status") == "ok", f"撤单失败: r{r_cancel}"
                 return
         raise BaseException("在{res_all_his_orders}中未找到历史订单含有订单号: {order_id}".format(res_all_his_orders=res_all_his_orders, order_id=order_id))
 
