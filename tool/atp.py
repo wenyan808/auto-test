@@ -2,6 +2,8 @@ import json
 
 import requests
 
+from config import conf
+
 
 class ATP:
     ATPHost = 'http://172.18.6.52:8000'
@@ -35,6 +37,21 @@ class ATP:
         response = requests.get(atp_url, headers=cls.header, params=params)
         return response.json()
 
+    @classmethod
+    def clean_market(cls, system_type, contract_code, direction=None):
+        atp_url = cls.ATPHost + "/jobs/market_control"
+        body = {"env": conf.ENV,
+                "system_type": system_type,
+                'contract_code': contract_code,
+                'job_name': 'CleanMarket'
+                }
+        if direction == 'sell':
+            body['job_name'] = 'CleanSell'
+        if direction == 'buy':
+            body['job_name'] = 'CleanBuy'
+        response = requests.post(atp_url, headers=cls.header, json=body)
+        return response.json()
+
 
 if __name__ == '__main__':
     print(ATP.get_api_test_data("test_linear_account_info"))
@@ -42,3 +59,6 @@ if __name__ == '__main__':
     print(ATP.get_global_data())
     print(ATP.get_global_data(env='Test6'))
     print(ATP.get_global_data(env='Test20', system_type='LinearSwap'))
+    print(ATP.clean_market(system_type='LinearSwap', contract_code='ETH-USDT', direction='sell'))
+    print(ATP.clean_market(system_type='Swap', contract_code='BSV-USD', direction='buy'))
+    print(ATP.clean_market(system_type='Delivery', contract_code='ETH211231'))
