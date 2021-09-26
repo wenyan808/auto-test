@@ -1,7 +1,7 @@
 '''#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 20210916
-# @Author : 
+# @Author : chenwei
 	用例Id
 		
 	所属分组
@@ -50,6 +50,7 @@ import pytest, allure, random, time
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
 class TestCoinswapLimitOrder_010:
 
 	@allure.step('前置条件')
@@ -67,6 +68,20 @@ class TestCoinswapLimitOrder_010:
 		lever_rate = 5
 
 		self.setup()
+		r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
+		pprint(r)
+		# 得到最近的价格
+		lastprice = r['data'][0]['data'][0]['price']+1
+		#挂一个买单
+		r = swap_api.swap_order(contract_code=contract_code,
+											  client_order_id='',
+											  price=lastprice,
+											  volume='1',
+											  direction='buy',
+											  offset='open',
+											  lever_rate=lever_rate,
+											  order_price_type="limit")
+		time.sleep(3)
 		pprint('\n步骤一:获取盘口(买)\n')
 		r_trend_req = swap_api.swap_depth(contract_code=contract_code, type="step0")
 		pprint(r_trend_req)
@@ -91,6 +106,7 @@ class TestCoinswapLimitOrder_010:
 										lever_rate=lever_rate,
 										order_price_type='limit')
 			pprint(r)
+			time.sleep(2)
 			pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有买单\n")
 			r_trend_req_confirm = swap_api.swap_depth(contract_code=contract_code, type="step0")
 			current_bids = r_trend_req_confirm.get("tick").get("bids")

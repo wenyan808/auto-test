@@ -76,11 +76,11 @@ class TestUSDTSwapLimitOrder_002:
 		r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
 		pprint(r)
 		#得到最近的价格
-		lastprice = r['data'][0]['data'][0]['price']
+		lastprice = r['data'][0]['data'][0]['price']+1
 		print('\n下一个买单\n')
 		r = linear_api.linear_order(contract_code=contract_code,
 									client_order_id='',
-									price=lastprice+100,
+									price=lastprice,
 									volume='1',
 									direction='buy',
 									offset='open',
@@ -120,7 +120,7 @@ class TestUSDTSwapLimitOrder_002:
 			if frozen2 <= frozen1:
 				print("冻结资金没有增加，不符合预期")
 				flag = False
-				assert frozen2 >= frozen1
+				assert frozen2 <= frozen1
 			time.sleep(2)
 		with allure.step('3、观察当前委托-限价委托页面有结果B'):
 			"""获取当前委托数量及详情"""

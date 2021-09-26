@@ -72,7 +72,7 @@ class TestUSDTSwapLimitOrder_009:
 		r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
 		pprint(r)
 		# 得到最近的价格
-		lastprice = r['data'][0]['data'][0]['price']
+		lastprice = r['data'][0]['data'][0]['price']+1
 		# 挂一个买单
 		r = linear_api.linear_order(contract_code=contract_code,
 								client_order_id='',
@@ -100,16 +100,17 @@ class TestUSDTSwapLimitOrder_009:
 			# service = LinearServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
 			r = linear_api.linear_order(contract_code=contract_code,
 										client_order_id='',
-										price=highest_price+100,
+										price=highest_price,
 										volume=total_asks,
 										direction='buy',
 										offset='open',
 										lever_rate=lever_rate,
 										order_price_type='limit')
 			pprint(r)
-			time.sleep(2)
+			time.sleep(5)
 			pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有卖单\n")
 			r_trend_req_confirm = linear_api.linear_depth(contract_code=contract_code, type="step0")
+			pprint(r_trend_req_confirm)
 			current_asks = r_trend_req_confirm.get("tick").get("asks")
 			assert not current_asks, "卖盘不为空! 当前卖盘: {current_asks}".format(current_asks=current_asks)
 		with allure.step('1、盘口无卖盘，对手价买入开多'):

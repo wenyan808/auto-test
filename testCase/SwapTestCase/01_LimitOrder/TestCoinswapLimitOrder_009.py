@@ -50,6 +50,7 @@ import pytest, allure, random, time
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
 class TestCoinswapLimitOrder_009:
 
 	@allure.step('前置条件')
@@ -71,7 +72,7 @@ class TestCoinswapLimitOrder_009:
 		r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
 		pprint(r)
 		# 得到最近的价格
-		lastprice = r['data'][0]['data'][0]['price']
+		lastprice = r['data'][0]['data'][0]['price']+1
 		#挂一个买单
 		r = swap_api.swap_order(contract_code=contract_code,
 											  client_order_id='',
@@ -81,7 +82,7 @@ class TestCoinswapLimitOrder_009:
 											  offset='open',
 											  lever_rate=lever_rate,
 											  order_price_type="limit")
-		time.sleep(4)
+		time.sleep(3)
 		pprint('\n步骤一:获取盘口(卖)\n')
 		r_trend_req = swap_api.swap_depth(contract_code=contract_code, type="step0")
 		pprint(r_trend_req)
@@ -108,6 +109,7 @@ class TestCoinswapLimitOrder_009:
 			time.sleep(2)
 			pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有卖单\n")
 			r_trend_req_confirm = swap_api.swap_depth(contract_code=contract_code, type="step0")
+			pprint(r_trend_req_confirm)
 			current_asks = r_trend_req_confirm.get("tick").get("asks")
 			assert not current_asks, "卖盘不为空! 当前卖盘: {current_asks}".format(current_asks=current_asks)
 		with allure.step('1、盘口无卖盘，对手价买入开多'):

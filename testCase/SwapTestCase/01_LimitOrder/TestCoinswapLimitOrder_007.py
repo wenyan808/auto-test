@@ -1,7 +1,7 @@
 '''#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 20210916
-# @Author : 
+# @Author : chenwei
 	用例Id
 		
 	所属分组
@@ -72,7 +72,7 @@ class TestCoinswapLimitOrder_007:
 		r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
 		pprint(r)
 		# 得到最近的价格
-		lastprice = r['data'][0]['data'][0]['price']
+		lastprice = r['data'][0]['data'][0]['price']+1
 		#挂一个买单
 		r = swap_api.swap_order(contract_code=contract_code,
 											  client_order_id='',
@@ -81,8 +81,9 @@ class TestCoinswapLimitOrder_007:
 											  direction='sell',
 											  offset='open',
 											  lever_rate=lever_rate,
-											  order_price_type=order_price_type)
+											  order_price_type="limit")
 		pprint(r)
+		time.sleep(3)
 		print('\n步骤一:获取盘口卖一价\n')
 		r_trend_req = swap_api.swap_depth(contract_code=contract_code, type="step5")
 		pprint(r_trend_req)

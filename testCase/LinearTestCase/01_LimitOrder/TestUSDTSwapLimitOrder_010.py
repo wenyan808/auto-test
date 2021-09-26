@@ -67,6 +67,20 @@ class TestUSDTSwapLimitOrder_010:
 		lever_rate = 5
 
 		self.setup()
+		r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
+		pprint(r)
+		# 得到最近的价格
+		lastprice = r['data'][0]['data'][0]['price']+1
+		#挂一个买单
+		r = linear_api.linear_order(contract_code=contract_code,
+											  client_order_id='',
+											  price=lastprice,
+											  volume='1',
+											  direction='buy',
+											  offset='open',
+											  lever_rate=lever_rate,
+											  order_price_type="limit")
+		time.sleep(3)
 		pprint('\n步骤一:获取盘口(买)\n')
 		r_trend_req = linear_api.linear_depth(contract_code=contract_code, type="step0")
 		pprint(r_trend_req)
