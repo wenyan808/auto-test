@@ -40,15 +40,18 @@ class TestContractLimitOrder_010:
         # 如果有买单，则吃掉所有买单;如果没有，则不需要吃盘，直接卖出
         if current_bids:
             total_bids = 0
-            lowest_price = []
+            lowest_price_list = []
+            lowest_price = None
             for each_bids in current_bids:
                 each_price, each_amount = each_bids[0], each_bids[1]
                 total_bids += each_amount
-                lowest_price.append(each_price)
-            lowest_price = min(lowest_price)
-            pprint("\n步骤二：用操作账号以当前最低价吃掉所有买单(卖出)\n")
+                lowest_price_list.append(each_price)
+                lowest_price = min(lowest_price_list)
+                pprint("\n步骤二：用操作账号以当前最低价吃掉所有买单(卖出)\n")
             service = ContractServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
-            service.contract_order(symbol=symbol, contract_type='this_week', price=lowest_price, volume=total_bids, direction='sell', offset='open', lever_rate=lever_rate, order_price_type='limit')
+            r_eat = service.contract_order(symbol=symbol, contract_type='this_week', price=lowest_price, volume=total_bids, direction='sell', offset='open', lever_rate=lever_rate, order_price_type='limit')
+            assert r_eat.get("status") == "ok", f"吃买单失败: r{r_eat}"
+            time.sleep(3)
             pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有买单\n")
             r_trend_req_confirm = contract_api.contract_depth(symbol=symbol_period, type="step0")
             current_bids = r_trend_req_confirm.get("tick").get("bids")

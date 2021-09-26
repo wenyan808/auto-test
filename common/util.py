@@ -19,7 +19,6 @@ import time
 TIMEOUT = 15
 
 
-
 # 各种请求,获取数据方式
 def api_http_get(url, params, add_to_headers=None):
     headers = {

@@ -48,6 +48,7 @@ class TestContractLimitOrder_0013:
             pprint("\n步骤二：用操作账号以当前最高价吃掉(买入)所有卖单\n")
             service = ContractServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
             service.contract_order(symbol=symbol, contract_type='this_week', price=highest_price, volume=total_asks, direction='buy', offset='open', lever_rate=lever_rate, order_price_type='limit')
+            time.sleep(3)
             pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有卖单\n")
             r_trend_req_confirm = contract_api.contract_depth(symbol=symbol_period, type="step0")
             current_asks = r_trend_req_confirm.get("tick").get("asks")
