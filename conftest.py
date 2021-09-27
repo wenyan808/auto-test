@@ -41,10 +41,9 @@ def pytest_sessionfinish():
     将信息写到environment.properties中用于在allure报告中展
     :return:
     """
-    path = pathlib.Path(os.path.dirname(__file__)).parent / 'report/allure'
-    if not path.exists():
-        path.mkdir()
-    with open(path / 'environment.properties', 'w') as f:
+
+    path = os.path.abspath(os.path.dirname(__file__))
+    with open("{}/report/allure/environment.properties".format(path), 'w') as f:
         f.write(
             "ENV={}\nSYSTEM_TYPE={}\nURL={}\nACCESS_KEY={}\nSECRET_KEY={}".format(conf.ENV, conf.SYSTEM_TYPE, conf.URL,
                                                                                   conf.ACCESS_KEY, conf.SECRET_KEY))
