@@ -45,34 +45,37 @@ from common.SwapServiceOrder import t as swap_order
 from config.conf import COMMON_ACCESS_KEY, COMMON_SECRET_KEY, URL
 from pprint import pprint
 import pytest, allure, random, time
-
+from tool.atp import ATP
 
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
-@pytest.mark.stable
 class TestUSDTSwapLimitOrder_009:
 
 	@allure.step('前置条件')
-	def setup(self):
+	@pytest.fixture(scope='function', autouse=True)
+	def setup(self, contract_code):
 		print(''' 初始化环境准备
 		1、建议准备两个账户，一个用于初始化环境，一个用于测试下单验证。
 		1、建议初始化环境是初始化账户吃掉其他所有买卖挂单，盘口无任何挂单
 		2、再根据测试场景进行拿初始化账户进行买一卖一挂单作为对手方
 		3、每次完成测试后再还原环境
 		4、本次用例场景为无成交下撤单场景 ''')
+		# 清除盘口所有卖单
+		ATP.clean_market(contract_code=contract_code, direction='sell')
+		# 清除盘口所有买单
+		ATP.clean_market(contract_code=contract_code, direction='buy')
 
 	@allure.title('对手价买入开多卖盘无数据自动撤单')
 	@allure.step('测试执行')
 	def test_execute(self, contract_code):
 		""" 对手价买入开多卖盘无数据以对手价买入会报对手价不存在 """
 		lever_rate = 5
-
-		self.setup()
 		r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
 		pprint(r)
 		# 得到最近的价格
-		lastprice = r['data'][0]['data'][0]['price']+0.5
+		lastprice = r['data'][0]['data'][0]['price']
+		lastprice = round((lastprice * 1.01), 2)
 		# 挂一个买单
 		r = linear_api.linear_order(contract_code=contract_code,
 								client_order_id='',
