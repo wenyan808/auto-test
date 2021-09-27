@@ -62,6 +62,7 @@ class TestUSDTSwapLimitOrder_004:
 		2、再根据测试场景进行拿初始化账户进行买一卖一挂单作为对手方
 		3、每次完成测试后再还原环境
 		4、本次用例场景为无成交下撤单场景 ''')
+		pprint('清除盘口所有卖单')
 		# 清除盘口所有卖单
 		ATP.clean_market(contract_code=contract_code, direction='sell')
 		# 清除盘口所有买单

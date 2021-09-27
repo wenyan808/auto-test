@@ -75,7 +75,7 @@ class TestUSDTSwapLimitOrder_010:
 		pprint(r)
 		# 得到最近的价格
 		lastprice = r['data'][0]['data'][0]['price']
-		lastprice = round((lastprice * 0.99), 2)
+		lastprice = round((lastprice * 0.98), 2)
 		#挂一个买单
 		r = linear_api.linear_order(contract_code=contract_code,
 											  client_order_id='',

@@ -80,7 +80,8 @@ class TestCoinswapLimitOrder_001:
 		r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
 		pprint(r)
 		# 得到最近的价格
-		lastprice = r['data'][0]['data'][0]['price']+0.5
+		lastprice = r['data'][0]['data'][0]['price']
+		lastprice = round((lastprice * 1.01), 2)
 		print('\n下一个卖单\n')
 		r = swap_api.swap_order(contract_code=contract_code,
 									client_order_id='',
