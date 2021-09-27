@@ -3,6 +3,7 @@
 # @Date    : 2020/8/19
 # @Author  : zhangranghan
 import os
+import pathlib
 import time
 
 import allure
@@ -10,6 +11,7 @@ import pytest
 import yaml
 from _pytest.nose import teardown_nose
 
+from config import conf
 from tool.DingDingMsg import DingDingMsg
 from tool.atp import ATP
 
@@ -39,16 +41,13 @@ def pytest_sessionfinish():
     将信息写到environment.properties中用于在allure报告中展
     :return:
     """
-    path = os.path.abspath(os.path.dirname(__file__))
-    with open('{}/config/application.yml'.format(path), 'r') as f:
-        conf = yaml.load(f.read(), Loader=yaml.FullLoader)
-        URL = conf['URL']
-        ACCESS_KEY = conf['ACCESS_KEY']
-        SECRET_KEY = conf['SECRET_KEY']
-        f.close()
-    with open("{}/report/allure/environment.properties".format(path), 'w') as f:
-        f.write("URL={}\nACCESS_KEY={}\nSECRET_KEY={}".format(URL, ACCESS_KEY, SECRET_KEY))
-        f.close()
+    path = pathlib.Path(os.path.dirname(__file__)).parent / 'report/allure'
+    if not path.exists():
+        path.mkdir()
+    with open(path / 'environment.properties', 'w') as f:
+        f.write(
+            "ENV={}\nSYSTEM_TYPE={}\nURL={}\nACCESS_KEY={}\nSECRET_KEY={}".format(conf.ENV, conf.SYSTEM_TYPE, conf.URL,
+                                                                                  conf.ACCESS_KEY, conf.SECRET_KEY))
 
 
 """
@@ -101,17 +100,3 @@ def pytest_runtest_makereport(item):
             title = api_test_data.get("title", "")
             if title:
                 allure.dynamic.title(title)
-
-
-def pytest_terminal_summary(terminalreporter, exitstatus, config):
-    '''收集测试结果'''
-    duration = time.time() - terminalreporter._sessionstarttime
-    result = {}
-    # result['total'] = terminalreporter._numcollected
-    result['passed'] = len(terminalreporter.stats.get('passed', []))
-    result['failed'] = len(terminalreporter.stats.get('failed', []))
-    result['error'] = len(terminalreporter.stats.get('error', []))
-    result['skipped'] = len(terminalreporter.stats.get('skipped', []))
-    result['run_time'] = duration
-    result['total'] = result['passed'] + result['failed'] + result['error'] + result['skipped']
-    DingDingMsg.update_result(**result)
