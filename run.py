@@ -99,6 +99,6 @@ if __name__ == '__main__':
     DingDingMsg.init()
     start = time.time()
     run(run_env=test_env, system_type=system_type, test_type=test_type)
-    duration = time.time() - start
-    DingDingMsg.update_json_file(env=test_env, system_type=system_type, test_type=test_type, duration=duration,
+    run_time = time.time() - start
+    DingDingMsg.update_json_file(env=test_env, system_type=system_type, test_type=test_type, run_time=run_time,
                                  build_num=build_num)
