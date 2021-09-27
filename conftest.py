@@ -41,7 +41,7 @@ def pytest_sessionfinish():
     将信息写到environment.properties中用于在allure报告中展
     :return:
     """
-    path = pathlib.Path(os.path.dirname(__file__)).parent / 'report/allure'
+    path = pathlib.Path(__file__).parent / 'report/allure'
     if not path.exists():
         path.mkdir()
     with open(path / 'environment.properties', 'w') as f:
