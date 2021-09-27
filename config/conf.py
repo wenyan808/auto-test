@@ -4,8 +4,9 @@
 # @Author  : zhangranghan
 from tool.global_data import GlobalData
 
+
 ENV = 'Test5'
-SYSTEM_TYPE = None
+SYSTEM_TYPE = 'LinearSwap'
 GLOBAL_DATA = GlobalData.get_global_data(ENV, SYSTEM_TYPE)
 
 URL = GLOBAL_DATA['base_url']

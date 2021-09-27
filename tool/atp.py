@@ -48,6 +48,10 @@ class ATP:
 if __name__ == '__main__':
     print(ATP.get_api_test_data("test_linear_account_info"))
     print(ATP.get_api_test_data("test_linear_account_info", priority_list=["P0", "P1"]))
+
+    # 清除盘口所有卖单
     print(ATP.clean_market(contract_code='ETH-USDT', direction='sell'))
+    # 清除盘口所有买单
     print(ATP.clean_market(contract_code='BSV-USD', direction='buy'))
+    # 清除盘口所有买卖挂单
     print(ATP.clean_market(contract_code='ETH211231'))
