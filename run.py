@@ -5,6 +5,8 @@
 
 
 import os, sys
+import time
+from copy import copy
 from string import Template
 
 import pytest
@@ -60,9 +62,11 @@ def run(system_type=None, run_env='Test5', test_type=''):
         args.append(f'-m={test_type}')
 
     if system_type == 'ALL':
-        set_run_env_and_system_type(run_env)
-        args.append('testCase/')
-        pytest.main(args=args)
+        for system_types_item in ['Contract', 'Swap', 'Linear']:
+            set_run_env_and_system_type(run_env, system_types[system_types_item])
+            run_args = copy(args)
+            run_args.append(f"testCase/{system_types_item}TestCase")
+            pytest.main(args=run_args)
         # os.system('pytest --alluredir report/allure testCase/')
 
     elif type(system_type) == str:
@@ -80,15 +84,21 @@ def run(system_type=None, run_env='Test5', test_type=''):
 
 
 if __name__ == '__main__':
-    system_type = sys.argv[1]
-    build_num = sys.argv[2]
-    test_type = sys.argv[3]
-
+    test_env = sys.argv[1]
+    system_type = sys.argv[2]
+    build_num = sys.argv[3]
+    if len(sys.argv) > 4:
+        test_type = sys.argv[4]
+    else:
+        test_type = ''
     # for debug
-    # system_type = 'Linear'
-    # build_num = 10
+    # test_env = 'Test5'
+    # system_type = 'ALL'
+    # build_num = 30
     # test_type = 'stable'
-
-    DingDingMsg.update_result(env='Test5', system_type=system_type, test_type=test_type)
-    run(system_type, test_type=test_type)
-    DingDingMsg.update_json_file(build_num)
+    DingDingMsg.init()
+    start = time.time()
+    run(run_env=test_env, system_type=system_type, test_type=test_type)
+    run_time = time.time() - start
+    DingDingMsg.update_json_file(env=test_env, system_type=system_type, test_type=test_type, run_time=run_time,
+                                 build_num=build_num)

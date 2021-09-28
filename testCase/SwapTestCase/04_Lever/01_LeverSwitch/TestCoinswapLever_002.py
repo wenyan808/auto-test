@@ -4,7 +4,7 @@
 # @Author  : zhangranghan
 
 
-from common.LinearServiceAPI import t as linear_api
+from common.SwapServiceAPI import t as swap_api
 
 from schema import Schema, And, Or, Regex, SchemaError
 from pprint import pprint
@@ -15,37 +15,40 @@ from tool.get_test_data import case_data
 @allure.epic('反向交割')
 @allure.feature('')
 @pytest.mark.stable
-class TestUSDTSwapLever_002:
+class TestContractLever_001:
 
     def setUp(self, contract_code):
         print('\n全部撤单')
-        r = linear_api.linear_cross_cancelall(contract_code=contract_code)
+        r = swap_api.swap_cancelall(contract_code=contract_code)
         pprint(r)
 
     @allure.title('title')
     def test_contract_account_position_info(self, contract_code):
         self.setUp(contract_code)
+        time.sleep(0.1)
         '''查询支持的全部杠杆率，取随机一种下单，再切换另一种，预期失败'''
-        r = linear_api.linear_cross_available_level_rate(contract_code=contract_code)
+        r = swap_api.swap_available_level_rate(contract_code=contract_code)
         availableleverlist = r['data'][0]['available_level_rate'].split(',')
+
         i = random.choice(availableleverlist)
         availableleverlist.remove(i)
         j = random.choice(availableleverlist)
         '''下单任意一种杠杆'''
-        r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
+        r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
+        pprint(r)
         price = r['data'][0]['data'][0]['price']
-        r = linear_api.linear_cross_order(contract_code=contract_code,
-                                          client_order_id='',
-                                          price=price,
-                                          volume='1',
-                                          direction='buy',
-                                          offset='open',
-                                          lever_rate=i,
-                                          order_price_type='limit')
+        r = swap_api.swap_order(contract_code=contract_code,
+                                client_order_id='',
+                                price=price,
+                                volume='1',
+                                direction='buy',
+                                offset='open',
+                                lever_rate='5',
+                                order_price_type='limit')
         pprint(r)
         time.sleep(0.5)
         '''调整杠杆率'''
-        r = linear_api.linear_cross_switch_lever_rate(contract_code=contract_code, lever_rate=j)
+        r = swap_api.swap_switch_lever_rate(contract_code=contract_code, lever_rate=j)
         pprint(r)
 
         assert r['err_msg'] == '当前有挂单,无法切换倍数'

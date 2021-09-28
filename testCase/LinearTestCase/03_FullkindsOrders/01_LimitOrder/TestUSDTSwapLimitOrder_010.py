@@ -45,7 +45,7 @@ from common.SwapServiceOrder import t as swap_order
 from config.conf import COMMON_ACCESS_KEY, COMMON_SECRET_KEY, URL
 from pprint import pprint
 import pytest, allure, random, time
-
+from tool.atp import ATP
 
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
@@ -53,20 +53,42 @@ import pytest, allure, random, time
 class TestUSDTSwapLimitOrder_010:
 
 	@allure.step('前置条件')
-	def setup(self):
+	@pytest.fixture(scope='function', autouse=True)
+	def setup(self, contract_code):
 		print(''' 初始化环境准备
 		1、建议准备两个账户，一个用于初始化环境，一个用于测试下单验证。
 		1、建议初始化环境是初始化账户吃掉其他所有买卖挂单，盘口无任何挂单
 		2、再根据测试场景进行拿初始化账户进行买一卖一挂单作为对手方
 		3、每次完成测试后再还原环境
 		4、本次用例场景为无成交下撤单场景 ''')
+		# 撤销当前用户 某个品种所有限价挂单
+		ATP.cancel_all_order(contract_code=contract_code)
+		# 修改当前品种杠杆 默认5倍
+		ATP.switch_level(contract_code=contract_code)
+		# 清除盘口所有卖单
+		ATP.clean_market(contract_code=contract_code, direction='sell')
+		# 清除盘口所有买单
+		ATP.clean_market(contract_code=contract_code, direction='buy')
 
 	@allure.title('对手价卖出开空买盘无数据自动撤单')
 	@allure.step('测试执行')
 	def test_execute(self, contract_code):
 		lever_rate = 5
-
-		self.setup()
+		r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
+		pprint(r)
+		# 得到最近的价格
+		lastprice = r['data'][0]['data'][0]['price']
+		lastprice = round((lastprice * 0.98), 2)
+		#挂一个买单
+		r = linear_api.linear_order(contract_code=contract_code,
+											  client_order_id='',
+											  price=lastprice,
+											  volume='1',
+											  direction='buy',
+											  offset='open',
+											  lever_rate=lever_rate,
+											  order_price_type="limit")
+		time.sleep(3)
 		pprint('\n步骤一:获取盘口(买)\n')
 		r_trend_req = linear_api.linear_depth(contract_code=contract_code, type="step0")
 		pprint(r_trend_req)
@@ -91,6 +113,7 @@ class TestUSDTSwapLimitOrder_010:
 										lever_rate=lever_rate,
 										order_price_type='limit')
 			pprint(r)
+			time.sleep(3)
 			pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有买单\n")
 			r_trend_req_confirm = linear_api.linear_depth(contract_code=contract_code, type="step0")
 			current_bids = r_trend_req_confirm.get("tick").get("bids")
@@ -119,4 +142,4 @@ class TestUSDTSwapLimitOrder_010:
 		print('\n恢复环境操作')
 
 if __name__ == '__main__':
-    pytest.main()
+	pytest.main()

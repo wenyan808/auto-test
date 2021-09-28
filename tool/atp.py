@@ -2,6 +2,9 @@ import json
 
 import requests
 
+from common.util import api_key_post
+from config import conf
+
 
 class ATP:
     ATPHost = 'http://172.18.6.52:8000'
@@ -28,17 +31,61 @@ class ATP:
         return data_keys, variables_values_list
 
     @classmethod
-    def get_global_data(cls, env=None, system_type=None):
-        atp_url = cls.ATPHost + "/global_data/get_all_global_data_by_env_and_system_type"
-        params = {"env": env,
-                  "system_type": system_type}
-        response = requests.get(atp_url, headers=cls.header, params=params)
+    def clean_market(cls, contract_code, direction=None):
+        atp_url = cls.ATPHost + "/jobs/market_control"
+        body = {"env": conf.ENV,
+                "system_type": conf.SYSTEM_TYPE,
+                'contract_code': contract_code,
+                'job_name': 'CleanMarket'
+                }
+        if direction == 'sell':
+            body['job_name'] = 'CleanSell'
+        if direction == 'buy':
+            body['job_name'] = 'CleanBuy'
+        response = requests.post(atp_url, headers=cls.header, json=body)
         return response.json()
+
+    @classmethod
+    def cancel_all_order(cls, contract_code):
+        json_body = {}
+        if conf.SYSTEM_TYPE == 'Delivery':
+            if '_' in contract_code:
+                json_body['symbol'] = contract_code.split('_')[0]
+            else:
+                json_body['symbol'] = contract_code[:-6]
+        else:
+            json_body['contract_code'] = contract_code
+
+        response = api_key_post(conf.URL, conf.CANCEL_ALL_ORDER_URL, json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+        return response
+
+    @classmethod
+    def switch_level(cls, contract_code, lever_rate=5):
+        json_body = {'lever_rate': lever_rate}
+        if conf.SYSTEM_TYPE == 'Delivery':
+            if '_' in contract_code:
+                json_body['symbol'] = contract_code.split('_')[0]
+            else:
+                json_body['symbol'] = contract_code[:-6]
+        else:
+            json_body['contract_code'] = contract_code
+
+        response = api_key_post(conf.URL, conf.SWITCH_LEVER_URL, json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+        return response
 
 
 if __name__ == '__main__':
     print(ATP.get_api_test_data("test_linear_account_info"))
     print(ATP.get_api_test_data("test_linear_account_info", priority_list=["P0", "P1"]))
-    print(ATP.get_global_data())
-    print(ATP.get_global_data(env='Test6'))
-    print(ATP.get_global_data(env='Test20', system_type='LinearSwap'))
+
+    # 清除盘口所有卖单
+    print(ATP.clean_market(contract_code='ETH-USDT', direction='sell'))
+    # 清除盘口所有买单
+    print(ATP.clean_market(contract_code='BSV-USD', direction='buy'))
+    # 清除盘口所有买卖挂单
+    print(ATP.clean_market(contract_code='ETH211231'))
+
+    # 撤销当前用户 某个品种所有限价挂单
+    print(ATP.cancel_all_order(contract_code='ETH211001'))
+    # 修改当前品种杠杆 默认5倍
+    print(ATP.switch_level(contract_code='ETH_CW'))
