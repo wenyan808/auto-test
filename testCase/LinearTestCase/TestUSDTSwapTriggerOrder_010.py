@@ -41,7 +41,7 @@ from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
 import pytest, allure, random, time
-from config.conf import URL2, LSS_ACCESS_KEY, LSS_SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
+from config.conf import URL2, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
 
 
 @allure.epic('所属分组')  # 这里填业务线
@@ -53,11 +53,12 @@ class TestUSDTSwapTriggerOrder_010:
     def setup(self):
         print(''' 选择正常限价下单 ''')
         self.contract_code = "BTC-USDT"
-        self.current_user = LinearServiceAPI(url=URL2, access_key=LSS_ACCESS_KEY, secret_key=LSS_SECRET_KEY)
+        self.current_user = LinearServiceAPI(url=URL2, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
+        self.new_limit_order_id = None
 
     @allure.title('触发计划委托订单开仓测试')
     @allure.step('测试执行')
-    def test_execute(self, symbol, symbol_period):
+    def test_execute(self, symbol):
         with allure.step('1、登录U本位永续界面'):
             # 下计划委托前，获取一遍当前计划委托单列表
             current_plan_orders_before = self.current_user.linear_trigger_openorders(contract_code=self.contract_code).get("data").get("orders")
@@ -104,16 +105,14 @@ class TestUSDTSwapTriggerOrder_010:
             new_limit_open_orders = [o for o in after_trigger_current_limit_open_orders if o not in before_trigger_current_limit_open_orders]
             assert len(new_limit_open_orders) == 1, f"新增限价委托单不止一个或为0个: {new_limit_open_orders}"
             new_limit_open_order = new_limit_open_orders[0]
-            new_limit_order_id = new_limit_open_order.get("order_id")
+            self.new_limit_order_id = new_limit_open_order.get("order_id")
             expected_info = {"contract_code": self.contract_code, "price": order_price, "order_price_type": "limit", "direction": "buy", "lever_rate": 5, "status": 3, "order_source": "trigger"}
             assert common.util.compare_dict(expected_info, new_limit_open_order)
-        with allure.step("撤单"):
-            r_cancel = self.current_user.linear_cancel(order_id=new_limit_order_id, contract_code=self.contract_code)
-            assert r_cancel.get("status") == "ok", f"撤单失败: {r_cancel}"
 
     @allure.step('恢复环境')
     def teardown(self):
-        print('\n恢复环境操作')
+        r_cancel = self.current_user.linear_cancel(order_id=self.new_limit_order_id, contract_code=self.contract_code)
+        assert r_cancel.get("status") == "ok", f"撤单失败: {r_cancel}"
 
 
 if __name__ == '__main__':

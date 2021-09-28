@@ -41,7 +41,7 @@ from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
 import pytest, allure, random, time
-from config.conf import URL2, LSS_ACCESS_KEY, LSS_SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
+from config.conf import URL2, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
 
 
 @allure.epic('所属分组')  # 这里填业务线
@@ -53,11 +53,11 @@ class TestUSDTSwapTriggerOrder_011:
     def setup(self):
         print(''' 选择正常限价下单 ''')
         self.contract_code = "BTC-USDT"
-        self.current_user = LinearServiceAPI(url=URL2, access_key=LSS_ACCESS_KEY, secret_key=LSS_SECRET_KEY)
+        self.current_user = LinearServiceAPI(url=URL2, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
 
     @allure.title('触发计划委托订单平仓测试')
     @allure.step('测试执行')
-    def test_execute(self, symbol, symbol_period):
+    def test_execute(self, symbol):
         with allure.step("0、进行一次买卖，保证可平多量至少为10"):
             position_larger_than_10 = self.current_user.check_positions_larger_than(contract_code=self.contract_code, direction="sell", amount=10, position_type=1)
             price = 5

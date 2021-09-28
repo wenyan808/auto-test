@@ -41,19 +41,20 @@ from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
 import pytest, allure, random, time
-from config.conf import URL2, LSS_ACCESS_KEY, LSS_SECRET_KEY
+from config.conf import URL2, ACCESS_KEY, SECRET_KEY
 
 
 @allure.epic('所属分组')  # 这里填业务线
 @allure.feature('计划委托')  # 这里填功能
 @allure.story('计划止盈最优5/10/20挡')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
 class TestUSDTSwapTriggerOrder_007:
 
     @allure.step('前置条件')
     def setup(self):
         print(''' 有持仓且大于等于10张， 触发价大于最新价 ''')
         self.contract_code = "BTC-USDT"
-        self.current_user = LinearServiceAPI(url=URL2, access_key=LSS_ACCESS_KEY, secret_key=LSS_SECRET_KEY)
+        self.current_user = LinearServiceAPI(url=URL2, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
         position_larger_than_10 = self.current_user.check_positions_larger_than(contract_code=self.contract_code, direction="buy", amount=10, position_type=1)
         price = 5
         if not position_larger_than_10:
@@ -72,7 +73,7 @@ class TestUSDTSwapTriggerOrder_007:
 
     @allure.title('计划止盈最优5/10/20挡')
     @allure.step('测试执行')
-    def test_execute(self, symbol, symbol_period):
+    def test_execute(self, symbol):
         with allure.step('1、登录U本位永续界面'):
             # 获取最新价
             latest_trades = self.current_user.linear_trade(contract_code=self.contract_code)
@@ -103,13 +104,11 @@ class TestUSDTSwapTriggerOrder_007:
             new_plan_order = new_plan_orders[0]
             expected_info = {"contract_code": self.contract_code, "trigger_type": "ge", "volume": 10, "direction": "sell", "lever_rate": 5, "trigger_price": trigger_price, "order_price": 0, "order_price_type": "optimal_5", "margin_mode": "isolated"}
             assert common.util.compare_dict(expected_info, new_plan_order)
-        with allure.step("撤单"):
-            r_cancel = self.current_user.linear_trigger_cancelall(contract_code=self.contract_code)
-            assert r_cancel.get('status') == "ok", f"撤单失败: {r_cancel}"
 
     @allure.step('恢复环境')
     def teardown(self):
-        print('\n恢复环境操作')
+        r_cancel = self.current_user.linear_trigger_cancelall(contract_code=self.contract_code)
+        assert r_cancel.get('status') == "ok", f"撤单失败: {r_cancel}"
 
 
 if __name__ == '__main__':
