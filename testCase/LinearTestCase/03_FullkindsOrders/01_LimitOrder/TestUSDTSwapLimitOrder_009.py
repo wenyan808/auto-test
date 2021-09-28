@@ -50,6 +50,7 @@ from tool.atp import ATP
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
 class TestUSDTSwapLimitOrder_009:
 
 	@allure.step('前置条件')
@@ -95,31 +96,31 @@ class TestUSDTSwapLimitOrder_009:
 		r_trend_req = linear_api.linear_depth(contract_code=contract_code, type="step0")
 		pprint(r_trend_req)
 		current_asks = r_trend_req.get("tick").get("asks")
-		# # 如果有卖单，则吃掉所有卖单
-		# if current_asks:
-		# 	total_asks = 0
-		# 	highest_price = 0
-		# 	for each_ask in current_asks:
-		# 		each_price, each_amount = each_ask[0], each_ask[1]
-		# 		total_asks += each_amount
-		# 		highest_price = max(highest_price, each_price)
-		# 	pprint("\n步骤二：用操作账号以当前最高价吃掉(买入)所有卖单\n")
-		# 	service = LinearServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
-		# 	r = service.linear_order(contract_code=contract_code,
-		# 								client_order_id='',
-		# 								price=highest_price,
-		# 								volume=total_asks,
-		# 								direction='buy',
-		# 								offset='open',
-		# 								lever_rate=lever_rate,
-		# 								order_price_type='limit')
-		# 	pprint(r)
-		# 	time.sleep(3)
-		# 	pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有卖单\n")
-		# 	r_trend_req_confirm = linear_api.linear_depth(contract_code=contract_code, type="step0")
-		# 	pprint(r_trend_req_confirm)
-		# 	current_asks = r_trend_req_confirm.get("tick").get("asks")
-		# 	assert not current_asks, "卖盘不为空! 当前卖盘: {current_asks}".format(current_asks=current_asks)
+		# 如果有卖单，则吃掉所有卖单
+		if current_asks:
+			total_asks = 0
+			highest_price = 0
+			for each_ask in current_asks:
+				each_price, each_amount = each_ask[0], each_ask[1]
+				total_asks += each_amount
+				highest_price = max(highest_price, each_price)
+			pprint("\n步骤二：用操作账号以当前最高价吃掉(买入)所有卖单\n")
+			service = LinearServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
+			r = service.linear_order(contract_code=contract_code,
+										client_order_id='',
+										price=highest_price,
+										volume=total_asks,
+										direction='buy',
+										offset='open',
+										lever_rate=lever_rate,
+										order_price_type='limit')
+			pprint(r)
+			time.sleep(3)
+			pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有卖单\n")
+			r_trend_req_confirm = linear_api.linear_depth(contract_code=contract_code, type="step0")
+			pprint(r_trend_req_confirm)
+			current_asks = r_trend_req_confirm.get("tick").get("asks")
+			assert not current_asks, "卖盘不为空! 当前卖盘: {current_asks}".format(current_asks=current_asks)
 		with allure.step('1、盘口无卖盘，对手价买入开多'):
 			# 买入开多限价
 			r_buy_opponent = linear_api.linear_order(contract_code=contract_code,
@@ -130,16 +131,16 @@ class TestUSDTSwapLimitOrder_009:
 										offset='open',
 										lever_rate=lever_rate,
 										order_price_type='opponent')
-			time.sleep(5)
+			time.sleep(3)
 			pprint(r_buy_opponent)
 		with allure.step('2、观察下单是否成功有结果A'):
-			actual_status = r_buy_opponent.get("status")
-			actual_msg = r_buy_opponent.get("err_msg")
+			err_code = r_buy_opponent.get("err_code")
+			assert err_code == 1016
 		with allure.step('3、观察历史委托-限价委托有结果B'):
 			r = linear_api.linear_openorders(contract_code=contract_code, page_index='', page_size='')
 			pprint(r)
 			totalsize2 = r['data']['total_size']
-			actual_orderinfo = r['data']['orders'][0]
+			assert totalsize2 ==0
 		with allure.step('4、观察资产信息有结果C'):
 			pass
 

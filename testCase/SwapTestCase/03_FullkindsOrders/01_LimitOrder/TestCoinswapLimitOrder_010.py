@@ -114,7 +114,7 @@ class TestCoinswapLimitOrder_010:
 										lever_rate=lever_rate,
 										order_price_type='limit')
 			pprint(r)
-			time.sleep(2)
+			time.sleep(3)
 			pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有买单\n")
 			r_trend_req_confirm = swap_api.swap_depth(contract_code=contract_code, type="step0")
 			current_bids = r_trend_req_confirm.get("tick").get("bids")
