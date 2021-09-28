@@ -42,7 +42,7 @@ from common.SwapServiceOrder import t as swap_order
 from pprint import pprint
 import pytest, allure, random, time
 
-from config.conf import URL, LSS_ACCESS_KEY, COMMON_ACCESS_KEY, LSS_SECRET_KEY, COMMON_SECRET_KEY
+from config.conf import URL, ACCESS_KEY, COMMON_ACCESS_KEY, SECRET_KEY, COMMON_SECRET_KEY
 
 
 @allure.epic('所属分组')  # 这里填业务线
@@ -54,7 +54,7 @@ class TestCoinswapTriggerOrder_014:
     def setup(self):
         print(''' 不要触发，至少2条以上订单 ''')
         print(''' 选择正常限价下单 ''')
-        self.current_user = SwapService(url=URL, access_key=LSS_ACCESS_KEY, secret_key=LSS_SECRET_KEY)
+        self.current_user = SwapService(url=URL, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
         self.common_user = SwapService(url=URL, access_key=COMMON_ACCESS_KEY, secret_key=COMMON_SECRET_KEY)
         self.contract_type = "this_week"
         self.contract_code = "EOS-USD"
@@ -73,7 +73,7 @@ class TestCoinswapTriggerOrder_014:
     def test_execute(self, symbol, symbol_period):
         with allure.step('1、登录币本位永续界面'):
             print(''' 选择正常限价下单 ''')
-            self.current_user = SwapService(url=URL, access_key=LSS_ACCESS_KEY, secret_key=LSS_SECRET_KEY)
+            self.current_user = SwapService(url=URL, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
             self.common_user = SwapService(url=URL, access_key=COMMON_ACCESS_KEY, secret_key=COMMON_SECRET_KEY)
             self.contract_type = "this_week"
             self.contract_code = "EOS-USD"
