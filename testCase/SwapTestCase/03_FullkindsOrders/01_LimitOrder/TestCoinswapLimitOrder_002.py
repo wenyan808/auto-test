@@ -75,13 +75,13 @@ class TestCoinswapLimitOrder_002:
 	@allure.step('测试执行')
 	def test_execute(self, contract_code):
 		flag = True
-		self.setup()
 		leverrate = '5'
 		print('\n获取最近价\n')
 		r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
 		pprint(r)
 		# 得到最近的价格
-		lastprice = r['data'][0]['data'][0]['price']+0.5
+		lastprice = r['data'][0]['data'][0]['price']
+		lastprice = round((lastprice * 0.99), 2)
 		print('\n下一个买单\n')
 		r = swap_api.swap_order(contract_code=contract_code,
 									client_order_id='',
