@@ -2,6 +2,7 @@ import json
 
 import requests
 
+from common.util import api_key_post
 from config import conf
 
 
@@ -44,6 +45,34 @@ class ATP:
         response = requests.post(atp_url, headers=cls.header, json=body)
         return response.json()
 
+    @classmethod
+    def cancel_all_order(cls, contract_code):
+        json_body = {}
+        if conf.SYSTEM_TYPE == 'Delivery':
+            if '_' in contract_code:
+                json_body['symbol'] = contract_code.split('_')[0]
+            else:
+                json_body['symbol'] = contract_code[:-6]
+        else:
+            json_body['contract_code'] = contract_code
+
+        response = api_key_post(conf.URL, conf.CANCEL_ALL_ORDER_URL, json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+        return response
+
+    @classmethod
+    def switch_level(cls, contract_code, lever_rate=5):
+        json_body = {'lever_rate': lever_rate}
+        if conf.SYSTEM_TYPE == 'Delivery':
+            if '_' in contract_code:
+                json_body['symbol'] = contract_code.split('_')[0]
+            else:
+                json_body['symbol'] = contract_code[:-6]
+        else:
+            json_body['contract_code'] = contract_code
+
+        response = api_key_post(conf.URL, conf.SWITCH_LEVER_URL, json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+        return response
+
 
 if __name__ == '__main__':
     print(ATP.get_api_test_data("test_linear_account_info"))
@@ -55,3 +84,8 @@ if __name__ == '__main__':
     print(ATP.clean_market(contract_code='BSV-USD', direction='buy'))
     # 清除盘口所有买卖挂单
     print(ATP.clean_market(contract_code='ETH211231'))
+
+    # 撤销当前用户 某个品种所有限价挂单
+    print(ATP.cancel_all_order(contract_code='ETH211001'))
+    # 修改当前品种杠杆 默认5倍
+    print(ATP.switch_level(contract_code='ETH_CW'))
