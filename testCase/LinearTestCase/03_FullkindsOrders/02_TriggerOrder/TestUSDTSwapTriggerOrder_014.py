@@ -86,7 +86,7 @@ class TestUSDTSwapTriggerOrder_014:
         with allure.step('5、点击全部撤销按钮弹框选择计划委托类型,点击确定后有结果B'):
             r_cancel_all = self.current_user.linear_trigger_cancelall(contract_code=self.contract_code)
             assert r_cancel_all.get("status") == "ok", f"撤销所有计划单失败: {r_cancel_all}"
-            time.sleep(3)
+            time.sleep(4)
         with allure.step('6、检查当前委托-计划委托信息有结果C'):
             pass
         with allure.step('7、检查历史委托-计划委托信息有结果D'):

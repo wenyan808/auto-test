@@ -111,13 +111,11 @@ class TestUSDTSwapTriggerOrder_017:
                     trigger_price = sl_trigger_price
                 expected_tp_sl_each = {"volume": 10, "direction": "sell", "trigger_price": trigger_price, "trigger_type": trigger_type, "order_price": 0, "status": 1, "order_price_type": "optimal_5"}
                 assert common.util.compare_dict(expected_tp_sl_each, i)
-        with allure.step("撤单"):
-            r_cancel = self.current_user.linear_cancel(contract_code=self.contract_code, order_id=tp_sl_order_id)
-            assert r_cancel.get("status") == "ok", f"撤单失败: {r_cancel}"
 
     @allure.step('恢复环境')
     def teardown(self):
-        print('\n恢复环境操作')
+        r_cancel = self.current_user.linear_cancel(contract_code=self.contract_code, order_id=tp_sl_order_id)
+        assert r_cancel.get("status") == "ok", f"撤单失败: {r_cancel}"
 
 
 if __name__ == '__main__':
