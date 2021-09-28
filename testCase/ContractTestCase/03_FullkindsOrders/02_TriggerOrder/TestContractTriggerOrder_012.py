@@ -17,6 +17,7 @@ from tool.get_test_data import case_data
 
 @allure.epic('反向交割')
 @allure.feature('')
+@pytest.mark.stable
 class TestContractTriggerOrder_0012:
 
     def setUp(self):
@@ -25,7 +26,6 @@ class TestContractTriggerOrder_0012:
     @allure.title('{title}')
     def test_contract_account_position_info(self, symbol, symbol_period):
         """ 撤销计划委托订单开仓测试 """
-        self.setUp()
         c = ContractServiceAPI(url=URL, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
         #     获取最新价
         r_contract_trade = c.contract_trade(symbol=symbol_period)

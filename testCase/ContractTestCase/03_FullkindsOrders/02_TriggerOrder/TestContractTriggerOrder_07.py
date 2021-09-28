@@ -15,16 +15,19 @@ from tool.get_test_data import case_data
 
 @allure.epic('反向交割')
 @allure.feature('')
+@pytest.mark.stable
 class TestContractTriggerOrder_007:
 
     def setUp(self):
         self.available = None
         self.trigger_price = None
+        self.order_id = None
+        self.symbol = None
 
     @allure.title('{title}')
     def test_contract_account_position_info(self, symbol, symbol_period):
         """ 计划止盈最优5/10/20挡 """
-        self.setUp()
+        self.symbol = symbol
         pprint("\n步骤一：查看自己的持仓\n")
         contract_ltc_info = contract_api.contract_contract_info(symbol=symbol).get("data")
         contract_type = "this_week"
@@ -84,29 +87,31 @@ class TestContractTriggerOrder_007:
         # 如果有持仓，就不需要再造持仓了，否则需要去造持仓数据
         if positions_data:
             pprint("\n找到已存在的LTC持仓数据, 判断可平量...\n")
-            order_id = get_order_id(positions_data)
-            if not order_id:
+            self.order_id = get_order_id(positions_data)
+            if not self.order_id:
                 pprint("\n可平量少于10个， 准备制造持仓...\n")
                 sell_and_buy()
                 positions_data = contract_api.contract_account_position_info(symbol=symbol).get("data")
-                order_id = get_order_id(positions_data)
+                self.order_id = get_order_id(positions_data)
         # 否则，先持仓10张(做一个卖->买)，再下计划委托单
         else:
             sell_and_buy()
             positions_data = contract_api.contract_account_position_info(symbol=symbol).get("data")
-            order_id = get_order_id(positions_data)
+            self.order_id = get_order_id(positions_data)
 
         res_all_his_orders = contract_api.contract_trigger_openorders(symbol=symbol, contract_code=contract_code).get("data").get("orders")
         for r in res_all_his_orders:
-            if r.get("order_id") == order_id:
+            if r.get("order_id") == self.order_id:
                 expected_did = {"trigger_type": trigger_type, "volume": self.available, "lever_rate": lever_rate, "order_price_type": order_price_type, "trigger_price": self.trigger_price, "contract_code": contract_code, "symbol": symbol,
                                 "contract_type": contract_type, "direction": direction, "offset": offset}
                 assert common.util.compare_dict(expected_did, r)
-                pprint("\n步骤三: 撤单\n")
-                r_cancel = contract_api.contract_cancel(symbol=symbol, order_id=order_id)
-                assert r_cancel.get("status") == "ok"
                 return
-        raise BaseException("在{res_all_his_orders}中未找到历史订单含有订单号: {order_id}".format(res_all_his_orders=res_all_his_orders, order_id=order_id))
+        raise BaseException("在{res_all_his_orders}中未找到历史订单含有订单号: {order_id}".format(res_all_his_orders=res_all_his_orders, order_id=self.order_id))
+
+    @allure.step("恢复环境")
+    def teardown(self):
+        r_cancel = contract_api.contract_cancel(symbol=self.symbol, order_id=self.order_id)
+        assert r_cancel.get("status") == "ok", f"撤单失败: {r_cancel}"
 
 
 if __name__ == '__main__':

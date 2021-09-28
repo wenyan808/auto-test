@@ -44,17 +44,21 @@ from config.conf import URL, ACCESS_KEY, SECRET_KEY
 @allure.epic('交割')  # 这里填业务线
 @allure.feature('止盈止损')  # 这里填功能
 @allure.story('下单区域下止盈止损限价单成交测试')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
 class TestContractTriggerOrder_016:
 
     @allure.step('前置条件')
     def setup(self):
         print(''' 在下单区域下单，下限价委托单触发成交 ''')
+        self.symbol = None
+        self.order_id = None
+        self.contract_code = None
 
     @allure.title('下单区域下止盈止损限价单成交测试')
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
         with allure.step('1、登录交割合约界面'):
-            pass
+            self.symbol = symbol
         with allure.step('2、选择BTC当周，选择杠杆5X，点击开仓-限价按钮'):
             self.c = ContractServiceAPI(url=URL, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
             #     获取最新价
@@ -78,13 +82,13 @@ class TestContractTriggerOrder_016:
             sl_order_price_type = "limit"
             pprint("\n前置： 获取合约code\n")
             contract_type = "this_week"
-            contract_code = [i.get("contract_code") for i in contract_ltc_info if i.get("contract_type") == contract_type][0]
+            self.contract_code = [i.get("contract_code") for i in contract_ltc_info if i.get("contract_type") == contract_type][0]
             volume = 10
             direction = "buy"
             offset = "open"
             lever_rate = 5
             order_price_type = "limit"
-            r_contract_order = self.c.contract_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code, price=open_price, volume=volume, direction=direction, offset=offset, lever_rate=lever_rate, order_price_type=order_price_type,
+            r_contract_order = self.c.contract_order(symbol=symbol, contract_type=contract_type, contract_code=self.contract_code, price=open_price, volume=volume, direction=direction, offset=offset, lever_rate=lever_rate, order_price_type=order_price_type,
                                                      tp_trigger_price=tp_trigger_price, tp_order_price=tp_order_price, tp_order_price_type=tp_order_price_type, sl_trigger_price=sl_trigger_price, sl_order_price=sl_order_price, sl_order_price_type=sl_order_price_type)
             assert r_contract_order.get("status") == "ok", "下单失败: {r_contract_order}".format(r_contract_order=r_contract_order)
             order_id = r_contract_order.get("data").get("order_id")
@@ -104,15 +108,12 @@ class TestContractTriggerOrder_016:
             time.sleep(3)
             r_contract_order_history_data = self.c.contract_relation_tpsl_order(symbol=symbol, order_id=order_id).get("data")
             # 获取成交之前的止盈止损单
-            before_deal_contract_tpsl_openorders = self.c.contract_tpsl_openorders(symbol=symbol, contract_code=contract_code).get("data").get("orders")
+            before_deal_contract_tpsl_openorders = self.c.contract_tpsl_openorders(symbol=symbol, contract_code=self.contract_code).get("data").get("orders")
 
         with allure.step('10、在当前委托-限价委托列表的止盈/止损列点击查看按钮有结果B'):
-            expected_info = {"symbol": symbol, "contract_code": contract_code, "contract_type": contract_type, "volume": volume, "price": open_price, "order_price_type": order_price_type, "direction": direction, "offset": offset, "lever_rate": lever_rate}
+            expected_info = {"symbol": symbol, "contract_code": self.contract_code, "contract_type": contract_type, "volume": volume, "price": open_price, "order_price_type": order_price_type, "direction": direction, "offset": offset, "lever_rate": lever_rate}
             assert common.util.compare_dict(expected_info, r_contract_order_history_data)
             direction_tp_sl = "sell"
-            """
-                1:未生效、2:等待委托、3:委托中、4:委托成功、5:委托失败、6:已撤单、8：撤单未找到、9：撤单中、10：失败' 、11：已失效、12、未生效-已结束
-            """
             expected_tp_info = {"volume": volume, "direction": direction_tp_sl, "tpsl_order_type": "tp", "trigger_type": "ge", "trigger_price": tp_trigger_price, "order_price": tp_trigger_price, "order_price_type": order_price_type, "status": 1}
             expected_sl_info = {"volume": volume, "direction": direction_tp_sl, "tpsl_order_type": "sl", "trigger_type": "le", "trigger_price": sl_trigger_price, "order_price": sl_trigger_price, "order_price_type": order_price_type, "status": 1}
             for tp_sl in r_contract_order_history_data.get("tpsl_order_info"):
@@ -121,11 +122,11 @@ class TestContractTriggerOrder_016:
                 else:
                     assert common.util.compare_dict(expected_sl_info, tp_sl)
         with allure.step("11、做一个卖单促成成交"):
-            res_sell = self.c.contract_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code, price=open_price, volume=volume, direction="sell", offset="open", lever_rate=lever_rate, order_price_type="limit")
+            res_sell = self.c.contract_order(symbol=symbol, contract_type=contract_type, contract_code=self.contract_code, price=open_price, volume=volume, direction="sell", offset="open", lever_rate=lever_rate, order_price_type="limit")
             assert res_sell.get("status") == "ok", "下开仓卖单失败: {res_sell}".format(res_sell=res_sell)
             time.sleep(5)
         with allure.step("12. 检查止盈止损单状态"):
-            after_contract_tpsl_openorders = self.c.contract_tpsl_openorders(symbol=symbol, contract_code=contract_code).get('data').get('orders')
+            after_contract_tpsl_openorders = self.c.contract_tpsl_openorders(symbol=symbol, contract_code=self.contract_code).get('data').get('orders')
             new_orders = [o for o in after_contract_tpsl_openorders if o not in before_deal_contract_tpsl_openorders]
             after_deal_expected_tp_info = {"volume": volume, "direction": direction_tp_sl, "tpsl_order_type": "tp", "trigger_type": "ge", "trigger_price": tp_trigger_price, "order_price": tp_trigger_price, "order_price_type": order_price_type, "status": 2}
             after_deal_expected_sl_info = {"volume": volume, "direction": direction_tp_sl, "tpsl_order_type": "sl", "trigger_type": "le", "trigger_price": sl_trigger_price, "order_price": sl_trigger_price, "order_price_type": order_price_type, "status": 2}
@@ -135,13 +136,10 @@ class TestContractTriggerOrder_016:
                 else:
                     assert common.util.compare_dict(after_deal_expected_sl_info, tp_sl)
 
-        with allure.step('13、撤单'):
-            r_cancel_all = self.c.contract_tpsl_cancelall(symbol=symbol, contract_code=contract_code)
-            assert r_cancel_all.get('status') == "ok", "撤单失败"
-
     @allure.step('环境清理')
     def teardown(self):
-        pass
+        r_cancel_all = self.c.contract_tpsl_cancelall(symbol=self.symbol, contract_code=self.contract_code)
+        assert r_cancel_all.get('status') == "ok", f"撤单失败: r{r_cancel_all}"
 
 
 if __name__ == '__main__':

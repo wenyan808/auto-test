@@ -17,25 +17,28 @@ from tool.get_test_data import case_data
 
 @allure.epic('反向交割')
 @allure.feature('')
+@pytest.mark.stable
 class TestContractTriggerOrder_0010:
 
     def setUp(self):
-        pass
+        self.symbol = None
+        self.new_order_id = None
 
     @allure.title('{title}')
     def test_contract_account_position_info(self, symbol, symbol_period):
         """ 触发计划委托订单开仓测试 """
-        self.setUp()
-        curren_user = ContractServiceAPI(url=URL, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
+        self.symbol = symbol
+
+        current_user = ContractServiceAPI(url=URL, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
         common_user = ContractServiceAPI(url=URL, access_key=COMMON_ACCESS_KEY, secret_key=COMMON_SECRET_KEY)
         #     获取最新价
-        r_contract_trade = curren_user.contract_trade(symbol=symbol_period)
+        r_contract_trade = current_user.contract_trade(symbol=symbol_period)
         data_r_tract_trade = r_contract_trade.get("tick").get("data")
         last_price = float(data_r_tract_trade[0].get("price"))
         pprint("\n前置： 获取合约code\n")
-        contract_ltc_info = curren_user.contract_contract_info(symbol=symbol).get("data")
+        contract_ltc_info = current_user.contract_contract_info(symbol=symbol).get("data")
         print("查询当前限价委托单")
-        res_before_limit_created_orders = curren_user.contract_openorders(symbol=symbol, trade_type=0).get("data").get("orders")
+        res_before_limit_created_orders = current_user.contract_openorders(symbol=symbol, trade_type=0).get("data").get("orders")
         pprint("\n步骤一: 开仓-计划委托单\n")
         contract_type = "this_week"
         contract_code = [i.get("contract_code") for i in contract_ltc_info if i.get("contract_type") == contract_type][0]
@@ -48,12 +51,12 @@ class TestContractTriggerOrder_0010:
         offset = "open"
         lever_rate = 5
         order_price_type = "limit"
-        resp_plan_buy = curren_user.contract_trigger_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code, trigger_type=trigger_type, trigger_price=trigger_price, order_price=order_price, order_price_type=order_price_type, volume=volume,
+        resp_plan_buy = current_user.contract_trigger_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code, trigger_type=trigger_type, trigger_price=trigger_price, order_price=order_price, order_price_type=order_price_type, volume=volume,
                                                            direction=direction, offset=offset, lever_rate=lever_rate)
         assert resp_plan_buy.get("status") == "ok", "下单出错: {res}".format(res=resp_plan_buy)
         order_id = resp_plan_buy['data']['order_id']
         time.sleep(5)
-        res_all_his_orders = curren_user.contract_trigger_openorders(symbol=symbol, contract_code=contract_code).get("data").get("orders")
+        res_all_his_orders = current_user.contract_trigger_openorders(symbol=symbol, contract_code=contract_code).get("data").get("orders")
         order_created = False
         for r in res_all_his_orders:
             if r.get("order_id") == order_id:
@@ -68,22 +71,28 @@ class TestContractTriggerOrder_0010:
             assert resp_limit_sell.get("status") == "ok", "下单出错: {res}".format(res=resp_limit_sell)
             resp_limit_buy = common_user.contract_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code, price=order_price, volume=1, direction="buy", offset="open", lever_rate=lever_rate, order_price_type=order_price_type)
             assert resp_limit_buy.get("status") == "ok", "下单出错: {res}".format(res=resp_limit_buy)
-            time.sleep(5)
-            res_all_orders = curren_user.contract_openorders(symbol=symbol, trade_type=0)
-            print(res_all_orders)
-            after_orders = res_all_orders.get("data").get("orders")
+            after_orders = None
+            time_count = 0
+            while (not after_orders) and (time_count < 10):
+                time.sleep(1)
+                res_all_orders = current_user.contract_openorders(symbol=symbol, trade_type=0)
+                print(res_all_orders)
+                after_orders = res_all_orders.get("data").get("orders")
+                time_count += 1
             new_order = [i for i in after_orders if i not in res_before_limit_created_orders][0]
             expected_dic = {"symbol": symbol, "order_price_type": order_price_type, "lever_rate": lever_rate, "volume": volume, "price": order_price}
             assert common.util.compare_dict(expected_dic, new_order)
-            new_order_id = new_order.get("order_id")
+            self.new_order_id = new_order.get("order_id")
             created_time = datetime.datetime.fromtimestamp(new_order.get("created_at") / 1000)
             now = datetime.datetime.now()
             assert (now + datetime.timedelta(seconds=180) >= created_time >= now) or (created_time + datetime.timedelta(seconds=180) >= now >= created_time), "时间过长对不上(时间差超过180s)"
-            print("步骤四: 撤单")
-            r_cancel = curren_user.contract_cancel(symbol=symbol, order_id=new_order_id)
-            assert r_cancel.get("status") == "ok"
         else:
             raise BaseException("在{res_all_his_orders}中未找到历史订单含有订单号: {order_id}".format(res_all_his_orders=res_all_his_orders, order_id=order_id))
+
+    @allure.step("恢复环境")
+    def teardown(self):
+        r_cancel = contract_api.contract_cancel(symbol=self.symbol, order_id=self.new_order_id)
+        assert r_cancel.get("status") == "ok", f"撤单失败: {r_cancel}"
 
 
 if __name__ == '__main__':
