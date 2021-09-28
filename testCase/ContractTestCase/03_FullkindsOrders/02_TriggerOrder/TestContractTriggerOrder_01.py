@@ -20,7 +20,7 @@ class TestContractTriggerOrder_001:
         self.oder_id = None
         self.symbol = None
 
-    @allure.title('{title}')
+    @allure.title('计划委托正常限价开仓测试')
     def test_contract_account_position_info(self, symbol):
         """ 计划委托正常限价开仓测试 """
         self.symbol = symbol

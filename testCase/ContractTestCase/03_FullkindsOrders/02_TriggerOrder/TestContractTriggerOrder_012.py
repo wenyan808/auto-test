@@ -23,7 +23,7 @@ class TestContractTriggerOrder_0012:
     def setUp(self):
         pass
 
-    @allure.title('{title}')
+    @allure.title('撤销计划委托订单开仓测试')
     def test_contract_account_position_info(self, symbol, symbol_period):
         """ 撤销计划委托订单开仓测试 """
         c = ContractServiceAPI(url=URL, access_key=ACCESS_KEY, secret_key=SECRET_KEY)

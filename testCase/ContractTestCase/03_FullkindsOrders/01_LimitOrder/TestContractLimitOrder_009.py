@@ -28,7 +28,7 @@ class TestContractLimitOrder_009:
     def setUp(self):
         print('\n前置条件')
 
-    @allure.title('{title}')
+    @allure.title('对手价买入开多卖盘无数据以对手价买入会报对手价不存在')
     def test_contract_limit_order(self, symbol, symbol_period):
         """ 对手价买入开多卖盘无数据以对手价买入会报对手价不存在 """
         lever_rate = 5
