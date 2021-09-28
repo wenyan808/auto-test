@@ -50,6 +50,7 @@ from tool.atp import ATP
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
 class TestUSDTSwapLimitOrder_009:
 
 	@allure.step('前置条件')
@@ -133,13 +134,13 @@ class TestUSDTSwapLimitOrder_009:
 			time.sleep(3)
 			pprint(r_buy_opponent)
 		with allure.step('2、观察下单是否成功有结果A'):
-			actual_status = r_buy_opponent.get("status")
-			actual_msg = r_buy_opponent.get("err_msg")
+			err_code = r_buy_opponent.get("err_code")
+			assert err_code == 1016
 		with allure.step('3、观察历史委托-限价委托有结果B'):
 			r = linear_api.linear_openorders(contract_code=contract_code, page_index='', page_size='')
 			pprint(r)
 			totalsize2 = r['data']['total_size']
-			actual_orderinfo = r['data']['orders'][0]
+			assert totalsize2 ==0
 		with allure.step('4、观察资产信息有结果C'):
 			pass
 
