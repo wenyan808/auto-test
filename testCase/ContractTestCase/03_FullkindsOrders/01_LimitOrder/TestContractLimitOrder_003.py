@@ -23,6 +23,7 @@ from config.conf import *
 # hisorder 限价委托
 @allure.epic('反向交割')
 @allure.feature('')
+@pytest.mark.stable
 class TestContractLimitOrder_003:
 
     def setUp(self):

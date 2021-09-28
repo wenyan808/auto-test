@@ -23,6 +23,7 @@ from datetime import datetime
 # hisorder 限价委托
 @allure.epic('反向交割')
 @allure.feature('')
+@pytest.mark.stable
 class TestContractLimitOrder_008:
 
     def setUp(self):
