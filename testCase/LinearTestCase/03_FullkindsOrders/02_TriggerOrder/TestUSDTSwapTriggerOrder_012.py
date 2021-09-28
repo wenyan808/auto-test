@@ -96,7 +96,7 @@ class TestUSDTSwapTriggerOrder_012:
         with allure.step('8、点击撤销按钮有结果C'):
             r_cancel = self.current_user.linear_trigger_cancel(order_id=plan_order_id, contract_code=self.contract_code)
             assert r_cancel.get("status") == "ok", f"撤单失败: {r_cancel}"
-            time.sleep(3)
+            time.sleep(4)
         with allure.step('9、检查历史委托-计划委托界面有结果D'):
             trigger_his_orders = self.current_user.linear_trigger_hisorders(contract_code=self.contract_code, status="6", trade_type=1, create_date=7).get("data").get("orders")
             trigger_order = [i for i in trigger_his_orders if i.get("order_id") == plan_order_id]

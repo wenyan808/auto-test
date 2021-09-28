@@ -47,6 +47,7 @@ from config.conf import URL2, ACCESS_KEY, SECRET_KEY
 @allure.epic('所属分组')  # 这里填业务线
 @allure.feature('计划委托')  # 这里填功能
 @allure.story('计划止损最优5/10/20挡')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
 class TestUSDTSwapTriggerOrder_009:
 
     @allure.step('前置条件')
@@ -54,7 +55,7 @@ class TestUSDTSwapTriggerOrder_009:
         print(''' 有持仓且大于等于10张， 触发价小于最新价 ''')
         self.contract_code = "BTC-USDT"
         self.current_user = LinearServiceAPI(url=URL2, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
-        position_larger_than_10 = self.current_user.check_positions_larger_than(contract_code=self.contract_code, direction="buy", amount=10)
+        position_larger_than_10 = self.current_user.check_positions_larger_than(contract_code=self.contract_code, direction="buy", amount=10, position_type=1)
         price = 5
         if not position_larger_than_10:
             # 获取买一价, 以稍高与买一价的价格进行一次买->卖，制造持仓(逐仓)
@@ -103,13 +104,11 @@ class TestUSDTSwapTriggerOrder_009:
             new_plan_order = new_plan_orders[0]
             expected_info = {"contract_code": self.contract_code, "trigger_type": "le", "volume": 10, "direction": "sell", "lever_rate": 5, "trigger_price": trigger_price, "order_price": 0, "order_price_type": "optimal_5", "margin_mode": "isolated"}
             assert common.util.compare_dict(expected_info, new_plan_order)
-        with allure.step("撤单"):
-            r_cancel = self.current_user.linear_trigger_cancelall(contract_code=self.contract_code)
-            assert r_cancel.get('status') == "ok", f"撤单失败: {r_cancel}"
 
     @allure.step('恢复环境')
     def teardown(self):
-        print('\n恢复环境操作')
+        r_cancel = self.current_user.linear_trigger_cancelall(contract_code=self.contract_code)
+        assert r_cancel.get('status') == "ok", f"撤单失败: {r_cancel}"
 
 
 if __name__ == '__main__':

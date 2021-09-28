@@ -59,7 +59,7 @@ class TestUSDTSwapTriggerOrder_011:
     @allure.step('测试执行')
     def test_execute(self, symbol):
         with allure.step("0、进行一次买卖，保证可平多量至少为10"):
-            position_larger_than_10 = self.current_user.check_positions_larger_than(contract_code=self.contract_code, direction="sell", amount=10)
+            position_larger_than_10 = self.current_user.check_positions_larger_than(contract_code=self.contract_code, direction="sell", amount=10, position_type=1)
             price = 5
             if not position_larger_than_10:
                 # 获取买一价, 以稍高与买一价的价格进行一次买->卖，制造持仓(逐仓)
@@ -88,7 +88,6 @@ class TestUSDTSwapTriggerOrder_011:
             order_price = round(trigger_price * 0.9, 1)
             r_order_plan = self.current_user.linear_trigger_order(contract_code=self.contract_code, trigger_type="ge", trigger_price=trigger_price, order_price=order_price, order_price_type="limit", volume=10, direction="buy", offset="close", lever_rate=5)
             assert r_order_plan.get("status") == "ok", f"下计划委托单失败: {r_order_plan}"
-            plan_order_id = r_order_plan.get("data").get("order_id")
             time.sleep(3)
         with allure.step('2、选择BTC当周，选择杠杆5X，点击平仓-计划按钮'):
             pass
