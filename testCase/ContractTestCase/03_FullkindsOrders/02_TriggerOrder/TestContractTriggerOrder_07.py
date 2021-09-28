@@ -24,7 +24,7 @@ class TestContractTriggerOrder_007:
         self.order_id = None
         self.symbol = None
 
-    @allure.title('{title}')
+    @allure.title('计划止盈最优5/10/20挡')
     def test_contract_account_position_info(self, symbol, symbol_period):
         """ 计划止盈最优5/10/20挡 """
         self.symbol = symbol

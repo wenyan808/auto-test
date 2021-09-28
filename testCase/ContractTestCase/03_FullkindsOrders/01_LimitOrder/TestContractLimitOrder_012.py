@@ -23,14 +23,14 @@ from datetime import datetime
 @allure.epic('反向交割')
 @allure.feature('')
 @pytest.mark.stable
-class TestContractLimitOrder_010:
+class TestContractLimitOrder_0012:
 
     def setUp(self):
         print('\n前置条件')
 
-    @allure.title('{title}')
+    @allure.title('最优5档卖出开空买盘无数据自动撤单')
     def test_contract_limit_order(self, symbol, symbol_period):
-        """ 对手价卖出开空买盘无数据自动撤单 """
+        """ 最优5档卖出开空买盘无数据自动撤单 """
         lever_rate = 5
 
         self.setUp()
@@ -41,27 +41,25 @@ class TestContractLimitOrder_010:
         # 如果有买单，则吃掉所有买单;如果没有，则不需要吃盘，直接卖出
         if current_bids:
             total_bids = 0
-            lowest_price_list = []
-            lowest_price = None
+            lowest_price = []
             for each_bids in current_bids:
                 each_price, each_amount = each_bids[0], each_bids[1]
                 total_bids += each_amount
-                lowest_price_list.append(each_price)
-                lowest_price = min(lowest_price_list)
-                pprint("\n步骤二：用操作账号以当前最低价吃掉所有买单(卖出)\n")
+                lowest_price.append(each_price)
+            lowest_price = min(lowest_price)
+            pprint("\n步骤二：用操作账号以当前最低价吃掉所有买单(卖出)\n")
             service = ContractServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
-            r_eat = service.contract_order(symbol=symbol, contract_type='this_week', price=lowest_price, volume=total_bids, direction='sell', offset='open', lever_rate=lever_rate, order_price_type='limit')
-            assert r_eat.get("status") == "ok", f"吃买单失败: r{r_eat}"
+            service.contract_order(symbol=symbol, contract_type='this_week', price=lowest_price, volume=total_bids, direction='sell', offset='open', lever_rate=lever_rate, order_price_type='limit')
             time.sleep(3)
             pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有买单\n")
             r_trend_req_confirm = contract_api.contract_depth(symbol=symbol_period, type="step0")
             current_bids = r_trend_req_confirm.get("tick").get("bids")
             assert not current_bids, "买盘不为空! 当前买盘: {current_bids}".format(current_bids=current_bids)
-        pprint("\n步骤四: 以对手价卖出做空\n")
-        r_sell_opponent = contract_api.contract_order(symbol=symbol, contract_type='this_week', order_price_type='opponent', price="", direction="sell", offset="open", lever_rate=lever_rate, volume=1)
+        pprint("\n步骤四: 以最优5档卖出做空\n")
+        r_sell_opponent = contract_api.contract_order(symbol=symbol, contract_type='this_week', order_price_type='optimal_5', price="", direction="sell", offset="open", lever_rate=lever_rate, volume=1)
         actual_status = r_sell_opponent.get("status")
         actual_msg = r_sell_opponent.get("err_msg")
-        assert actual_status == 'error' and actual_msg == "对手价不存在", "预期: `error`+`对手价不存在`, 实际: `{actual_status}+{actual_msg}`".format(actual_status=actual_status, actual_msg=actual_msg)
+        assert actual_status == 'error' and actual_msg == "盘口无数据,请稍后再试", "预期: `error`+`盘口无数据,请稍后再试`, 实际: `{actual_status}+{actual_msg}`".format(actual_status=actual_status, actual_msg=actual_msg)
 
 
 if __name__ == '__main__':

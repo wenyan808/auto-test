@@ -28,7 +28,7 @@ class TestContractLimitOrder_0013:
     def setUp(self):
         print('\n前置条件')
 
-    @allure.title('{title}')
+    @allure.title('最优10档买入开多卖盘无数据自动撤单')
     def test_contract_limit_order(self, symbol, symbol_period):
         """ 最优10档买入开多卖盘无数据自动撤单 """
         lever_rate = 5

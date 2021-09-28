@@ -24,7 +24,7 @@ class TestContractTriggerOrder_0010:
         self.symbol = None
         self.new_order_id = None
 
-    @allure.title('{title}')
+    @allure.title('触发计划委托订单开仓测试')
     def test_contract_account_position_info(self, symbol, symbol_period):
         """ 触发计划委托订单开仓测试 """
         self.symbol = symbol
