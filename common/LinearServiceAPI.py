@@ -4,12 +4,9 @@
 # @Author  : zhangranghan
 
 
-
-from common.util import api_http_get, api_key_post,api_key_get
-from config.conf  import URL2,ACCESS_KEY,SECRET_KEY
+from common.util import api_http_get, api_key_post, api_key_get
+from config.conf import URL2, ACCESS_KEY, SECRET_KEY
 import time
-
-
 
 
 class LinearServiceAPI:
@@ -2279,18 +2276,18 @@ class LinearServiceAPI:
     def linear_control_price(self, contract_code='', price=None, lever_rate='1'):
 
         self.linear_cross_order(contract_code=contract_code, price=price, volume='1', direction='buy',
-                        offset='open', lever_rate=lever_rate, order_price_type='limit')
+                                offset='open', lever_rate=lever_rate, order_price_type='limit')
         time.sleep(0.5)
         self.linear_cross_order(contract_code=contract_code, price=price, volume='1', direction='sell',
-                        offset='open', lever_rate=lever_rate, order_price_type='limit')
+                                offset='open', lever_rate=lever_rate, order_price_type='limit')
         time.sleep(2)
         self.linear_cross_order(contract_code=contract_code, price=price, volume='1', direction='buy',
-                        offset='close', lever_rate=lever_rate, order_price_type='limit')
+                                offset='close', lever_rate=lever_rate, order_price_type='limit')
         time.sleep(0.5)
         self.linear_cross_order(contract_code=contract_code, price=price, volume='1', direction='sell',
-                        offset='close', lever_rate=lever_rate, order_price_type='limit')
+                                offset='close', lever_rate=lever_rate, order_price_type='limit')
 
-        # 全仓清空当前持仓
+    # 全仓清空当前持仓
     def linear_cross_empty_position(self, contract_code='', price=None):  # 恢复环境时用
 
         r = self.linear_cross_position_info(contract_code=contract_code)
@@ -2329,6 +2326,24 @@ class LinearServiceAPI:
             print("当前持仓状况复杂，无法通过自我成交清空，请人工处理")
             return False
 
+    def check_positions_larger_than(self, contract_code, direction="buy", amount=10, position_type="isolated") -> bool:
+        """
+        查询仓位是否大于某个数量
+        @param contract_code: BTC-USDT, etc.
+        @param direction: buy: 多仓, sell: 空仓
+        @param amount: 大于多少
+        @param position_type: 查询的仓位类型, isolated: 逐仓
+        @return:
+        """
+        position_info = self.linear_position_info(contract_code=contract_code).get("data")
+        if not position_info:
+            return False
+        else:
+            for p in position_info:
+                if p.get("contract_code") == contract_code and p.get("available") >= amount and p.get("direction") == direction:
+                    return True
+            return False
 
-#定义t并传入公私钥和URL,供用例直接调用
-t = LinearServiceAPI(URL2,ACCESS_KEY,SECRET_KEY)
+
+# 定义t并传入公私钥和URL,供用例直接调用
+t = LinearServiceAPI(URL2, ACCESS_KEY, SECRET_KEY)
