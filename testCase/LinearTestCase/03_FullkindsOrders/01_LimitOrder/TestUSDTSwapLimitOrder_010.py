@@ -50,7 +50,6 @@ from tool.atp import ATP
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
-@pytest.mark.stable
 class TestUSDTSwapLimitOrder_010:
 
 	@allure.step('前置条件')
@@ -114,6 +113,7 @@ class TestUSDTSwapLimitOrder_010:
 										lever_rate=lever_rate,
 										order_price_type='limit')
 			pprint(r)
+			time.sleep(3)
 			pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有买单\n")
 			r_trend_req_confirm = linear_api.linear_depth(contract_code=contract_code, type="step0")
 			current_bids = r_trend_req_confirm.get("tick").get("bids")
@@ -142,4 +142,4 @@ class TestUSDTSwapLimitOrder_010:
 		print('\n恢复环境操作')
 
 if __name__ == '__main__':
-    pytest.main()
+	pytest.main()

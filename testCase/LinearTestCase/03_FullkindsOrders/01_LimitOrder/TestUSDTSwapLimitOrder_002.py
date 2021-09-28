@@ -84,8 +84,8 @@ class TestUSDTSwapLimitOrder_002:
 		r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
 		pprint(r)
 		#得到最近的价格
-		lastprice = r['data'][0]['data'][0]['price']
-		lastprice = round((lastprice * 0.99), 2)
+		lastprice1 = r['data'][0]['data'][0]['price']
+		lastprice = round((lastprice1 * 0.99), 2)
 		print('\n下一个买单\n')
 		r = linear_api.linear_order(contract_code=contract_code,
 									client_order_id='',
@@ -109,7 +109,7 @@ class TestUSDTSwapLimitOrder_002:
 		pprint(totalsize1)
 		with allure.step('1、卖出开空限价手动输入价格高于买一价'):
 			#生成一个卖出开空下单价(高于买一价)
-			orderprice = lastprice+0.5
+			orderprice = round((lastprice1 * 1.01), 2)
 			#卖出开空限价下单
 			r = linear_api.linear_order(contract_code=contract_code,
 										client_order_id='',
