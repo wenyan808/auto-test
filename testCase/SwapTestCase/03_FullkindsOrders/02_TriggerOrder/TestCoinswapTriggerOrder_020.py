@@ -44,7 +44,7 @@ from common.SwapServiceOrder import t as swap_order
 from pprint import pprint
 import pytest, allure, random, time
 
-from config.conf import URL, LSS_SECRET_KEY, LSS_ACCESS_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
+from config.conf import URL, SECRET_KEY, ACCESS_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
 
 
 @allure.epic('所属分组')  # 这里填业务线
@@ -57,7 +57,7 @@ class TestCoinswapTriggerOrder_020:
         print(''' 有持仓且大于等于10张''')
         print(''' 有持仓且大于等于10张''')
         self.contract_code = "EOS-USD"
-        self.current_user = SwapService(url=URL, access_key=LSS_ACCESS_KEY, secret_key=LSS_SECRET_KEY)
+        self.current_user = SwapService(url=URL, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
         self.common_user = SwapService(url=URL, access_key=COMMON_ACCESS_KEY, secret_key=COMMON_SECRET_KEY)
         position_larger_than_10 = self.current_user.check_positions_larger_than(contract_code=self.contract_code, direction="buy", amount=10)
         if not position_larger_than_10:

@@ -44,7 +44,7 @@ from common.SwapServiceOrder import t as swap_order
 from pprint import pprint
 import pytest, allure, random, time
 
-from config.conf import URL, LSS_SECRET_KEY, LSS_ACCESS_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
+from config.conf import URL, SECRET_KEY, ACCESS_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
 
 
 @allure.epic('所属分组')  # 这里填业务线
@@ -61,7 +61,7 @@ class TestCoinswapTriggerOrder_015:
     def test_execute(self, symbol, symbol_period):
         with allure.step("0、判断盘口有无数据，么有的话，挂一个买单"):
             contract_code = "EOS-USD"
-            current_user = SwapService(url=URL, access_key=LSS_ACCESS_KEY, secret_key=LSS_SECRET_KEY)
+            current_user = SwapService(url=URL, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
             print("步骤一(0): 为了不要成交，找出卖盘的最低价, 并以低于卖1价的价格下单")
             r_trend_req = current_user.swap_depth(contract_code=contract_code, type="step5")
             asks = r_trend_req.get("tick").get("asks", None)
