@@ -19,7 +19,6 @@ import time
 TIMEOUT = 15
 
 
-
 # 各种请求,获取数据方式
 def api_http_get(url, params, add_to_headers=None):
     headers = {
@@ -204,6 +203,17 @@ def sub(url, subs):
 """ 公共常用函数 """
 
 
+# def compare_dict(expected: dict, actual: dict) -> bool:
+#     for k, v in expected.items():
+#         v_actual = actual.get(k, None)
+#         if not v_actual:
+#             # 没找到可能是0值，也可能是None
+#             if v_actual != 0:
+#                 raise Exception("{expected_k_v} not found in actual".format(expected_k_v={k: v}))
+#         if actual.get(k) != expected.get(k):
+#             raise Exception("expected: {expected_k_v}, actual: {actual_k_v}".format(expected_k_v={k: v}, actual_k_v={k: actual.get(k)}))
+#     return True
+
 def compare_dict(expected, result):
     err = 0
     for key in expected:
@@ -224,3 +234,4 @@ def compare_dict(expected, result):
         return True
     else:
         return False
+

@@ -67,6 +67,10 @@ class TestUSDTSwapLimitOrder_001:
 		2、再根据测试场景进行拿初始化账户进行买一卖一挂单作为对手方
 		3、每次完成测试后再还原环境
 		4、本次用例场景为无成交下撤单场景 ''')
+		# 撤销当前用户 某个品种所有限价挂单
+		ATP.cancel_all_order(contract_code=contract_code)
+		# 修改当前品种杠杆 默认5倍
+		ATP.switch_level(contract_code=contract_code)
 		# 清除盘口所有卖单
 		ATP.clean_market(contract_code=contract_code, direction='sell')
 		# 清除盘口所有买单
@@ -96,7 +100,7 @@ class TestUSDTSwapLimitOrder_001:
 									order_price_type='limit')
 		pprint(r)
 		orderid1 = r['data']['order_id']
-		self.orderid1 = orderid1;
+		self.orderid1 = orderid1
 		time.sleep(3)
 		"""获取当前冻结保证金"""
 		r = linear_api.linear_account_info(contract_code=contract_code)

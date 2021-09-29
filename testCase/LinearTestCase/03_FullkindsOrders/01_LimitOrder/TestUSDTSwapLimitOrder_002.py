@@ -66,6 +66,10 @@ class TestUSDTSwapLimitOrder_002:
 		2、再根据测试场景进行拿初始化账户进行买一卖一挂单作为对手方
 		3、每次完成测试后再还原环境
 		4、本次用例场景为无成交下撤单场景 ''')
+		# 撤销当前用户 某个品种所有限价挂单
+		ATP.cancel_all_order(contract_code=contract_code)
+		#修改当前品种杠杆 默认5倍
+		ATP.switch_level(contract_code=contract_code)
 		# 清除盘口所有卖单
 		ATP.clean_market(contract_code=contract_code, direction='sell')
 		# 清除盘口所有买单
@@ -80,8 +84,8 @@ class TestUSDTSwapLimitOrder_002:
 		r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
 		pprint(r)
 		#得到最近的价格
-		lastprice = r['data'][0]['data'][0]['price']
-		lastprice = round((lastprice * 0.99), 2)
+		lastprice1 = r['data'][0]['data'][0]['price']
+		lastprice = round((lastprice1 * 0.98), 2)
 		print('\n下一个买单\n')
 		r = linear_api.linear_order(contract_code=contract_code,
 									client_order_id='',
@@ -105,7 +109,7 @@ class TestUSDTSwapLimitOrder_002:
 		pprint(totalsize1)
 		with allure.step('1、卖出开空限价手动输入价格高于买一价'):
 			#生成一个卖出开空下单价(高于买一价)
-			orderprice = lastprice+0.5
+			orderprice = round((lastprice1 * 1.05), 2)
 			#卖出开空限价下单
 			r = linear_api.linear_order(contract_code=contract_code,
 										client_order_id='',
@@ -132,10 +136,9 @@ class TestUSDTSwapLimitOrder_002:
 			"""获取当前委托数量及详情"""
 			r = linear_api.linear_openorders(contract_code=contract_code, page_index='', page_size='')
 			totalsize2 = r['data']['total_size']
+			pprint(totalsize2)
 			actual_orderinfo = r['data']['orders'][0]
 		with allure.step('4、观察资产信息有结果C'):
-			pprint(totalsize1)
-			pprint(totalsize2)
 			if totalsize2 - totalsize1 != 1:
 				print("当前委托数量增量不为1，不符合预期")
 				flag = False

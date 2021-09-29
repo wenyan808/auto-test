@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2020/7/31
 # @Author  : zhangranghan
+import contextlib
 
 import pytest
 from common.ContractServiceAPI import t as ct
