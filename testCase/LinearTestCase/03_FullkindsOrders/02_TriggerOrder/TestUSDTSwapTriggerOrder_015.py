@@ -80,7 +80,7 @@ class TestUSDTSwapTriggerOrder_015:
             r_order_plan = self.current_user.linear_order(contract_code=self.contract_code, price=price, order_price_type="limit", volume=10, direction="buy", offset="open", lever_rate=5, tp_trigger_price=tp_trigger_price, sl_trigger_price=sl_trigger_price,
                                                           tp_order_price=order_price, sl_order_price=order_price)
             assert r_order_plan.get("status") == "ok", f"下计划委托单失败: {r_order_plan}"
-            tp_sl_order_id = r_order_plan.get("data").get("order_id")
+            self.tp_sl_order_id = r_order_plan.get("data").get("order_id")
             time.sleep(3)
         with allure.step('2、选择BTC当周，选择杠杆5X，点击开仓-限价按钮'):
             pass
@@ -99,7 +99,7 @@ class TestUSDTSwapTriggerOrder_015:
         with allure.step('9、在下单区域点击买入开多按钮下限价单有结果A'):
             pass
         with allure.step('10、在当前委托-限价委托列表的止盈/止损列点击查看按钮有结果B'):
-            tp_sl_actual = self.current_user.linear_relation_tpsl_order(contract_code=self.contract_code, order_id=tp_sl_order_id).get("data")
+            tp_sl_actual = self.current_user.linear_relation_tpsl_order(contract_code=self.contract_code, order_id=self.tp_sl_order_id).get("data")
             expected_tp_sl_info = {"contract_code": self.contract_code, "volume": 10, "price": price, "order_price_type": "limit", "direction": "buy", "offset": "open"}
             assert common.util.compare_dict(expected_tp_sl_info, tp_sl_actual)
             tp_sl_detail_actual = tp_sl_actual.get("tpsl_order_info")
@@ -112,13 +112,11 @@ class TestUSDTSwapTriggerOrder_015:
                     trigger_price = sl_trigger_price
                 expected_tp_sl_each = {"volume": 10, "direction": "sell", "trigger_price": trigger_price, "trigger_type": trigger_type, "order_price": order_price, "status": 1}
                 assert common.util.compare_dict(expected_tp_sl_each, i)
-        with allure.step("撤单"):
-            r_cancel = self.current_user.linear_cancel(contract_code=self.contract_code, order_id=tp_sl_order_id)
-            assert r_cancel.get("status") == "ok", f"撤单失败: {r_cancel}"
 
     @allure.step('恢复环境')
     def teardown(self):
-        print('\n恢复环境操作')
+        r_cancel = self.current_user.linear_cancel(contract_code=self.contract_code, order_id=self.tp_sl_order_id)
+        assert r_cancel.get("status") == "ok", f"撤单失败: {r_cancel}"
 
 
 if __name__ == '__main__':

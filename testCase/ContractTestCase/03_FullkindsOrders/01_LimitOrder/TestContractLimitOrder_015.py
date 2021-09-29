@@ -23,14 +23,14 @@ from datetime import datetime
 @allure.epic('反向交割')
 @allure.feature('')
 @pytest.mark.stable
-class TestContractLimitOrder_0011:
+class TestContractLimitOrder_0015:
 
     def setUp(self):
         print('\n前置条件')
 
-    @allure.title('{title}')
+    @allure.title('最优20档买入开多卖盘无数据自动撤单')
     def test_contract_limit_order(self, symbol, symbol_period):
-        """ 最优5档买入开多卖盘无数据自动撤单 """
+        """ 最优20档买入开多卖盘无数据自动撤单 """
         lever_rate = 5
 
         self.setUp()
@@ -54,8 +54,8 @@ class TestContractLimitOrder_0011:
             r_trend_req_confirm = contract_api.contract_depth(symbol=symbol_period, type="step0")
             current_asks = r_trend_req_confirm.get("tick").get("asks")
             assert not current_asks, "卖盘不为空! 当前卖盘: {current_asks}".format(current_asks=current_asks)
-        pprint("\n步骤四: 以最优5档买入开多\n")
-        r_buy_opponent = contract_api.contract_order(symbol=symbol, contract_type='this_week', order_price_type='optimal_5', price="", direction="buy", offset="open", lever_rate=lever_rate, volume=1)
+        pprint("\n步骤四: 以最优20档买入开多\n")
+        r_buy_opponent = contract_api.contract_order(symbol=symbol, contract_type='this_week', order_price_type='optimal_20', price="", direction="buy", offset="open", lever_rate=lever_rate, volume=1)
         actual_status = r_buy_opponent.get("status")
         actual_msg = r_buy_opponent.get("err_msg")
         assert actual_status == 'error' and actual_msg == "盘口无数据,请稍后再试", "预期: `error`+`盘口无数据,请稍后再试`, 实际: `{actual_status}+{actual_msg}`".format(actual_status=actual_status, actual_msg=actual_msg)
