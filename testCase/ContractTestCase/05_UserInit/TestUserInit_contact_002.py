@@ -90,6 +90,7 @@ class TestUserInit_contact_002:
                 "payload_encoding": "string"
             }
             api_http_post('http://172.18.6.165:15672/api/exchanges/%2F/amq.default/publish', param,add_to_headers=requestHeaders)
+            time.sleep(1)#等待初始化完成
             pass
         with allure.step('进入redis，查看初始化后' + contractCode + '(品种)的APO'):
             if r.keyIsExists(userId, contractCode) == 1:
