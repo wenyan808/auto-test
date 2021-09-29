@@ -44,6 +44,7 @@ class TestUSDTSwapTriggerOrder_001:
     @allure.step('测试执行')
     def test_execute(self, contract_code):
         self.contract_code = contract_code
+        self.orderid = ''
         leverrate = '5'
         r = linear_api.linear_cross_trigger_openorders(contract_code=contract_code,
                                              page_index='',
