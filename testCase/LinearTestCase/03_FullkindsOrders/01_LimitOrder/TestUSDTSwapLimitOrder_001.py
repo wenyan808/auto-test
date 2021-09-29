@@ -100,7 +100,7 @@ class TestUSDTSwapLimitOrder_001:
 									order_price_type='limit')
 		pprint(r)
 		orderid1 = r['data']['order_id']
-		self.orderid1 = orderid1;
+		self.orderid1 = orderid1
 		time.sleep(3)
 		"""获取当前冻结保证金"""
 		r = linear_api.linear_account_info(contract_code=contract_code)
