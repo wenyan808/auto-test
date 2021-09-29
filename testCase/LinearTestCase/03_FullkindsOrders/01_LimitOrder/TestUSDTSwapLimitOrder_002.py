@@ -136,10 +136,9 @@ class TestUSDTSwapLimitOrder_002:
 			"""获取当前委托数量及详情"""
 			r = linear_api.linear_openorders(contract_code=contract_code, page_index='', page_size='')
 			totalsize2 = r['data']['total_size']
+			pprint(totalsize2)
 			actual_orderinfo = r['data']['orders'][0]
 		with allure.step('4、观察资产信息有结果C'):
-			pprint(totalsize1)
-			pprint(totalsize2)
 			if totalsize2 - totalsize1 != 1:
 				print("当前委托数量增量不为1，不符合预期")
 				flag = False

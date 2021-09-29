@@ -4,7 +4,7 @@ import requests
 
 from common.util import api_key_post
 from config import conf
-
+from pprint import pprint
 
 class ATP:
     ATPHost = 'http://172.18.6.52:8000'
@@ -57,6 +57,8 @@ class ATP:
             json_body['contract_code'] = contract_code
 
         response = api_key_post(conf.URL, conf.CANCEL_ALL_ORDER_URL, json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+        print('撤销当前用户 某个品种所有限价挂单')
+        pprint(response)
         return response
 
     @classmethod
@@ -71,6 +73,8 @@ class ATP:
             json_body['contract_code'] = contract_code
 
         response = api_key_post(conf.URL, conf.SWITCH_LEVER_URL, json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+        pprint('修改当前品种杠杆 默认5倍')
+        pprint(response)
         return response
 
 
