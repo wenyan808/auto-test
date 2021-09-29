@@ -66,6 +66,10 @@ class TestCoinswapLimitOrder_002:
 		2、再根据测试场景进行拿初始化账户进行买一卖一挂单作为对手方
 		3、每次完成测试后再还原环境
 		4、本次用例场景为无成交下撤单场景 ''')
+		# 撤销当前用户 某个品种所有限价挂单
+		ATP.cancel_all_order(contract_code=contract_code)
+		# 修改当前品种杠杆 默认5倍
+		ATP.switch_level(contract_code=contract_code)
 		# 清除盘口所有卖单
 		ATP.clean_market(contract_code=contract_code, direction='sell')
 		# 清除盘口所有买单
@@ -75,13 +79,13 @@ class TestCoinswapLimitOrder_002:
 	@allure.step('测试执行')
 	def test_execute(self, contract_code):
 		flag = True
-		self.setup()
 		leverrate = '5'
 		print('\n获取最近价\n')
 		r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
 		pprint(r)
 		# 得到最近的价格
-		lastprice = r['data'][0]['data'][0]['price']+0.5
+		lastprice1 = r['data'][0]['data'][0]['price']
+		lastprice = round((lastprice1 * 0.99), 2)
 		print('\n下一个买单\n')
 		r = swap_api.swap_order(contract_code=contract_code,
 									client_order_id='',
@@ -105,7 +109,7 @@ class TestCoinswapLimitOrder_002:
 		pprint(totalsize1)
 		with allure.step('1、卖出开空限价手动输入价格高于买一价'):
 			# 生成一个卖出开空下单价(高于买一价)
-			orderprice = lastprice+0.5
+			orderprice = round((lastprice1 * 1.01), 2)
 			# 卖出开空限价下单
 			r = swap_api.swap_order(contract_code=contract_code,
 										client_order_id='',
@@ -116,7 +120,7 @@ class TestCoinswapLimitOrder_002:
 										lever_rate=leverrate,
 										order_price_type='limit')
 			pprint(r)
-			time.sleep(2)
+			time.sleep(4)
 			orderid2 = r['data']['order_id']  # 890261795566276608
 		with allure.step('2、观察盘口有结果A'):
 			"""获取当前冻结保证金"""
