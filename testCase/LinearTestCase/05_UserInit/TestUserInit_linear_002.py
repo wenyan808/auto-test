@@ -38,6 +38,8 @@ import pytest, allure, random, time
 
 @allure.epic('正向永续')  # 这里填业务线
 @allure.feature('个人初始化APO')  # 这里填功能
+@allure.story('指定品种')
+@pytest.mark.stable
 class TestUserInit_linear_002:
 
     @allure.step('前置条件')

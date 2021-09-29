@@ -96,7 +96,8 @@ class TestUserInit_swap_002:
             if r.keyIsExists(userId, contractCode) == 1:
                 print(contractCode+"初始化成功")
             else:
-                assert "初始化失败"
+                print(contractCode + "初始化失败")
+                assert False
             pass
 
     @allure.step('恢复环境')

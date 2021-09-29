@@ -38,6 +38,8 @@ from common.util import api_http_post
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('用户个人初始化')  # 这里填功能
+@allure.story('指定品种')
+@pytest.mark.stable
 class TestUserInit_contact_002:
 
     @allure.step('前置条件')
@@ -90,10 +92,10 @@ class TestUserInit_contact_002:
             api_http_post('http://172.18.6.165:15672/api/exchanges/%2F/amq.default/publish', param,add_to_headers=requestHeaders)
             pass
         with allure.step('进入redis，查看初始化后' + contractCode + '(品种)的APO'):
-            if r.keyIsExists(userId, contractCode) == 0:
+            if r.keyIsExists(userId, contractCode) == 1:
                 print(contractCode + "初始化成功")
             else:
-                assert "初始化失败"
+                assert False
             pass
 
     @allure.step('恢复环境')
