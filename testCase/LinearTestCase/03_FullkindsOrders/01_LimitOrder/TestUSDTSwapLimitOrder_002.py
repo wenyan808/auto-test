@@ -68,7 +68,7 @@ class TestUSDTSwapLimitOrder_002:
 		4、本次用例场景为无成交下撤单场景 ''')
 		# 撤销当前用户 某个品种所有限价挂单
 		ATP.cancel_all_order(contract_code=contract_code)
-		# 修改当前品种杠杆 默认5倍
+		#修改当前品种杠杆 默认5倍
 		ATP.switch_level(contract_code=contract_code)
 		# 清除盘口所有卖单
 		ATP.clean_market(contract_code=contract_code, direction='sell')
@@ -85,7 +85,7 @@ class TestUSDTSwapLimitOrder_002:
 		pprint(r)
 		#得到最近的价格
 		lastprice1 = r['data'][0]['data'][0]['price']
-		lastprice = round((lastprice1 * 0.99), 2)
+		lastprice = round((lastprice1 * 0.98), 2)
 		print('\n下一个买单\n')
 		r = linear_api.linear_order(contract_code=contract_code,
 									client_order_id='',
@@ -109,7 +109,7 @@ class TestUSDTSwapLimitOrder_002:
 		pprint(totalsize1)
 		with allure.step('1、卖出开空限价手动输入价格高于买一价'):
 			#生成一个卖出开空下单价(高于买一价)
-			orderprice = round((lastprice1 * 1.01), 2)
+			orderprice = round((lastprice1 * 1.05), 2)
 			#卖出开空限价下单
 			r = linear_api.linear_order(contract_code=contract_code,
 										client_order_id='',
