@@ -103,6 +103,93 @@ class ATP:
         pprint(response)
         return response
 
+    @classmethod
+    def cancel_all_trigger_order(cls, contract_code=None):
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
+        json_body = {}
+        if conf.SYSTEM_TYPE == 'Delivery':
+            if '_' in contract_code:
+                json_body['symbol'] = contract_code.split('_')[0]
+            else:
+                json_body['symbol'] = contract_code[:-6]
+        else:
+            json_body['contract_code'] = contract_code
+
+        response = api_key_post(conf.URL, conf.CANCEL_ALL_TRIGGER_ORDER_URL, json_body, conf.ACCESS_KEY,
+                                conf.SECRET_KEY)
+        if conf.SYSTEM_TYPE == 'LinearSwap':
+            cross_response = api_key_post(conf.URL,
+                                          conf.CANCEL_ALL_TRIGGER_ORDER_URL.replace('swap_trigger_cancelall',
+                                                                                    'swap_cross_trigger_cancelall'),
+                                          json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+            response = {
+                "cross": cross_response,
+                "isolated": response
+
+            }
+        print('撤销当前用户 某个品种所有计划委托挂单')
+        pprint(response)
+        return response
+
+    @classmethod
+    def cancel_all_tpsl_order(cls, contract_code=None):
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
+        json_body = {}
+        if conf.SYSTEM_TYPE == 'Delivery':
+            if '_' in contract_code:
+                json_body['symbol'] = contract_code.split('_')[0]
+            else:
+                json_body['symbol'] = contract_code[:-6]
+        else:
+            json_body['contract_code'] = contract_code
+
+        response = api_key_post(conf.URL, conf.CANCEL_ALL_TPSL_ORDER_URL, json_body, conf.ACCESS_KEY,
+                                conf.SECRET_KEY)
+        if conf.SYSTEM_TYPE == 'LinearSwap':
+            cross_response = api_key_post(conf.URL,
+                                          conf.CANCEL_ALL_TPSL_ORDER_URL.replace('swap_tpsl_cancelall',
+                                                                                 'swap_cross_tpsl_cancelall'),
+                                          json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+            response = {
+                "cross": cross_response,
+                "isolated": response
+
+            }
+        print('撤销当前用户 某个品种所有止盈止损委托挂单')
+        pprint(response)
+        return response
+
+    @classmethod
+    def cancel_all_track_order(cls, contract_code=None):
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
+        json_body = {}
+        if conf.SYSTEM_TYPE == 'Delivery':
+            if '_' in contract_code:
+                json_body['symbol'] = contract_code.split('_')[0]
+            else:
+                json_body['symbol'] = contract_code[:-6]
+        else:
+            json_body['contract_code'] = contract_code
+
+        response = api_key_post(conf.URL, conf.CANCEL_ALL_TRACK_ORDER_URL, json_body, conf.ACCESS_KEY,
+                                conf.SECRET_KEY)
+        if conf.SYSTEM_TYPE == 'LinearSwap':
+            cross_response = api_key_post(conf.URL,
+                                          conf.CANCEL_ALL_TRACK_ORDER_URL.replace('swap_track_cancelall',
+                                                                                  'swap_cross_track_cancelall'),
+                                          json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+            response = {
+                "cross": cross_response,
+                "isolated": response
+
+            }
+        print('撤销当前用户 某个品种所有跟踪委托挂单')
+        pprint(response)
+        return response
+
 
 if __name__ == '__main__':
     print(ATP.get_api_test_data("test_linear_account_info"))

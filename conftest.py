@@ -104,4 +104,7 @@ def pytest_runtest_makereport(item):
 @pytest.fixture(autouse=True, scope='module')
 def cancel_all_orders_and_switch_level():
     ATP.cancel_all_order()
+    ATP.cancel_all_tpsl_order()
+    ATP.cancel_all_track_order()
+    ATP.cancel_all_trigger_order()
     ATP.switch_level()
