@@ -3,23 +3,23 @@
 """# @Date    : 20210930
 # @Author : 
     用例标题
-        计划委托卖出开空触发价等于最新价
+        计划委托买入开多触发价等于最新价
     前置条件
         
     步骤/文本
         1、登录合约交易系统
         2、选择币种BTC，选择杠杆5X，点击开仓-计划按钮
         3、输入触发价（如：50000，最新价：50000）
-        4、输入卖出价（如：45000）
-        5、输入卖出量10张
-        6、点击卖出开空按钮，弹框点击确认
+        4、输入买入价（如：45000）
+        5、输入买入量10张
+        6、点击买入开多按钮，弹框点击确认
     预期结果
         A)提示下单成功
         B)当前委托-计划委托列表查询创建订单（可能会触发订单）
     优先级
         1
     用例别名
-        TestLinearTriggerOpenSell_006
+        TestConteractTriggerOpenBuy_006
 """
 
 from common.ContractServiceAPI import t as contract_api
@@ -36,13 +36,13 @@ import pytest, allure, random, time
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
-class TestLinearTriggerOpenSell_006:
+class TestConteractTriggerOpenBuy_006:
 
     @allure.step('前置条件')
     def setup(self):
         print('''  ''')
 
-    @allure.title('计划委托卖出开空触发价等于最新价')
+    @allure.title('计划委托买入开多触发价等于最新价')
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
         with allure.step('1、登录合约交易系统'):
@@ -51,11 +51,11 @@ class TestLinearTriggerOpenSell_006:
             pass
         with allure.step('3、输入触发价（如：50000，最新价：50000）'):
             pass
-        with allure.step('4、输入卖出价（如：45000）'):
+        with allure.step('4、输入买入价（如：45000）'):
             pass
-        with allure.step('5、输入卖出量10张'):
+        with allure.step('5、输入买入量10张'):
             pass
-        with allure.step('6、点击卖出开空按钮，弹框点击确认'):
+        with allure.step('6、点击买入开多按钮，弹框点击确认'):
             pass
 
     @allure.step('恢复环境')
