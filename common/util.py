@@ -52,6 +52,7 @@ def api_http_post(url, params, add_to_headers=None):
         headers.update(add_to_headers)
     postdata = json.dumps(params)
     try:
+        print(postdata)
         response = requests.post(url, postdata, headers=headers, timeout=TIMEOUT)
         if response.status_code == 200:
             return response.json()
