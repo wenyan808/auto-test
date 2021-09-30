@@ -98,7 +98,7 @@ class TestContractLever_002:
                                             order_price_type='limit')
             self.orderid = r['data']['order_id_str']
             pprint(r)
-            time.sleep(0.5)
+            time.sleep(4)
             '''调整杠杆率'''
             r = contract_api.contract_switch_lever_rate(symbol=symbol, lever_rate=j)
             pprint(r)
