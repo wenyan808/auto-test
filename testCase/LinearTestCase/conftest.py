@@ -6,6 +6,7 @@
 import pytest
 from common.SwapServiceAPI import t as st
 from common.LinearServiceAPI import t as lt
+from config import conf
 
 
 @pytest.fixture()
@@ -17,19 +18,21 @@ def sub_uid():
 
 @pytest.fixture()
 def contract_code():
-    contract_code = 'ETH-USDT'
+    contract_code = conf.DEFAULT_CONTRACT_CODE
     return contract_code
 
 
 @pytest.fixture()
 def symbol():
-    symbol = 'BTC'
+    symbol = conf.DEFAULT_SYMBOL
     return symbol
+
 
 @pytest.fixture()
 def buy_price():
-    buy_price = lt.linear_depth(contract_code='btc-usdt',type='step0')['tick']['bids'][0][0]
+    buy_price = lt.linear_depth(contract_code='btc-usdt', type='step0')['tick']['bids'][0][0]
     return buy_price
+
 
 @pytest.fixture()
 def sell_price():

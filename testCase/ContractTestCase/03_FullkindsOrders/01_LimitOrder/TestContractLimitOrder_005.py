@@ -35,7 +35,7 @@ class TestContractLimitOrder_005:
         lever_rate = 5
         self.setUp()
         print('\n步骤一:获取盘口卖一价\n')
-        r_trend_req = contract_api.contract_depth(symbol="LTC_CW", type="step5")
+        r_trend_req = contract_api.contract_depth(symbol=symbol_period, type="step5")
         pprint(r_trend_req)
         asks = r_trend_req.get("tick").get("asks")
         bids = r_trend_req.get("tick").get("bids")
@@ -50,7 +50,7 @@ class TestContractLimitOrder_005:
                 price = round(max([i[0] for i in bids]) * 1.1, 1)
             r_common_sell = common_user.contract_order(symbol=symbol, contract_code=contract_this_week, price=price, volume=1, direction="sell", offset="open", lever_rate=lever_rate, order_price_type="limit")
             assert r_common_sell.get("status") == "ok", f"通用账号下卖单失败: {r_common_sell}"
-            r_trend_req = contract_api.contract_depth(symbol="LTC_CW", type="step5")
+            r_trend_req = contract_api.contract_depth(symbol=symbol_period, type="step5")
             asks = r_trend_req.get("tick").get("asks")
         lowest_price_sell = min([i[0] for i in asks])
         print('\n步骤二:下一个低于卖一价的买单\n')

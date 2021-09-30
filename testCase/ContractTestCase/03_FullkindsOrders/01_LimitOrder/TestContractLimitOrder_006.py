@@ -36,7 +36,7 @@ class TestContractLimitOrder_006:
 
         self.setUp()
         print('\n步骤一:获取盘口买一价\n')
-        r_trend_req = contract_api.contract_depth(symbol="LTC_CW", type="step5")
+        r_trend_req = contract_api.contract_depth(symbol=symbol_period, type="step5")
         bids = r_trend_req.get("tick").get("bids")
         asks = r_trend_req.get("tick").get("asks")
         # 如果盘口无买一价，则用通用账号挂一个买单,为了防止成交，价格得低于卖一价
@@ -50,7 +50,7 @@ class TestContractLimitOrder_006:
                 price = round(min([i[0] for i in asks]) * 0.9, 1)
             r_common_buy = common_user.contract_order(symbol=symbol, contract_code=contract_this_week, price=price, volume=1, direction="buy", offset="open", lever_rate=lever_rate, order_price_type="limit")
             assert r_common_buy.get("status") == "ok", f"通用账号下买单失败: {r_common_buy}"
-            r_trend_req = contract_api.contract_depth(symbol="LTC_CW", type="step5")
+            r_trend_req = contract_api.contract_depth(symbol=symbol_period, type="step5")
             bids = r_trend_req.get("tick").get("bids")
         highest_price_buy = max([i[0] for i in bids])
         print('\n步骤二:下一个高于买一价的卖单\n')

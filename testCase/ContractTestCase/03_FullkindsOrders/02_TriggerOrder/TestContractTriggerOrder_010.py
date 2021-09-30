@@ -45,7 +45,7 @@ class TestContractTriggerOrder_0010:
         direction = "buy"
         volume = 10
 
-        trigger_price = last_price
+        trigger_price = round(last_price * 1.01, 1)
         order_price = round(last_price * 1.1, 1)
         trigger_type = "ge"
         offset = "open"

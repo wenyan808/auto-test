@@ -6,6 +6,7 @@ import contextlib
 
 import pytest
 from common.ContractServiceAPI import t as ct
+from config import conf
 from logger import logger
 
 
@@ -18,7 +19,7 @@ def sub_uid():
 
 @pytest.fixture()
 def symbol():
-    symbol = 'LTC'
+    symbol = conf.DEFAULT_SYMBOL
     return symbol
 
 
@@ -28,8 +29,7 @@ def test():
     return test
 
 
-
 @pytest.fixture()
 def symbol_period():
-    symbol_period = 'LTC_CW'
+    symbol_period = conf.DEFAULT_CONTRACT_CODE
     return symbol_period
