@@ -37,6 +37,7 @@ from common.SwapServiceOrder import t as swap_order
 from pprint import pprint
 import pytest, allure, random, time
 
+from config import conf
 from config.conf import URL, ACCESS_KEY, SECRET_KEY
 
 
@@ -53,7 +54,7 @@ class TestContractTriggerOrder_019:
         self.current_user = ContractServiceAPI(url=URL, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
         print(''' 有持仓且大于等于10张''')
         self.contract_type = "this_week"
-        symbol, symbol_period = "LTC", "LTC_CW"
+        symbol, symbol_period = conf.DEFAULT_SYMBOL, conf.DEFAULT_CONTRACT_CODE
         contract_ltc_info = self.current_user.contract_contract_info(symbol=symbol).get("data")
         self.contract_code = [i.get("contract_code") for i in contract_ltc_info if i.get("contract_type") == self.contract_type][0]
         print("为了使持仓量满足条件, 先进行一次卖->买")
