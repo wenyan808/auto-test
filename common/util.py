@@ -223,7 +223,7 @@ def compare_dict(expected, result):
             print(result)
             err = err + 1
             continue
-        if key in ["price", "volume"]:
+        if isinstance(result[key], int) or isinstance(result[key], float):
             if float(result[key]) != float(expected[key]):
                 print('%s的值实际和预期不一致，实际：%s，预期：%s' % (key, result[key], expected[key]))
                 err = err + 1
@@ -235,4 +235,3 @@ def compare_dict(expected, result):
         return True
     else:
         return False
-
