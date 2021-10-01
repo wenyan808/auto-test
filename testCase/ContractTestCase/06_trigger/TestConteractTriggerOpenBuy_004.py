@@ -31,7 +31,7 @@ from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
 import pytest, allure, random, time
-
+from tool.atp import ATP
 
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
@@ -39,8 +39,17 @@ import pytest, allure, random, time
 class TestConteractTriggerOpenBuy_004:
 
     @allure.step('前置条件')
-    def setup(self):
-        print('''  ''')
+    @pytest.fixture(scope='function', autouse=True)
+    def setup(self, symbol):
+        # 撤销当前用户 某个品种所有限价挂单
+        ATP.cancel_all_order(symbol=symbol)
+        # 修改当前品种杠杆 默认5倍
+        ATP.switch_level(symbol=symbol)
+        # 清除盘口所有卖单
+        ATP.clean_market(symbol=symbol, direction='sell')
+        # 清除盘口所有买单
+        ATP.clean_market(symbol=symbol
+                         , direction='buy')
 
     @allure.title('计划委托买入开多触发价大于最新价')
     @allure.step('测试执行')
