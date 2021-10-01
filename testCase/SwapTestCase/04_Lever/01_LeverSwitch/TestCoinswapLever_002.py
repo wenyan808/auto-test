@@ -103,7 +103,7 @@ class TestCoinswapLever_002:
             pprint(r)
             self.orderid = r['data']['order_id_str']
 
-            time.sleep(0.5)
+            time.sleep(4)
             '''调整杠杆率'''
             r = swap_api.swap_switch_lever_rate(contract_code=contract_code, lever_rate=j)
             pprint(r)

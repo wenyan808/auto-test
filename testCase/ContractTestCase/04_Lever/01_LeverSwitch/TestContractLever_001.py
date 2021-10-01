@@ -68,6 +68,7 @@ class TestContractLever_001:
             pass
         with allure.step('5、将杠杆倍数切换为任意值'):
             i = random.choice(availableleverlist)
+            time.sleep(4)
             r = contract_api.contract_switch_lever_rate(symbol=symbol, lever_rate=i)
             pprint(r)
             assert r['status'] == 'ok'

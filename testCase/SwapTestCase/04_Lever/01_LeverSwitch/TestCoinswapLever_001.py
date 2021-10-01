@@ -74,6 +74,7 @@ class TestCoinswapLever_001:
 			pass
 		with allure.step('5、将杠杆倍数切换为任意值'):
 			i = random.choice(availableleverlist)
+			time.sleep(4)
 			r = swap_api.swap_switch_lever_rate(contract_code=contract_code, lever_rate=i)
 			pprint(r)
 			assert r['status'] == 'ok'
