@@ -31,17 +31,14 @@
     刘双双
 """
 
+import allure
+import pytest
+import time
+
 import common.util
 from common.LinearServiceAPI import LinearServiceAPI
-from common.ContractServiceOrder import t as contract_order
-from common.LinearServiceAPI import t as linear_api
-from common.LinearServiceOrder import t as linear_order
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceOrder import t as swap_order
-
-from pprint import pprint
-import pytest, allure, random, time
-from config.conf import URL2, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
+from config import conf
+from config.conf import URL2, ACCESS_KEY, SECRET_KEY
 
 
 @allure.epic('所属分组')  # 这里填业务线
@@ -52,7 +49,7 @@ class TestUSDTSwapTriggerOrder_014:
     @allure.step('前置条件')
     def setup(self):
         print(''' 不要触发，至少2条以上订单 ''')
-        self.contract_code = "BTC-USDT"
+        self.contract_code = conf.DEFAULT_CONTRACT_CODE
         self.current_user = LinearServiceAPI(url=URL2, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
 
     @allure.title('全部撤销计划委托订单')
@@ -68,10 +65,17 @@ class TestUSDTSwapTriggerOrder_014:
             else:
                 trigger_price = 5
             order_price = round(trigger_price * 0.9, 1)
-            r_order_plan = self.current_user.linear_trigger_order(contract_code=self.contract_code, trigger_type="ge", trigger_price=trigger_price, order_price=order_price, order_price_type="limit", volume=10, direction="buy", offset="open", lever_rate=5)
+            r_order_plan = self.current_user.linear_trigger_order(contract_code=self.contract_code, trigger_type="ge",
+                                                                  trigger_price=trigger_price, order_price=order_price,
+                                                                  order_price_type="limit", volume=10, direction="buy",
+                                                                  offset="open", lever_rate=5)
             assert r_order_plan.get("status") == "ok", f"下计划委托单失败: {r_order_plan}"
             plan_order_id = r_order_plan.get("data").get("order_id")
-            r_order_plan_2 = self.current_user.linear_trigger_order(contract_code=self.contract_code, trigger_type="ge", trigger_price=trigger_price, order_price=order_price, order_price_type="limit", volume=10, direction="buy", offset="open", lever_rate=5)
+            r_order_plan_2 = self.current_user.linear_trigger_order(contract_code=self.contract_code, trigger_type="ge",
+                                                                    trigger_price=trigger_price,
+                                                                    order_price=order_price, order_price_type="limit",
+                                                                    volume=10, direction="buy", offset="open",
+                                                                    lever_rate=5)
             assert r_order_plan_2.get("status") == "ok", f"下计划委托单失败: {r_order_plan_2}"
             plan_order_id_2 = r_order_plan_2.get("data").get("order_id")
             time.sleep(3)
@@ -90,11 +94,15 @@ class TestUSDTSwapTriggerOrder_014:
         with allure.step('6、检查当前委托-计划委托信息有结果C'):
             pass
         with allure.step('7、检查历史委托-计划委托信息有结果D'):
-            trigger_his_orders = self.current_user.linear_trigger_hisorders(contract_code=self.contract_code, status="6", trade_type=1, create_date=7).get("data").get("orders")
+            trigger_his_orders = self.current_user.linear_trigger_hisorders(contract_code=self.contract_code,
+                                                                            status="6", trade_type=1,
+                                                                            create_date=7).get("data").get("orders")
             trigger_order = [i for i in trigger_his_orders if i.get("order_id") in [plan_order_id, plan_order_id_2]]
             assert len(trigger_order) == 2, f"生成的历史计划订单不为2个: {trigger_order}"
             for o in trigger_order:
-                expected_info = {"contract_code": self.contract_code, "trigger_type": "ge", "margin_mode": "isolated", "volume": 10, "direction": "buy", "offset": "open", "lever_rate": 5, "status": 6, "trigger_price": trigger_price, "order_price_type": "limit"}
+                expected_info = {"contract_code": self.contract_code, "trigger_type": "ge", "margin_mode": "isolated",
+                                 "volume": 10, "direction": "buy", "offset": "open", "lever_rate": 5, "status": 6,
+                                 "trigger_price": trigger_price, "order_price_type": "limit"}
                 assert common.util.compare_dict(expected_info, o)
 
     @allure.step('恢复环境')
