@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """# @Date    : 20210930
-# @Author : 
+# @Author : chenwei
     用例标题
         计划委托买入开多触发价大于最新价
     前置条件
@@ -36,30 +36,50 @@ from tool.atp import ATP
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
 class TestConteractTriggerOpenBuy_004:
 
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
-    def setup(self, symbol):
-        # 撤销当前用户 某个品种所有限价挂单
-        ATP.cancel_all_order(symbol=symbol)
-        # 修改当前品种杠杆 默认5倍
-        ATP.switch_level(symbol=symbol)
+    def setup(self, symbol, symbol_period):
+        self.symbol = symbol
         # 清除盘口所有卖单
-        ATP.clean_market(symbol=symbol, direction='sell')
+        print(ATP.clean_market(contract_code=symbol_period, direction='sell'))
+        time.sleep(2)
         # 清除盘口所有买单
-        ATP.clean_market(symbol=symbol
-                         , direction='buy')
+        print(ATP.clean_market(contract_code=symbol_period, direction='buy'))
+
+        print(ATP.switch_level(contract_code=symbol_period))
+
+        r = contract_api.contract_cancelall(symbol=symbol)
+        pprint(r)
+        r = contract_api.contract_tpsl_cancelall(symbol=symbol)
+        pprint(r)
+        r = contract_api.contract_trigger_cancelall(symbol=symbol)
+        pprint(r)
+        r = contract_api.contract_cancelall(symbol=symbol)
+        pprint(r)
+        time.sleep(2)
 
     @allure.title('计划委托买入开多触发价大于最新价')
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
-        triggerPrice = 50000
-        orderPrice = 49800
+        self.symbol = symbol
+        # triggerPrice = 50000
+        # orderPrice = 49800
         volume = 10
         direction = 'buy'
         offset = 'open'
         leverRate = 5
+        trigger_type = "ge"
+        contract_type = "this_week"
+        print('\n步骤一:获取最近价\n')
+        r = contract_api.contract_history_trade(symbol=symbol_period, size='1')
+        pprint(r)
+        lastprice = r['data'][0]['data'][0]['price']
+        # print(lastprice)
+        triggerPrice = round((lastprice * 1.2), 1)
+        orderPrice = round((lastprice * 1.1), 1)
         with allure.step('1、登录合约交易系统'):
             pass
         with allure.step('2、选择币种BTC，选择杠杆5X，点击开仓-计划按钮'):
@@ -71,13 +91,22 @@ class TestConteractTriggerOpenBuy_004:
         with allure.step('5、输入买入量10张'):
             pass
         with allure.step('6、点击买入开多按钮，弹框点击确认'):
-            r=linear_order.linear_swap_triggerOrder_insert(symbol=symbol,trigger_price=triggerPrice,
+            r=contract_order.contract_triggerorder_insert(symbol=symbol,trigger_type=trigger_type,trigger_price=triggerPrice,contract_type=contract_type,
                                                          order_price=orderPrice,volume=volume, direction=direction,
                                                          offset=offset,lever_rate=leverRate)
             print(r)
+            order_id = r['data']['order_id']
+            print(order_id)
+            time.sleep(2)
+            r = contract_order.contract_open_triggerorders(symbol=symbol)
+            print(r)
+            orders_id = r['data']['orders'][0]['order_id']
+            assert order_id == orders_id
+
 
     @allure.step('恢复环境')
     def teardown(self):
+        contract_order.contract_triggerorder_cancelall(symbol=self.symbol)
         print('\n恢复环境操作')
 
 
