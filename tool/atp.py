@@ -173,6 +173,7 @@ class ATP:
 
     @classmethod
     def close_all_position(cls, contract_code=None, iscross=False):
+        # Author : Guangnan Zhang
         contract_type = ''
         symbol = ''
         if not contract_code:
@@ -242,62 +243,150 @@ class ATP:
         return response
 
     @classmethod
-    def make_market_depth(cls, contract_code=None, market_pirce=None, volume=10):
-        json_body = cls.get_base_json_body(contract_code)
-        order_json = {
-                      'price': None,
-                      'volume': volume, 'direction': None,
-                      'offset': 'open', 'lever_rate': 5, 'order_price_type': "limit"}
-        order_json.update(json_body)
-        order_methods = {'Delivery': common_user_contract_service_api.contract_order,
-                         'Swap': common_user_swap_service_api.swap_order,
-                         'LinearSwap': common_user_linear_service_api.linear_order,
-                         }
+    def get_current_price(cls, contract_code=None):
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
         trade_price_methods = {'Delivery': common_user_contract_service_api.contract_trade,
                                'Swap': common_user_swap_service_api.swap_trade,
                                'LinearSwap': common_user_linear_service_api.linear_trade,
                                }
-        order_method = order_methods[conf.SYSTEM_TYPE]
-        # 清盘
-        print(cls.clean_market())
+        response = trade_price_methods[conf.SYSTEM_TYPE](contract_code)
+        err_msg = {'status': 'error', 'err_msg': '获取最新价出错', 'response': response}
+        tick = response.get('tick', {})
+        if not tick:
+            print(err_msg)
+            return -1
 
-        # 获取最新价
-        response = trade_price_methods[conf.SYSTEM_TYPE](conf.DEFAULT_CONTRACT_CODE)
+        data = tick.get('data', [])
+        if not data:
+            print(err_msg)
+            return -1
+        current_price = float(data[0].get('price', -1))
+        if current_price < 0:
+            print(err_msg)
+            return -1
+        return current_price
+
+    @classmethod
+    def common_user_make_order(cls, contract_code=None, price=None, volume=10, direction='buy', offset='open',
+                               lever_rate=5,
+                               order_price_type='limit', user='common'):
+        if user == 'common':
+            order_methods = {'Delivery': common_user_contract_service_api.contract_order,
+                             'Swap': common_user_swap_service_api.swap_order,
+                             'LinearSwap': common_user_linear_service_api.linear_order,
+                             }
+        else:
+            order_methods = {'Delivery': contract_api.contract_order,
+                             'Swap': swap_api.swap_order,
+                             'LinearSwap': linear_api.linear_order,
+                             }
+        order_method = order_methods[conf.SYSTEM_TYPE]
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
+        if not price:
+            price = cls.get_current_price(contract_code)
+        if price < 0:
+            return {"status": "err", "err_msg": "获取最新价失败"}
+        json_body = cls.get_base_json_body(contract_code)
+        order_json = {
+            'price': price,
+            'volume': volume, 'direction': direction,
+            'offset': offset, 'lever_rate': lever_rate, 'order_price_type': order_price_type}
+        order_json.update(json_body)
+        return order_method(**order_json)
+
+    @classmethod
+    def current_user_make_order(cls, contract_code=None, price=None, volume=10, direction='buy', offset='open',
+                                lever_rate=5,
+                                order_price_type='limit'):
+        return cls.common_user_make_order(contract_code=contract_code, price=price, volume=volume, direction=direction,
+                                          offset=offset, lever_rate=lever_rate,
+                                          order_price_type=order_price_type, user='current')
+
+    @classmethod
+    def common_user_make_trigger_order(cls, contract_code=None, trigger_type=None, trigger_price=None, order_price=None,
+                                       volume=10,
+                                       direction='buy', offset='open',
+                                       lever_rate=5,
+                                       order_price_type='limit', user='common'):
+        if user == 'common':
+            order_methods = {'Delivery': common_user_contract_service_api.contract_trigger_order,
+                             'Swap': common_user_swap_service_api.swap_trigger_order,
+                             'LinearSwap': common_user_linear_service_api.linear_trigger_order,
+                             }
+        else:
+            order_methods = {'Delivery': contract_api.contract_trigger_order,
+                             'Swap': swap_api.swap_trigger_order,
+                             'LinearSwap': linear_api.linear_trigger_order,
+                             }
+        order_method = order_methods[conf.SYSTEM_TYPE]
+
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
+
+        current_price = cls.get_current_price(contract_code)
+        if current_price < 0:
+            return {"status": "err", "err_msg": "获取最新价失败"}
+
+        if not trigger_price:
+            if direction == 'buy':
+                trigger_price = round(current_price * 0.99, 1)
+            else:
+                trigger_price = round(current_price * 1.01, 1)
+
+        if not order_price:
+            order_price = trigger_price
+
+        if not trigger_type:
+            if trigger_price >= current_price:
+                trigger_type = 'ge'
+            else:
+                trigger_type = 'le'
+
+        json_body = cls.get_base_json_body(contract_code)
+        order_json = {
+            'trigger_type': trigger_type, 'trigger_price': trigger_price,
+            'order_price': order_price,
+            'volume': volume, 'direction': direction,
+            'offset': offset, 'lever_rate': lever_rate, 'order_price_type': order_price_type}
+        order_json.update(json_body)
+        return order_method(**order_json)
+
+    @classmethod
+    def current_user_make_trigger_order(cls, contract_code=None, trigger_type=None, trigger_price=None,
+                                        order_price=None,
+                                        volume=10,
+                                        direction='buy', offset='open',
+                                        lever_rate=5,
+                                        order_price_type='limit'):
+        return cls.common_user_make_trigger_order(contract_code=contract_code, trigger_type=trigger_type,
+                                                  trigger_price=trigger_price, order_price=order_price, volume=volume,
+                                                  direction=direction,
+                                                  offset=offset, lever_rate=lever_rate,
+                                                  order_price_type=order_price_type, user='current')
+
+    @classmethod
+    def make_market_depth(cls, contract_code=None, market_pirce=None, volume=10):
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
+        # 清盘
+        print(cls.clean_market(contract_code=contract_code))
+
         if not market_pirce:
             # 获取最新价
-            err_msg = {'status': 'error', 'err_msg': '获取最新价出错', 'response': response}
-            tick = response.get('tick', {})
-            if not tick:
-                return err_msg
-
-            data = tick.get('data', [])
-            if not data:
-                return err_msg
-
-            current_price = float(data[0].get('price', -1))
-            if current_price < 0:
-                return err_msg
-
-            # 确定挂单买价 和 挂单卖价
-            sell_price = round(current_price * 1.01, 1)
-            buy_price = round(current_price * 0.99, 1)
+            print(cls.common_user_make_order(direction='buy'))
+            print(cls.common_user_make_order(direction='sell'))
         else:
             # 按目标价格成交
-            order_json.update({'price': market_pirce, 'direction': 'buy'})
-            print(order_method(**order_json))
-            order_json.update({'price': market_pirce, 'direction': 'sell'})
-            print(order_method(**order_json))
-
+            print(cls.common_user_make_order(price=market_pirce, direction='buy'))
+            print(cls.common_user_make_order(price=market_pirce, direction='sell'))
             sell_price = round(market_pirce * 1.01, 1)
             buy_price = round(market_pirce * 0.99, 1)
+            print(cls.common_user_make_order(price=buy_price, direction='buy'))
+            print(cls.common_user_make_order(price=sell_price, direction='sell'))
 
-        # 挂单
-        order_json.update({'price': buy_price, 'direction': 'buy'})
-        print(order_method(**order_json))
-        order_json.update({'price': sell_price, 'direction': 'sell'})
-        print(order_method(**order_json))
-
-        return response
+        return True
 
 
 if __name__ == '__main__':
