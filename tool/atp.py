@@ -1,4 +1,5 @@
 import json
+from decimal import Decimal
 
 import requests
 
@@ -186,6 +187,76 @@ class ATP:
                 "isolated": response
 
             }
+        print('撤销当前用户 某个品种所有跟踪委托挂单')
+        pprint(response)
+        return response
+
+    @classmethod
+    def close_all_position(cls, contract_code=None, iscross=False):
+        contract_type = ''
+        symbol = ''
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
+        json_body = {}
+        if conf.SYSTEM_TYPE == 'Delivery':
+            contract_type_dic = {'CW': 'this_week', 'NW': 'next_week', 'CQ': 'quarter', 'NQ': 'next_ quarter'}
+
+            if '_' in contract_code:
+                symbol = contract_code.split('_')[0]
+                json_body['symbol'] = symbol
+                contract_type = contract_type_dic[contract_code.split('_')[1]]
+            else:
+                symbol = contract_code[:-6]
+                json_body['symbol'] = symbol
+                contract_type = ''
+
+        else:
+            json_body['contract_code'] = contract_code
+
+        if conf.SYSTEM_TYPE == 'LinearSwap' and iscross is True:
+            response = api_key_post(conf.URL, conf.POSITION_INFO_URL.replace('swap_position_info',
+                                                                             'swap_cross_position_info'),
+                                    json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+        else:
+            response = api_key_post(conf.URL, conf.POSITION_INFO_URL, json_body, conf.ACCESS_KEY,
+                                    conf.SECRET_KEY)
+
+        position_list = response["data"]
+
+        if conf.SYSTEM_TYPE == 'Delivery':
+            json_body['contract_type'] = contract_type
+        response = api_key_post(conf.URL, conf.CONTRACT_INFO_URL, json_body, conf.ACCESS_KEY,
+                                conf.SECRET_KEY)
+        price_tick = str(response['data'][0]['price_tick'])
+
+        for position in position_list:
+            order_json_body = {}
+            if conf.SYSTEM_TYPE == 'Delivery':
+                if position['contract_type'] != contract_type:  # 如果这个持仓和当前在测的合约周期不一致，就跳过
+                    continue
+                order_json_body['contract_type'] = contract_type
+                order_json_body['symbol'] = symbol
+            else:
+                json_body['contract_code'] = contract_code
+            order_json_body['global'] = str(int(position['volume']))
+            order_json_body['lever_rate'] = position['lever_rate']
+            order_json_body['offset'] = 'close'
+            order_json_body['order_price_type'] = 'limit'
+            if position['direction'] == "buy":
+                order_json_body['direction'] = 'sell'
+            else:
+                order_json_body['direction'] = 'buy'
+            price = str(position['cost_open'])
+            order_json_body['orderprice'] = str(Decimal(price).quantize(Decimal(price_tick)))
+
+            if conf.SYSTEM_TYPE == 'LinearSwap' and iscross is True:
+                response = api_key_post(conf.URL,
+                                        conf.PLACE_ORDER_URL.replace('swap_order', 'swap_cross_order'),
+                                        json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+            else:
+                response = api_key_post(conf.URL, conf.PLACE_ORDER_URL,
+                                        json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+
         print('撤销当前用户 某个品种所有跟踪委托挂单')
         pprint(response)
         return response
