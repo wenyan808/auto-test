@@ -191,6 +191,9 @@ class TestUSDTSwapLimitOrder_001:
 	def teardown(self):
 		r = linear_api.linear_cancel(contract_code=self.contract_code, order_id=self.orderid1)
 		pprint(r)
+		time.sleep(3)
+		r = linear_api.linear_cancel(contract_code=self.contract_code, order_id=self.orderid2)
+		pprint(r)
 		print('\n恢复环境操作')
 
 

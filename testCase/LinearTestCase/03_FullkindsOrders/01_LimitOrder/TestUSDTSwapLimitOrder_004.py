@@ -75,6 +75,9 @@ class TestUSDTSwapLimitOrder_004:
 	@allure.step('测试执行')
 	def test_execute(self, contract_code):
 
+		self.contract_code = contract_code;
+		self.orderid1 = 0;
+		self.orderid2 = 0;
 		""" 只做maker 卖出开空下单后自动撤单测试 """
 		lever_rate = 5
 		print('\n新建一个买单\n')
@@ -140,6 +143,11 @@ class TestUSDTSwapLimitOrder_004:
 	@allure.step('恢复环境')
 	def teardown(self):
 		print('\n恢复环境操作')
+		r = linear_api.linear_cancel(contract_code=self.contract_code, order_id=self.orderid1)
+		pprint(r)
+		time.sleep(1)
+		r = linear_api.linear_cancel(contract_code=self.contract_code, order_id=self.orderid2)
+		pprint(r)
 
 if __name__ == '__main__':
     pytest.main()
