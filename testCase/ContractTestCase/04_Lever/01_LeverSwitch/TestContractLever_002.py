@@ -64,6 +64,7 @@ class TestContractLever_002:
         pprint(r)
 
         print(symbol)
+        print(symbol_period)
         time.sleep(2)
 
     @allure.title('当前有挂单切换杠杆倍数测试')
@@ -98,6 +99,7 @@ class TestContractLever_002:
                                             offset='open',
                                             lever_rate=i,
                                             order_price_type='limit')
+            pprint(r)
             self.orderid = r['data']['order_id_str']
             pprint(r)
             time.sleep(4)
