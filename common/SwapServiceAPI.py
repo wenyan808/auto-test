@@ -771,25 +771,25 @@ class SwapService:
 
 
     # 获取合约当前未成交委托
-    def swap_openorders(self,contract_code=None,page_index=None,page_size=None):
+    def swap_openorders(self,contract_code=None,page_index=None,page_size=None,trade_type=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
         page_index          int               false      第几页,不填第一页
         page_size           int               false      不填默认20，不得多于50
         """
-
-        params = {'contract_code': contract_code}
+        params = {}
+        if contract_code:
+            params['contract_code'] = contract_code
         if page_index:
             params['page_index'] = page_index
         if page_size:
             params['page_size'] = page_size
+        if trade_type:
+            params['trade_type'] = trade_type
 
         request_path = '/swap-api/v1/swap_openorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
-
-
-
 
 
     # 获取合约历史委托
