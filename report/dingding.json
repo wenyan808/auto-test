@@ -1,5 +1,5 @@
 {
         "msgtype": "text",
         "text": {
-        "content": "report url: http://172.18.6.183:8080/jenkins/view/autotest(%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95)/job/auto-test/10/allure/"
+        "content": "env: 'Test6' system_type: 'ALL' test_type: 'stable' \ntotal: 86 passed: 78  \nfailed: 4  error: 4 skipped: 0  \nrun_time: 557.3233802318573 \nreport url: \nhttp://172.18.6.183:8080/jenkins/view/autotest(%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95)/job/auto-test/1001/allure/"
         }}
