@@ -5,7 +5,7 @@
 
 
 from common.util import order_http_post, order_http_get
-from config.conf import URL, hbsession
+from config.conf import URL2, MULANURL, hbsession
 
 
 class LinearServiceOrder:
@@ -145,4 +145,4 @@ class LinearServiceOrder:
 
 
 # 定义t并传入hbsessionL,供用例直接调用
-t = LinearServiceOrder(URL,  hbsession)
+t = LinearServiceOrder(URL2, MULANURL, hbsession)
