@@ -31,16 +31,14 @@
     刘双双
 """
 
+import time
+
+import allure
+import pytest
+
 import common.util
 from common.LinearServiceAPI import LinearServiceAPI
-from common.ContractServiceOrder import t as contract_order
-from common.LinearServiceAPI import t as linear_api
-from common.LinearServiceOrder import t as linear_order
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceOrder import t as swap_order
-
-from pprint import pprint
-import pytest, allure, random, time
+from config import conf
 from config.conf import URL2, ACCESS_KEY, SECRET_KEY
 
 
@@ -53,9 +51,11 @@ class TestUSDTSwapTriggerOrder_008:
     @allure.step('前置条件')
     def setup(self):
         print(''' 有持仓且大于等于10张， 触发价小于最新价 ''')
-        self.contract_code = "BTC-USDT"
+        self.contract_code = conf.DEFAULT_CONTRACT_CODE
         self.current_user = LinearServiceAPI(url=URL2, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
-        position_larger_than_10 = self.current_user.check_positions_larger_than(contract_code=self.contract_code, direction="buy", amount=10, position_type=1)
+        position_larger_than_10 = self.current_user.check_positions_larger_than(contract_code=self.contract_code,
+                                                                                direction="buy", amount=10,
+                                                                                position_type=1)
         price = 5
         if not position_larger_than_10:
             # 获取买一价, 以稍高与买一价的价格进行一次买->卖，制造持仓(逐仓)
@@ -64,9 +64,13 @@ class TestUSDTSwapTriggerOrder_008:
             if bids:
                 highest_price_bid = round(max([i[0] for i in bids]) * 1.1, 1)
                 price = max([price, highest_price_bid])
-            o_buy = self.current_user.linear_order(contract_code=self.contract_code, price=price, volume=10, direction="buy", offset="open", lever_rate=5, order_price_type="limit")
+            o_buy = self.current_user.linear_order(contract_code=self.contract_code, price=price, volume=10,
+                                                   direction="buy", offset="open", lever_rate=5,
+                                                   order_price_type="limit")
             assert o_buy.get("status") == "ok", f"下买单失败: {o_buy}"
-            o_sell = self.current_user.linear_order(contract_code=self.contract_code, price=price, volume=10, direction="sell", offset="open", lever_rate=5, order_price_type="limit")
+            o_sell = self.current_user.linear_order(contract_code=self.contract_code, price=price, volume=10,
+                                                    direction="sell", offset="open", lever_rate=5,
+                                                    order_price_type="limit")
             assert o_sell.get("status") == "ok", f"下卖单失败: {o_sell}"
             time.sleep(3)
         self.open_price = price
@@ -80,8 +84,12 @@ class TestUSDTSwapTriggerOrder_008:
             last_price = float(latest_trades.get("tick").get("data")[0].get("price"))
             trigger_price = round(last_price * 0.9, 1)
             order_price = trigger_price
-            current_plan_orders_before = self.current_user.linear_trigger_openorders(contract_code=self.contract_code).get("data").get("orders")
-            r_order_plan = self.current_user.linear_trigger_order(contract_code=self.contract_code, trigger_type="le", trigger_price=trigger_price, order_price=order_price, order_price_type="limit", volume=10, direction="sell", offset="close")
+            current_plan_orders_before = self.current_user.linear_trigger_openorders(
+                contract_code=self.contract_code).get("data").get("orders")
+            r_order_plan = self.current_user.linear_trigger_order(contract_code=self.contract_code, trigger_type="le",
+                                                                  trigger_price=trigger_price, order_price=order_price,
+                                                                  order_price_type="limit", volume=10, direction="sell",
+                                                                  offset="close")
             assert r_order_plan.get("status") == "ok", f"下计划委托单失败: {r_order_plan}"
             order_id = r_order_plan.get("data").get("order_id")
             time.sleep(3)
@@ -98,11 +106,14 @@ class TestUSDTSwapTriggerOrder_008:
         with allure.step('6、点击止损按钮有结果A'):
             pass
         with allure.step('7、查看当前委托列表中的计划委托有结果B'):
-            current_plan_orders_after = self.current_user.linear_trigger_openorders(contract_code=self.contract_code).get("data").get("orders")
+            current_plan_orders_after = self.current_user.linear_trigger_openorders(
+                contract_code=self.contract_code).get("data").get("orders")
             new_plan_orders = [i for i in current_plan_orders_after if i not in current_plan_orders_before]
             assert len(new_plan_orders) == 1, f"新增计划委托单不止一个或为0个: {new_plan_orders}"
             new_plan_order = new_plan_orders[0]
-            expected_info = {"contract_code": self.contract_code, "trigger_type": "le", "volume": 10, "direction": "sell", "lever_rate": 5, "trigger_price": trigger_price, "order_price": order_price, "order_price_type": "limit", "margin_mode": "isolated"}
+            expected_info = {"contract_code": self.contract_code, "trigger_type": "le", "volume": 10,
+                             "direction": "sell", "lever_rate": 5, "trigger_price": trigger_price,
+                             "order_price": order_price, "order_price_type": "limit", "margin_mode": "isolated"}
             assert common.util.compare_dict(expected_info, new_plan_order)
 
     @allure.step('恢复环境')

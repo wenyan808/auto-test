@@ -31,17 +31,14 @@
     刘双双
 """
 
+import allure
+import pytest
+import time
+
 import common.util
 from common.LinearServiceAPI import LinearServiceAPI
-from common.ContractServiceOrder import t as contract_order
-from common.LinearServiceAPI import t as linear_api
-from common.LinearServiceOrder import t as linear_order
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceOrder import t as swap_order
-
-from pprint import pprint
-import pytest, allure, random, time
-from config.conf import URL2, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
+from config import conf
+from config.conf import URL2, ACCESS_KEY, SECRET_KEY
 
 
 @allure.epic('所属分组')  # 这里填业务线
@@ -52,9 +49,11 @@ class TestUSDTSwapTriggerOrder_020:
     @allure.step('前置条件')
     def setup(self):
         print(''' 有持仓且大于等于10张''')
-        self.contract_code = "BTC-USDT"
+        self.contract_code = conf.DEFAULT_CONTRACT_CODE
         self.current_user = LinearServiceAPI(url=URL2, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
-        position_larger_than_10 = self.current_user.check_positions_larger_than(contract_code=self.contract_code, direction="buy", amount=10, position_type=1)
+        position_larger_than_10 = self.current_user.check_positions_larger_than(contract_code=self.contract_code,
+                                                                                direction="buy", amount=10,
+                                                                                position_type=1)
         price = 5
         if not position_larger_than_10:
             # 获取买一价, 以稍高与买一价的价格进行一次买->卖，制造持仓(逐仓)
@@ -63,9 +62,13 @@ class TestUSDTSwapTriggerOrder_020:
             if bids:
                 highest_price_bid = round(max([i[0] for i in bids]) * 1.1, 1)
                 price = max([price, highest_price_bid])
-            o_buy = self.current_user.linear_order(contract_code=self.contract_code, price=price, volume=10, direction="buy", offset="open", lever_rate=5, order_price_type="limit")
+            o_buy = self.current_user.linear_order(contract_code=self.contract_code, price=price, volume=10,
+                                                   direction="buy", offset="open", lever_rate=5,
+                                                   order_price_type="limit")
             assert o_buy.get("status") == "ok", f"下买单失败: {o_buy}"
-            o_sell = self.current_user.linear_order(contract_code=self.contract_code, price=price, volume=10, direction="sell", offset="open", lever_rate=5, order_price_type="limit")
+            o_sell = self.current_user.linear_order(contract_code=self.contract_code, price=price, volume=10,
+                                                    direction="sell", offset="open", lever_rate=5,
+                                                    order_price_type="limit")
             assert o_sell.get("status") == "ok", f"下卖单失败: {o_sell}"
             time.sleep(3)
         self.open_price = price
@@ -80,7 +83,8 @@ class TestUSDTSwapTriggerOrder_020:
             last_price = float(latest_trades.get("tick").get("data")[0].get("price"))
             trigger_price = round(last_price * 1.1, 1)
             tp_order_price = trigger_price
-            req = self.current_user.linear_tpsl_order(contract_code=self.contract_code, direction="sell", volume=10, tp_trigger_price=trigger_price, tp_order_price_type="optimal_5")
+            req = self.current_user.linear_tpsl_order(contract_code=self.contract_code, direction="sell", volume=10,
+                                                      tp_trigger_price=trigger_price, tp_order_price_type="optimal_5")
             assert req.get("status") == "ok", f"下单失败: {req}"
             order_id = req.get("data").get("tp_order").get("order_id")
         with allure.step('3、选择按价格按钮'):
@@ -95,11 +99,14 @@ class TestUSDTSwapTriggerOrder_020:
             pass
         with allure.step('8、查看当前委托列表中的止盈止损页面有结果B'):
             time.sleep(3)
-            current_open_tp_sl_orders = self.current_user.linear_tpsl_openorders(contract_code=self.contract_code).get("data").get('orders')
+            current_open_tp_sl_orders = self.current_user.linear_tpsl_openorders(contract_code=self.contract_code).get(
+                "data").get('orders')
             actual_tp_sl_order = [i for i in current_open_tp_sl_orders if i.get("order_id") == order_id]
             assert len(actual_tp_sl_order) == 1, f"生成的止盈止损单不止一个或为0个: {actual_tp_sl_order}"
             actual_tp_sl_order = actual_tp_sl_order[0]
-            expected_info = {"contract_code": self.contract_code, "volume": 10, "direction": "sell", "trigger_type": "ge", "order_price": 0, "order_price_type": "optimal_5", "tpsl_order_type": "tp"}
+            expected_info = {"contract_code": self.contract_code, "volume": 10, "direction": "sell",
+                             "trigger_type": "ge", "order_price": 0, "order_price_type": "optimal_5",
+                             "tpsl_order_type": "tp"}
             assert common.util.compare_dict(expected_info, actual_tp_sl_order)
         with allure.step("撤单"):
             r_cancel = self.current_user.linear_tpsl_cancelall(contract_code=self.contract_code)
