@@ -5,7 +5,8 @@
 from pprint import pprint
 
 from common.util import api_http_get, api_key_post, api_key_get
-from config.conf import URL, ACCESS_KEY, SECRET_KEY
+from config import conf
+from config.conf import URL, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
 import time
 
 
@@ -286,7 +287,8 @@ class ContractServiceAPI:
     # 合约下单
     def contract_order(self, symbol=None, contract_type=None, contract_code=None,
                        client_order_id=None, price=None, volume=None, direction=None, offset=None,
-                       lever_rate=None, order_price_type=None, tp_trigger_price=None, tp_order_price=None, tp_order_price_type=None,
+                       lever_rate=None, order_price_type=None, tp_trigger_price=None, tp_order_price=None,
+                       tp_order_price_type=None,
                        sl_trigger_price=None, sl_order_price=None, sl_order_price_type=None, channel_code=None):
         """
         :symbol: "BTC","ETH"..
@@ -409,7 +411,8 @@ class ContractServiceAPI:
 
     # 获取合约订单明细信息
 
-    def contract_order_detail(self, symbol=None, order_id=None, created_at=None, order_type=None, page_index=None, page_size=None):
+    def contract_order_detail(self, symbol=None, order_id=None, created_at=None, order_type=None, page_index=None,
+                              page_size=None):
         """
         参数名称     是否必须  类型    描述
         symbol      true	    string "BTC","ETH"...
@@ -534,7 +537,8 @@ class ContractServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取历史成交记录
-    def contract_matchresults(self, symbol=None, trade_type=None, create_date=None, contract_code=None, page_index=None, page_size=None):
+    def contract_matchresults(self, symbol=None, trade_type=None, create_date=None, contract_code=None, page_index=None,
+                              page_size=None):
         """
         参数名称     是否必须      类型     描述	    取值范围
         symbol      true	    string  品种代码  "BTC","ETH"...
@@ -633,7 +637,8 @@ class ContractServiceAPI:
         return api_key_get(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取强平订单
-    def contract_liquidation_orders(self, symbol=None, trade_type=None, create_date=None, page_index=None, page_size=None):
+    def contract_liquidation_orders(self, symbol=None, trade_type=None, create_date=None, page_index=None,
+                                    page_size=None):
         """
 
         :param symbol:
@@ -789,7 +794,8 @@ class ContractServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询母账户下的所有母子账户的划转记录
-    def contract_master_sub_transfer_record(self, symbol=None, create_date=None, transfer_type=None, page_index=None, page_size=None):
+    def contract_master_sub_transfer_record(self, symbol=None, create_date=None, transfer_type=None, page_index=None,
+                                            page_size=None):
 
         params = {'symbol': symbol,
                   'create_date': create_date}
@@ -850,7 +856,8 @@ class ContractServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 闪电平仓
-    def lightning_close_position(self, symbol=None, contract_type=None, contract_code=None, client_order_id=None, volume=None, direction=None, order_price_type=None, channel_code=None):
+    def lightning_close_position(self, symbol=None, contract_type=None, contract_code=None, client_order_id=None,
+                                 volume=None, direction=None, order_price_type=None, channel_code=None):
         params = {'volume': volume,
                   'direction': direction}
         if symbol:
@@ -871,8 +878,10 @@ class ContractServiceAPI:
 
         # 计划委托下单
 
-    def contract_trigger_order(self, symbol=None, contract_type=None, contract_code=None, trigger_type=None, trigger_price=None,
-                               order_price=None, order_price_type=None, volume=None, direction=None, offset=None, lever_rate=None):
+    def contract_trigger_order(self, symbol=None, contract_type=None, contract_code=None, trigger_type=None,
+                               trigger_price=None,
+                               order_price=None, order_price_type=None, volume=None, direction=None, offset=None,
+                               lever_rate=None):
         """
         参数名称              是否必须   类型     描述	    取值范围
         symbol	             false	String	品种代码	"BTC","ETH"...
@@ -927,7 +936,8 @@ class ContractServiceAPI:
 
         # 计划委托全部撤单接口
 
-    def contract_trigger_cancelall(self, symbol=None, contract_code=None, contract_type=None, direction=None, offset=None):
+    def contract_trigger_cancelall(self, symbol=None, contract_code=None, contract_type=None, direction=None,
+                                   offset=None):
         """
         参数名称              是否必须   类型     描述	    取值范围
         symbol	             True    String	品种代码	"BTC","ETH"...
@@ -951,7 +961,8 @@ class ContractServiceAPI:
 
         # 获取计划委托当前委托接口
 
-    def contract_trigger_openorders(self, symbol=None, contract_code=None, trade_type=None, page_index=None, page_size=None):
+    def contract_trigger_openorders(self, symbol=None, contract_code=None, trade_type=None, page_index=None,
+                                    page_size=None):
         """
         参数名称              是否必须   类型     描述	    取值范围
         symbol	             True    String	品种代码	"BTC","ETH"...
@@ -976,7 +987,8 @@ class ContractServiceAPI:
 
         # 获取计划委托历史委托接口
 
-    def contract_trigger_hisorders(self, symbol=None, contract_code=None, trade_type=None, status=None, create_date=None, sort_by=None,
+    def contract_trigger_hisorders(self, symbol=None, contract_code=None, trade_type=None, status=None,
+                                   create_date=None, sort_by=None,
                                    page_index=None, page_size=None):
         """
         参数名称              是否必须   类型     描述	    取值范围
@@ -1006,7 +1018,8 @@ class ContractServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 组合查询合约历史委托
-    def contract_hisorders_exact(self, symbol=None, trade_type=None, type=None, status=None, contract_code=None, order_type=None, start_time=None, end_time=None, from_id=None, size=None, direct=None):
+    def contract_hisorders_exact(self, symbol=None, trade_type=None, type=None, status=None, contract_code=None,
+                                 order_type=None, start_time=None, end_time=None, from_id=None, size=None, direct=None):
 
         params = {}
         if symbol:
@@ -1035,7 +1048,8 @@ class ContractServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 组合查询用户财务记录
-    def contract_financial_record_exact(self, symbol=None, type=None, start_time=None, end_time=None, from_id=None, size=None, direct=None):
+    def contract_financial_record_exact(self, symbol=None, type=None, start_time=None, end_time=None, from_id=None,
+                                        size=None, direct=None):
         params = {}
         if symbol:
             params['symbol'] = symbol
@@ -1055,7 +1069,8 @@ class ContractServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询用户结算记录
-    def contract_user_settlement_records(self, symbol=None, start_time=None, end_time=None, page_index=None, page_size=None):
+    def contract_user_settlement_records(self, symbol=None, start_time=None, end_time=None, page_index=None,
+                                         page_size=None):
         params = {}
         if symbol:
             params['symbol'] = symbol
@@ -1070,7 +1085,8 @@ class ContractServiceAPI:
         request_path = '/api/v1/contract_user_settlement_records'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
-    def contract_matchresults_exact(self, symbol=None, trade_type=None, contract_code=None, start_time=None, end_time=None, from_id=None, size=None, direct=None):
+    def contract_matchresults_exact(self, symbol=None, trade_type=None, contract_code=None, start_time=None,
+                                    end_time=None, from_id=None, size=None, direct=None):
         params = {}
         if symbol:
             params['symbol'] = symbol
@@ -1130,7 +1146,8 @@ class ContractServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 对仓位设置止盈止损订单
-    def contract_tpsl_order(self, symbol=None, contract_type=None, contract_code=None, direction=None, volume=None, tp_trigger_price=None, tp_order_price=None, tp_order_price_type=None,
+    def contract_tpsl_order(self, symbol=None, contract_type=None, contract_code=None, direction=None, volume=None,
+                            tp_trigger_price=None, tp_order_price=None, tp_order_price_type=None,
                             sl_trigger_price=None, sl_order_price=None, sl_order_price_type=None):
 
         params = {}
@@ -1190,7 +1207,8 @@ class ContractServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询止盈止损订单当前委托接口
-    def contract_tpsl_openorders(self, symbol=None, contract_code=None, trade_type=None, page_index=None, page_size=None):
+    def contract_tpsl_openorders(self, symbol=None, contract_code=None, trade_type=None, page_index=None,
+                                 page_size=None):
 
         params = {}
 
@@ -1209,7 +1227,8 @@ class ContractServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询止盈止损订单历史委托接口
-    def contract_tpsl_hisorders(self, symbol=None, contract_code=None, status=None, create_date=None, page_index=None, page_size=None, sort_by=None):
+    def contract_tpsl_hisorders(self, symbol=None, contract_code=None, status=None, create_date=None, page_index=None,
+                                page_size=None, sort_by=None):
 
         params = {}
 
@@ -1245,7 +1264,9 @@ class ContractServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 跟踪委托订单下单接口
-    def contract_track_order(self, symbol=None, contract_type=None, contract_code=None, direction=None, offset=None, lever_rate=None, volume=None, callback_rate=None, active_price=None, order_price_type=None):
+    def contract_track_order(self, symbol=None, contract_type=None, contract_code=None, direction=None, offset=None,
+                             lever_rate=None, volume=None, callback_rate=None, active_price=None,
+                             order_price_type=None):
 
         params = {}
 
@@ -1286,7 +1307,8 @@ class ContractServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 跟踪委托订单全部撤单接口
-    def contract_track_cancelall(self, symbol=None, contract_code=None, contract_type=None, direction=None, offset=None):
+    def contract_track_cancelall(self, symbol=None, contract_code=None, contract_type=None, direction=None,
+                                 offset=None):
 
         params = {}
         if symbol:
@@ -1304,7 +1326,8 @@ class ContractServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询跟踪委托订单当前委托接口
-    def contract_track_openorders(self, symbol=None, contract_code=None, trade_type=None, page_index=None, page_size=None):
+    def contract_track_openorders(self, symbol=None, contract_code=None, trade_type=None, page_index=None,
+                                  page_size=None):
 
         params = {}
         if symbol:
@@ -1322,7 +1345,8 @@ class ContractServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询跟踪委托订单历史委托接口
-    def contract_track_hisorders(self, symbol=None, contract_code=None, status=None, trade_type=None, create_date=None, page_index=None, page_size=None, sort_by=None):
+    def contract_track_hisorders(self, symbol=None, contract_code=None, status=None, trade_type=None, create_date=None,
+                                 page_index=None, page_size=None, sort_by=None):
 
         params = {}
         if symbol:
@@ -1346,8 +1370,9 @@ class ContractServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 自买自卖调节最新价
-    def contract_control_price(self, symbol='', price=None, contract_type=None, lever_rate='1'):
-
+    def contract_control_price(self, symbol='', price=None, contract_type=None, lever_rate='5'):
+        if not symbol:
+            symbol = conf.DEFAULT_SYMBOL
         self.contract_order(symbol=symbol, contract_type=contract_type, price=price, volume='1', direction='buy',
                             offset='open', lever_rate=lever_rate, order_price_type='limit')
         time.sleep(0.5)
@@ -1404,3 +1429,4 @@ class ContractServiceAPI:
 
 # 定义t并传入公私钥和URL,供用例直接调用
 t = ContractServiceAPI(URL, ACCESS_KEY, SECRET_KEY)
+common_user_contract_service_api = ContractServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
