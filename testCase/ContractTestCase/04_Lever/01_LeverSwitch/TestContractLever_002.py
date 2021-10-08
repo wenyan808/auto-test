@@ -52,6 +52,8 @@ class TestContractLever_002:
         # 清除盘口所有买单
         print(ATP.clean_market(contract_code=symbol_period, direction='buy'))
 
+        print(ATP.switch_level(contract_code=symbol_period))
+
         r = contract_api.contract_cancelall(symbol=symbol)
         pprint(r)
         r = contract_api.contract_tpsl_cancelall(symbol=symbol)
@@ -62,6 +64,7 @@ class TestContractLever_002:
         pprint(r)
 
         print(symbol)
+        print(symbol_period)
         time.sleep(2)
 
     @allure.title('当前有挂单切换杠杆倍数测试')
@@ -78,7 +81,7 @@ class TestContractLever_002:
         with allure.step('5、点击杠杆切换框外的区域，有结果D'):
             r = contract_api.contract_available_level_rate(symbol=symbol)
             availableleverlist = r['data'][0]['available_level_rate'].split(',')
-            i = random.choice(availableleverlist)
+            i = "5"
             availableleverlist.remove(i)
             j = random.choice(availableleverlist)
             '''下单任意一种杠杆'''
@@ -96,6 +99,7 @@ class TestContractLever_002:
                                             offset='open',
                                             lever_rate=i,
                                             order_price_type='limit')
+            pprint(r)
             self.orderid = r['data']['order_id_str']
             pprint(r)
             time.sleep(0.5)
