@@ -32,16 +32,13 @@
     刘双双
 """
 
+import allure
+import pytest
+import time
+
 import common.util
 from common.LinearServiceAPI import LinearServiceAPI
-from common.ContractServiceOrder import t as contract_order
-from common.LinearServiceAPI import t as linear_api
-from common.LinearServiceOrder import t as linear_order
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceOrder import t as swap_order
-
-from pprint import pprint
-import pytest, allure, random, time
+from config import conf
 from config.conf import URL2, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
 
 
@@ -53,7 +50,7 @@ class TestUSDTSwapTriggerOrder_016:
     @allure.step('前置条件')
     def setup(self):
         print(''' 在下单区域下单，下限价委托单触发成交 ''')
-        self.contract_code = "BTC-USDT"
+        self.contract_code = conf.DEFAULT_CONTRACT_CODE
         self.current_user = LinearServiceAPI(url=URL2, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
 
     @allure.title('下单区域下止盈止损限价单成交测试')
@@ -77,7 +74,11 @@ class TestUSDTSwapTriggerOrder_016:
                 price = 5
                 order_price = 5
 
-            r_order_plan = self.current_user.linear_order(contract_code=self.contract_code, price=price, order_price_type="limit", volume=10, direction="buy", offset="open", lever_rate=5, tp_trigger_price=tp_trigger_price, sl_trigger_price=sl_trigger_price,
+            r_order_plan = self.current_user.linear_order(contract_code=self.contract_code, price=price,
+                                                          order_price_type="limit", volume=10, direction="buy",
+                                                          offset="open", lever_rate=5,
+                                                          tp_trigger_price=tp_trigger_price,
+                                                          sl_trigger_price=sl_trigger_price,
                                                           tp_order_price=order_price, sl_order_price=order_price)
             assert r_order_plan.get("status") == "ok", f"下计划委托单失败: {r_order_plan}"
             tp_sl_order_id = r_order_plan.get("data").get("order_id")
@@ -99,12 +100,16 @@ class TestUSDTSwapTriggerOrder_016:
         with allure.step('9、在下单区域点击买入开多按钮下限价单有结果A'):
             pass
         with allure.step('10、限价单成交后，在当前委托-止盈止损列表查看下单数据有结果B'):
-            current_tp_sl_orders_before_deal = self.current_user.linear_tpsl_openorders(contract_code=self.contract_code).get("data").get("orders")
+            current_tp_sl_orders_before_deal = self.current_user.linear_tpsl_openorders(
+                contract_code=self.contract_code).get("data").get("orders")
             common_user = LinearServiceAPI(url=URL2, access_key=COMMON_ACCESS_KEY, secret_key=COMMON_SECRET_KEY)
-            r_common_sell = common_user.linear_order(contract_code=self.contract_code, price=price, volume=10, direction="sell", offset="open", lever_rate=5, order_price_type="limit")
+            r_common_sell = common_user.linear_order(contract_code=self.contract_code, price=price, volume=10,
+                                                     direction="sell", offset="open", lever_rate=5,
+                                                     order_price_type="limit")
             assert r_common_sell.get("status") == "ok", f"通用账号下卖单失败: {r_common_sell}"
             time.sleep(3)
-            current_tp_sl_orders_after_deal = self.current_user.linear_tpsl_openorders(contract_code=self.contract_code).get('data').get("orders")
+            current_tp_sl_orders_after_deal = self.current_user.linear_tpsl_openorders(
+                contract_code=self.contract_code).get('data').get("orders")
             new_tp_sl_order = [i for i in current_tp_sl_orders_after_deal if i not in current_tp_sl_orders_before_deal]
             for i in new_tp_sl_order:
                 if i.get("tpsl_order_type") == "tp":
@@ -113,7 +118,8 @@ class TestUSDTSwapTriggerOrder_016:
                 else:
                     trigger_type = "le"
                     trigger_price = sl_trigger_price
-                expected_tp_sl_each = {"volume": 10, "direction": "sell", "trigger_price": trigger_price, "trigger_type": trigger_type, "order_price": order_price, "status": 2}
+                expected_tp_sl_each = {"volume": 10, "direction": "sell", "trigger_price": trigger_price,
+                                       "trigger_type": trigger_type, "order_price": order_price, "status": 2}
                 assert common.util.compare_dict(expected_tp_sl_each, i)
 
     @allure.step('恢复环境')
