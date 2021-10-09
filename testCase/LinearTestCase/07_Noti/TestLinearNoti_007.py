@@ -22,7 +22,7 @@ from common.LinearServiceAPI import t as linear_api
 from common.LinearServiceOrder import t as linear_order
 from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
-from common.LinearServiceWS import WebsocketSevice as websocketsevice
+from common.LinearServiceWS import t as websocketsevice
 from pprint import pprint
 import pytest, allure, random, time
 
@@ -38,10 +38,22 @@ class TestLinearNoti_007:
 
     @allure.title('WS订阅最新成交记录(单个合约，即传参contract_code)')
     @allure.step('测试执行')
-    def test_execute(self, contract_code, symbol_period):
+    def test_execute(self, contract_code):
         with allure.step('WS订阅最新成交记录(单个合约，即传参contract_code)，可参考文档：https://docs.huobigroup.com/docs/usdt_swap/v1/cn/#websocket-3'):
-            r = websocketsevice.linear_req_trade_detail(contract_code)
+            r = websocketsevice.linear_sub_trade_detail(contract_code=contract_code)
             pprint(r)
+            tradedetail = r['tick']['data'][0]
+            if tradedetail['amount'] == None:
+                assert False
+            if tradedetail['direction'] == None:
+                assert False
+            if tradedetail['price'] == None:
+                assert False
+            if tradedetail['quantity'] == None:
+                assert False
+            if tradedetail['trade_turnover'] == None:
+                assert False
+
 
     @allure.step('恢复环境')
     def teardown(self):
