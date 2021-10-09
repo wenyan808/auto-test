@@ -144,6 +144,45 @@ class LinearServiceOrder:
         request_path = self.__path + '/x/v1/linear_swap_open_triggerorders'
         return order_http_post(self.__host, request_path, params, self.__hbsession)
 
+    # 计划委托-获取历史计划委托
+    def linear_swap_his_triggerorders(self, contract_code=None, trade_type=None, create_date=7,status=4,type=2):
+        # 参数名称	    是否必须	类型	    描述	                默认值	取值范围
+        # contract_code	true	string	合约code		                BTC-USDT
+        # trade_type	true	int	    交易类型		                0:全部,1:买入开多,2: 卖出开空,3: 买入平空,4: 卖出平多 ；后台是根据该值转换为offset和direction，然后去查询的； 其他值无法查询出结果
+        # type	        true	int	    类型		                    查询类型：1、全部订单（此时status字段必须传0，对应查询的数据库状态范围2、4、5、6）；2、已完成订单（对应状态范围 4、5、6）
+        # status	    true	String	订单状态		                多个以英文隔开，计划委托单状态：0 全部 、2:等待委托、4:已委托、5:委托失败、6:已撤单
+        # order_type	false	String	委托类型
+        # create_date	true	int	    日期		                    7，90（7天或者90天）
+        # page_index	false	int	    页码  不填默认第1页	1	    第几页，不填默认第一页
+        # page_size	    false	int	    不填默认20，不得多于50	20	    不填默认20，不得多于50
+        params = {}
+        if contract_code:
+            params['contract_code'] = contract_code
+        if trade_type:
+            params['trade_type'] = trade_type
+        if create_date:
+            params['create_date'] = create_date
+        if status:
+            params['status'] = status
+        if type:
+            params['type'] = type
+
+        request_path = self.__path + '/x/v1/linear_swap_his_triggerorders'
+        return order_http_post(self.__host, request_path, params, self.__hbsession)
+
+    # 选择取消挂单
+    def linear_swap_selection_cancel(self, contract_code=None):
+        # 属性	        数据类型	是否必填	说明
+        # contract_code	String	N	    合约，不传表示所有
+        # margin_mode	String	N	    全仓：cross，逐仓：isolated，全部：all
+        # order_type	String	N	    限价单：limit , 计划委托：trigger , 止盈止损：tpsl_trigger, 跟踪委托：track_trigger,不传值表示所有
+        # contract_type	String	N	    合约类型，swap（永续）、this_week（当周）、next_week（次周）、quarter（当季）、next_ quarter（次季）
+        # pair	        String	N	    交易对，如：“BTC-USDT”
+        params={}
+        if contract_code:
+            params['contract_code'] = contract_code
+        request_path = self.__path + '/x/v1/linear_swap_selection_cancel'
+        return order_http_post(self.__host, request_path, params, self.__hbsession)
 
 # 定义t并传入hbsessionL,供用例直接调用
 t = LinearServiceOrder(URL2, MULANURL, hbsession)
