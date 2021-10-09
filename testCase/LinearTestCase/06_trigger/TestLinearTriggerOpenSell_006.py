@@ -33,6 +33,7 @@ from tool import atp
 @allure.epic('正向永续')  # 这里填业务线
 @allure.feature('计划委托下单')  # 这里填功能
 @allure.story('下单成功')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
 class TestLinearTriggerOpenSell_006:
 
     @allure.step('前置条件')
