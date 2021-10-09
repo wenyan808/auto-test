@@ -10,8 +10,9 @@ from config.conf import URL2, MULANURL, hbsession
 
 class LinearServiceOrder:
 
-    def __init__(self, host, hbsession):
+    def __init__(self, host, mulanhost, hbsession):
         self.__host = host
+        self.__mulanhost = mulanhost
         self.__hbsession = hbsession
         self.__path = '/linear-swap-order'
 
