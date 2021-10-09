@@ -192,8 +192,12 @@ def sub(url, subs):
     try:
         ws = websocket.create_connection(url)
         sub_str = json.dumps(subs)
-        ws.send(sub_str)
-        sub_result = json.loads(gzip.decompress(ws.recv()).decode())
+        i = 0
+        while i<3:
+            ws.send(sub_str)
+            sub_result = json.loads(gzip.decompress(ws.recv()).decode())
+            i = i+1
+            time.sleep(0.3)
         ws.close()
         return sub_result
     except Exception as e:
