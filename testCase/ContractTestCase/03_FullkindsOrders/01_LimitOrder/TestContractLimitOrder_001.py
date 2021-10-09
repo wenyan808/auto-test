@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 2020/7/1
-# @Author  : zhangranghan
+# @Author  : 张广南
 
 
 from common.ContractServiceAPI import t as contract_api
@@ -17,6 +17,7 @@ from tool.get_test_data import case_data
 @allure.epic('合约自动化测试')
 @allure.feature('')
 @allure.title('title')
+@pytest.mark.stable
 class TestContractLimitOrder_001:
 
     def setUp(self):
