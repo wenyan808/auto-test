@@ -43,10 +43,11 @@ class TestSwapTriggerCloseBuy_004:
 
     @allure.step('前置条件')
     def setup(self, ):
+        ATP.close_all_position()
         print(''' 使当前交易对有交易盘口  ''')
         print(ATP.make_market_depth())
         print(''' 使当前用户有持仓  ''')
-        print(ATP.current_user_make_order())
+        print(ATP.current_user_make_order(order_price_type='opponent'))
 
     @allure.title('计划委托买入平空触发价大于最新价')
     @allure.step('测试执行')
@@ -93,6 +94,7 @@ class TestSwapTriggerCloseBuy_004:
         print('\n恢复环境操作')
         ATP.cancel_all_trigger_order()
         ATP.cancel_all_order()
+        ATP.close_all_position()
 
 
 if __name__ == '__main__':

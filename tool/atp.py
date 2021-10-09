@@ -174,25 +174,10 @@ class ATP:
     @classmethod
     def close_all_position(cls, contract_code=None, iscross=False):
         # Author : Guangnan Zhang
-        contract_type = ''
-        symbol = ''
         if not contract_code:
             contract_code = conf.DEFAULT_CONTRACT_CODE
-        json_body = {}
-        if conf.SYSTEM_TYPE == 'Delivery':
-            contract_type_dic = {'CW': 'this_week', 'NW': 'next_week', 'CQ': 'quarter', 'NQ': 'next_ quarter'}
-
-            if '_' in contract_code:
-                symbol = contract_code.split('_')[0]
-                json_body['symbol'] = symbol
-                contract_type = contract_type_dic[contract_code.split('_')[1]]
-            else:
-                symbol = contract_code[:-6]
-                json_body['symbol'] = symbol
-                contract_type = ''
-
-        else:
-            json_body['contract_code'] = contract_code
+        cls.cancel_all_order(contract_code=contract_code)
+        json_body = cls.get_base_json_body(contract_code)
 
         if conf.SYSTEM_TYPE == 'LinearSwap' and iscross is True:
             response = api_key_post(conf.URL, conf.POSITION_INFO_URL.replace('swap_position_info',
@@ -203,43 +188,21 @@ class ATP:
                                     conf.SECRET_KEY)
 
         position_list = response["data"]
-
         if conf.SYSTEM_TYPE == 'Delivery':
-            json_body['contract_type'] = contract_type
-        response = api_key_post(conf.URL, conf.CONTRACT_INFO_URL, json_body, conf.ACCESS_KEY,
-                                conf.SECRET_KEY)
-        price_tick = str(response['data'][0]['price_tick'])
+            volume_dict = {item['direction']: int(item['volume']) for item in
+                           list(filter(
+                               lambda i: i['contract_type'] == json_body['contract_type'], position_list))}
+        else:
+            volume_dict = {item['direction']: int(item['volume']) for item in position_list}
 
-        for position in position_list:
-            order_json_body = {}
-            if conf.SYSTEM_TYPE == 'Delivery':
-                if position['contract_type'] != contract_type:  # 如果这个持仓和当前在测的合约周期不一致，就跳过
-                    continue
-                order_json_body['contract_type'] = contract_type
-                order_json_body['symbol'] = symbol
-            else:
-                json_body['contract_code'] = contract_code
-            order_json_body['global'] = str(int(position['volume']))
-            order_json_body['lever_rate'] = position['lever_rate']
-            order_json_body['offset'] = 'close'
-            order_json_body['order_price_type'] = 'limit'
-            if position['direction'] == "buy":
-                order_json_body['direction'] = 'sell'
-            else:
-                order_json_body['direction'] = 'buy'
-            price = str(position['cost_open'])
-            order_json_body['orderprice'] = str(Decimal(price).quantize(Decimal(price_tick)))
+        # 下单平仓
+        for direction, volume in volume_dict.items():
+            if volume:
+                print(cls.current_user_make_order(contract_code=contract_code, offset='close',
+                                                  direction='buysell'.replace(direction, ''),
+                                                  volume=volume, iscross=iscross))
 
-            if conf.SYSTEM_TYPE == 'LinearSwap' and iscross is True:
-                response = api_key_post(conf.URL,
-                                        conf.PLACE_ORDER_URL.replace('swap_order', 'swap_cross_order'),
-                                        json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
-            else:
-                response = api_key_post(conf.URL, conf.PLACE_ORDER_URL,
-                                        json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
-
-        print('撤销当前用户 某个品种所有跟踪委托挂单')
-        pprint(response)
+        ATP.clean_market(contract_code=contract_code)
         return response
 
     @classmethod
@@ -270,17 +233,24 @@ class ATP:
     @classmethod
     def common_user_make_order(cls, contract_code=None, price=None, volume=10, direction='buy', offset='open',
                                lever_rate=5,
-                               order_price_type='limit', user='common'):
+                               order_price_type='limit', user='common', iscross=False):
         if user == 'common':
+
             order_methods = {'Delivery': common_user_contract_service_api.contract_order,
                              'Swap': common_user_swap_service_api.swap_order,
                              'LinearSwap': common_user_linear_service_api.linear_order,
                              }
+            if iscross:
+                order_methods['LinearSwap'] = common_user_linear_service_api.linear_cross_order,
+
         else:
             order_methods = {'Delivery': contract_api.contract_order,
                              'Swap': swap_api.swap_order,
                              'LinearSwap': linear_api.linear_order,
                              }
+            if iscross:
+                order_methods['LinearSwap'] = linear_api.linear_cross_order,
+
         order_method = order_methods[conf.SYSTEM_TYPE]
         if not contract_code:
             contract_code = conf.DEFAULT_CONTRACT_CODE
@@ -299,27 +269,32 @@ class ATP:
     @classmethod
     def current_user_make_order(cls, contract_code=None, price=None, volume=10, direction='buy', offset='open',
                                 lever_rate=5,
-                                order_price_type='limit'):
+                                order_price_type='limit', iscross=False):
         return cls.common_user_make_order(contract_code=contract_code, price=price, volume=volume, direction=direction,
                                           offset=offset, lever_rate=lever_rate,
-                                          order_price_type=order_price_type, user='current')
+                                          order_price_type=order_price_type, user='current', iscross=iscross)
 
     @classmethod
     def common_user_make_trigger_order(cls, contract_code=None, trigger_type=None, trigger_price=None, order_price=None,
                                        volume=10,
                                        direction='buy', offset='open',
                                        lever_rate=5,
-                                       order_price_type='limit', user='common'):
+                                       order_price_type='limit', user='common', iscross=False):
         if user == 'common':
             order_methods = {'Delivery': common_user_contract_service_api.contract_trigger_order,
                              'Swap': common_user_swap_service_api.swap_trigger_order,
                              'LinearSwap': common_user_linear_service_api.linear_trigger_order,
                              }
+            if iscross:
+                order_methods['LinearSwap'] = common_user_linear_service_api.linear_cross_trigger_order
         else:
             order_methods = {'Delivery': contract_api.contract_trigger_order,
                              'Swap': swap_api.swap_trigger_order,
                              'LinearSwap': linear_api.linear_trigger_order,
                              }
+            if iscross:
+                order_methods['LinearSwap'] = linear_api.linear_cross_trigger_order
+
         order_method = order_methods[conf.SYSTEM_TYPE]
 
         if not contract_code:
@@ -359,32 +334,32 @@ class ATP:
                                         volume=10,
                                         direction='buy', offset='open',
                                         lever_rate=5,
-                                        order_price_type='limit'):
+                                        order_price_type='limit', iscross=False):
         return cls.common_user_make_trigger_order(contract_code=contract_code, trigger_type=trigger_type,
                                                   trigger_price=trigger_price, order_price=order_price, volume=volume,
                                                   direction=direction,
                                                   offset=offset, lever_rate=lever_rate,
-                                                  order_price_type=order_price_type, user='current')
+                                                  order_price_type=order_price_type, user='current', iscross=iscross)
 
     @classmethod
-    def make_market_depth(cls, contract_code=None, market_pirce=None, volume=10):
+    def make_market_depth(cls, contract_code=None, market_price=None, volume=10):
         if not contract_code:
             contract_code = conf.DEFAULT_CONTRACT_CODE
         # 清盘
         print(cls.clean_market(contract_code=contract_code))
 
-        if not market_pirce:
-            # 获取最新价
-            print(cls.common_user_make_order(direction='buy'))
-            print(cls.common_user_make_order(direction='sell'))
-        else:
-            # 按目标价格成交
-            print(cls.common_user_make_order(price=market_pirce, direction='buy'))
-            print(cls.common_user_make_order(price=market_pirce, direction='sell'))
-            sell_price = round(market_pirce * 1.01, 1)
-            buy_price = round(market_pirce * 0.99, 1)
-            print(cls.common_user_make_order(price=buy_price, direction='buy'))
-            print(cls.common_user_make_order(price=sell_price, direction='sell'))
+        if not market_price:
+            market_price = cls.get_current_price(contract_code=contract_code)
+            if market_price < 0:
+                return False
+
+        # 按目标价格成交
+        print(cls.common_user_make_order(price=market_price, direction='buy'))
+        print(cls.common_user_make_order(price=market_price, direction='sell'))
+        sell_price = round(market_price * 1.01, 1)
+        buy_price = round(market_price * 0.99, 1)
+        print(cls.common_user_make_order(price=buy_price, direction='buy', volume=volume))
+        print(cls.common_user_make_order(price=sell_price, direction='sell', volume=volume))
 
         return True
 
@@ -407,7 +382,7 @@ if __name__ == '__main__':
         # print(ATP.cancel_all_order())
         # # 修改当前品种杠杆 默认5倍
         # print(ATP.switch_level())
-
         print(ATP.make_market_depth())
+        # print(ATP.close_all_position())
     # conf.set_run_env_and_system_type('Test6', 'Swap')
     # print(ATP.make_market_depth(market_pirce=52000))
