@@ -17,7 +17,7 @@ class WebsocketSevice:
         self.__access_key = access_key
         self.__secret_key = secret_key
 
-
+    # 【通用】订阅 KLine 数据
     def linear_sub_kline(self,contract_code,period):
         subs = {
                 "sub": "market.{}.kline.{}".format(contract_code,period),
@@ -27,6 +27,15 @@ class WebsocketSevice:
         url = self.__url + path
         return sub(url,subs)
 
+    # 通用】买一卖一逐笔行情推送
+    def linear_sub_bbo(self,contract_code):
+        subs = {
+                "sub": "market.{}.bbo".format(contract_code),
+                "id": "id8"
+            }
+        path = '/linear-swap-ws'
+        url = self.__url + path
+        return sub(url,subs)
 
 
     def linear_req_kline(self,contract_code,period,From,to):
@@ -40,14 +49,16 @@ class WebsocketSevice:
         url = self.__url + path
         return sub(url,subs)
 
-
+    # 【通用】订阅 Market Depth 数据
     def linear_sub_depth(self,contract_code,type):
         subs = {
                 "sub": "market.{}.depth.{}".format(contract_code,type),
-                "id": "id1"
+                "id": "id5"
             }
         path = '/linear-swap-ws'
         url = self.__url + path
+        requestInfo = '\n请求信息：url='+ url + ',参数='+str(subs)
+        print('\033[1;32;49m%s\033[0m' % requestInfo)
         return sub(url,subs)
 
 
@@ -61,7 +72,7 @@ class WebsocketSevice:
         url = self.__url + path
         return sub(url,subs)
 
-
+    # 【通用】订阅 Market detail 数据
     def linear_sub_detail(self,contract_code):
         subs = {
                 "sub": "market.{}.detail".format(contract_code),
