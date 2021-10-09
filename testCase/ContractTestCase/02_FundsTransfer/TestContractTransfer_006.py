@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 2020/7/1
-# @Author  : zhangranghan
+# @Author  : 张广南
 
 
 from common.ContractServiceAPI import t as contranct_api
@@ -15,6 +15,7 @@ from tool.get_test_data import case_data
 
 @allure.epic('反向交割')
 @allure.feature('获取用户的合约账户和持仓信息')
+@pytest.mark.stable
 class TestContractTransfer_006:
 
     def setUp(self):
@@ -39,7 +40,7 @@ class TestContractTransfer_006:
                                                        sub_uid=subuid,
                                                        type='sub_to_master')
         pprint(r)
-        time.sleep(0.2)
+        time.sleep(2)
         r2 = contranct_api.contract_financial_record(symbol=symbol,
                                                      type='35',
                                                      create_date='',

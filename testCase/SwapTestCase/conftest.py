@@ -5,6 +5,7 @@
 
 import pytest
 from common.SwapServiceAPI import t as st
+from config import conf
 
 
 @pytest.fixture()
@@ -16,5 +17,5 @@ def sub_uid():
 
 @pytest.fixture()
 def contract_code():
-    contract_code = 'BSV-USD'
+    contract_code = conf.DEFAULT_CONTRACT_CODE
     return contract_code

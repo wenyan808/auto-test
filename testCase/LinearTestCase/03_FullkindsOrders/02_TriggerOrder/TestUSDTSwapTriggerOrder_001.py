@@ -28,7 +28,7 @@ from common.util import compare_dict
 
 from pprint import pprint
 import pytest, allure, random, time
-
+from tool.atp import ATP
 
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
@@ -37,13 +37,23 @@ import pytest, allure, random, time
 class TestUSDTSwapTriggerOrder_001:
 
     @allure.step('前置条件')
-    def setup(self):
+    @pytest.fixture(scope='function', autouse=True)
+    def setup(self, contract_code):
         print('''  ''')
+        # 撤销当前用户 某个品种所有限价挂单
+        ATP.cancel_all_order(contract_code=contract_code)
+        # 修改当前品种杠杆 默认5倍
+        ATP.switch_level(contract_code=contract_code)
+        # 清除盘口所有卖单
+        ATP.clean_market(contract_code=contract_code, direction='sell')
+        # 清除盘口所有买单
+        ATP.clean_market(contract_code=contract_code, direction='buy')
 
     @allure.title('计划委托正常限价开仓测试')
     @allure.step('测试执行')
     def test_execute(self, contract_code):
         self.contract_code = contract_code
+        self.orderid = ''
         leverrate = '5'
         r = linear_api.linear_cross_trigger_openorders(contract_code=contract_code,
                                              page_index='',
