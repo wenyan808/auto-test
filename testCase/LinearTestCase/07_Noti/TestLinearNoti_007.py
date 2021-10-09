@@ -25,7 +25,7 @@ from common.SwapServiceOrder import t as swap_order
 from common.LinearServiceWS import t as websocketsevice
 from pprint import pprint
 import pytest, allure, random, time
-
+from tool.atp import ATP
 
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
@@ -34,7 +34,9 @@ class TestLinearNoti_007:
 
     @allure.step('前置条件')
     def setup(self):
-        print('''  ''')
+        ATP.close_all_position()
+        print(''' 使当前交易对有交易盘口  ''')
+        print(ATP.make_market_depth())
 
     @allure.title('WS订阅最新成交记录(单个合约，即传参contract_code)')
     @allure.step('测试执行')
@@ -58,6 +60,9 @@ class TestLinearNoti_007:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
+        ATP.cancel_all_trigger_order()
+        ATP.cancel_all_order()
+        ATP.close_all_position()
 
 
 if __name__ == '__main__':

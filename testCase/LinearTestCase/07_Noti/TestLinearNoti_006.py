@@ -25,6 +25,8 @@ from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
 import pytest, allure, random, time
+from tool.atp import ATP
+from common.LinearServiceWS import t as websocketsevice
 
 
 @allure.epic('业务线')  # 这里填业务线
@@ -34,17 +36,41 @@ class TestLinearNoti_006:
 
     @allure.step('前置条件')
     def setup(self):
-        print('''  ''')
+        ATP.close_all_position()
+        print(''' 使当前交易对有交易盘口  ''')
+        print(ATP.make_market_depth())
+        print(''' 使当前用户有持仓  ''')
 
     @allure.title('WS订阅批量Overview(所有合约，即不传contract_code)')
     @allure.step('测试执行')
-    def test_execute(self, symbol, symbol_period):
+    def test_execute(self, contract_code):
         with allure.step('WS订阅批量Overview(所有合约，即不传contract_code)，可参考文档：https://docs.huobigroup.com/docs/usdt_swap/v1/cn/#websocket-3'):
-            pass
+            r = websocketsevice.linear_sub_detail(contract_code=contract_code)
+            pprint(r)
+            tradedetail = r['tick']
+            if tradedetail['amount'] == None:
+                assert False
+            if tradedetail['close'] == None:
+                assert False
+            if tradedetail['count'] == None:
+                assert False
+            if tradedetail['high'] == None:
+                assert False
+            if tradedetail['low'] == None:
+                assert False
+            if tradedetail['open'] == None:
+                assert False
+            if tradedetail['trade_turnover'] == None:
+                assert False
+            if tradedetail['vol'] == None:
+                assert False
 
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
+        ATP.cancel_all_trigger_order()
+        ATP.cancel_all_order()
+        ATP.close_all_position()
 
 
 if __name__ == '__main__':
