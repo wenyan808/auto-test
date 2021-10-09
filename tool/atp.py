@@ -3,15 +3,50 @@ from decimal import Decimal
 
 import requests
 
-from common.util import api_key_post
+from common.util import api_key_post, api_http_get
 from config import conf
 from pprint import pprint
+from common.ContractServiceAPI import t as contract_api
+from common.ContractServiceAPI import common_user_contract_service_api
+from common.LinearServiceAPI import t as linear_api
+from common.LinearServiceAPI import common_user_linear_service_api
+from common.SwapServiceAPI import t as swap_api
+from common.SwapServiceAPI import common_user_swap_service_api
 
 
 class ATP:
     ATPHost = 'http://172.18.6.52:8000'
     # ATPHost = 'http://0.0.0.0:8000'
     header = {'accept': 'application/json', 'Content-Type': 'application/json'}
+
+    @classmethod
+    def get_base_json_body(cls, contract_code=None):
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
+        json_body = {}
+        if conf.SYSTEM_TYPE == 'Delivery':
+            contract_types = {'CW': "this_week", 'NW': "next_week", 'CQ': "quarter", 'NQ': "next_quarter"}
+            if '_' in contract_code:
+                json_body['symbol'] = contract_code.split('_')[0]
+                json_body['contract_type'] = contract_types[contract_code.split('_')[1]]
+            else:
+                json_body['symbol'] = contract_code[:-6]
+                json_body['contract_type'] = contract_types['CW']
+        else:
+            json_body['contract_code'] = contract_code
+        return json_body
+
+    @classmethod
+    def key_post(cls, api_url, json_body):
+        return api_key_post(conf.URL, api_url, json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+
+    @classmethod
+    def common_user_key_post(cls, api_url, json_body):
+        return api_key_post(conf.URL, api_url, json_body, conf.COMMON_ACCESS_KEY, conf.COMMON_SECRET_KEY)
+
+    @classmethod
+    def get(cls, api_url, json_body, headers=None):
+        return api_http_get(conf.URL + api_url, json_body, headers)
 
     @classmethod
     def get_api_test_data(cls, script_path, priority_list=[], tags=[]):
@@ -51,22 +86,12 @@ class ATP:
 
     @classmethod
     def cancel_all_order(cls, contract_code=None):
-        if not contract_code:
-            contract_code = conf.DEFAULT_CONTRACT_CODE
-        json_body = {}
-        if conf.SYSTEM_TYPE == 'Delivery':
-            if '_' in contract_code:
-                json_body['symbol'] = contract_code.split('_')[0]
-            else:
-                json_body['symbol'] = contract_code[:-6]
-        else:
-            json_body['contract_code'] = contract_code
+        json_body = cls.get_base_json_body(contract_code)
 
-        response = api_key_post(conf.URL, conf.CANCEL_ALL_ORDER_URL, json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+        response = cls.key_post(conf.CANCEL_ALL_ORDER_URL, json_body)
         if conf.SYSTEM_TYPE == 'LinearSwap':
-            cross_response = api_key_post(conf.URL,
-                                          conf.CANCEL_ALL_ORDER_URL.replace('swap_cancelall', 'swap_cross_cancelall'),
-                                          json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+            cross_response = cls.key_post(conf.CANCEL_ALL_ORDER_URL.replace('swap_cancelall', 'swap_cross_cancelall'),
+                                          json_body)
             response = {
                 "cross": cross_response,
                 "isolated": response
@@ -78,23 +103,13 @@ class ATP:
 
     @classmethod
     def switch_level(cls, contract_code=None, lever_rate=5):
-        if not contract_code:
-            contract_code = conf.DEFAULT_CONTRACT_CODE
-        json_body = {'lever_rate': lever_rate}
-        if conf.SYSTEM_TYPE == 'Delivery':
-            if '_' in contract_code:
-                json_body['symbol'] = contract_code.split('_')[0]
-            else:
-                json_body['symbol'] = contract_code[:-6]
-        else:
-            json_body['contract_code'] = contract_code
+        json_body = cls.get_base_json_body(contract_code)
+        json_body['lever_rate'] = lever_rate
 
-        response = api_key_post(conf.URL, conf.SWITCH_LEVER_URL, json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+        response = cls.key_post(conf.SWITCH_LEVER_URL, json_body)
         if conf.SYSTEM_TYPE == 'LinearSwap':
-            cross_response = api_key_post(conf.URL,
-                                          conf.SWITCH_LEVER_URL.replace('swap_switch_lever_rate',
-                                                                        'swap_cross_switch_lever_rate'),
-                                          json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+            cross_response = cls.key_post(conf.SWITCH_LEVER_URL.replace('swap_switch_lever_rate',
+                                                                        'swap_cross_switch_lever_rate'), json_body)
             response = {
                 "cross": cross_response,
                 "isolated": response
@@ -106,24 +121,12 @@ class ATP:
 
     @classmethod
     def cancel_all_trigger_order(cls, contract_code=None):
-        if not contract_code:
-            contract_code = conf.DEFAULT_CONTRACT_CODE
-        json_body = {}
-        if conf.SYSTEM_TYPE == 'Delivery':
-            if '_' in contract_code:
-                json_body['symbol'] = contract_code.split('_')[0]
-            else:
-                json_body['symbol'] = contract_code[:-6]
-        else:
-            json_body['contract_code'] = contract_code
-
-        response = api_key_post(conf.URL, conf.CANCEL_ALL_TRIGGER_ORDER_URL, json_body, conf.ACCESS_KEY,
-                                conf.SECRET_KEY)
+        json_body = cls.get_base_json_body(contract_code)
+        response = cls.key_post(conf.CANCEL_ALL_TRIGGER_ORDER_URL, json_body)
         if conf.SYSTEM_TYPE == 'LinearSwap':
-            cross_response = api_key_post(conf.URL,
-                                          conf.CANCEL_ALL_TRIGGER_ORDER_URL.replace('swap_trigger_cancelall',
+            cross_response = cls.key_post(conf.CANCEL_ALL_TRIGGER_ORDER_URL.replace('swap_trigger_cancelall',
                                                                                     'swap_cross_trigger_cancelall'),
-                                          json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+                                          json_body)
             response = {
                 "cross": cross_response,
                 "isolated": response
@@ -135,24 +138,13 @@ class ATP:
 
     @classmethod
     def cancel_all_tpsl_order(cls, contract_code=None):
-        if not contract_code:
-            contract_code = conf.DEFAULT_CONTRACT_CODE
-        json_body = {}
-        if conf.SYSTEM_TYPE == 'Delivery':
-            if '_' in contract_code:
-                json_body['symbol'] = contract_code.split('_')[0]
-            else:
-                json_body['symbol'] = contract_code[:-6]
-        else:
-            json_body['contract_code'] = contract_code
+        json_body = cls.get_base_json_body(contract_code)
 
-        response = api_key_post(conf.URL, conf.CANCEL_ALL_TPSL_ORDER_URL, json_body, conf.ACCESS_KEY,
-                                conf.SECRET_KEY)
+        response = cls.key_post(conf.CANCEL_ALL_TPSL_ORDER_URL, json_body)
         if conf.SYSTEM_TYPE == 'LinearSwap':
-            cross_response = api_key_post(conf.URL,
-                                          conf.CANCEL_ALL_TPSL_ORDER_URL.replace('swap_tpsl_cancelall',
-                                                                                 'swap_cross_tpsl_cancelall'),
-                                          json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+            cross_response = cls.key_post(
+                conf.CANCEL_ALL_TPSL_ORDER_URL.replace('swap_tpsl_cancelall',
+                                                       'swap_cross_tpsl_cancelall'), json_body)
             response = {
                 "cross": cross_response,
                 "isolated": response
@@ -164,24 +156,12 @@ class ATP:
 
     @classmethod
     def cancel_all_track_order(cls, contract_code=None):
-        if not contract_code:
-            contract_code = conf.DEFAULT_CONTRACT_CODE
-        json_body = {}
-        if conf.SYSTEM_TYPE == 'Delivery':
-            if '_' in contract_code:
-                json_body['symbol'] = contract_code.split('_')[0]
-            else:
-                json_body['symbol'] = contract_code[:-6]
-        else:
-            json_body['contract_code'] = contract_code
-
-        response = api_key_post(conf.URL, conf.CANCEL_ALL_TRACK_ORDER_URL, json_body, conf.ACCESS_KEY,
-                                conf.SECRET_KEY)
+        json_body = cls.get_base_json_body(contract_code)
+        response = cls.key_post(conf.CANCEL_ALL_TRACK_ORDER_URL, json_body)
         if conf.SYSTEM_TYPE == 'LinearSwap':
-            cross_response = api_key_post(conf.URL,
-                                          conf.CANCEL_ALL_TRACK_ORDER_URL.replace('swap_track_cancelall',
-                                                                                  'swap_cross_track_cancelall'),
-                                          json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
+            cross_response = cls.key_post(
+                conf.CANCEL_ALL_TRACK_ORDER_URL.replace('swap_track_cancelall',
+                                                        'swap_cross_track_cancelall'), json_body)
             response = {
                 "cross": cross_response,
                 "isolated": response
@@ -193,25 +173,11 @@ class ATP:
 
     @classmethod
     def close_all_position(cls, contract_code=None, iscross=False):
-        contract_type = ''
-        symbol = ''
+        # Author : Guangnan Zhang
         if not contract_code:
             contract_code = conf.DEFAULT_CONTRACT_CODE
-        json_body = {}
-        if conf.SYSTEM_TYPE == 'Delivery':
-            contract_type_dic = {'CW': 'this_week', 'NW': 'next_week', 'CQ': 'quarter', 'NQ': 'next_ quarter'}
-
-            if '_' in contract_code:
-                symbol = contract_code.split('_')[0]
-                json_body['symbol'] = symbol
-                contract_type = contract_type_dic[contract_code.split('_')[1]]
-            else:
-                symbol = contract_code[:-6]
-                json_body['symbol'] = symbol
-                contract_type = ''
-
-        else:
-            json_body['contract_code'] = contract_code
+        cls.cancel_all_order(contract_code=contract_code)
+        json_body = cls.get_base_json_body(contract_code)
 
         if conf.SYSTEM_TYPE == 'LinearSwap' and iscross is True:
             response = api_key_post(conf.URL, conf.POSITION_INFO_URL.replace('swap_position_info',
@@ -222,58 +188,201 @@ class ATP:
                                     conf.SECRET_KEY)
 
         position_list = response["data"]
-
         if conf.SYSTEM_TYPE == 'Delivery':
-            json_body['contract_type'] = contract_type
-        response = api_key_post(conf.URL, conf.CONTRACT_INFO_URL, json_body, conf.ACCESS_KEY,
-                                conf.SECRET_KEY)
-        price_tick = str(response['data'][0]['price_tick'])
+            volume_dict = {item['direction']: int(item['volume']) for item in
+                           list(filter(
+                               lambda i: i['contract_type'] == json_body['contract_type'], position_list))}
+        else:
+            volume_dict = {item['direction']: int(item['volume']) for item in position_list}
 
-        for position in position_list:
-            order_json_body = {}
-            if conf.SYSTEM_TYPE == 'Delivery':
-                if position['contract_type'] != contract_type:  # 如果这个持仓和当前在测的合约周期不一致，就跳过
-                    continue
-                order_json_body['contract_type'] = contract_type
-                order_json_body['symbol'] = symbol
-            else:
-                json_body['contract_code'] = contract_code
-            order_json_body['global'] = str(int(position['volume']))
-            order_json_body['lever_rate'] = position['lever_rate']
-            order_json_body['offset'] = 'close'
-            order_json_body['order_price_type'] = 'limit'
-            if position['direction'] == "buy":
-                order_json_body['direction'] = 'sell'
-            else:
-                order_json_body['direction'] = 'buy'
-            price = str(position['cost_open'])
-            order_json_body['orderprice'] = str(Decimal(price).quantize(Decimal(price_tick)))
+        # 下单平仓
+        for direction, volume in volume_dict.items():
+            if volume:
+                print(cls.current_user_make_order(contract_code=contract_code, offset='close',
+                                                  direction='buysell'.replace(direction, ''),
+                                                  volume=volume, iscross=iscross))
 
-            if conf.SYSTEM_TYPE == 'LinearSwap' and iscross is True:
-                response = api_key_post(conf.URL,
-                                        conf.PLACE_ORDER_URL.replace('swap_order', 'swap_cross_order'),
-                                        json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
-            else:
-                response = api_key_post(conf.URL, conf.PLACE_ORDER_URL,
-                                        json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
-
-        print('撤销当前用户 某个品种所有跟踪委托挂单')
-        pprint(response)
+        ATP.clean_market(contract_code=contract_code)
         return response
+
+    @classmethod
+    def get_current_price(cls, contract_code=None):
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
+        trade_price_methods = {'Delivery': common_user_contract_service_api.contract_trade,
+                               'Swap': common_user_swap_service_api.swap_trade,
+                               'LinearSwap': common_user_linear_service_api.linear_trade,
+                               }
+        response = trade_price_methods[conf.SYSTEM_TYPE](contract_code)
+        err_msg = {'status': 'error', 'err_msg': '获取最新价出错', 'response': response}
+        tick = response.get('tick', {})
+        if not tick:
+            print(err_msg)
+            return -1
+
+        data = tick.get('data', [])
+        if not data:
+            print(err_msg)
+            return -1
+        current_price = float(data[0].get('price', -1))
+        if current_price < 0:
+            print(err_msg)
+            return -1
+        return current_price
+
+    @classmethod
+    def common_user_make_order(cls, contract_code=None, price=None, volume=10, direction='buy', offset='open',
+                               lever_rate=5,
+                               order_price_type='limit', user='common', iscross=False):
+        if user == 'common':
+
+            order_methods = {'Delivery': common_user_contract_service_api.contract_order,
+                             'Swap': common_user_swap_service_api.swap_order,
+                             'LinearSwap': common_user_linear_service_api.linear_order,
+                             }
+            if iscross:
+                order_methods['LinearSwap'] = common_user_linear_service_api.linear_cross_order,
+
+        else:
+            order_methods = {'Delivery': contract_api.contract_order,
+                             'Swap': swap_api.swap_order,
+                             'LinearSwap': linear_api.linear_order,
+                             }
+            if iscross:
+                order_methods['LinearSwap'] = linear_api.linear_cross_order,
+
+        order_method = order_methods[conf.SYSTEM_TYPE]
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
+        if not price:
+            price = cls.get_current_price(contract_code)
+        if price < 0:
+            return {"status": "err", "err_msg": "获取最新价失败"}
+        json_body = cls.get_base_json_body(contract_code)
+        order_json = {
+            'price': price,
+            'volume': volume, 'direction': direction,
+            'offset': offset, 'lever_rate': lever_rate, 'order_price_type': order_price_type}
+        order_json.update(json_body)
+        return order_method(**order_json)
+
+    @classmethod
+    def current_user_make_order(cls, contract_code=None, price=None, volume=10, direction='buy', offset='open',
+                                lever_rate=5,
+                                order_price_type='limit', iscross=False):
+        return cls.common_user_make_order(contract_code=contract_code, price=price, volume=volume, direction=direction,
+                                          offset=offset, lever_rate=lever_rate,
+                                          order_price_type=order_price_type, user='current', iscross=iscross)
+
+    @classmethod
+    def common_user_make_trigger_order(cls, contract_code=None, trigger_type=None, trigger_price=None, order_price=None,
+                                       volume=10,
+                                       direction='buy', offset='open',
+                                       lever_rate=5,
+                                       order_price_type='limit', user='common', iscross=False):
+        if user == 'common':
+            order_methods = {'Delivery': common_user_contract_service_api.contract_trigger_order,
+                             'Swap': common_user_swap_service_api.swap_trigger_order,
+                             'LinearSwap': common_user_linear_service_api.linear_trigger_order,
+                             }
+            if iscross:
+                order_methods['LinearSwap'] = common_user_linear_service_api.linear_cross_trigger_order
+        else:
+            order_methods = {'Delivery': contract_api.contract_trigger_order,
+                             'Swap': swap_api.swap_trigger_order,
+                             'LinearSwap': linear_api.linear_trigger_order,
+                             }
+            if iscross:
+                order_methods['LinearSwap'] = linear_api.linear_cross_trigger_order
+
+        order_method = order_methods[conf.SYSTEM_TYPE]
+
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
+
+        current_price = cls.get_current_price(contract_code)
+        if current_price < 0:
+            return {"status": "err", "err_msg": "获取最新价失败"}
+
+        if not trigger_price:
+            if direction == 'buy':
+                trigger_price = round(current_price * 0.99, 1)
+            else:
+                trigger_price = round(current_price * 1.01, 1)
+
+        if not order_price:
+            order_price = trigger_price
+
+        if not trigger_type:
+            if trigger_price >= current_price:
+                trigger_type = 'ge'
+            else:
+                trigger_type = 'le'
+
+        json_body = cls.get_base_json_body(contract_code)
+        order_json = {
+            'trigger_type': trigger_type, 'trigger_price': trigger_price,
+            'order_price': order_price,
+            'volume': volume, 'direction': direction,
+            'offset': offset, 'lever_rate': lever_rate, 'order_price_type': order_price_type}
+        order_json.update(json_body)
+        return order_method(**order_json)
+
+    @classmethod
+    def current_user_make_trigger_order(cls, contract_code=None, trigger_type=None, trigger_price=None,
+                                        order_price=None,
+                                        volume=10,
+                                        direction='buy', offset='open',
+                                        lever_rate=5,
+                                        order_price_type='limit', iscross=False):
+        return cls.common_user_make_trigger_order(contract_code=contract_code, trigger_type=trigger_type,
+                                                  trigger_price=trigger_price, order_price=order_price, volume=volume,
+                                                  direction=direction,
+                                                  offset=offset, lever_rate=lever_rate,
+                                                  order_price_type=order_price_type, user='current', iscross=iscross)
+
+    @classmethod
+    def make_market_depth(cls, contract_code=None, market_price=None, volume=10):
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
+        # 清盘
+        print(cls.clean_market(contract_code=contract_code))
+
+        if not market_price:
+            market_price = cls.get_current_price(contract_code=contract_code)
+            if market_price < 0:
+                return False
+
+        # 按目标价格成交
+        print(cls.common_user_make_order(price=market_price, direction='buy'))
+        print(cls.common_user_make_order(price=market_price, direction='sell'))
+        sell_price = round(market_price * 1.01, 1)
+        buy_price = round(market_price * 0.99, 1)
+        print(cls.common_user_make_order(price=buy_price, direction='buy', volume=volume))
+        print(cls.common_user_make_order(price=sell_price, direction='sell', volume=volume))
+
+        return True
 
 
 if __name__ == '__main__':
-    print(ATP.get_api_test_data("test_linear_account_info"))
-    print(ATP.get_api_test_data("test_linear_account_info", priority_list=["P0", "P1"]))
-
-    # 清除盘口所有卖单
-    print(ATP.clean_market(contract_code='ETH-USDT', direction='sell'))
-    # 清除盘口所有买单
-    print(ATP.clean_market(contract_code='BSV-USD', direction='buy'))
-    # 清除盘口所有买卖挂单
-    print(ATP.clean_market(contract_code='ETH211231'))
-
-    # 撤销当前用户 某个品种所有限价挂单
-    print(ATP.cancel_all_order(contract_code='ETH211001'))
-    # 修改当前品种杠杆 默认5倍
-    print(ATP.switch_level(contract_code='ETH_CW'))
+    system_types = ['Delivery', 'Swap', "LinearSwap"]
+    for system_type in system_types:
+        conf.set_run_env_and_system_type('Test6', system_type)
+        # print(ATP.get_api_test_data("test_linear_account_info"))
+        # print(ATP.get_api_test_data("test_linear_account_info", priority_list=["P0", "P1"]))
+        #
+        # # 清除盘口所有卖单
+        # print(ATP.clean_market())
+        # # 清除盘口所有买单
+        # print(ATP.clean_market())
+        # # 清除盘口所有买卖挂单
+        # print(ATP.clean_market())
+        #
+        # # 撤销当前用户 某个品种所有限价挂单
+        # print(ATP.cancel_all_order())
+        # # 修改当前品种杠杆 默认5倍
+        # print(ATP.switch_level())
+        print(ATP.make_market_depth())
+        # print(ATP.close_all_position())
+    # conf.set_run_env_and_system_type('Test6', 'Swap')
+    # print(ATP.make_market_depth(market_pirce=52000))

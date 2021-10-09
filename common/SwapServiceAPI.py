@@ -5,7 +5,8 @@
 import time
 
 from common.util import api_http_get, api_key_post, api_key_get
-from config.conf import URL, ACCESS_KEY, SECRET_KEY
+from config import conf
+from config.conf import URL, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
 
 from common.util import api_http_get, api_key_post, api_key_get
 from config.conf import URL, ACCESS_KEY, SECRET_KEY
@@ -271,7 +272,8 @@ class SwapService:
         return api_http_get(url, params)
 
     # 获取强平订单
-    def swap_liquidation_orders(self, contract_code=None, trade_type=None, create_date=None, page_index=None, page_size=None):
+    def swap_liquidation_orders(self, contract_code=None, trade_type=None, create_date=None, page_index=None,
+                                page_size=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
@@ -496,7 +498,9 @@ class SwapService:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 合约下单
-    def swap_order(self, contract_code=None, client_order_id=None, price=None, volume=None, direction=None, offset=None, lever_rate=None, order_price_type=None, tp_trigger_price=None, tp_order_price=None, tp_order_price_type=None,
+    def swap_order(self, contract_code=None, client_order_id=None, price=None, volume=None, direction=None, offset=None,
+                   lever_rate=None, order_price_type=None, tp_trigger_price=None, tp_order_price=None,
+                   tp_order_price_type=None,
                    sl_trigger_price=None, sl_order_price=None, sl_order_price_type=None, channel_code=None):
         """
         @param: contract_code	string	true	合约代码	"BTC-USD"...
@@ -611,7 +615,8 @@ class SwapService:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取订单明细信息
-    def swap_order_detail(self, contract_code=None, order_id=None, created_at=None, order_type=None, page_index=None, page_size=None):
+    def swap_order_detail(self, contract_code=None, order_id=None, created_at=None, order_type=None, page_index=None,
+                          page_size=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
@@ -636,25 +641,30 @@ class SwapService:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取合约当前未成交委托
-    def swap_openorders(self, contract_code=None, page_index=None, page_size=None):
+    def swap_openorders(self,contract_code=None,page_index=None,page_size=None,trade_type=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
         page_index          int               false      第几页,不填第一页
         page_size           int               false      不填默认20，不得多于50
         """
-
-        params = {'contract_code': contract_code}
+        params = {}
+        if contract_code:
+            params['contract_code'] = contract_code
         if page_index:
             params['page_index'] = page_index
         if page_size:
             params['page_size'] = page_size
+        if trade_type:
+            params['trade_type'] = trade_type
 
         request_path = '/swap-api/v1/swap_openorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
+
     # 获取合约历史委托
-    def swap_hisorders(self, contract_code=None, trade_type=None, type=None, status=None, create_date=None, sort_by=None, page_index=None, page_size=None):
+    def swap_hisorders(self, contract_code=None, trade_type=None, type=None, status=None, create_date=None,
+                       sort_by=None, page_index=None, page_size=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
@@ -704,7 +714,8 @@ class SwapService:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 闪电平仓下单
-    def swap_lightning_close_position(self, contract_code=None, volume=None, direction=None, client_order_id=None, order_price_type=None, channel_code=None):
+    def swap_lightning_close_position(self, contract_code=None, volume=None, direction=None, client_order_id=None,
+                                      order_price_type=None, channel_code=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
@@ -759,7 +770,8 @@ class SwapService:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 母子划转记录
-    def swap_master_sub_transfer_record(self, contract_code=None, transfer_type=None, create_date=None, page_index=None, page_size=None):
+    def swap_master_sub_transfer_record(self, contract_code=None, transfer_type=None, create_date=None, page_index=None,
+                                        page_size=None):
         params = {'contract_code': contract_code,
                   'create_date': create_date}
         if transfer_type:
@@ -805,7 +817,8 @@ class SwapService:
         return api_http_get(url, params)
 
     # 计划委托下单接口
-    def swap_trigger_order(self, contract_code=None, trigger_type=None, trigger_price=None, order_price=None, order_price_type=None, volume=None, direction=None, offset=None, lever_rate=None):
+    def swap_trigger_order(self, contract_code=None, trigger_type=None, trigger_price=None, order_price=None,
+                           order_price_type=None, volume=None, direction=None, offset=None, lever_rate=None):
         """
             contract_code	true	String	合约代码	BTC-USD
             trigger_type	true	String	触发类型： ge大于等于(触发价比最新价大)；le小于(触发价比最新价小)
@@ -863,7 +876,8 @@ class SwapService:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取计划委托历史委托接口
-    def swap_trigger_hisorders(self, contract_code=None, trade_type=None, status=None, create_date=None, sort_by=None, page_index=None, page_size=None):
+    def swap_trigger_hisorders(self, contract_code=None, trade_type=None, status=None, create_date=None, sort_by=None,
+                               page_index=None, page_size=None):
         """
         contract_code	true	string	合约代码		BTC-USD
         trade_type	true	int	交易类型		0:全部,1:买入开多,2: 卖出开空,3: 买入平空,4: 卖出平多；后台是根据该值转换为offset和direction，然后去查询的； 其他值无法查询出结果
@@ -897,7 +911,8 @@ class SwapService:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 组合查询合约历史委托
-    def swap_hisorders_exact(self, contract_code=None, trade_type=None, type=None, status=None, start_time=None, end_time=None, from_id=None, size=None, direct=None):
+    def swap_hisorders_exact(self, contract_code=None, trade_type=None, type=None, status=None, start_time=None,
+                             end_time=None, from_id=None, size=None, direct=None):
 
         params = {}
         if contract_code:
@@ -922,7 +937,8 @@ class SwapService:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 组合查询用户财务记录
-    def swap_financial_record_exact(self, contract_code=None, type=None, start_time=None, end_time=None, from_id=None, size=None, direct=None):
+    def swap_financial_record_exact(self, contract_code=None, type=None, start_time=None, end_time=None, from_id=None,
+                                    size=None, direct=None):
 
         params = {}
         if contract_code:
@@ -943,7 +959,8 @@ class SwapService:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 组合查询用户历史成交记录
-    def swap_matchresults_exact(self, contract_code=None, trade_type=None, start_time=None, end_time=None, from_id=None, size=None, direct=None):
+    def swap_matchresults_exact(self, contract_code=None, trade_type=None, start_time=None, end_time=None, from_id=None,
+                                size=None, direct=None):
 
         params = {}
         if contract_code:
@@ -964,7 +981,8 @@ class SwapService:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询用户结算记录
-    def swap_user_settlement_records(self, contract_code=None, start_time=None, end_time=None, page_index=None, page_size=None):
+    def swap_user_settlement_records(self, contract_code=None, start_time=None, end_time=None, page_index=None,
+                                     page_size=None):
 
         params = {}
         if contract_code:
@@ -1001,7 +1019,8 @@ class SwapService:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 平台结算记录
-    def swap_settlement_records(self, contract_code=None, start_time=None, end_time=None, page_index=None, page_size=None):
+    def swap_settlement_records(self, contract_code=None, start_time=None, end_time=None, page_index=None,
+                                page_size=None):
 
         params = {'contract_code': contract_code}
 
@@ -1077,7 +1096,8 @@ class SwapService:
         return api_http_get(url, params)
 
     # 对仓位设置止盈止损订单接口
-    def swap_tpsl_order(self, contract_code=None, volume=None, direction=None, tp_trigger_price=None, tp_order_price=None, tp_order_price_type=None,
+    def swap_tpsl_order(self, contract_code=None, volume=None, direction=None, tp_trigger_price=None,
+                        tp_order_price=None, tp_order_price_type=None,
                         sl_trigger_price=None, sl_order_price=None, sl_order_price_type=None):
 
         params = {}
@@ -1140,7 +1160,8 @@ class SwapService:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询止盈止损订单历史委托接口
-    def swap_tpsl_hisorders(self, contract_code=None, status=None, create_date=None, sort_by=None, page_index=None, page_size=None):
+    def swap_tpsl_hisorders(self, contract_code=None, status=None, create_date=None, sort_by=None, page_index=None,
+                            page_size=None):
         """
         参数名称	是否必须	类型	描述	取值范围
         contract_code	true	string	合约代码,"BTC-USD" ...
@@ -1209,7 +1230,8 @@ class SwapService:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 跟踪委托下单
-    def swap_track_order(self, contract_code=None, volume=None, direction=None, offset=None, lever_rate=None, callback_rate=None, active_price=None, order_price_type=None):
+    def swap_track_order(self, contract_code=None, volume=None, direction=None, offset=None, lever_rate=None,
+                         callback_rate=None, active_price=None, order_price_type=None):
 
         params = {}
         if contract_code:
@@ -1275,7 +1297,8 @@ class SwapService:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取跟踪委托当前委托
-    def swap_track_hisorders(self, contract_code=None, status=None, trade_type=None, create_date=None, page_index=None, page_size=None, sort_by=None):
+    def swap_track_hisorders(self, contract_code=None, status=None, trade_type=None, create_date=None, page_index=None,
+                             page_size=None, sort_by=None):
 
         params = {}
         if contract_code:
@@ -1297,8 +1320,9 @@ class SwapService:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 自买自卖调节最新价
-    def swap_control_price(self, contract_code='', price=None, lever_rate='1'):
-
+    def swap_control_price(self, contract_code='', price=None, lever_rate='5'):
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
         self.swap_order(contract_code=contract_code, price=price, volume='1', direction='buy',
                         offset='open', lever_rate=lever_rate, order_price_type='limit')
         time.sleep(0.5)
@@ -1354,3 +1378,4 @@ class SwapService:
 
 # 定义t并传入公私钥和URL,供用例直接调用
 t = SwapService(URL, ACCESS_KEY, SECRET_KEY)
+common_user_swap_service_api = SwapService(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
