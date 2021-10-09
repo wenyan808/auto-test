@@ -99,3 +99,22 @@ def pytest_runtest_makereport(item):
             title = api_test_data.get("title", "")
             if title:
                 allure.dynamic.title(title)
+
+
+@pytest.fixture(autouse=True, scope='module')
+def cancel_all_orders_and_switch_level():
+    # 撤销全部限价单
+    print('撤销全部限价单')
+    print(ATP.cancel_all_order())
+    # 撤销全部止盈止损单
+    print('撤销全部止盈止损单')
+    print(ATP.cancel_all_tpsl_order())
+    # 撤销全部跟踪委托单
+    print('撤销全部跟踪委托单')
+    print(ATP.cancel_all_track_order())
+    # 撤销全部跟计划委托托单
+    print('撤销全部跟计划委托托单')
+    print(ATP.cancel_all_trigger_order())
+    # 切换杠杠到 5 倍
+    print('切换杠杠到 5 倍')
+    print(ATP.switch_level())

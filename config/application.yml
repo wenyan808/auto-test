@@ -4,6 +4,8 @@ MULANURL : http://mulan-asset.test-5.huobiapps.com
 URL2 : http://test5-linear-ingress.bitfanssim.com
 ACCESS_KEY : a2d50841-b1rkuf4drg-c14e3276-3db18
 SECRET_KEY : 74f221f5-4712ceee-53f31309-0c8d3
+COMMON_ACCESS_KEY: bg2hyw2dfg-d7f1fb71-11fd638e-09d4b
+COMMON_SECRET_KEY: 1426285c-9cfafd0e-053ed628-955c2
 
 ##测试环境6 13249866834  lanhuisi
 #URL : http://test-6.dm.huobiapps.com
