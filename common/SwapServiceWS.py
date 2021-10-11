@@ -35,17 +35,6 @@ class WebsocketSevice:
         url = self.__url + path
         return sub(url, subs)
 
-    def swap_req_kline(self,contract_code,period,From,to):
-        subs = {
-                "req": "market.{}.kline.{}".format(contract_code,period),
-                "id": "id1",
-                "from" : "{}".format(From),
-                "to" : "{}".format(to)
-            }
-        path = '/swap-ws'
-        url = self.__url + path
-        return sub(url,subs)
-
     # 【通用】订阅 Market Depth 数据
     def swap_sub_depth(self, contract_code, type):
         subs = {
@@ -143,8 +132,6 @@ class WebsocketSevice:
         path = '/swap-ws'
         url = self.__url + path
         return sub(url, subs)
-
-t = WebsocketSevice(WSURL, ACCESS_KEY, SECRET_KEY)
 
     def swap_sub_estimated_rate(self, contract_code, period):
         subs = {
