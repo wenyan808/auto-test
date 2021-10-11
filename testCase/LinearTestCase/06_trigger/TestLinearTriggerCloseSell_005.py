@@ -106,16 +106,25 @@ class TestLinearTriggerCloseSell_005:
             time.sleep(1)
 
         with allure.step('8、验证计划委托单被触发'):
-            triggerOrderHistoryOrder = linear_order.linear_swap_his_triggerorders(contract_code=contractCode,trade_type=3)
+            triggerOrderHistoryOrders = linear_order.linear_swap_his_triggerorders(contract_code=contractCode,
+                                                                                   trade_type=3)
             # print('计划委托7天内买入平空单历史 =',triggerOrderHistoryOrder)
-            historySize = triggerOrderHistoryOrder['data']['total_size']
+            historySize = triggerOrderHistoryOrders['data']['total_size']
+            # 单页只显示10条数据
+            if historySize > 10:
+                historySize = 10
+
             i = 0
             while i < int(historySize):
+                triggerOrderHistoryOrder = triggerOrderHistoryOrders['data']['orders'][i]['order_id']
                 # 循环历史计划委托单，获取测试的计划委托单
-                if triggerOrderHistoryOrder['data']['orders'][i]['order_id'] == triggerOrderId:
+                if triggerOrderHistoryOrder == triggerOrderId:
                     # 找到当前测试的计划委托单后，判断他关联的限价单号值不为空，则证明该计划委托单已被触发，并转化限价单成功
-                    if not triggerOrderHistoryOrder['data']['orders'][i]['relation_order_id']:
+                    triggerOrderRelationOrder = triggerOrderHistoryOrders['data']['orders'][i]['relation_order_id']
+                    if not triggerOrderRelationOrder:
                         assert False
+                    # 在历史记录中找到了该计划委托订单则跳出循环，不再查找
+                    break
                 i = i + 1
     @allure.step('恢复环境')
     def teardown(self):
