@@ -57,6 +57,7 @@ class WebsocketSevice:
             }
         path = '/linear-swap-ws'
         url = self.__url + path
+        print(url)
         requestInfo = '\n请求信息：url='+ url + ',参数='+str(subs)
         print('\033[1;32;49m%s\033[0m' % requestInfo)
         return sub(url,subs)
