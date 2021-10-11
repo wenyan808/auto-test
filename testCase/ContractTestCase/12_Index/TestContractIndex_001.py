@@ -48,6 +48,7 @@ def check_index_res(res, symbol):
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('合约测试基线用例//01 交割合约//12 指数')  # 这里填功能
 @allure.story('校验交割业务线指数是否正常计算')  # 这里填子功能，没有的话就把本行注释掉
+@allure.tag('Script owner : Donglin Han', 'Case owner : Donglin Han')
 @pytest.mark.stable
 class TestContractIndex_001:
 
