@@ -38,6 +38,8 @@ class TestLinearNoti_009:
         ATP.close_all_position()
         print(''' 使当前交易对有交易盘口  ''')
         print(ATP.make_market_depth())
+        time.sleep(0.5)
+        print(ATP.current_user_make_order(order_price_type='opponent'))
 
     @allure.title('WS订阅深度图')
     @allure.step('测试执行')
@@ -48,7 +50,7 @@ class TestLinearNoti_009:
         pprint(r)
         # 得到最近的价格
         lastprice = r['data'][0]['data'][0]['price']
-        sellprice = round((lastprice * 1.01), 2)
+        sellprice = round((lastprice * 1.02), 2)
         print('\n下一个卖单\n')
         r = linear_api.linear_order(contract_code=contract_code,
                                     client_order_id='',
@@ -73,10 +75,17 @@ class TestLinearNoti_009:
 
         time.sleep(2)
         with allure.step('WS订阅深度图，可参考文档：https://docs.huobigroup.com/docs/usdt_swap/v1/cn/#websocket-3'):
-            r = websocketsevice.linear_sub_depth(contract_code=contract_code,type="step0")
-            pprint(r)
+            pprint("""api 获取行情深度数据""")
+            r_trend_req = linear_api.linear_depth(contract_code=contract_code, type="step0")
+            pprint(r_trend_req)
+            pprint("""ws 获取行情深度数据""")
+            n = 0
+            while n<2:
+                r = websocketsevice.linear_sub_depth(contract_code=contract_code,type="step0")
+                pprint(r)
+                n = n+1
             ask = r['tick']['asks'][0]
-            bid = r['tick']['asks'][0]
+            bid = r['tick']['bids'][0]
             pprint(ask)
             pprint(bid)
             if ask == None:

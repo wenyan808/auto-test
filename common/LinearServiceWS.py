@@ -40,7 +40,7 @@ class WebsocketSevice:
         url = self.__url + path
         return sub(url,subs)
 
-
+    #市场行情接口
     def linear_sub_depth(self,contract_code,type):
         subs = {
                 "sub": "market.{}.depth.{}".format(contract_code,type),
@@ -48,6 +48,7 @@ class WebsocketSevice:
             }
         path = '/linear-swap-ws'
         url = self.__url + path
+        print(url)
         return sub(url,subs)
 
 
