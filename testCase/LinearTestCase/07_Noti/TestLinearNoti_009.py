@@ -27,6 +27,7 @@ from pprint import pprint
 import pytest, allure, random, time
 from common.LinearServiceWS import t as websocketsevice
 from tool.atp import ATP
+
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
@@ -62,6 +63,7 @@ class TestLinearNoti_009:
                                     order_price_type='limit')
         pprint(r)
         print('\n下一个买单\n')
+        time.sleep(1)
         buyprice = round((lastprice * 0.98), 2)
         r = linear_api.linear_order(contract_code=contract_code,
                                     client_order_id='',
@@ -80,10 +82,8 @@ class TestLinearNoti_009:
             pprint(r_trend_req)
             pprint("""ws 获取行情深度数据""")
             n = 0
-            while n<2:
-                r = websocketsevice.linear_sub_depth(contract_code=contract_code,type="step0")
-                pprint(r)
-                n = n+1
+            r = websocketsevice.linear_sub_depth(contract_code=contract_code,type="step0")
+            pprint(r)
             ask = r['tick']['asks'][0]
             bid = r['tick']['bids'][0]
             pprint(ask)
