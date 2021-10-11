@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """# @Date    : 20210917
-# @Author : 
+# @Author : 张广南
     用例标题
         限价委托输入价格下单卖出开空后撤单测试
     前置条件
@@ -38,24 +38,33 @@ from common.util import compare_dict
 from pprint import pprint
 import pytest, allure, random, time
 
+from tool.atp import ATP
+
 
 @allure.epic('业务线')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
 class TestContractLimitOrder_002:
 
     @allure.step('前置条件')
-    def setup(self):
+    @pytest.fixture(scope='function', autouse=True)
+    def setup(self, symbol):
         print(''' 初始化环境准备
         1、建议准备两个账户，一个用于初始化环境，一个用于测试下单验证。
         1、建议初始化环境是初始化账户吃掉其他所有买卖挂单，盘口无任何挂单
         2、再根据测试场景进行拿初始化账户进行买一卖一挂单作为对手方
         3、每次完成测试后再还原环境
         4、本次用例场景为无成交下撤单场景 ''')
-
+        # 清除盘口所有卖单
+        ATP.clean_market(contract_code=symbol, direction='sell')
+        # 清除盘口所有买单
+        ATP.clean_market(contract_code=symbol, direction='buy')
     @allure.title('限价委托输入价格下单卖出开空后撤单测试')
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
+        print(symbol)
+        print(symbol_period)
         self.symbol = symbol
         leverrate = '5'
         contracttype = 'this_week'
