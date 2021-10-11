@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# @Date    : 2021/10/11
-# @Author  : YuHuiQing
+# @Date    : 2020/10/09
+# @Author  : chenwei
 
 from common.util import sub,api_key_sub
 from config.conf import WSURL,ACCESS_KEY,SECRET_KEY
