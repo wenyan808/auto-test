@@ -28,14 +28,14 @@ import allure
 import pytest
 import time
 
-from common.ContractServiceWS import t as ws
+from common.ContractServiceAPI import t as api
 from tool.atp import ATP
 
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('合约测试基线用例//01 交割合约//07 行情')  # 这里填功能
 @allure.story('请求K线(传参from,to)')  # 这里填子功能，没有的话就把本行注释掉
-@allure.tag('Script owner : Donglin Han', 'Case owner : Donglin Han')
+@allure.tag('Script owner : Donglin Han', 'Case owner : Panfeng Liu')
 @pytest.mark.stable
 class TestContractNoti_010:
     from_time = None
@@ -57,7 +57,7 @@ class TestContractNoti_010:
     @allure.step('测试执行')
     def test_execute(self, symbol_period):
         with allure.step('请求K线(传参from,to)，可参考文档：https://docs.huobigroup.com/docs/dm/v1/cn/#websocket-3'):
-            res = ws.contract_req_kline(symbol_period, '1min', self.from_time, self.to_time)
+            res = api.contract_kline(symbol=symbol_period, period='1min', From=self.from_time, to=self.to_time)
             pprint(res)
             # id、open、close、low、high价格正确；amount、vol、count值正确,不存在Null,[]
             data = res.get('data', [])
