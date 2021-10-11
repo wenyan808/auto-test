@@ -21,7 +21,7 @@
     韩东林
 """
 
-from common.SwapServiceWS import t as ws
+from common.SwapServiceAPI import t as api
 
 from pprint import pprint
 import pytest, allure, random, time
@@ -32,7 +32,7 @@ from tool.atp import ATP
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('合约测试基线用例//02 反向永续//07 行情')  # 这里填功能
 @allure.story('请求K线(传参from,to)')  # 这里填子功能，没有的话就把本行注释掉
-@allure.tag('Script owner : Donglin Han', 'Case owner : Donglin Han')
+@allure.tag('Script owner : Donglin Han', 'Case owner : Panfeng Liu')
 @pytest.mark.stable
 class TestSwapNoti_010:
     from_time = None
@@ -56,7 +56,7 @@ class TestSwapNoti_010:
         with allure.step(
                 '请求K线(传参from,to)，可参考文档：https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#websocket-3'):
             # id、open、close、low、high价格正确；amount、vol、count值正确,不存在Null,[]
-            res = ws.swap_req_kline(contract_code, '1min', self.from_time, self.to_time)
+            res = api.swap_kline(contract_code=contract_code, period='1min', From=self.from_time, to=self.to_time)
             pprint(res)
             # id、open、close、low、high价格正确；amount、vol、count值正确,不存在Null,[]
             data = res.get('data', [])

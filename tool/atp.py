@@ -363,6 +363,15 @@ class ATP:
 
         return True
 
+    @classmethod
+    def cancel_all_types_order(cls, contract_code=None):
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
+        ATP.cancel_all_order(contract_code=contract_code)
+        ATP.cancel_all_trigger_order(contract_code=contract_code)
+        ATP.cancel_all_track_order(contract_code=contract_code)
+        ATP.cancel_all_tpsl_order(contract_code=contract_code)
+
 
 if __name__ == '__main__':
     system_types = ['Delivery', 'Swap', "LinearSwap"]
