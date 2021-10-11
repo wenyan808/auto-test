@@ -59,7 +59,8 @@ class TestLinearNoti_005:
     @allure.step('测试执行')
     def test_execute(self, contract_code):
         with allure.step('WS订阅聚合行情(单个合约，即传参contract_code)，可参考文档：https://docs.huobigroup.com/docs/usdt_swap/v1/cn/#websocket-3'):
-            result = linear_service_ws.linear_sub_detail(contract_code=contract_code)
+            contractCode = 'BTC-USDT'
+            result = linear_service_ws.linear_sub_detail(contract_code=contractCode)
             resultStr = '\n聚合行情（Market detail ）返回结果 = ' + str(result)
             print('\033[1;32;49m%s\033[0m' % resultStr)
             if not result['tick']['bid']:

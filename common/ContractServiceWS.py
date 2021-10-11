@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# @Date    : 2020/10/09
-# @Author  : chenwei
+# @Date    : 2021/10/11
+# @Author  : YuHuiQing
 
 from common.util import sub,api_key_sub
 from config.conf import WSURL,ACCESS_KEY,SECRET_KEY
@@ -18,32 +18,32 @@ class WebsocketSevice:
         self.__secret_key = secret_key
 
     # 【通用】订阅 KLine 数据
-    def swap_sub_kline(self,contract_code,period):
+    def contract_sub_kline(self,contract_code,period):
         subs = {
                 "sub": "market.{}.kline.{}".format(contract_code,period),
                 "id": "id1"
             }
-        path = '/swap-ws'
+        path = '/ws'
         url = self.__url + path
         return sub(url,subs)
 
     # 【通用】订阅 Market Depth 数据
-    def swap_sub_depth(self, contract_code, type):
+    def contract_sub_depth(self, contract_code, type):
         subs = {
             "sub": "market.{}.depth.{}".format(contract_code, type),
             "id": "id5"
         }
-        path = '/swap-ws'
+        path = '/ws'
         url = self.__url + path
         return sub(url, subs)
 
     # 【通用】买一卖一逐笔行情推送 BBO
-    def swap_sub_bbo(self, contract_code):
+    def contract_sub_bbo(self, contract_code):
         subs = {
             "sub": "market.{}.bbo".format(contract_code),
             "id": "id8"
         }
-        path = '/swap-ws'
+        path = '/ws'
         url = self.__url + path
         return sub(url, subs)
 
