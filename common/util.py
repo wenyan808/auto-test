@@ -126,7 +126,9 @@ def order_http_post(host, request_path, params, hbsession):
     url = host + request_path
     data = json.dumps(params)
     try:
-        response = requests.post(url=url, data=data, headers=headers, timeout=TIMEOUT)
+        print("请求地址 = ", url, "参数 = ", data)
+        response = requests.post(url, data, headers=headers, timeout=TIMEOUT)
+        print("响应结果 = ", str(response.text))
         if response.status_code == 200:
             return response.json()
         else:
