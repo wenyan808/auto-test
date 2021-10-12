@@ -3,8 +3,6 @@
 # @Date    : 20211010
 # @Author :Alexli
 """
-	用例Id
-
 	所属分组
 		计划委托
 	用例标题
@@ -40,7 +38,8 @@ import pytest, allure, random, time
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('计划委托')  # 这里填功能
-#@allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@allure.story('计划委托卖出平多触发价大于最新价')  # 这里填子功能，没有的话就把本行注释掉
+@allure.tag('Script owner : Alex Li', 'Case owner : Alex Li')
 @pytest.mark.stable
 class TestSwapTriggerCloseSell_004:
 
@@ -49,7 +48,7 @@ class TestSwapTriggerCloseSell_004:
     def setup(self, contract_code):
         print("自买自卖产生持仓")
 
-        r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
+        r = swap_api.swap_trade(contract_code=contract_code)
         pprint(r)
         self.price = r['data'][0]['data'][0]['price']
         self.leverrate = '5'
@@ -65,8 +64,8 @@ class TestSwapTriggerCloseSell_004:
     def test_execute(self, contract_code):
         self.contract_code = contract_code
         #orderpricetype = 'optimal_10'
-        sltriggerprice = round((self.price * 0.98), 2)
-        slorderprice = round((self.price * 0.97), 2)
+        sltriggerprice = round((self.price * 1.01), 2)
+        slorderprice = round((self.price * 1.02), 2)
         r = swap_api.swap_trigger_openorders(contract_code=contract_code,
                                              page_index='',
                                              page_size='')
