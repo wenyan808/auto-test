@@ -15,6 +15,17 @@ class WebsocketSevice:
         self.__access_key = access_key
         self.__secret_key = secret_key
 
+    # 订阅(sub)指数K线数据
+    def swap_sub_index(self,contract_code,period):
+        subs = {
+            "sub": "market.{}.index.{}".format(contract_code, period),
+            "id": "id1"
+        }
+        path = '/swap-ws'
+        url = self.__url + path
+        print(url)
+        return sub(url, subs)
+
     # 【通用】订阅 KLine 数据
     def swap_sub_kline(self, contract_code, period):
         subs = {
