@@ -101,10 +101,10 @@ class SwapService:
 
         params = {'contract_code': contract_code,
                   'period': period,
-                  'size': size,
                   'from': From,
                   'to': to}
-
+        if size:
+            params['size'] = size
         url = self.__url + '/swap-ex/market/history/kline'
         return api_http_get(url, params)
 
@@ -641,7 +641,7 @@ class SwapService:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取合约当前未成交委托
-    def swap_openorders(self,contract_code=None,page_index=None,page_size=None,trade_type=None):
+    def swap_openorders(self, contract_code=None, page_index=None, page_size=None, trade_type=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
@@ -660,7 +660,6 @@ class SwapService:
 
         request_path = '/swap-api/v1/swap_openorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
-
 
     # 获取合约历史委托
     def swap_hisorders(self, contract_code=None, trade_type=None, type=None, status=None, create_date=None,

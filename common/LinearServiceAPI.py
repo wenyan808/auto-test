@@ -300,12 +300,13 @@ class LinearServiceAPI:
         """
 
         params = {'contract_code': contract_code,
-                  'period': period,
-                  'size': size}
+                  'period': period}
         if FROM:
             params['from'] = FROM
         if to:
             params['to'] = to
+        if size:
+            params['size'] = size
 
         url = self.__url + '/linear-swap-ex/market/history/kline'
         return api_http_get(url, params)
@@ -329,7 +330,7 @@ class LinearServiceAPI:
         contract_code   string            true     BTC-USD.....
         """
 
-        params = {'contract_code': contract_code}
+        params = {'contract_code': contract_code} if contract_code else {}
 
         url = self.__url + '/linear-swap-ex/market/detail/batch_merged'
         return api_http_get(url, params)
@@ -881,7 +882,7 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取合约当前未成交委托
-    def linear_openorders(self, contract_code=None, page_index=None, page_size=None,trade_type=None):
+    def linear_openorders(self, contract_code=None, page_index=None, page_size=None, trade_type=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
@@ -1044,7 +1045,7 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取计划委托当前委托接口
-    def linear_trigger_openorders(self, contract_code=None, page_index=None, page_size=None,trade_type=None):
+    def linear_trigger_openorders(self, contract_code=None, page_index=None, page_size=None, trade_type=None):
         params = {'contract_code': contract_code}
         if page_index:
             params['page_index'] = page_index

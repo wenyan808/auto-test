@@ -91,7 +91,7 @@ class TestCoinswapLever_002:
             r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
             pprint(r)
             price = r['data'][0]['data'][0]['price']
-            orderprice = round((price * 0.2), 2)
+            orderprice = round((price * 0.99), 2)
             r = swap_api.swap_order(contract_code=contract_code,
                                     client_order_id='',
                                     price=orderprice,
