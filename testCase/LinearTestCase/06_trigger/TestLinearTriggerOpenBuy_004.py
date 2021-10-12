@@ -48,7 +48,7 @@ class TestLinearTriggerOpenBuy_004:
         self.offsetC = offsetC
         self.offsetO = offsetO
         self.currentPrice = atp.ATP.get_current_price()  # 最新价
-        self.lowPrice = round(self.currentPrice * 0.09, 2)  # 买入价
+        self.lowPrice = round(self.currentPrice * 0.99, 2)  # 买入价
         self.highPrice = round(self.currentPrice * 1.01, 2)  # 触发价
         print(contract_code, '最新价 = ', self.currentPrice, ' 触发价 = ', self.highPrice, '买入价 = ', self.lowPrice)
 
