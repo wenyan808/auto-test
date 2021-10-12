@@ -78,6 +78,9 @@ class TestUSDTSwapLimitOrder_002:
 	@allure.title('限价委托输入价格下单卖出开空后撤单测试')
 	@allure.step('测试执行')
 	def test_execute(self, contract_code):
+		self.contract_code = contract_code;
+		self.orderid1 = 0;
+		self.orderid2 = 0;
 		flag = True
 		leverrate = '5'
 		print('\n获取最近价\n')
@@ -168,6 +171,11 @@ class TestUSDTSwapLimitOrder_002:
 	@allure.step('恢复环境')
 	def teardown(self):
 		print('\n恢复环境操作')
+		r = linear_api.linear_cancel(contract_code=self.contract_code, order_id=self.orderid1)
+		pprint(r)
+		time.sleep(1)
+		r = linear_api.linear_cancel(contract_code=self.contract_code, order_id=self.orderid2)
+		pprint(r)
 
 if __name__ == '__main__':
     pytest.main()

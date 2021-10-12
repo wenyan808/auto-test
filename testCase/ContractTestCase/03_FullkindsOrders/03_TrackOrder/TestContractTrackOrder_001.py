@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 2020/7/1
-# @Author  : zhangranghan
+# @Author  : 张广南
 
 
 from common.ContractServiceAPI import t as contract_api
@@ -15,6 +15,7 @@ from tool.get_test_data import case_data
 
 @allure.epic('反向交割')
 @allure.feature('获取用户的合约账户和持仓信息')
+@pytest.mark.stable
 class TestContractTrackOrder_001:
 
     def setUp(self):

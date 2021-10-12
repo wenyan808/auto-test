@@ -5,7 +5,8 @@
 
 
 from common.util import api_http_get, api_key_post, api_key_get
-from config.conf import URL2, ACCESS_KEY, SECRET_KEY
+from config import conf
+from config.conf import URL2, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY, URL
 import time
 
 
@@ -299,12 +300,13 @@ class LinearServiceAPI:
         """
 
         params = {'contract_code': contract_code,
-                  'period': period,
-                  'size': size}
+                  'period': period}
         if FROM:
             params['from'] = FROM
         if to:
             params['to'] = to
+        if size:
+            params['size'] = size
 
         url = self.__url + '/linear-swap-ex/market/history/kline'
         return api_http_get(url, params)
@@ -880,7 +882,7 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取合约当前未成交委托
-    def linear_openorders(self, contract_code=None, page_index=None, page_size=None):
+    def linear_openorders(self, contract_code=None, page_index=None, page_size=None, trade_type=None):
         """
         参数名称             参数类型            必填        描述
         contract_code       string            true       BTC-USD.....
@@ -893,6 +895,8 @@ class LinearServiceAPI:
             params['page_index'] = page_index
         if page_size:
             params['page_size'] = page_size
+        if trade_type:
+            params['trade_type'] = trade_type
 
         request_path = '/linear-swap-api/v1/swap_openorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
@@ -1041,14 +1045,14 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取计划委托当前委托接口
-    def linear_trigger_openorders(self, contract_code=None, page_index=None, page_size=None):
-
+    def linear_trigger_openorders(self, contract_code=None, page_index=None, page_size=None, trade_type=None):
         params = {'contract_code': contract_code}
-
-        if contract_code:
+        if page_index:
             params['page_index'] = page_index
-        if contract_code:
+        if page_size:
             params['page_size'] = page_size
+        if trade_type:
+            params['trade_type'] = trade_type
 
         request_path = '/linear-swap-api/v1/swap_trigger_openorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
@@ -2273,8 +2277,9 @@ class LinearServiceAPI:
         return api_http_get(url, params)
 
     # 自买自卖调节最新价
-    def linear_control_price(self, contract_code='', price=None, lever_rate='1'):
-
+    def linear_control_price(self, contract_code='', price=None, lever_rate='5'):
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
         self.linear_cross_order(contract_code=contract_code, price=price, volume='1', direction='buy',
                                 offset='open', lever_rate=lever_rate, order_price_type='limit')
         time.sleep(0.5)
@@ -2340,10 +2345,12 @@ class LinearServiceAPI:
             return False
         else:
             for p in position_info:
-                if p.get("contract_code") == contract_code and p.get("available") >= amount and p.get("direction") == direction:
+                if p.get("contract_code") == contract_code and p.get("available") >= amount and p.get(
+                        "direction") == direction:
                     return True
             return False
 
 
 # 定义t并传入公私钥和URL,供用例直接调用
-t = LinearServiceAPI(URL2, ACCESS_KEY, SECRET_KEY)
+t = LinearServiceAPI(URL, ACCESS_KEY, SECRET_KEY)
+common_user_linear_service_api = LinearServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)

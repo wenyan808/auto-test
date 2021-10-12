@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 2020/7/1
-# @Author  : zhangranghan
+# @Author  : 张广南
 
 
 from common.SwapServiceAPI import t as swap_api
@@ -14,16 +14,17 @@ from tool.get_test_data import case_data
 
 @allure.epic('反向交割')
 @allure.feature('获取用户的合约账户和持仓信息')
+@pytest.mark.stable
 class TestCoinSwapTransfer_006:
 
     def setUp(self):
         print('\n前置条件')
 
     @allure.title('title')
-    def test_contract_account_position_info(self, symbol, contract_code):
+    def test_contract_account_position_info(self, contract_code):
         subuid = ""
         amount = "0.19"
-
+        symbol = contract_code.split("-")[0]
         expectedresult = (symbol, float(amount))
 
         self.setUp()
@@ -38,7 +39,7 @@ class TestCoinSwapTransfer_006:
                                               sub_uid=subuid,
                                               type='sub_to_master')
         pprint(r)
-        time.sleep(0.8)
+        time.sleep(2)
         r2 = swap_api.swap_financial_record(contract_code=contract_code,
                                             type='35',
                                             create_date='',

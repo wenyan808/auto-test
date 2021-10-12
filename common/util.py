@@ -52,8 +52,9 @@ def api_http_post(url, params, add_to_headers=None):
         headers.update(add_to_headers)
     postdata = json.dumps(params)
     try:
-        print(postdata)
+        print("请求地址 = ",url,"参数 = ", postdata)
         response = requests.post(url, postdata, headers=headers, timeout=TIMEOUT)
+        print("响应结果 = ", str(response.text))
         if response.status_code == 200:
             return response.json()
         else:
@@ -192,8 +193,14 @@ def sub(url, subs):
     try:
         ws = websocket.create_connection(url)
         sub_str = json.dumps(subs)
-        ws.send(sub_str)
-        sub_result = json.loads(gzip.decompress(ws.recv()).decode())
+        requestInfo = '\nWS请求信息：url=' + url + ',参数=' + str(subs)
+        print('\033[1;32;49m%s\033[0m' % requestInfo)
+        i = 0
+        while i<3:
+            ws.send(sub_str)
+            sub_result = json.loads(gzip.decompress(ws.recv()).decode())
+            i = i+1
+            time.sleep(1)
         ws.close()
         return sub_result
     except Exception as e:
