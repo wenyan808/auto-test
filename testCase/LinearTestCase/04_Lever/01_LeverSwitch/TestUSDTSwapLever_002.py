@@ -82,7 +82,7 @@ class TestUSDTSwapLever_002:
             '''下单任意一种杠杆'''
             r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
             price = r['data'][0]['data'][0]['price']
-            orderprice = round((price * 0.2), 2)
+            orderprice = round((price * 0.99), 2)
             r = linear_api.linear_cross_order(contract_code=contract_code,
                                               client_order_id='',
                                               price=orderprice,

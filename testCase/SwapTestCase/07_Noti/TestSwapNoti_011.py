@@ -77,7 +77,7 @@ class TestSwapNoti_011:
 
             assert isinstance(bids, list) and len(bids) == 2, 'bids 不正确'
             for bid in bids:
-                assert isinstance(bid, list) and len(bids) == 2 and bid[0] > 0 and bid[1] == 10 and bid[
+                assert isinstance(bid, list) and len(bid) == 2 and bid[0] > 0 and bid[1] == 10 and bid[
                     0] < self.current_price, 'bid 价格 或 数量 错误'
 
             assert isinstance(mrid, int) and mrid >= 0, '获取bbo mrid 错误'
