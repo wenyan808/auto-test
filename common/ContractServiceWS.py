@@ -16,6 +16,16 @@ class WebsocketSevice:
         self.__access_key = access_key
         self.__secret_key = secret_key
 
+    # 【指数与基差接口】订阅(sub)指数K线数据
+    def contract_sub_index(self, symbol, period):
+        subs = {
+            "sub": "market.{}.index.{}".format(symbol, period),
+            "id": "id1"
+        }
+        path = '/ws'
+        url = self.__url + path
+        return sub(url, subs)
+
     # 【通用】订阅 KLine 数据
     def contract_sub_kline(self, contract_code, period):
         subs = {
@@ -29,8 +39,8 @@ class WebsocketSevice:
     def contract_req_kline(self, contract_code, period, From, to):
         subs = {
             "req": "market.{}.kline.{}".format(contract_code, period),
-            "from": int(From),
-            "to": int(to)
+            "from": From,
+            "to": to
         }
         return sub(self.default_ws_path, subs)
 
@@ -58,8 +68,8 @@ class WebsocketSevice:
     def contract_req_kline(self, contract_code, period, From, to):
         subs = {
             "req": "market.{}.kline.{}".format(contract_code, period),
-            "from": int(From),
-            "to": int(to)
+            "from": From,
+            "to": to
         }
         path = '/ws'
         url = self.__url + path
