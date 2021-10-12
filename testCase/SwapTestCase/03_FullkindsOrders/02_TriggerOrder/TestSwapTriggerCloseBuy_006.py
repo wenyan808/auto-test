@@ -44,12 +44,16 @@ class TestSwapTriggerCloseBuy_006:
 
     @allure.step('前置条件')
     def setup(self):
+        ATP.cancel_all_types_order()
+        time.sleep(0.5)
         ATP.close_all_position()
+        time.sleep(0.5)
         print(''' 使当前交易对有交易盘口  ''')
         print(ATP.make_market_depth())
         print(''' 使当前用户有持仓  ''')
         time.sleep(0.5)
         print(ATP.current_user_make_order(order_price_type='opponent'))
+        time.sleep(0.5)
 
     @allure.title('计划委托买入平空触发价等于最新价')
     @allure.step('测试执行')
