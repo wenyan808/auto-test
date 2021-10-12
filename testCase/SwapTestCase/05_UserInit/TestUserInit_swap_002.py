@@ -69,7 +69,7 @@ class TestUserInit_swap_002:
             pass
         with allure.step('3、手动在MQ中发送个人初始化（注意:user_id需要实际替换成用户的ID）'):
             requestHeaders = {
-                "authorization": "Basic Z3Vlc3Q6Z3Vlc3Q=",
+                "authorization": "Basic YWRtaW46aXhrUXkwZDJFY3RCWWZTQg==",
                 "Accept": "application/json",
                 'Content-Type': 'application/json',
                 "Accept-language": "zh-CN",
@@ -89,7 +89,7 @@ class TestUserInit_swap_002:
               "props": {},
               "payload_encoding": "string"
             }
-            api_http_post('http://172.18.6.241:15672/api/exchanges/%2F/amq.default/publish', param, add_to_headers=requestHeaders)
+            api_http_post('http://172.18.6.207:32100/api/exchanges/%2F/amq.default/publish', param, add_to_headers=requestHeaders)
             time.sleep(1)
             pass
         with allure.step('进入redis，查看初始化后'+contractCode+'(品种)的APO'):

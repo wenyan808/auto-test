@@ -21,12 +21,39 @@ def contract_code():
     contract_code = conf.DEFAULT_CONTRACT_CODE
     return contract_code
 
-
 @pytest.fixture()
 def symbol():
     symbol = conf.DEFAULT_SYMBOL
     return symbol
 
+# 开仓
+@pytest.fixture()
+def offsetO():
+    offset = 'open'
+    return offset
+# 平仓
+@pytest.fixture()
+def offsetC():
+    offset = 'close'
+    return offset
+
+#买入
+@pytest.fixture()
+def directionB():
+    direction = 'buy'
+    return direction
+
+#卖出
+@pytest.fixture()
+def directionS():
+    direction = 'sell'
+    return direction
+
+# 杠杆
+@pytest.fixture()
+def lever_rate():
+    lever_rate = 5
+    return lever_rate
 
 @pytest.fixture()
 def buy_price():
@@ -38,13 +65,6 @@ def buy_price():
 def sell_price():
     sell_price = lt.linear_depth(contract_code='btc-usdt', type='step0')['tick']['asks'][0][0]
     return sell_price
-
-
-@pytest.fixture()
-def lever_rate():
-    lever_rate = lt.linear_account_info(contract_code='btc-usdt')['data'][0]['lever_rate']
-    return lever_rate
-
 
 @pytest.fixture()
 def last_price():

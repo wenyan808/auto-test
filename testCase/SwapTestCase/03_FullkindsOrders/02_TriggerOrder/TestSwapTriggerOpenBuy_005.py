@@ -38,6 +38,7 @@ from tool.atp import ATP
 @allure.epic('所属分组')  # 这里填业务线
 @allure.feature('合约测试基线用例//02 反向永续//03 全部策略订单//02 计划委托//正常限价开仓')  # 这里填功能
 @allure.story('计划委托买入开多触发价小于最新价')  # 这里填子功能，没有的话就把本行注释掉
+@allure.tag('Script owner : Donglin Han', 'Case owner : Donglin Han')
 @pytest.mark.stable
 class TestSwapTriggerOpenBuy_005:
 
