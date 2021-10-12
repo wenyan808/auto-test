@@ -33,6 +33,7 @@ from tool.atp import ATP
 @allure.feature('合约测试基线用例//02 反向永续//07 行情')  # 这里填功能
 @allure.story('请求BBO(单个合约，即传参code)')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Donglin Han', 'Case owner : Panfeng Liu')
+@pytest.mark.stable
 class TestSwapNoti_012:
     current_price = None
 
@@ -43,8 +44,8 @@ class TestSwapNoti_012:
         time.sleep(0.5)
         ATP.make_market_depth()
         self.current_price = ATP.get_current_price()
-        sell_price = round(self.current_price * 1.02, 1)
-        buy_price = round(self.current_price * 0.98, 1)
+        sell_price = round(self.current_price * 1.02, 2)
+        buy_price = round(self.current_price * 0.98, 2)
         ATP.common_user_make_order(price=sell_price, direction='sell')
         ATP.common_user_make_order(price=buy_price, direction='buy')
         time.sleep(1)
