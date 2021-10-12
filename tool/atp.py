@@ -209,6 +209,7 @@ class ATP:
     def get_current_price(cls, contract_code=None):
         if not contract_code:
             contract_code = conf.DEFAULT_CONTRACT_CODE
+
         trade_price_methods = {'Delivery': common_user_contract_service_api.contract_trade,
                                'Swap': common_user_swap_service_api.swap_trade,
                                'LinearSwap': common_user_linear_service_api.linear_trade,
@@ -228,6 +229,7 @@ class ATP:
         if current_price < 0:
             print(err_msg)
             return -1
+        print(contract_code, '最新价 = ', current_price)
         return current_price
 
     @classmethod
