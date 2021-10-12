@@ -88,7 +88,7 @@ class TestContractLever_002:
             r = contract_api.contract_history_trade(symbol=symbol_period, size='1')
             pprint(r)
             price = r['data'][0]['data'][0]['price']
-            orderprice = round((price * 0.2), 2)
+            orderprice = round((price * 0.99), 2)
             r = contract_api.contract_order(symbol=symbol,
                                             contract_type='this_week',
                                             contract_code='',

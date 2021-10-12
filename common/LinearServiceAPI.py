@@ -330,7 +330,7 @@ class LinearServiceAPI:
         contract_code   string            true     BTC-USD.....
         """
 
-        params = {'contract_code': contract_code}
+        params = {'contract_code': contract_code} if contract_code else {}
 
         url = self.__url + '/linear-swap-ex/market/detail/batch_merged'
         return api_http_get(url, params)
