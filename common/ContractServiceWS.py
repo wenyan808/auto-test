@@ -15,6 +15,17 @@ class WebsocketSevice:
         self.default_ws_path = url + '/ws'
         self.__access_key = access_key
         self.__secret_key = secret_key
+    #【WS通用请求】
+    def contract_sub(self,subs):
+        path = '/ws'
+        url = self.__url + path
+        return sub(url,subs)
+
+    # 【WS鉴权请求】
+    def contract_sub_auth(self, subs):
+        path = '/ws'
+        url = self.__url + path
+        return api_key_sub(url,self.__access_key,self.__secret_key,subs)
 
     # 【指数与基差接口】订阅(sub)指数K线数据
     def contract_sub_index(self, symbol, period):
