@@ -17,6 +17,18 @@ class WebsocketSevice:
         self.__access_key = access_key
         self.__secret_key = secret_key
 
+    #【WS通用请求】
+    def contract_sub(self,subs):
+        path = '/ws'
+        url = self.__url + path
+        return sub(url,subs)
+
+    # 【WS鉴权请求】
+    def contract_sub_auth(self, subs):
+        path = '/ws'
+        url = self.__url + path
+        return api_key_sub(url,self.__access_key,self.__secret_key,subs)
+
     # 【通用】订阅 KLine 数据
     def contract_sub_kline(self,contract_code,period):
         subs = {
