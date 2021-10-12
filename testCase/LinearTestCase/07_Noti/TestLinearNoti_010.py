@@ -43,12 +43,13 @@ class TestLinearNoti_010:
 
     @allure.step('前置条件')
     def setup(self):
+        ATP.cancel_all_types_order()
         self.from_time = int(time.time())
         print(''' 制造成交数据 ''')
         ATP.make_market_depth()
         time.sleep(0.5)
         ATP.clean_market()
-        time.sleep(0.5)
+        time.sleep(1)
         self.current_price = ATP.get_current_price()
         self.to_time = int(time.time())
 
@@ -88,7 +89,7 @@ class TestLinearNoti_010:
             assert merge_record['close'] == self.current_price, 'K 线数据 close 不正确'
             assert merge_record['count'] >= 2, 'K 线数据 amount 不正确'
             assert merge_record['high'] >= self.current_price, 'K 线数据 high 不正确'
-            assert merge_record['id'] <= self.from_time, 'K 线数据 id 不正确'
+            assert merge_record['id'] - 60 <= self.from_time, 'K 线数据 id 不正确'
             assert merge_record['id'] + 120 >= self.from_time, 'K 线数据 id 不正确'
             assert merge_record['low'] >= 0, 'K 线数据 low 不正确'
             assert merge_record['low'] <= merge_record['open'] <= merge_record['high'], 'K 线数据 open 不正确'

@@ -44,12 +44,13 @@ class TestContractNoti_010:
 
     @allure.step('前置条件')
     def setup(self):
+        ATP.cancel_all_types_order()
         self.from_time = int(time.time())
         print(''' 制造成交数据 ''')
         ATP.make_market_depth()
         time.sleep(0.5)
         ATP.clean_market()
-        time.sleep(0.5)
+        time.sleep(1)
         self.current_price = ATP.get_current_price()
         self.to_time = int(time.time())
 

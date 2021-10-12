@@ -44,8 +44,8 @@ class TestLinearNoti_012:
         time.sleep(0.5)
         ATP.make_market_depth()
         self.current_price = ATP.get_current_price()
-        sell_price = round(self.current_price * 1.02, 1)
-        buy_price = round(self.current_price * 0.98, 1)
+        sell_price = round(self.current_price * 1.02, 2)
+        buy_price = round(self.current_price * 0.98, 2)
         ATP.common_user_make_order(price=sell_price, direction='sell')
         ATP.common_user_make_order(price=buy_price, direction='buy')
         time.sleep(1)
@@ -56,7 +56,7 @@ class TestLinearNoti_012:
         with allure.step('请求BBO(单个合约，即传参code),可参考文档：https://docs.huobigroup.com/docs/usdt_swap/v1/cn/#0737c93bf7'):
             # asks,bids 数据正确,不存在Null,[]
             # asks,bids 数据正确,不存在Null,[]
-            res = api.swap_bbo(contract_code)
+            res = api.linear_bbo(contract_code)
             print(res)
             status = res.get('status', 'error')
             assert status == 'ok', '获取bbo 返回状态错误'
