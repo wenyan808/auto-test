@@ -29,7 +29,6 @@ import time
 import allure
 import pytest
 
-from common.ContractServiceAPI import t as contract_api
 from common.util import compare_dict
 from tool.atp import ATP
 
