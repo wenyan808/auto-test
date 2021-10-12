@@ -1,23 +1,26 @@
-import json
-from decimal import Decimal
+from pprint import pprint
 
 import requests
 
+from common.ContractServiceAPI import common_user_contract_service_api
+from common.ContractServiceAPI import t as contract_api
+from common.LinearServiceAPI import common_user_linear_service_api
+from common.LinearServiceAPI import t as linear_api
+from common.SwapServiceAPI import common_user_swap_service_api
+from common.SwapServiceAPI import t as swap_api
 from common.util import api_key_post, api_http_get
 from config import conf
-from pprint import pprint
-from common.ContractServiceAPI import t as contract_api
-from common.ContractServiceAPI import common_user_contract_service_api
-from common.LinearServiceAPI import t as linear_api
-from common.LinearServiceAPI import common_user_linear_service_api
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceAPI import common_user_swap_service_api
 
 
 class ATP:
     ATPHost = 'http://172.18.6.52:8000'
     # ATPHost = 'http://0.0.0.0:8000'
     header = {'accept': 'application/json', 'Content-Type': 'application/json'}
+
+    price_precision = {'ETH-USDT': 3,
+                       'BTC-USD': 6,
+                       'BTC_CW': 2
+                       }
 
     @classmethod
     def get_base_json_body(cls, contract_code=None):
@@ -308,9 +311,9 @@ class ATP:
 
         if not trigger_price:
             if direction == 'buy':
-                trigger_price = round(current_price * 0.99, 1)
+                trigger_price = cls.get_adjust_price(0.99)
             else:
-                trigger_price = round(current_price * 1.01, 1)
+                trigger_price = cls.get_adjust_price(1.01)
 
         if not order_price:
             order_price = trigger_price
@@ -358,12 +361,31 @@ class ATP:
         # 按目标价格成交
         print(cls.common_user_make_order(price=market_price, direction='buy'))
         print(cls.common_user_make_order(price=market_price, direction='sell'))
-        sell_price = round(market_price * 1.01, 1)
-        buy_price = round(market_price * 0.99, 1)
+        sell_price = cls.get_adjust_price(1.01)
+        buy_price = cls.get_adjust_price(0.99)
         print(cls.common_user_make_order(price=buy_price, direction='buy', volume=volume))
         print(cls.common_user_make_order(price=sell_price, direction='sell', volume=volume))
 
         return True
+
+    @classmethod
+    def cancel_all_types_order(cls, contract_code=None):
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
+        ATP.cancel_all_order(contract_code=contract_code)
+        ATP.cancel_all_trigger_order(contract_code=contract_code)
+        ATP.cancel_all_track_order(contract_code=contract_code)
+        ATP.cancel_all_tpsl_order(contract_code=contract_code)
+
+    @classmethod
+    def get_adjust_price(cls, rate=1.01, contract_code=None):
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
+        current_price = ATP.get_current_price(contract_code=contract_code)
+        if contract_code in cls.price_precision:
+            return round(current_price * rate, cls.price_precision[contract_code])
+        else:
+            return round(current_price * rate, 1)
 
 
 if __name__ == '__main__':

@@ -69,6 +69,9 @@ class TestContractIndex_001:
             second_index_price = check_index_res(second_index_res, symbol)
 
         with allure.step('3、校验指数是否有变化'):
+            print()
+            print(f'first_index_price : {first_index_price}')
+            print(f'second_index_price : {second_index_price}')
             if conf.ENV.startswith('Test'):
                 assert first_index_price == second_index_price
             else:

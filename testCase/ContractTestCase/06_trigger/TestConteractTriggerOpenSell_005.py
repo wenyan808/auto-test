@@ -77,7 +77,7 @@ class TestConteractTriggerOpenSell_005:
         lastprice = r['data'][0]['data'][0]['price']
         # print(lastprice)
         triggerPrice = round((lastprice * 0.98), 1)
-        orderPrice = round((lastprice * 0.8), 1)
+        orderPrice = round((lastprice * 0.9), 1)
         with allure.step('1、登录合约交易系统'):
             pass
         with allure.step('2、选择币种BTC，选择杠杆5X，点击开仓-计划按钮'):
