@@ -16,7 +16,7 @@ from tool.get_test_data import case_data
 
 
 @allure.epic('反向交割')
-@allure.feature('')
+@allure.feature('功能')
 @pytest.mark.stable
 class TestContractTriggerOrder_0010:
 

@@ -14,9 +14,8 @@ import pytest, allure, random, time
 from tool.get_test_data import case_data
 
 
-@allure.epic('合约自动化测试')
-@allure.feature('')
-@allure.title('title')
+@allure.epic('反向交割')
+@allure.feature('现价单')
 @pytest.mark.stable
 class TestContractLimitOrder_001:
 

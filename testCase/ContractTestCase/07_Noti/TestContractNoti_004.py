@@ -88,10 +88,8 @@ class TestContractNoti_004:
             result = contract_service_ws.contract_sub(subs)
             resultStr = '\nDepth返回结果 = ' + str(result)
             print('\033[1;32;49m%s\033[0m' % resultStr)
-            if not result['tick']['bid']:
-                assert False
-            if not result['tick']['ask']:
-                assert False
+            assert  result['tick']['bid'] is not None
+            assert  result['tick']['ask'] is not None
             pass
 
     @allure.step('恢复环境')

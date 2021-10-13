@@ -13,7 +13,7 @@ import pytest, allure, random, time
 from tool.get_test_data import case_data
 
 
-@allure.epic('反向交割')
+@allure.epic('正向永续')
 @allure.feature('获取用户的合约账户和持仓信息')
 @pytest.mark.stable
 class TestUSDTSwapTransfer_003:
@@ -21,7 +21,7 @@ class TestUSDTSwapTransfer_003:
     def setUp(self):
         print('\n前置条件')
 
-    @allure.title('title')
+
     def test_contract_account_position_info(self, symbol, contract_code):
         from_margin_account = 'USDT'
         to_margin_account = contract_code

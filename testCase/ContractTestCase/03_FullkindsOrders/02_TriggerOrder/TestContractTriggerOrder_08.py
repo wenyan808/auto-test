@@ -15,7 +15,7 @@ from tool.atp import ATP
 
 
 @allure.epic('反向交割')
-@allure.feature('')
+@allure.feature('功能')
 @pytest.mark.stable
 class TestContractTriggerOrder_008:
 

@@ -28,7 +28,7 @@ import pytest, allure, random, time
 from tool.atp import ATP
 from common.ContractServiceWS import t as websocketsevice
 
-@allure.epic('交割合约')  # 这里填业务线
+@allure.epic('反向交割')  # 这里填业务线
 @allure.feature('WS订阅')  # 这里填功能
 @allure.story('行情')  # 这里填子功能，没有的话就把本行注释掉
 class TestContractNoti_006:

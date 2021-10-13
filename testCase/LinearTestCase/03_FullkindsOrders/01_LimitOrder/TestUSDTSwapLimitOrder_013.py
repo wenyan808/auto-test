@@ -34,9 +34,11 @@ from pprint import pprint
 import pytest, allure, random, time
 
 
-@allure.epic('业务线')  # 这里填业务线
+@allure.epic('正向永续')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@allure.title('最优10档买入开多卖盘无数据自动撤单')
+@pytest.mark.stable
 class TestUSDTSwapLimitOrder_013:
 
 	@allure.step('前置条件')
@@ -56,9 +58,8 @@ class TestUSDTSwapLimitOrder_013:
 			print('盘口有卖盘，不满足用例要求')
 			assert False
 
-	@allure.title('最优10档买入开多卖盘无数据自动撤单')
+
 	@allure.step('测试执行')
-	@pytest.mark.stable
 	def test_execute(self, contract_code):
 		leverrate = '5'
 		with allure.step('1、盘口无卖盘，最优10档买入开多'):

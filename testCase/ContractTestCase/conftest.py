@@ -33,6 +33,72 @@ def symbol_period():
     symbol_period = conf.DEFAULT_CONTRACT_CODE
     return symbol_period
 
+
+contract_types = {'CW': "this_week", 'NW': "next_week", 'CQ': "quarter", 'NQ': "next_quarter"}
+
+
+@pytest.fixture()
+def contract_type():
+    return contract_types[conf.DEFAULT_CONTRACT_CODE[-2:]]
+
+# 开仓
+@pytest.fixture()
+def offsetO():
+    offset = 'open'
+    return offset
+# 平仓
+@pytest.fixture()
+def offsetC():
+    offset = 'close'
+    return offset
+
+#买入
+@pytest.fixture()
+def directionB():
+    direction = 'buy'
+    return direction
+
+#卖出
+@pytest.fixture()
+def directionS():
+    direction = 'sell'
+    return direction
+
+# 杠杆
+@pytest.fixture()
+def lever_rate():
+    lever_rate = 5
+    return lever_rate
+
+# 开仓
+@pytest.fixture()
+def offsetO():
+    offset = 'open'
+    return offset
+# 平仓
+@pytest.fixture()
+def offsetC():
+    offset = 'close'
+    return offset
+
+#买入
+@pytest.fixture()
+def directionB():
+    direction = 'buy'
+    return direction
+
+#卖出
+@pytest.fixture()
+def directionS():
+    direction = 'sell'
+    return direction
+
+# 杠杆
+@pytest.fixture()
+def lever_rate():
+    lever_rate = 5
+    return lever_rate
+
 # 开仓
 @pytest.fixture()
 def offsetO():
