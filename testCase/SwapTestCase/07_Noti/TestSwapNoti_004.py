@@ -61,9 +61,22 @@ class TestSwapNoti_004:
                 "sub": "market.{}.bbo".format(self.contract_code),
                 "id": "id8"
             }
-            result = swap_service_ws.swap_sub(subs)
-            resultStr = '\n返回结果 = ' + str(result)
-            print('\033[1;32;49m%s\033[0m' % resultStr)
+            tryTimes = 1
+            while True:
+                result = swap_service_ws.swap_sub(subs)
+                resultStr = '\nKline返回结果 = ' + str(result)
+                print('\033[1;32;49m%s\033[0m' % resultStr)
+                # 由于Kline可能更新有点慢，等1秒，再执行一次获取结果；避免失败用例造成死循环；这里重试5次
+                if 'tick' in result:
+                    break
+                else:
+                    # 超过5次，跳过循环
+                    if tryTimes > 5:
+                        break
+                    else:
+                        tryTimes = tryTimes + 1
+                        time.sleep(1)
+                        print('k线未返回预期数据，等待1秒，第', tryTimes - 1, '次重试………………')
             assert result['tick']['bid'] is not None
             assert result['tick']['ask'] is not None
             pass
