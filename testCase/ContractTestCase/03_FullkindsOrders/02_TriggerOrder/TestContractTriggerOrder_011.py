@@ -29,10 +29,6 @@ class TestContractTriggerOrder_0011:
         self.current_price = ATP.get_current_price()
         print(''' make market depth ''')
         ATP.make_market_depth()
-        sell_price = ATP.get_adjust_price(1.02)
-        buy_price = ATP.get_adjust_price(0.98)
-        ATP.common_user_make_order(price=sell_price, direction='sell')
-        ATP.common_user_make_order(price=buy_price, direction='buy')
         time.sleep(2)
 
     @allure.title("触发计划委托订单平仓测试")
@@ -104,8 +100,7 @@ class TestContractTriggerOrder_0011:
 
     @allure.step("恢复环境")
     def teardown(self):
-        r_cancel = contract_api.contract_cancel(symbol=self.symbol, order_id=self.new_order_id)
-        assert r_cancel.get("status") == "ok", f"撤单失败: {r_cancel}"
+        ATP.cancel_all_types_order()
 
 if __name__ == '__main__':
     pytest.main()
