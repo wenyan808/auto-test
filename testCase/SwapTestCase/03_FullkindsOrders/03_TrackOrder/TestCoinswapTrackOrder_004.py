@@ -20,7 +20,7 @@ class TestCoinswapTrackOrder_004:
     def setUp(self):
         print('\n前置条件')
 
-    @allure.title('title')
+
     def test_contract_account_position_info(self, contract_code):
         flag = True
 

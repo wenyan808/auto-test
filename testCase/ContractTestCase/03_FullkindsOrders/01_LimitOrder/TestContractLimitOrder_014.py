@@ -21,7 +21,7 @@ from datetime import datetime
 # tracker 跟踪委托
 # hisorder 限价委托
 @allure.epic('反向交割')
-@allure.feature('')
+@allure.feature('功能')
 @pytest.mark.stable
 class TestContractLimitOrder_0014:
 
