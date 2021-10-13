@@ -1426,6 +1426,10 @@ class ContractServiceAPI:
             print("当前持仓状况复杂，无法通过自我成交清空，请人工处理")
             return False
 
+    def contract_market_over_view(self):
+        request_path = '/market/overview'
+        return api_http_get(self.__url + request_path, {})
+
 
 # 定义t并传入公私钥和URL,供用例直接调用
 t = ContractServiceAPI(URL, ACCESS_KEY, SECRET_KEY)
