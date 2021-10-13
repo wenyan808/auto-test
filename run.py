@@ -42,9 +42,10 @@ allure generate ./report -o ./html_report --clean
 # os.system('allure generate report/allure -o report/html --clean')
 # os.system('allure open report/html')
 """
+from multiprocessing import Process
 
 
-def run(system_type=None, run_env='Test5', test_type=''):
+def run(system_type=None, run_env='Test6', test_type=''):
     """
     新执行脚本由jenkins中的shell传入执行模块，执行方式为
     python3 run.py 模块名
@@ -92,13 +93,22 @@ if __name__ == '__main__':
     else:
         test_type = ''
     # for debug
-    # test_env = 'Test5'
+    # test_env = 'Test6'
     # system_type = 'ALL'
-    # build_num = 30
+    # build_num = 30000
     # test_type = 'stable'
     DingDingMsg.init()
     start = time.time()
-    run(run_env=test_env, system_type=system_type, test_type=test_type)
+    if system_type == 'ALL':
+        ps_list = []
+        for system_types_item in ['Contract', 'Swap', 'Linear']:
+            ps = Process(target=run, args=(system_types_item, test_env, test_type))
+            ps_list.append(ps)
+            ps.start()
+        for ps in ps_list:
+            ps.join()
+    else:
+        run(run_env=test_env, system_type=system_type, test_type=test_type)
     run_time = time.time() - start
     DingDingMsg.update_json_file(env=test_env, system_type=system_type, test_type=test_type, run_time=run_time,
                                  build_num=build_num)

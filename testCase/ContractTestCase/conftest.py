@@ -33,6 +33,14 @@ def symbol_period():
     symbol_period = conf.DEFAULT_CONTRACT_CODE
     return symbol_period
 
+
+contract_types = {'CW': "this_week", 'NW': "next_week", 'CQ': "quarter", 'NQ': "next_quarter"}
+
+
+@pytest.fixture()
+def contract_type():
+    return contract_types[conf.DEFAULT_CONTRACT_CODE[-2:]]
+
 # 开仓
 @pytest.fixture()
 def offsetO():

@@ -21,7 +21,7 @@ class TestUSDTSwapTransfer_011:
     def setUp(self):
         print('\n前置条件')
 
-    @allure.title('title')
+
     def test_contract_account_position_info(self, symbol):
         subuid = ""
         amount = "13"

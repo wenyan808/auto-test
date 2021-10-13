@@ -2350,6 +2350,10 @@ class LinearServiceAPI:
                     return True
             return False
 
+    def linear_market_over_view(self):
+        request_path = '/linear-swap-ex/market/overview'
+        return api_http_get(self.__url + request_path, {})
+
 
 # 定义t并传入公私钥和URL,供用例直接调用
 t = LinearServiceAPI(URL, ACCESS_KEY, SECRET_KEY)

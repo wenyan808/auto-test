@@ -9,7 +9,9 @@ import time
 import allure
 import pytest
 import yaml
+from _pytest.mark import Mark
 from _pytest.nose import teardown_nose
+from allure_commons.types import LabelType
 
 from config import conf
 from tool.DingDingMsg import DingDingMsg
@@ -23,6 +25,12 @@ conftest.py文件名字是固定的，不可以做任何修改
 conftest.py文件不能被其他文件导入
 
 """
+
+epic_mapping = {
+    'Delivery': '反向交割',
+    'LinearSwap': '正向永续',
+    'Swap': '反向永续'
+}
 
 
 def pytest_collection_modifyitems(items):
@@ -93,6 +101,14 @@ def pytest_runtest_setup(item):
 def pytest_runtest_makereport(item):
     outcome = yield
     report = outcome.get_result()
+    if report.when == 'setup':
+        for pytestmark in item.cls.pytestmark:
+            if pytestmark.kwargs == {'label_type': 'epic'}:
+                item.cls.pytestmark.remove(pytestmark)
+                # pytestmark.args = epic_mapping[conf.SYSTEM_TYPE]
+
+        pytestmark = Mark(name='allure_label', args=(epic_mapping[conf.SYSTEM_TYPE],), kwargs={'label_type': 'epic'})
+        item.cls.pytestmark.append(pytestmark)
     if report.when == 'call':
         api_test_data = item.funcargs.get("api_test_data", {})
         if api_test_data:
@@ -101,7 +117,10 @@ def pytest_runtest_makereport(item):
                 allure.dynamic.title(title)
 
 
-@pytest.fixture(autouse=True, scope='module')
+        # allure.dynamic.label(LabelType.EPIC, epic_mapping[conf.SYSTEM_TYPE])
+
+
+# @pytest.fixture(autouse=True, scope='module')
 def cancel_all_orders_and_switch_level():
     # 撤销全部限价单
     print('撤销全部限价单')
