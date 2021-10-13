@@ -40,6 +40,7 @@ import common.util
 from common.LinearServiceAPI import LinearServiceAPI
 from config import conf
 from config.conf import URL2, ACCESS_KEY, SECRET_KEY
+from tool.atp import ATP
 
 
 @allure.epic('正向永续')  # 这里填业务线
@@ -52,27 +53,24 @@ class TestUSDTSwapTriggerOrder_015:
         print(''' 在下单区域下单，下限价委托单不要触发成交 ''')
         self.contract_code = conf.DEFAULT_CONTRACT_CODE
         self.current_user = LinearServiceAPI(url=URL2, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
+        ATP.clean_market()
+        time.sleep(1)
+        ATP.current_user_make_order(direction='buy')
+        time.sleep(1)
+        ATP.current_user_make_order(direction='sell')
+        time.sleep(1)
 
     @allure.title('下单区域下止盈止损限价单未成交测试')
     @allure.step('测试执行')
     def test_execute(self, symbol):
         with allure.step('1、登录U本位永续界面'):
-            # 获取买一价, 如果买一价不存在, 则手动设置买一价为5
-            contract_depth = self.current_user.linear_depth(contract_code=self.contract_code, type="step5")
-            bids = contract_depth.get("tick").get("bids")
-            if bids:
-                current_highest_price = max([i[0] for i in bids])
-                highest_price_bid = round(current_highest_price * 1.1, 1)
-                tp_trigger_price = highest_price_bid
-                sl_trigger_price = round(current_highest_price * 0.9, 1)
-                order_price = highest_price_bid
-                price = current_highest_price
-            else:
 
-                tp_trigger_price = 5
-                sl_trigger_price = 4
-                price = 5
-                order_price = 5
+            current_highest_price = ATP.get_adjust_price()
+            highest_price_bid = round(current_highest_price * 1.1, 1)
+            tp_trigger_price = highest_price_bid
+            sl_trigger_price = round(current_highest_price * 0.9, 1)
+            order_price = highest_price_bid
+            price = current_highest_price
 
             r_order_plan = self.current_user.linear_order(contract_code=self.contract_code, price=price,
                                                           order_price_type="limit", volume=10, direction="buy",
@@ -119,8 +117,7 @@ class TestUSDTSwapTriggerOrder_015:
 
     @allure.step('恢复环境')
     def teardown(self):
-        r_cancel = self.current_user.linear_cancel(contract_code=self.contract_code, order_id=self.tp_sl_order_id)
-        assert r_cancel.get("status") == "ok", f"撤单失败: {r_cancel}"
+        ATP.cancel_all_types_order()
 
 
 if __name__ == '__main__':
