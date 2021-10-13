@@ -11,6 +11,7 @@ from schema import Schema, And, Or, Regex, SchemaError
 from pprint import pprint
 import pytest, allure, random, time
 from tool.get_test_data import case_data
+from tool.atp import ATP
 
 
 @allure.epic('反向交割')
@@ -23,6 +24,19 @@ class TestContractTriggerOrder_008:
         self.trigger_price = None
         self.order_id = None
         self.symbol = None
+        self.symbol = None
+        self.new_order_id = None
+        print(''' cancel all types orders ''')
+        ATP.cancel_all_types_order()
+        time.sleep(1)
+        self.current_price = ATP.get_current_price()
+        print(''' make market depth ''')
+        ATP.make_market_depth()
+        sell_price = ATP.get_adjust_price(1.02)
+        buy_price = ATP.get_adjust_price(0.98)
+        ATP.common_user_make_order(price=sell_price, direction='sell')
+        ATP.common_user_make_order(price=buy_price, direction='buy')
+        time.sleep(2)
 
     @allure.title('计划止损正常限价')
     def test_contract_account_position_info(self, symbol, symbol_period):
@@ -75,9 +89,9 @@ class TestContractTriggerOrder_008:
                         if self.available >= 10:
                             pprint("\n可平量大于等于10个\n")
                             pprint("步骤三: 下单(计划委托止损单)")
-                            order = c.contract_trigger_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code, trigger_type=trigger_type, trigger_price=self.trigger_price, order_price=order_price, order_price_type=order_price_type, volume=self.available,
+                            order = c.contract_trigger_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code, trigger_type=trigger_type, trigger_price=self.trigger_price, order_price=order_price, order_price_type=order_price_type, volume=volume_at_least,
                                                              direction=direction, offset=offset, lever_rate=lever_rate)
-                            time.sleep(5)
+                            time.sleep(3)
                             assert order.get("status") == "ok", "下单出错: {res}".format(res=order)
                             return order['data']['order_id']
                         else:
@@ -87,6 +101,7 @@ class TestContractTriggerOrder_008:
             return None
 
         positions_data = c.contract_account_position_info(symbol=symbol).get("data")
+        pprint(positions_data)
         # 如果有持仓，就不需要再造持仓了，否则需要去造持仓数据
         if positions_data:
             pprint("\n找到已存在的LTC持仓数据, 判断可平量...\n")
@@ -105,7 +120,7 @@ class TestContractTriggerOrder_008:
         res_all_his_orders = c.contract_trigger_openorders(symbol=symbol, contract_code=contract_code).get("data").get("orders")
         for r in res_all_his_orders:
             if r.get("order_id") == self.order_id:
-                expected_did = {"trigger_type": trigger_type, "volume": self.available, "lever_rate": lever_rate, "order_price_type": order_price_type, "trigger_price": self.trigger_price, "contract_code": contract_code, "symbol": symbol,
+                expected_did = {"trigger_type": trigger_type, "volume": volume_at_least, "lever_rate": lever_rate, "order_price_type": order_price_type, "trigger_price": self.trigger_price, "contract_code": contract_code, "symbol": symbol,
                                 "contract_type": contract_type, "direction": direction, "offset": offset}
                 assert common.util.compare_dict(expected_did, r)
                 pprint("\n步骤三: 撤单\n")
