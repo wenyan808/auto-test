@@ -21,10 +21,6 @@
     B)当前委托-计划委托列表查询创建订单
 优先级
     1
-用例编号
-    TestContractTriggerCloseBuy_005
-自动化作者
-    韩东林
 """
 
 import pprint
