@@ -30,7 +30,7 @@ from common.ContractServiceWS import t as websocketsevice
 from config.conf import COMMON_ACCESS_KEY, COMMON_SECRET_KEY, URL
 
 
-@allure.epic('交割合约')  # 这里填业务线
+@allure.epic('反向交割')  # 这里填业务线
 @allure.feature('WS订阅')  # 这里填功能
 @allure.story('行情')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable

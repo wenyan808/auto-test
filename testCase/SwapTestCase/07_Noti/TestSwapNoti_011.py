@@ -31,7 +31,7 @@ from tool.atp import ATP
 from tool.common_assert import Assert
 
 
-@allure.epic('所属分组')  # 这里填业务线
+@allure.epic('反向永续')  # 这里填业务线
 @allure.feature('合约测试基线用例//02 反向永续//07 行情')  # 这里填功能
 @allure.story('请求深度(150档不合并)')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Donglin Han', 'Case owner : Panfeng Liu')

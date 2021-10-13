@@ -42,7 +42,7 @@ from config import conf
 from config.conf import URL2, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
 
 
-@allure.epic('所属分组')  # 这里填业务线
+@allure.epic('正向永续')  # 这里填业务线
 @allure.feature('计划委托')  # 这里填功能
 @allure.story('下单区域下止盈止损最优5/10/20档限价单成交测试')  # 这里填子功能，没有的话就把本行注释掉
 class TestUSDTSwapTriggerOrder_018:
