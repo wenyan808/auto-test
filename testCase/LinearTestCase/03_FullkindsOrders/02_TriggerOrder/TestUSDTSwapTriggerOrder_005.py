@@ -30,7 +30,7 @@ from pprint import pprint
 import pytest, allure, random, time
 
 
-@allure.epic('反向永续')  # 这里填业务线
+@allure.epic('正向永续')  # 这里填业务线
 @allure.feature('计划委托')  # 这里填功能
 #@allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
