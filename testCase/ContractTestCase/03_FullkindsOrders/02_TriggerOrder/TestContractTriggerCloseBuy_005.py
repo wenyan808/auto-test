@@ -42,19 +42,18 @@ from tool.atp import ATP
 class TestContractTriggerCloseBuy_005:
 
     @allure.step('前置条件')
-    @pytest.fixture(scope='function', autouse=True)
-    def setup(self, contract_code):
+    @pytest.fixture(scope='function')
+    def setup(self):
         ATP.close_all_position()
         print(''' 使当前交易对有交易盘口  ''')
         print(ATP.make_market_depth())
         print(''' 使当前用户有持仓  ''')
         time.sleep(0.5)
-        print(ATP.current_user_make_order(
-            contract_code=contract_code, order_price_type='limit'))
+        print(ATP.current_user_make_order(order_price_type='limit'))
 
     @allure.title('计划委托买入平空触发价小于最新价')
     @allure.step('测试执行')
-    def test_execute(self, contract_code):
+    def test_execute(self):
         with allure.step('1、登录合约交易系统'):
             pass
         with allure.step('2、选择币种BTC，选择杠杆5X，点击平仓-计划按钮'):
@@ -71,7 +70,7 @@ class TestContractTriggerCloseBuy_005:
             order_price = round(current * 0.98, 2)
             offset = 'close'
             direction = 'buy'
-            res = ATP.current_user_make_trigger_order(contract_code=contract_code, trigger_type='le',
+            res = ATP.current_user_make_trigger_order(trigger_type='le',
                                                       trigger_price=trigger_price, order_price=order_price, volume=10.0, direction=direction, offset=offset)
             print(res)
 
@@ -85,8 +84,7 @@ class TestContractTriggerCloseBuy_005:
             #res = contract_api.contract_trigger_order(contract_code=contract_code)
             actual_orderinfo = res['data']['orders'][0]
             pprint(actual_orderinfo)
-            expectdic = {'contract_code': contract_code,
-                         'order_price': order_price,
+            expectdic = {'order_price': order_price,
                          'order_id': order_id,
                          'trigger_type': 'le',
                          'trigger_price': trigger_price,
