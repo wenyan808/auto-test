@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211009
+"""# @Date    : 20211012
 # @Author : 
     用例标题
-        WS订阅BBO(单个合约，即传参合约code)
+        WS订阅深度图
     前置条件
         
     步骤/文本
-        WS订阅BBO(单个合约，即传参合约code)，可参考文档：https://docs.huobigroup.com/docs/dm/v1/cn/#websocket-3
+        WS订阅深度图，可参考文档：https://docs.huobigroup.com/docs/dm/v1/cn/#websocket-3
     预期结果
         asks,bids 数据正确,不存在Null,[]
     优先级
         0
     用例别名
-        TestContractNoti_004
+        TestContractNoti_009
 """
 
 from common.ContractServiceAPI import t as contract_api
@@ -24,11 +24,11 @@ import pytest, allure, random, time
 from tool import atp
 
 @allure.epic('反向交割')  # 这里填业务线
-@allure.feature('订阅')  # 这里填功能
-@allure.story('BBO')  # 这里填子功能，没有的话就把本行注释掉
+@allure.feature('WS订阅')  # 这里填功能
+@allure.story('深度图')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
-class TestContractNoti_004:
+class TestContractNoti_009:
 
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
@@ -77,19 +77,20 @@ class TestContractNoti_004:
         # 等待深度信息更新
         time.sleep(3)
 
-    @allure.title('WS订阅BBO(单个合约，即传参合约code)')
+    @allure.title('WS订阅深度图')
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
-        with allure.step('WS订阅BBO(单个合约，即传参合约code)，可参考文档：https://docs.huobigroup.com/docs/dm/v1/cn/#websocket-3'):
+        with allure.step('WS订阅深度图，可参考文档：https://docs.huobigroup.com/docs/dm/v1/cn/#websocket-3'):
+            self.depthType = 'step0'
             subs = {
-                "sub": "market.{}.bbo".format(symbol_period),
-                "id": "id8"
+                "sub": "market.{}.depth.{}".format(self.symbol_period, self.depthType),
+                "id": "id5"
             }
             result = contract_service_ws.contract_sub(subs)
             resultStr = '\nDepth返回结果 = ' + str(result)
             print('\033[1;32;49m%s\033[0m' % resultStr)
-            assert  result['tick']['bid'] is not None
-            assert  result['tick']['ask'] is not None
+            assert result['tick']['bids'] is not None
+            assert result['tick']['asks'] is not  None
             pass
 
     @allure.step('恢复环境')

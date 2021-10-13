@@ -27,38 +27,45 @@ import pytest, allure, random, time
 @allure.feature('WS订阅')  # 这里填功能
 @allure.story('BBO')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
+@allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 class TestSwapNoti_004:
 
     @allure.step('前置条件')
-    def setup(self):
-        contract_code = 'BTC-USD'
-        print("\n清卖盘》》》》", atp.ATP.clean_market(contract_code=contract_code, direction='sell'))
-        print("\n清买盘》》》》", atp.ATP.clean_market(contract_code=contract_code, direction='buy'))
-        lever_rate = 5
-        order_price_type = 'limit'
-        offset = 'open'
-        buy = 'buy'
-        sell = 'sell'
+    @pytest.fixture(scope='function', autouse=True)
+    def setup(self, contract_code, lever_rate, offsetO, offsetC, directionB, directionS):
+        print("\n清盘》》》》", atp.ATP.clean_market())
+        self.contract_code = contract_code
+        self.lever_rate = lever_rate
+        self.offsetO = offsetO
+        self.offsetC = offsetC
+        self.directionB = directionB
+        self.directionS = directionS
+        self.order_price_type = 'limit'
+        self.currentPrice = atp.ATP.get_current_price()  # 最新价
+        print('挂单，更新盘口深度')
+        swap_api.swap_order(contract_code=self.contract_code, price=round(self.currentPrice * (1 - 0.01), 2),
+                            order_price_type=self.order_price_type,
+                            lever_rate=self.lever_rate, direction=self.directionB, offset=self.offsetO, volume=10)
 
-        print('进行2笔交易，更新Kline数据')
-        swap_api.swap_order(contract_code=contract_code, price='50000', volume=1, direction=buy, offset=offset,
-                            lever_rate=lever_rate, order_price_type=order_price_type)
-
-        swap_api.swap_order(contract_code=contract_code, price='50001', volume=1, direction=sell, offset=offset,
-                            lever_rate=lever_rate, order_price_type=order_price_type)
+        swap_api.swap_order(contract_code=self.contract_code, price=round(self.currentPrice * (1 + 0.01), 2),
+                            order_price_type=self.order_price_type,
+                            lever_rate=self.lever_rate, direction=self.directionS, offset=self.offsetO, volume=10)
+        # 等待成交刷新最新价
+        time.sleep(3)
 
     @allure.title('WS订阅BBO(单个合约，即传参合约code)')
     @allure.step('测试执行')
     def test_execute(self):
         with allure.step('WS订阅BBO(单个合约，即传参合约code)，可参考文档：https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#websocket-3'):
-            contractCode = 'BTC-USD'
-            result = swap_service_ws.swap_sub_bbo(contract_code=contractCode)
-            resultStr = '\nDepth返回结果 = ' + str(result)
+            subs = {
+                "sub": "market.{}.bbo".format(self.contract_code),
+                "id": "id8"
+            }
+            result = swap_service_ws.swap_sub(subs)
+            resultStr = '\n返回结果 = ' + str(result)
             print('\033[1;32;49m%s\033[0m' % resultStr)
-            if not result['tick']['bid']:
-                assert False
-            if not result['tick']['ask']:
-                assert False
+            assert result['tick']['bid'] is not None
+            assert result['tick']['ask'] is not None
             pass
 
     @allure.step('恢复环境')
