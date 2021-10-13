@@ -15,6 +15,7 @@
     用例别名
         TestContractNoti_004
 """
+
 from common.ContractServiceAPI import t as contract_api
 from common.ContractServiceOrder import t as contract_order
 from common.ContractServiceWS import t as contract_service_ws
@@ -26,33 +27,53 @@ from tool import atp
 @allure.feature('订阅')  # 这里填功能
 @allure.story('BBO')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
+@allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 class TestContractNoti_004:
 
     @allure.step('前置条件')
-    def setup(self):
-        print("\n清卖盘》》》》", atp.ATP.clean_market(contract_code='BTC_CW', direction='sell'))
-        print("\n清买盘》》》》", atp.ATP.clean_market(contract_code='BTC_CW', direction='buy'))
-        lever_rate = 5
-        symbol = 'BTC'
-        contract_type = 'this_week'
-        order_price_type = 'limit'
-        offset = 'open'
-        buy = 'buy'
-        sell = 'sell'
+    @pytest.fixture(scope='function', autouse=True)
+    def setup(self, symbol, symbol_period, lever_rate, directionB, directionS, offsetC, offsetO):
+        print("\n清盘》》》》", atp.ATP.clean_market())
+        self.lever_rate = lever_rate
+        self.symbol = symbol
+        self.symbol_period = symbol_period
+        # "BTC_CW"    表示BTC当周合约
+        # "BTC_NW"    表示BTC次周合约
+        # "BTC_CQ"    表示BTC当季合约
+        # "BTC_NQ"    表示BTC次季度合约
+        if '_CW' in self.symbol_period:
+            self.contract_type = 'this_week'
+        elif '_NW' in self.symbol_period:
+            self.contract_type = 'next_week'
+        elif '_CQ' in self.symbol_period:
+            self.contract_type = 'quarter'
+        elif '_NQ' in self.symbol_period:
+            self.contract_type = 'next_quarter'
+
+        self.order_price_type = 'limit'
+        self.offsetO = offsetO
+        self.offsetC = offsetC
+        self.directionB = directionB
+        self.directionS = directionS
+        self.currentPrice = atp.ATP.get_current_price()  # 最新价
+        self.lowPrice = round(self.currentPrice * 0.99, 2)  # 买入价
+        self.highPrice = round(self.currentPrice * 1.01, 2)  # 触发价
+        print(self.symbol_period, '最新价 = ', self.currentPrice, ' 触发价 = ', self.highPrice, '买入价 = ', self.lowPrice)
 
         # 获取交割合约信息
-        contractInfo = contract_api.contract_contract_info(symbol=symbol, contract_type=contract_type)
-        print('BTC当周合约信息 = ', contractInfo)
+        contractInfo = contract_api.contract_contract_info(symbol=symbol, contract_type=self.contract_type)
+        print(self.symbol, '合约信息 = ', contractInfo)
         contract_code = contractInfo['data'][0]['contract_code']
+        print('挂单更新盘口')
+        contract_api.contract_order(symbol=symbol, contract_type=self.contract_type, contract_code=contract_code,
+                                    client_order_id=None, price=self.lowPrice, volume=1, direction=self.directionB,
+                                    offset=self.offsetO,
+                                    lever_rate=lever_rate, order_price_type=self.order_price_type)
+        contract_api.contract_order(symbol=symbol, contract_type=self.contract_type, contract_code=contract_code,
+                                    client_order_id=None, price=self.highPrice, volume=1, direction=self.directionS,
+                                    offset=self.offsetO,
+                                    lever_rate=self.lever_rate, order_price_type=self.order_price_type)
 
-        print('进行2笔交易，更新Kline数据')
-        contract_api.contract_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code,
-                                    client_order_id=None, price='45000', volume=1, direction=buy, offset=offset,
-                                    lever_rate=lever_rate, order_price_type=order_price_type)
-
-        contract_api.contract_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code,
-                                    client_order_id=None, price='45001', volume=1, direction=sell, offset=offset,
-                                    lever_rate=lever_rate, order_price_type=order_price_type)
         # 等待深度信息更新
         time.sleep(3)
 
@@ -60,14 +81,15 @@ class TestContractNoti_004:
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
         with allure.step('WS订阅BBO(单个合约，即传参合约code)，可参考文档：https://docs.huobigroup.com/docs/dm/v1/cn/#websocket-3'):
-            contractCode = 'BTC_CW'
-            result = contract_service_ws.contract_sub_bbo(contract_code=contractCode)
+            subs = {
+                "sub": "market.{}.bbo".format(symbol_period),
+                "id": "id8"
+            }
+            result = contract_service_ws.contract_sub(subs)
             resultStr = '\nDepth返回结果 = ' + str(result)
             print('\033[1;32;49m%s\033[0m' % resultStr)
-            if not result['tick']['bid']:
-                assert False
-            if not result['tick']['ask']:
-                assert False
+            assert  result['tick']['bid'] is not None
+            assert  result['tick']['ask'] is not None
             pass
 
     @allure.step('恢复环境')

@@ -62,14 +62,24 @@ class TestCoinswapLimitOrder_010:
 		2、再根据测试场景进行拿初始化账户进行买一卖一挂单作为对手方
 		3、每次完成测试后再还原环境
 		4、本次用例场景为无成交下撤单场景 ''')
-		# 撤销当前用户 某个品种所有限价挂单
-		ATP.cancel_all_order(contract_code=contract_code)
-		# 修改当前品种杠杆 默认5倍
-		ATP.switch_level(contract_code=contract_code)
-		# 清除盘口所有卖单
-		ATP.clean_market(contract_code=contract_code, direction='sell')
-		# 清除盘口所有买单
-		ATP.clean_market(contract_code=contract_code, direction='buy')
+		# # 撤销当前用户 某个品种所有限价挂单
+		# ATP.cancel_all_order(contract_code=contract_code)
+		# # 修改当前品种杠杆 默认5倍
+		# ATP.switch_level(contract_code=contract_code)
+		# # 清除盘口所有卖单
+		# ATP.clean_market(contract_code=contract_code, direction='sell')
+		# # 清除盘口所有买单
+		# ATP.clean_market(contract_code=contract_code, direction='buy')
+		print(" 清盘 -》 挂单 ")
+		ATP.cancel_all_types_order()
+		time.sleep(0.5)
+		ATP.make_market_depth()
+		self.current_price = ATP.get_current_price()
+		sell_price = round(self.current_price * 1.02, 1)
+		buy_price = round(self.current_price * 0.98, 1)
+		ATP.common_user_make_order(price=sell_price, direction='sell')
+		ATP.common_user_make_order(price=buy_price, direction='buy')
+		time.sleep(1)
 
 	@allure.title('对手价卖出开空买盘无数据自动撤单')
 	@allure.step('测试执行')
@@ -89,7 +99,7 @@ class TestCoinswapLimitOrder_010:
 											  offset='open',
 											  lever_rate=lever_rate,
 											  order_price_type="limit")
-		time.sleep(3)
+		time.sleep(2)
 		pprint('\n步骤一:获取盘口(买)\n')
 		r_trend_req = swap_api.swap_depth(contract_code=contract_code, type="step0")
 		pprint(r_trend_req)
@@ -114,12 +124,13 @@ class TestCoinswapLimitOrder_010:
 										lever_rate=lever_rate,
 										order_price_type='limit')
 			pprint(r)
-			time.sleep(3)
+			time.sleep(2)
 			pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有买单\n")
 			r_trend_req_confirm = swap_api.swap_depth(contract_code=contract_code, type="step0")
 			current_bids = r_trend_req_confirm.get("tick").get("bids")
 			assert not current_bids, "买盘不为空! 当前买盘: {current_bids}".format(current_bids=current_bids)
 		with allure.step('1、盘口无买盘，对手价卖出开空'):
+			time.sleep(2)
 			r_sell_opponent = swap_api.swap_order(contract_code=contract_code,
 													  client_order_id='',
 													  price="",
@@ -141,6 +152,7 @@ class TestCoinswapLimitOrder_010:
 	@allure.step('恢复环境')
 	def teardown(self):
 		print('\n恢复环境操作')
+		ATP.clean_market()
 
 if __name__ == '__main__':
 	pytest.main()

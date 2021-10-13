@@ -15,6 +15,16 @@ class WebsocketSevice:
         self.__access_key = access_key
         self.__secret_key = secret_key
 
+    #【通用】订阅
+    def linear_sub(self,subTopic,subId):
+        subs = {
+                "sub": subTopic,
+                "id": subId
+            }
+        path = '/linear-swap-ws'
+        url = self.__url + path
+        return sub(url,subs)
+
     # 【通用】订阅 KLine 数据
     def linear_sub_kline(self, contract_code, period):
         subs = {

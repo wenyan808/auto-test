@@ -7,7 +7,6 @@ from common.util import sub, api_key_sub
 from config.conf import WSURL, ACCESS_KEY, SECRET_KEY
 import uuid
 
-
 class WebsocketSevice:
 
     def __init__(self, url, access_key, secret_key):
@@ -15,11 +14,44 @@ class WebsocketSevice:
         self.__access_key = access_key
         self.__secret_key = secret_key
 
+    #WS普通订阅请求
+    def swap_sub(self,subs):
+        path = '/swap-ws'
+        url = self.__url + path
+        print(url)
+        return sub(url, subs)
+    # WS鉴权订阅，请求
+    def swap_sub_auth(self, subs):
+        path = '/swap-notification'
+        url = self.__url + path
+        return api_key_sub(url, self.__access_key, self.__secret_key, subs)
+
+    # 订阅(sub)指数K线数据
+    def swap_sub_index(self,contract_code,period):
+        subs = {
+            "sub": "market.{}.index.{}".format(contract_code, period),
+            "id": "id1"
+        }
+        path = '/swap-ws'
+        url = self.__url + path
+        print(url)
+        return sub(url, subs)
+
     # 【通用】订阅 KLine 数据
     def swap_sub_kline(self, contract_code, period):
         subs = {
             "sub": "market.{}.kline.{}".format(contract_code, period),
             "id": "id1"
+        }
+        path = '/swap-ws'
+        url = self.__url + path
+        return sub(url, subs)
+
+    def swap_req_kline(self, contract_code, period, From, to):
+        subs = {
+            "req": "market.{}.kline.{}".format(contract_code, period),
+            "from": int(From),
+            "to": int(to)
         }
         path = '/swap-ws'
         url = self.__url + path

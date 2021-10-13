@@ -82,12 +82,12 @@ class TestUSDTSwapLever_004:
             '''下单任意一种杠杆'''
             r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
             price = r['data'][0]['data'][0]['price']
-            orderprice = round((price * 0.99), 2)
+            orderprice = round((price * 1.5), 2)
             r = linear_api.linear_order(contract_code=contract_code,
                                               client_order_id='',
                                               price=orderprice,
                                               volume='1',
-                                              direction='buy',
+                                              direction='sell',
                                               offset='open',
                                               lever_rate=i,
                                               order_price_type='limit')
