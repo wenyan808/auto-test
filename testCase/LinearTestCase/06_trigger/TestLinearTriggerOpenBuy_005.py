@@ -40,6 +40,7 @@ class TestLinearTriggerOpenBuy_005:
               '\n*、触发计划委托订单；'
               '\n*、验证计划委托订单触发否')
         print("清盘》》》》", atp.ATP.clean_market())
+        print("恢复杠杆》》》", atp.ATP.switch_level(contract_code=contract_code))
         self.symbol = symbol
         self.contract_code = contract_code
         self.lever_rate = lever_rate

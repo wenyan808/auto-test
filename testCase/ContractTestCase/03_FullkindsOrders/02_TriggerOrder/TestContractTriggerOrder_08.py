@@ -13,6 +13,7 @@ import pytest, allure, random, time
 
 from tool.atp import ATP
 from tool.get_test_data import case_data
+from tool.atp import ATP
 
 
 @allure.epic('反向交割')
@@ -25,6 +26,19 @@ class TestContractTriggerOrder_008:
         self.trigger_price = None
         self.order_id = None
         self.symbol = None
+        self.symbol = None
+        self.new_order_id = None
+        print(''' cancel all types orders ''')
+        ATP.cancel_all_types_order()
+        time.sleep(1)
+        self.current_price = ATP.get_current_price()
+        print(''' make market depth ''')
+        ATP.make_market_depth()
+        sell_price = ATP.get_adjust_price(1.02)
+        buy_price = ATP.get_adjust_price(0.98)
+        ATP.common_user_make_order(price=sell_price, direction='sell')
+        ATP.common_user_make_order(price=buy_price, direction='buy')
+        time.sleep(2)
 
     @allure.title('计划止损正常限价')
     def test_contract_account_position_info(self, symbol, symbol_period):
