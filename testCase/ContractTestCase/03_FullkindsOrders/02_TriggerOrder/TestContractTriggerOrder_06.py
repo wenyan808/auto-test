@@ -10,6 +10,8 @@ from config.conf import *
 from schema import Schema, And, Or, Regex, SchemaError
 from pprint import pprint
 import pytest, allure, random, time
+
+from tool.atp import ATP
 from tool.get_test_data import case_data
 
 
@@ -45,11 +47,14 @@ class TestContractTriggerOrder_006:
 
         def sell_and_buy():
             pprint("\n步骤二(1): 挂一个卖单\n")
-            r_temp_buy = contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=100.0, volume=volume_at_least, direction='sell', offset='open', lever_rate=lever_rate, order_price_type="limit")
-            assert r_temp_buy.get("status") == "ok"
-            pprint("\n步骤二(2): 挂一个买单\n")
-            r_temp_buy = contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=100.0, volume=volume_at_least, direction='buy', offset='open', lever_rate=lever_rate, order_price_type="limit")
-            assert r_temp_buy.get("status") == "ok"
+            ATP.current_user_make_order(direction='sell')
+            ATP.current_user_make_order(direction='buy')
+            #
+            # r_temp_buy = contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=100.0, volume=volume_at_least, direction='sell', offset='open', lever_rate=lever_rate, order_price_type="limit")
+            # assert r_temp_buy.get("status") == "ok"
+            # pprint("\n步骤二(2): 挂一个买单\n")
+            # r_temp_buy = contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=100.0, volume=volume_at_least, direction='buy', offset='open', lever_rate=lever_rate, order_price_type="limit")
+            # assert r_temp_buy.get("status") == "ok"
             pprint("\n步骤二(3): 等待5s成交\n")
             time.sleep(5)
 
