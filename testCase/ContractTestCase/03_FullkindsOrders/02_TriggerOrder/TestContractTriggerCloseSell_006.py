@@ -10,7 +10,7 @@
 用例标题
     计划委托卖出平多触发价等于最新价
 前置条件
-    
+
 步骤/文本
     1、登录合约交易系统
     2、选择币种BTC，选择杠杆5X，点击平仓-计划按钮
@@ -23,7 +23,7 @@
     B)当前委托-计划委托列表查询创建订单
 """
 
-import pprint
+from pprint import pprint
 import time
 
 import allure
@@ -31,6 +31,7 @@ import pytest
 
 from common.util import compare_dict
 from tool.atp import ATP
+from common.ContractServiceAPI import t as contract_api
 
 
 @allure.epic('交割合约')  # 这里填业务线
@@ -38,7 +39,7 @@ from tool.atp import ATP
 @allure.story('计划委托卖出平多触发价等于最新价')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : Alex Li')
 @pytest.mark.stable
-class TestContractTriggerCloseSell_004:
+class TestContractTriggerCloseSell_006:
 
     @allure.step('前置条件')
     @pytest.fixture(scope='function')
@@ -69,8 +70,8 @@ class TestContractTriggerCloseSell_004:
             order_price = round(current * 0.98, 2)
             offset = 'close'
             direction = 'sell'
-            res = ATP.current_user_make_trigger_order(contract_code=contract_code,
-                                                      trigger_price=trigger_price, order_price=order_price, volume=10.0, direction=direction, offset=offset)
+            res = ATP.current_user_make_trigger_order(
+                trigger_type='ge', trigger_price=trigger_price, order_price=order_price, volume=10, direction=direction, offset=offset)
             print(res)
 
             # A)提示下单成功
@@ -79,20 +80,21 @@ class TestContractTriggerCloseSell_004:
             assert 'order_id' in data and 'order_id_str' in data, '计划委托单下单失败'
             order_id = data['order_id']
             # B)当前委托 - 计划委托列表查询创建订单
-            time.sleep(1)
-            #res = contract_api.contract_trigger_order(contract_code=contract_code)
-            actual_orderinfo = res['data']['orders'][0]
-            pprint(actual_orderinfo)
-            expectdic = {'order_price': order_price,
-                         'order_id': order_id,
-                         'trigger_price': trigger_price,
-                         'volume': 10.0,
-                         'lever_rate': self.leverrate,
-                         'offset': offset,
-                         'direction': direction
-                         }
-            assert compare_dict(
-                expectdic, actual_orderinfo), '当前委托 - 计划委托列表查询创建订单失败'
+            res = contract_api.contract_trigger_openorders(symbol='BTC', contract_code='BTC_CW',
+                                                           page_index='',
+                                                           page_size='')
+            pprint(res)
+            if res['data']['orders']:
+                actual_orderinfo = res['data']['orders'][0]
+                pprint(actual_orderinfo)
+                with allure.step('7、当前委托-计划委托列表查询创建订单B'):
+                    expectdic = {'order_price': order_price,
+                                 'order_id': order_id,
+                                 'trigger_price': trigger_price,
+                                 'volume': 10.0,
+                                 'offset': 'close'
+                                 }
+                    assert compare_dict(expectdic, actual_orderinfo)
 
     @allure.step('恢复环境')
     def teardown(self):
