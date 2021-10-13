@@ -114,9 +114,8 @@ class TestContractLever_002:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        if self.orderid:
-            r = contract_api.contract_cancel(symbol=self.symbol, order_id=self.orderid)
-            pprint(r)
+        ATP.cancel_all_types_order()
+        ATP.switch_level()
 
 
 if __name__ == '__main__':
