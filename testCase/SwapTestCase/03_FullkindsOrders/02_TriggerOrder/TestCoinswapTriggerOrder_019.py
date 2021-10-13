@@ -45,6 +45,7 @@ from pprint import pprint
 import pytest, allure, random, time
 
 from config.conf import URL, SECRET_KEY, ACCESS_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
+from tool.atp import ATP
 
 
 @allure.epic('反向永续')  # 这里填业务线
@@ -55,21 +56,19 @@ class TestCoinswapTriggerOrder_019:
     @allure.step('前置条件')
     def setup(self):
         print(''' 有持仓且大于等于10张''')
-        self.contract_code = "EOS-USD"
         self.current_user = SwapService(url=URL, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
         self.common_user = SwapService(url=URL, access_key=COMMON_ACCESS_KEY, secret_key=COMMON_SECRET_KEY)
-        position_larger_than_10 = self.current_user.check_positions_larger_than(contract_code=self.contract_code, direction="buy", amount=10)
-        if not position_larger_than_10:
-            req_eat = self.current_user.eat_orders(contract_code=contract_order, eat_type="all")
-            assert req_eat.get("status") == "ok", f"吃盘失败: {req_eat}"
-            req_temp_buy = self.current_user.swap_order(contract_code=self.contract_code, price=5, volume=10, direction="buy", offset="open", lever_rate=5, order_price_type="limit")
-            assert req_temp_buy.get("status") == "ok", f"下临时买单失败: {req_temp_buy}"
-            req_temp_sell = self.current_user.swap_order(contract_code=self.contract_code, price=5, volume=10, direction="sell", offset="open", lever_rate=5, order_price_type="limit")
-            assert req_temp_sell.get("status") == "ok", f"下临时卖单失败: {req_temp_sell}"
+        ATP.current_user_make_order(direction='sell')
+        time.sleep(1)
+        ATP.current_user_make_order(direction='buy')
+        time.sleep(1)
+        ATP.make_market_depth()
+        time.sleep(1)
 
     @allure.title('持仓区域下止盈止损正常限价')
     @allure.step('测试执行')
-    def test_execute(self, symbol, symbol_period):
+    def test_execute(self, contract_code):
+        self.contract_code = contract_code
         with allure.step('1、登录币本位永续界面'):
             before_current_tp_sl_orders = self.current_user.swap_tpsl_openorders(contract_code=self.contract_code).get("data").get("orders")
             latest_swap_trade = self.current_user.swap_trade(contract_code=self.contract_code)
@@ -105,6 +104,8 @@ class TestCoinswapTriggerOrder_019:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
+        ATP.cancel_all_types_order()
+        ATP.clean_market()
 
 
 if __name__ == '__main__':

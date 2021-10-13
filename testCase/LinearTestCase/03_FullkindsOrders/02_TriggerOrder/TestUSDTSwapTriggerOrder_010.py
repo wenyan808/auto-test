@@ -39,6 +39,7 @@ import common.util
 from common.LinearServiceAPI import LinearServiceAPI
 from config import conf
 from config.conf import URL2, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
+from tool.atp import ATP
 
 
 @allure.epic('正向永续')  # 这里填业务线
@@ -49,9 +50,12 @@ class TestUSDTSwapTriggerOrder_010:
     @allure.step('前置条件')
     def setup(self):
         print(''' 选择正常限价下单 ''')
+        ATP.clean_market()
+        time.sleep(1)
         self.contract_code = conf.DEFAULT_CONTRACT_CODE
         self.current_user = LinearServiceAPI(url=URL2, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
         self.new_limit_order_id = None
+
 
     @allure.title('触发计划委托订单开仓测试')
     @allure.step('测试执行')
@@ -61,13 +65,8 @@ class TestUSDTSwapTriggerOrder_010:
             current_plan_orders_before = self.current_user.linear_trigger_openorders(
                 contract_code=self.contract_code).get("data").get("orders")
             # 获取买一价, 如果买一价不存在, 则手动设置买一价为5
-            contract_depth = self.current_user.linear_depth(contract_code=self.contract_code, type="step5")
-            bids = contract_depth.get("tick").get("bids")
-            if bids:
-                highest_price_bid = round(max([i[0] for i in bids]) * 1.1, 1)
-                trigger_price = highest_price_bid
-            else:
-                trigger_price = 5
+            trigger_price = ATP.get_adjust_price()
+
             order_price = round(trigger_price * 0.9, 1)
             r_order_plan = self.current_user.linear_trigger_order(contract_code=self.contract_code, trigger_type="ge",
                                                                   trigger_price=trigger_price, order_price=order_price,
@@ -124,8 +123,10 @@ class TestUSDTSwapTriggerOrder_010:
 
     @allure.step('恢复环境')
     def teardown(self):
-        r_cancel = self.current_user.linear_cancel(order_id=self.new_limit_order_id, contract_code=self.contract_code)
-        assert r_cancel.get("status") == "ok", f"撤单失败: {r_cancel}"
+        ATP.cancel_all_types_order()
+
+
+
 
 
 if __name__ == '__main__':
