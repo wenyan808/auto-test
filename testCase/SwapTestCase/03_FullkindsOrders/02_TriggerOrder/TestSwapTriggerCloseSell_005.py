@@ -60,10 +60,6 @@ class TestSwapTriggerCloseSell_005:
         current = ATP.get_current_price(contract_code=contract_code)
         sltriggerprice = round(current * 0.98, 2)
         slorderprice = round(current * 1.01, 2)
-        r = swap_api.swap_trigger_openorders(contract_code=contract_code,
-                                             page_index='',
-                                             page_size='')
-        totalsize1 = r['data']['total_size']
 
         with allure.step('1、登录合约交易系统'):
             pass
@@ -83,8 +79,7 @@ class TestSwapTriggerCloseSell_005:
                                             order_price_type='limit',
                                             volume='10',
                                             direction='sell',
-                                            offset='close',
-                                            lever_rate=self.leverrate)
+                                            offset='close')
             pprint(r)
             self.orderid = r['data']['order_id_str']
             print(self.orderid)
@@ -97,14 +92,12 @@ class TestSwapTriggerCloseSell_005:
             actual_orderinfo = r['data']['orders'][0]
             pprint(actual_orderinfo)
         with allure.step('7、当前委托-计划委托列表查询创建订单B'):
-            assert totalsize2 - totalsize1 == 1
             expectdic = {'contract_code': contract_code,
                          'order_price': slorderprice,
                          'order_id': self.orderid,
                          'trigger_type': 'le',
                          'trigger_price': sltriggerprice,
                          'volume': 10.0,
-                         'lever_rate': self.leverrate,
                          'offset': 'close'
                          }
             assert compare_dict(expectdic, actual_orderinfo)
