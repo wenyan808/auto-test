@@ -31,9 +31,11 @@
 
 from common.SwapServiceAPI import t as swap_api
 from common.util import compare_dict
-
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import time
+from tool.atp import ATP
 
 
 @allure.epic('反向永续')  # 这里填业务线
@@ -44,28 +46,20 @@ import pytest, allure, random, time
 class TestSwapTriggerCloseSell_004:
 
     @allure.step('前置条件')
-    @pytest.fixture(scope='function', autouse=True)
-    def setup(self, contract_code):
-        print("自买自卖产生持仓")
-
-        r = swap_api.swap_trade(contract_code=contract_code)
-        pprint(r)
-        self.price = r['data'][0]['data'][0]['price']
-        self.leverrate = '5'
-
-        swap_api.swap_order(contract_code=contract_code, price=self.price, volume='20', direction='buy',
-                        offset='open', lever_rate=self.leverrate, order_price_type='limit')
+    def setup(self):
+        ATP.close_all_position()
+        print(''' 使当前交易对有交易盘口  ''')
+        print(ATP.make_market_depth())
+        print(''' 使当前用户有持仓  ''')
         time.sleep(0.5)
-        swap_api.swap_order(contract_code=contract_code, price=self.price, volume='20', direction='sell',
-                        offset='open', lever_rate=self.leverrate, order_price_type='limit')
+        print(ATP.current_user_make_order(order_price_type='limit'))
 
     @allure.title('计划委托卖出平多触发价大于最新价')
     @allure.step('测试执行')
     def test_execute(self, contract_code):
-        self.contract_code = contract_code
-        #orderpricetype = 'optimal_10'
-        sltriggerprice = round((self.price * 1.01), 2)
-        slorderprice = round((self.price * 1.02), 2)
+        current = ATP.get_current_price(contract_code=contract_code)
+        sltriggerprice = round(current * 1.01, 2)
+        slorderprice = round(current * 1.02, 2)
         r = swap_api.swap_trigger_openorders(contract_code=contract_code,
                                              page_index='',
                                              page_size='')
@@ -118,11 +112,10 @@ class TestSwapTriggerCloseSell_004:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        if self.orderid:
-            swap_api.swap_trigger_cancel(contract_code=self.contract_code, order_id=self.orderid)
-        r = swap_api.swap_empty_position(contract_code=self.contract_code, price=self.price)
-        print('\n恢复环境操作完毕')
-        return r
+        ATP.cancel_all_trigger_order()
+        ATP.cancel_all_order()
+        ATP.close_all_position()
+
 
 if __name__ == '__main__':
     pytest.main()
