@@ -62,6 +62,7 @@ def run(system_type=None, run_env='Test6', test_type=''):
     args = ["--alluredir=report/allure"]
     if test_type:
         args.append(f'-m={test_type}')
+        args.append('--reruns=2')
 
     if system_type == 'ALL':
         for system_types_item in ['Contract', 'Swap', 'Linear']:
