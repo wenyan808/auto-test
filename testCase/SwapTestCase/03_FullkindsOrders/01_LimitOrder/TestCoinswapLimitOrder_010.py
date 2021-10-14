@@ -54,8 +54,7 @@ from tool.atp import ATP
 class TestCoinswapLimitOrder_010:
 
 	@allure.step('前置条件')
-	@pytest.fixture(scope='function', autouse=True)
-	def setup(self, contract_code):
+	def setup(self,):
 		print(''' 初始化环境准备
 		1、建议准备两个账户，一个用于初始化环境，一个用于测试下单验证。
 		1、建议初始化环境是初始化账户吃掉其他所有买卖挂单，盘口无任何挂单
@@ -72,13 +71,12 @@ class TestCoinswapLimitOrder_010:
 		# ATP.clean_market(contract_code=contract_code, direction='buy')
 		print(" 清盘 -》 挂单 ")
 		ATP.cancel_all_types_order()
-		time.sleep(0.5)
-		ATP.make_market_depth()
+		time.sleep(1)
+		ATP.clean_market()
+		time.sleep(1)
 		self.current_price = ATP.get_current_price()
-		sell_price = round(self.current_price * 1.02, 1)
-		buy_price = round(self.current_price * 0.98, 1)
-		ATP.common_user_make_order(price=sell_price, direction='sell')
-		ATP.common_user_make_order(price=buy_price, direction='buy')
+		ATP.common_user_make_order(direction='sell')
+		ATP.common_user_make_order(direction='buy')
 		time.sleep(1)
 
 	@allure.title('对手价卖出开空买盘无数据自动撤单')

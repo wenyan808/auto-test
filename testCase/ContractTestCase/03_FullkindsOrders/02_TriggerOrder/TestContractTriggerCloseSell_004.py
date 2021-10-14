@@ -42,14 +42,14 @@ from common.ContractServiceAPI import t as contract_api
 class TestContractTriggerCloseSell_004:
 
     @allure.step('前置条件')
-    @pytest.fixture(scope='function')
     def setup(self):
-        ATP.close_all_position()
         print(''' 使当前交易对有交易盘口  ''')
         print(ATP.make_market_depth())
         print(''' 使当前用户有持仓  ''')
         time.sleep(0.5)
-        print(ATP.current_user_make_order(order_price_type='limit'))
+        print(ATP.current_user_make_order(direction='buy'))
+        print(ATP.current_user_make_order(direction='sell'))
+        time.sleep(1)
 
     @allure.title('计划委托卖出平多触发价大于最新价')
     @allure.step('测试执行')

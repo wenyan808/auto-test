@@ -88,7 +88,7 @@ class TestSwapNoti_ws_kline_006:
             # 最高价校验,不为空
             assert result['tick']['high'] is not None
             # 币的成交量
-            assert result['tick']['amount'] > 0
+            assert result['tick']['amount'] >= 0
             # 成交量张数。 值是买卖双边之和
             assert result['tick']['vol'] >= 0
             # 成交笔数。 值是买卖双边之和

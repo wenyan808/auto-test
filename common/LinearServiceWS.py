@@ -15,12 +15,8 @@ class WebsocketSevice:
         self.__access_key = access_key
         self.__secret_key = secret_key
 
-    #【通用】订阅
-    def linear_sub(self,subTopic,subId):
-        subs = {
-                "sub": subTopic,
-                "id": subId
-            }
+    #【通用】普通订阅
+    def linear_sub(self,subs):
         path = '/linear-swap-ws'
         url = self.__url + path
         return sub(url,subs)
@@ -35,6 +31,12 @@ class WebsocketSevice:
         url = self.__url + path
         print(url)
         return sub(url, subs)
+
+    # 【通用】鉴权订阅
+    def linear_sub_auth(self, subs):
+        path = '/linear-swap-ws'
+        url = self.__url + path
+        return api_key_sub(url, self.__access_key, self.__secret_key, subs)
 
     # 【通用】订阅 KLine 数据
     def linear_sub_kline(self, contract_code, period):
@@ -74,9 +76,6 @@ class WebsocketSevice:
         }
         path = '/linear-swap-ws'
         url = self.__url + path
-        print(url)
-        requestInfo = '\n请求信息：url=' + url + ',参数=' + str(subs)
-        print('\033[1;32;49m%s\033[0m' % requestInfo)
         return sub(url, subs)
 
     def linear_sub_depth_high_freq(self, data_type, contract_code, size, ):

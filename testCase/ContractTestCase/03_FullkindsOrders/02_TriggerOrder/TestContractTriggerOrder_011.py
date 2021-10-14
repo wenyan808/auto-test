@@ -20,16 +20,18 @@ from tool.atp import ATP
 @pytest.mark.stable
 class TestContractTriggerOrder_0011:
 
-    def setUp(self):
+    def setup(self):
         self.symbol = None
         self.new_order_id = None
         print(''' cancel all types orders ''')
         ATP.cancel_all_types_order()
         time.sleep(1)
+        ATP.clean_market()
         self.current_price = ATP.get_current_price()
-        print(''' make market depth ''')
-        ATP.make_market_depth()
-        time.sleep(2)
+        ATP.current_user_make_order(direction='buy')
+        ATP.current_user_make_order(direction='sell')
+        time.sleep(1)
+
 
     @allure.title("触发计划委托订单平仓测试")
     def test_contract_account_position_info(self, symbol, symbol_period):
@@ -89,7 +91,7 @@ class TestContractTriggerOrder_0011:
                 after_orders = res_all_orders.get("data").get("orders")
                 time_count += 1
             new_order = [i for i in after_orders if i not in res_before_limit_created_orders][0]
-            expected_dic = {"symbol": symbol, "order_price_type": order_price_type, "lever_rate": lever_rate, "volume": 2, "price": order_price}
+            expected_dic = {"symbol": symbol, "order_price_type": order_price_type, "lever_rate": lever_rate, "volume": 10, "price": order_price}
             assert common.util.compare_dict(expected_dic, new_order)
             self.new_order_id = new_order.get("order_id")
             created_time = datetime.datetime.fromtimestamp(new_order.get("created_at") / 1000)
