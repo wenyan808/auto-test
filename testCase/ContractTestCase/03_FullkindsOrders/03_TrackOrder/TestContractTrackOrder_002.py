@@ -22,6 +22,8 @@ class TestContractTrackOrder_002:
 
     def setUp(self):
         print('\n前置条件')
+        ATP.cancel_all_types_order()
+        time.sleep(1)
         ATP.clean_market()
         time.sleep(1)
 

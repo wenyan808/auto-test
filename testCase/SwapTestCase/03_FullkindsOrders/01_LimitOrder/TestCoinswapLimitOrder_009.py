@@ -125,6 +125,7 @@ class TestCoinswapLimitOrder_009:
 													 order_price_type='opponent')
 			pprint(r_buy_opponent)
 		with allure.step('2、观察下单是否成功有结果A'):
+			time.sleep(2)
 			err_code = r_buy_opponent.get("err_code")
 			assert err_code == 1016
 		with allure.step('3、观察历史委托-限价委托有结果B'):

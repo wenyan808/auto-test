@@ -16,11 +16,15 @@
         TestSwapNoti_depth_015
 """
 
+import allure
+import pytest
+import time
+
 from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceWS import t as swap_service_ws
-import pytest, allure, random, time
-
 from tool import atp
+from tool.atp import ATP
+
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('行情')  # 这里填功能
@@ -32,7 +36,10 @@ class TestSwapNoti_depth_015:
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, contract_code, lever_rate, offsetO, directionB, directionS):
+        ATP.cancel_all_types_order()
+        time.sleep(1)
         print("\n清盘》》》》", atp.ATP.clean_market())
+        time.sleep(1)
 
         lever_rate = 5
 

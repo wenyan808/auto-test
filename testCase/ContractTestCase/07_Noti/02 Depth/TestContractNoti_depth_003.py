@@ -32,6 +32,8 @@ class TestContractNoti_depth_003:
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, symbol_period):
+        atp.ATP.cancel_all_types_order()
+        time.sleep(1)
         print("\n清盘》》》》", atp.ATP.clean_market())
         time.sleep(1)
         contract_types = {'CW': "this_week", 'NW': "next_week", 'CQ': "quarter", 'NQ': "next_quarter"}
