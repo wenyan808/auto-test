@@ -18,7 +18,7 @@ from tool.get_test_data import case_data
 @pytest.mark.stable
 class TestContractTrackOrder_001:
 
-    def setUp(self):
+    def setup(self):
         print('\n前置条件')
 
     def test_contract_account_position_info(self, symbol, symbol_period):

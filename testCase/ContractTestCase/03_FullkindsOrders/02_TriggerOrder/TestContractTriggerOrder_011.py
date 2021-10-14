@@ -20,17 +20,18 @@ from tool.atp import ATP
 @pytest.mark.stable
 class TestContractTriggerOrder_0011:
 
-    def setUp(self):
+    def setup(self):
         self.symbol = None
         self.new_order_id = None
         print(''' cancel all types orders ''')
-        ATP.clean_market()
         ATP.cancel_all_types_order()
         time.sleep(1)
+        ATP.clean_market()
         self.current_price = ATP.get_current_price()
-        print(''' make market depth ''')
-        ATP.make_market_depth()
-        time.sleep(2)
+        ATP.current_user_make_order(direction='buy')
+        ATP.current_user_make_order(direction='sell')
+        time.sleep(1)
+
 
     @allure.title("触发计划委托订单平仓测试")
     def test_contract_account_position_info(self, symbol, symbol_period):
