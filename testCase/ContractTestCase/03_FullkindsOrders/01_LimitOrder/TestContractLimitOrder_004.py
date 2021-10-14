@@ -5,29 +5,30 @@
 # @link : p0.交割
 
 
-from common.ContractServiceAPI import t as contract_api, ContractServiceAPI
-from common.ContractServiceOrder import t as contranct_order
-from common.util import compare_dict
-
-from schema import Schema, And, Or, Regex, SchemaError
 from pprint import pprint
-import pytest, allure, random, time
 
+import allure
+import pytest
+import time
+
+from common.ContractServiceAPI import t as contract_api, ContractServiceAPI
+from common.util import compare_dict
 from config.conf import URL, COMMON_SECRET_KEY, COMMON_ACCESS_KEY
-from tool.get_test_data import case_data
-from datetime import datetime
+from tool.atp import ATP
 
 
 # tpsl止盈止损
 # tracker 跟踪委托
 # hisorder 限价委托
 @allure.epic('反向交割')
-@allure.feature('')
+@allure.feature('功能')
 @pytest.mark.stable
 class TestContractLimitOrder_004:
 
     def setUp(self):
         print('\n前置条件')
+        ATP.make_market_depth()
+        time.sleep(1)
 
     @allure.title('只做maker 卖出开空下单后自动撤单测试')
     def test_contract_limit_order(self, symbol, symbol_period):
@@ -46,17 +47,20 @@ class TestContractLimitOrder_004:
         contract_this_week = r_contract_info.get("data")[0].get("contract_code")
         if not bids:
             if not asks:
-                price = 10
+                price = ATP.get_current_price()
             else:
-                price = round(min([i[0] for i in asks])*0.9, 1)
-            r_common_buy = common_user.contract_order(symbol=symbol, contract_code=contract_this_week, price=price, volume=1, direction="buy", offset="open", lever_rate=lever_rate, order_price_type="limit")
+                price = round(min([i[0] for i in asks]) * 0.9, 1)
+            r_common_buy = common_user.contract_order(symbol=symbol, contract_code=contract_this_week, price=price,
+                                                      volume=1, direction="buy", offset="open", lever_rate=lever_rate,
+                                                      order_price_type="limit")
             assert r_common_buy.get("status") == "ok", f"通用账号下买单失败: {r_common_buy}"
             r_trend_req = contract_api.contract_depth(symbol=symbol_period, type="step5")
             bids = r_trend_req.get("tick").get("bids")
         highest_price_buy = max([i[0] for i in bids])
         print('\n步骤二:下一个等于买一价的卖单\n')
         order_price_type = "post_only"
-        r_order_sell = contract_api.contract_order(symbol=symbol, contract_type='this_week', price=highest_price_buy, volume=1,
+        r_order_sell = contract_api.contract_order(symbol=symbol, contract_type='this_week', price=highest_price_buy,
+                                                   volume=1,
                                                    direction='sell', offset='open', lever_rate=lever_rate,
                                                    order_price_type=order_price_type)
         assert r_order_sell.get("status") == "ok", f"下卖单失败:r{r_order_sell}"
@@ -69,12 +73,19 @@ class TestContractLimitOrder_004:
         for order in all_orders:
             current_order_id = order.get("order_id")
             if current_order_id == generated_order_id:
-                expected_info_dic = {"status": 7, "lever_rate": 5, "order_type": 1, "volume": 1, "price": highest_price_buy}
+                expected_info_dic = {"status": 7, "lever_rate": 5, "order_type": 1, "volume": 1,
+                                     "price": highest_price_buy}
                 actual_time_from_query = int(str(order.get("create_date"))[0:10])
-                assert (actual_time_from_query - current_time) <= 180, "时间不一致, 限价单%d创建时间: %s, 查询到的时间: %s" % (generated_order_id, current_time, actual_time_from_query)
+                assert (actual_time_from_query - current_time) <= 180, "时间不一致, 限价单%d创建时间: %s, 查询到的时间: %s" % (
+                generated_order_id, current_time, actual_time_from_query)
                 assert compare_dict(expected_info_dic, order)
                 return
-        raise BaseException("在{all_order_ids}中未找到历史订单含有订单号: {generated_order_id}".format(all_order_ids=all_order_ids, generated_order_id=generated_order_id))
+        raise BaseException("在{all_order_ids}中未找到历史订单含有订单号: {generated_order_id}".format(all_order_ids=all_order_ids,
+                                                                                         generated_order_id=generated_order_id))
+
+    @allure.step("恢复环境")
+    def teardown(self):
+        ATP.clean_market()
 
 
 if __name__ == '__main__':

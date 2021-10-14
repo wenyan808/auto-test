@@ -5,28 +5,34 @@
 # @link : p0.交割
 
 
+from pprint import pprint
+
+import allure
+import pytest
+import time
+
+from common.ContractServiceAPI import ContractServiceAPI
 from common.ContractServiceAPI import t as contract_api
 from config.conf import COMMON_ACCESS_KEY, COMMON_SECRET_KEY, URL
-from common.ContractServiceOrder import t as contranct_order
-from common.util import compare_dict
-from common.ContractServiceAPI import ContractServiceAPI
-from schema import Schema, And, Or, Regex, SchemaError
-from pprint import pprint
-import pytest, allure, random, time
-from tool.get_test_data import case_data
-from datetime import datetime
+from tool.atp import ATP
 
 
 # tpsl止盈止损
 # tracker 跟踪委托
 # hisorder 限价委托
 @allure.epic('反向交割')
-@allure.feature('')
+@allure.feature('功能')
 @pytest.mark.stable
 class TestContractLimitOrder_010:
 
     def setUp(self):
         print('\n前置条件')
+        ATP.make_market_depth()
+        time.sleep(1)
+
+    @allure.step("恢复环境")
+    def teardown(self):
+        ATP.clean_market()
 
     @allure.title('对手价卖出开空买盘无数据自动撤单')
     def test_contract_limit_order(self, symbol, symbol_period):
@@ -50,7 +56,9 @@ class TestContractLimitOrder_010:
                 lowest_price = min(lowest_price_list)
                 pprint("\n步骤二：用操作账号以当前最低价吃掉所有买单(卖出)\n")
             service = ContractServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
-            r_eat = service.contract_order(symbol=symbol, contract_type='this_week', price=lowest_price, volume=total_bids, direction='sell', offset='open', lever_rate=lever_rate, order_price_type='limit')
+            r_eat = service.contract_order(symbol=symbol, contract_type='this_week', price=lowest_price,
+                                           volume=total_bids, direction='sell', offset='open', lever_rate=lever_rate,
+                                           order_price_type='limit')
             assert r_eat.get("status") == "ok", f"吃买单失败: r{r_eat}"
             time.sleep(3)
             pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有买单\n")
@@ -58,10 +66,13 @@ class TestContractLimitOrder_010:
             current_bids = r_trend_req_confirm.get("tick").get("bids")
             assert not current_bids, "买盘不为空! 当前买盘: {current_bids}".format(current_bids=current_bids)
         pprint("\n步骤四: 以对手价卖出做空\n")
-        r_sell_opponent = contract_api.contract_order(symbol=symbol, contract_type='this_week', order_price_type='opponent', price="", direction="sell", offset="open", lever_rate=lever_rate, volume=1)
+        r_sell_opponent = contract_api.contract_order(symbol=symbol, contract_type='this_week',
+                                                      order_price_type='opponent', price="", direction="sell",
+                                                      offset="open", lever_rate=lever_rate, volume=1)
         actual_status = r_sell_opponent.get("status")
         actual_msg = r_sell_opponent.get("err_msg")
-        assert actual_status == 'error' and actual_msg == "对手价不存在", "预期: `error`+`对手价不存在`, 实际: `{actual_status}+{actual_msg}`".format(actual_status=actual_status, actual_msg=actual_msg)
+        assert actual_status == 'error' and actual_msg == "对手价不存在", "预期: `error`+`对手价不存在`, 实际: `{actual_status}+{actual_msg}`".format(
+            actual_status=actual_status, actual_msg=actual_msg)
 
 
 if __name__ == '__main__':

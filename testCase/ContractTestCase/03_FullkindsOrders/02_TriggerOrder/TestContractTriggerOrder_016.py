@@ -41,7 +41,7 @@ import pytest, allure, random, time
 from config.conf import URL, ACCESS_KEY, SECRET_KEY
 
 
-@allure.epic('交割')  # 这里填业务线
+@allure.epic('反向交割')  # 这里填业务线
 @allure.feature('止盈止损')  # 这里填功能
 @allure.story('下单区域下止盈止损限价单成交测试')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable

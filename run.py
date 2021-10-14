@@ -13,6 +13,7 @@ import pytest
 
 from config.conf import set_run_env_and_system_type
 from tool.DingDingMsg import DingDingMsg
+from tool.atp import ATP
 
 """
 pytest 命令中加入 '-n 数字'可实现分布式执行测试用例，数字表示执行用例的机器数，但是由于速度过快被api接口限频，如果需要可考虑调大测试环境限频
@@ -42,9 +43,10 @@ allure generate ./report -o ./html_report --clean
 # os.system('allure generate report/allure -o report/html --clean')
 # os.system('allure open report/html')
 """
+from multiprocessing import Process
 
 
-def run(system_type=None, run_env='Test5', test_type=''):
+def run(system_type=None, run_env='Test6', test_type=''):
     """
     新执行脚本由jenkins中的shell传入执行模块，执行方式为
     python3 run.py 模块名
@@ -72,8 +74,16 @@ def run(system_type=None, run_env='Test5', test_type=''):
     elif type(system_type) == str:
         if system_type.capitalize() in ['Contract', 'Swap', 'Linear', 'Option', 'Schema']:
             set_run_env_and_system_type(run_env, system_types[system_type.capitalize()])
+            ATP.make_market_depth(market_price=ATP.get_index_price())
             args.append(f"testCase/{system_type.capitalize()}TestCase")
             pytest.main(args=args)
+            ATP.cancel_all_types_order()
+            time.sleep(2)
+            ATP.close_all_position()
+            time.sleep(2)
+            ATP.clean_market()
+            time.sleep(2)
+            ATP.make_market_depth(market_price=ATP.get_index_price())
             # os.system(
             #     'pytest --alluredir report/allure testCase/{}TestCase'.format(system_type.capitalize()))
 
@@ -84,6 +94,7 @@ def run(system_type=None, run_env='Test5', test_type=''):
 
 
 if __name__ == '__main__':
+    # run cmd ： python3 run.py Test6 ALL 300 stable
     test_env = sys.argv[1]
     system_type = sys.argv[2]
     build_num = sys.argv[3]
@@ -92,13 +103,22 @@ if __name__ == '__main__':
     else:
         test_type = ''
     # for debug
-    # test_env = 'Test5'
+    # test_env = 'Test6'
     # system_type = 'ALL'
-    # build_num = 30
+    # build_num = 30000
     # test_type = 'stable'
     DingDingMsg.init()
     start = time.time()
-    run(run_env=test_env, system_type=system_type, test_type=test_type)
+    if system_type == 'ALL':
+        ps_list = []
+        for system_types_item in ['Contract', 'Swap', 'Linear']:
+            ps = Process(target=run, args=(system_types_item, test_env, test_type))
+            ps_list.append(ps)
+            ps.start()
+        for ps in ps_list:
+            ps.join()
+    else:
+        run(run_env=test_env, system_type=system_type, test_type=test_type)
     run_time = time.time() - start
     DingDingMsg.update_json_file(env=test_env, system_type=system_type, test_type=test_type, run_time=run_time,
                                  build_num=build_num)

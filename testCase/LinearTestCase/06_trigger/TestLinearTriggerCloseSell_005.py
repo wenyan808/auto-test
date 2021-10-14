@@ -46,6 +46,7 @@ class TestLinearTriggerCloseSell_005:
               '\n*、触发计划委托订单；'
               '\n*、验证计划委托订单触发否')
         print("清盘》》》》", atp.ATP.clean_market())
+        time.sleep(2)
         print("恢复杠杆》》》", atp.ATP.switch_level(contract_code=contract_code))
         self.symbol =symbol
         self.contract_code = contract_code
@@ -134,14 +135,8 @@ class TestLinearTriggerCloseSell_005:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n平仓，清理测试数据')
-        linear_api.linear_order(contract_code=self.contract_code, price=self.highPrice, order_price_type='limit',
-                                lever_rate=self.lever_rate,
-                                direction=self.directionB, offset=self.offsetC,
-                                volume=2)
-        linear_api.linear_order(contract_code=self.contract_code, price=self.lowPrice, order_price_type='limit',
-                                lever_rate=self.lever_rate,
-                                direction=self.directionS, offset=self.offsetC,
-                                volume=1)
+        atp.ATP.cancel_all_order()
+        atp.ATP.switch_level()
 
 
 if __name__ == '__main__':

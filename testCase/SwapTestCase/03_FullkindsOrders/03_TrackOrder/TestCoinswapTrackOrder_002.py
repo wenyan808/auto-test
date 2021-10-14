@@ -10,18 +10,22 @@ from common.ContractServiceOrder import t as contranct_order
 from schema import Schema, And, Or, Regex, SchemaError
 from pprint import pprint
 import pytest, allure, random, time
+
+from tool.atp import ATP
 from tool.get_test_data import case_data
 
 
-@allure.epic('反向交割')
+@allure.epic('反向永续')
 @allure.feature('获取用户的合约账户和持仓信息')
 @pytest.mark.stable
 class TestCoinswapTrackOrder_002:
 
     def setUp(self):
         print('\n前置条件')
+        ATP.clean_market()
+        time.sleep(1)
 
-    @allure.title('title')
+
     def test_contract_account_position_info(self, contract_code):
         flag = True
 
