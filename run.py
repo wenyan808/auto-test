@@ -77,6 +77,13 @@ def run(system_type=None, run_env='Test6', test_type=''):
             ATP.make_market_depth(market_price=ATP.get_index_price())
             args.append(f"testCase/{system_type.capitalize()}TestCase")
             pytest.main(args=args)
+            ATP.cancel_all_types_order()
+            time.sleep(2)
+            ATP.close_all_position()
+            time.sleep(2)
+            ATP.clean_market()
+            time.sleep(2)
+            ATP.make_market_depth(market_price=ATP.get_index_price())
             # os.system(
             #     'pytest --alluredir report/allure testCase/{}TestCase'.format(system_type.capitalize()))
 

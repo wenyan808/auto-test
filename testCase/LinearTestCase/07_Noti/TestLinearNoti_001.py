@@ -16,12 +16,14 @@
         restful请求
 """
 
+import allure
+import pytest
+import time
+
 from common.LinearServiceAPI import t as linear_api
 from common.LinearServiceWS import t as linear_service_ws
-import json
-from pprint import pprint
-import pytest, allure, random, time
 from tool import atp
+from tool.atp import ATP
 
 
 @allure.epic('正向永续')  # 这里填业务线
@@ -33,7 +35,9 @@ class TestLinearNoti_001:
 
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
-    def setup(self,contract_code,lever_rate,offsetO,directionB,directionS):
+    def setup(self, contract_code, lever_rate, offsetO, directionB, directionS):
+        ATP.clean_market()
+        time.sleep(2)
         self.lever_rate = lever_rate
         self.contract_code = contract_code
         self.order_price_type = 'limit'
@@ -44,11 +48,13 @@ class TestLinearNoti_001:
         self.directionB = directionB
         self.directionS = directionS
         print('进行2笔交易，更新Kline数据')
-        linear_api.linear_order(contract_code=self.contract_code, price= self.lowPrice, order_price_type=self.order_price_type,
-                                lever_rate=self.lever_rate,direction=self.directionB, offset=self.offsetO,volume=1)
+        linear_api.linear_order(contract_code=self.contract_code, price=self.lowPrice,
+                                order_price_type=self.order_price_type,
+                                lever_rate=self.lever_rate, direction=self.directionB, offset=self.offsetO, volume=1)
 
-        linear_api.linear_order(contract_code=self.contract_code, price=self.lowPrice, order_price_type=self.order_price_type,
-                                lever_rate=self.lever_rate,direction=self.directionS, offset=self.offsetO,volume=1)
+        linear_api.linear_order(contract_code=self.contract_code, price=self.lowPrice,
+                                order_price_type=self.order_price_type,
+                                lever_rate=self.lever_rate, direction=self.directionS, offset=self.offsetO, volume=1)
         # 等待成交刷新最新价
         time.sleep(1)
         linear_api.linear_order(contract_code=self.contract_code, price=self.highPrice,
@@ -66,7 +72,7 @@ class TestLinearNoti_001:
     def test_execute(self):
         with allure.step('1、订阅Kline获取订阅结果'):
             self.period = '1min'
-            result = linear_service_ws.linear_sub_kline(contract_code=self.contract_code,period=self.period)
+            result = linear_service_ws.linear_sub_kline(contract_code=self.contract_code, period=self.period)
             resultStr = '\nKline返回结果 = ' + str(result)
             print('\033[1;32;49m%s\033[0m' % resultStr)
             # 最低价校验

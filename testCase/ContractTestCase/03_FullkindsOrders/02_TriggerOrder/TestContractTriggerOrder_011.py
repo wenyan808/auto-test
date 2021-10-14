@@ -24,6 +24,7 @@ class TestContractTriggerOrder_0011:
         self.symbol = None
         self.new_order_id = None
         print(''' cancel all types orders ''')
+        ATP.clean_market()
         ATP.cancel_all_types_order()
         time.sleep(1)
         self.current_price = ATP.get_current_price()

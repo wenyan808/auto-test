@@ -33,6 +33,7 @@ class TestContractNoti_depth_004:
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, symbol_period):
         print("\n清盘》》》》", atp.ATP.clean_market())
+        time.sleep(1)
         contract_types = {'CW': "this_week", 'NW': "next_week", 'CQ': "quarter", 'NQ': "next_quarter"}
         symbol = symbol_period.split('_')[0]
         contract_type = contract_types[symbol_period.split('_')[1]]
