@@ -79,6 +79,9 @@ class TestUSDTSwapLever_001:
         ATP.cancel_all_types_order()
         time.sleep(1)
         ATP.switch_level()
+        time.sleep(1)
+        ATP.close_all_position()
+        time.sleep(1)
 
 
 if __name__ == '__main__':
