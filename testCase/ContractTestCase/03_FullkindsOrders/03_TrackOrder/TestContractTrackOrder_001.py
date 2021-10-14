@@ -16,6 +16,7 @@ from tool.get_test_data import case_data
 @allure.epic('反向交割')
 @allure.feature('获取用户的合约账户和持仓信息')
 @pytest.mark.stable
+@allure.tag('Script owner : 张广南', 'Case owner : 封泰')
 class TestContractTrackOrder_001:
 
     def setup(self):
