@@ -17,10 +17,6 @@
 """
 
 from common.SwapServiceWS import t as swap_service_ws
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceOrder import t as swap_order
-from tool import atp
-from pprint import pprint
 import pytest, allure, random, time
 
 
@@ -54,7 +50,7 @@ class TestSwapNoti_ws_kline_138:
             result = swap_service_ws.swap_sub(subs)
             resultStr = '\nKline返回结果 = ' + str(result)
             print('\033[1;32;49m%s\033[0m' % resultStr)
-            assert 'invalid topic market.BTC-BTC.kline.1year' in result['err-msg']
+            assert 'invalid topic' in result['err-msg']
             pass
 
     @allure.step('恢复环境')

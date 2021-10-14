@@ -21,6 +21,17 @@ class WebsocketSevice:
         url = self.__url + path
         return sub(url,subs)
 
+    # 订阅(sub)指数K线数据
+    def linear_sub_index(self,contract_code,period):
+        subs = {
+            "sub": "market.{}.index.{}".format(contract_code, period),
+            "id": "id1"
+        }
+        path = '/ws_index'
+        url = self.__url + path
+        print(url)
+        return sub(url, subs)
+
     # 【通用】鉴权订阅
     def linear_sub_auth(self, subs):
         path = '/linear-swap-ws'
@@ -105,13 +116,13 @@ class WebsocketSevice:
         path = '/linear-swap-ws'
         url = self.__url + path
         return sub(url, subs)
-
-    def linear_sub_basis(self, contract_code, period, basis_price_type):
+    #订阅基差数据
+    def linear_sub_basis(self, contract_code, period, basis_price_type="open"):
         subs = {
             "sub": "market.{}.basis.{}.{}".format(contract_code, period, basis_price_type),
             "id": "id1"
         }
-        path = '/linear-swap-ws'
+        path = '/ws_index'
         url = self.__url + path
         return sub(url, subs)
 
@@ -122,7 +133,7 @@ class WebsocketSevice:
             "from": "{}".format(From),
             "to": "{}".format(to)
         }
-        path = '/linear-swap-ws'
+        path = '/ws_index'
         url = self.__url + path
         return sub(url, subs)
 

@@ -28,20 +28,21 @@ from pprint import pprint
 import pytest
 import allure
 import time
+from tool.atp import ATP
 from tool.get_test_data import case_data
 
 
-@allure.epic('交割合约')  # 这里填业务线
+@allure.epic('反向永续')  # 这里填业务线
 @allure.feature('资金划转（含母子划转，借贷币划转)母子划转')  # 这里填功能
 @allure.story('母账户划转到子账户')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : Alex Li')
 @pytest.mark.stable
-class TestContractTransfer_007:
+class TestCoinswapTransfer_007:
 
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, sub_uid):
-        print("前置条件  %s".format(sub_uid))
+        print("前置条件  {}".format(sub_uid))
 
     @allure.title('母账户划转到子账户')
     @allure.step('测试执行')
@@ -68,7 +69,7 @@ class TestContractTransfer_007:
                 withdraw_available = float(
                     master_account_info['data'][0]['withdraw_available'])
             # 划转金额大于可转数量
-            amount = round(withdraw_available+1, 2)
+            amount = round(withdraw_available+2, 2)
             res = swap_api.swap_master_sub_transfer(contract_code=contract_code,
                                                     amount=amount,
                                                     sub_uid=sub_uid,
@@ -80,6 +81,12 @@ class TestContractTransfer_007:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
+        print('\n恢复环境操作')
+        print(ATP.clean_market())
+        # 撤销当前用户 某个品种所有限价挂单
+        print(ATP.cancel_all_order())
+        print(ATP.make_market_depth())
+        print(ATP.close_all_position())
 
 
 if __name__ == '__main__':
