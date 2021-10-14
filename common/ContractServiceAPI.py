@@ -42,7 +42,12 @@ class ContractServiceAPI:
         """
         :symbol    "BTC","ETH"...
         """
-        params = {'symbol': symbol}
+        if symbol:
+            if '_' in symbol:
+                symbol=symbol[:-3]
+            params = {'symbol': symbol}
+        else:
+            params = {}
 
         url = self.__url + '/api/v1/contract_index'
         return api_http_get(url, params)
