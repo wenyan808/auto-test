@@ -32,6 +32,7 @@ from tool import atp
 class TestLinearNoti_001:
 
     @allure.step('前置条件')
+    @pytest.fixture(scope='function', autouse=True)
     def setup(self,contract_code,lever_rate,offsetO,directionB,directionS):
         self.lever_rate = lever_rate
         self.contract_code = contract_code
