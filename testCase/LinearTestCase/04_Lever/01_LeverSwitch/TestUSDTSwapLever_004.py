@@ -48,6 +48,7 @@ class TestUSDTSwapLever_004:
         self.contract_code = contract_code
         self.orderid = ''
         # 清除盘口所有卖单
+        ATP.switch_level()
         ATP.cancel_all_types_order()
         time.sleep(2)
         print(ATP.clean_market())
@@ -93,7 +94,8 @@ class TestUSDTSwapLever_004:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        ATP.cancel_all_order()
+        ATP.cancel_all_types_order()
+        time.sleep(1)
         ATP.switch_level()
 
 

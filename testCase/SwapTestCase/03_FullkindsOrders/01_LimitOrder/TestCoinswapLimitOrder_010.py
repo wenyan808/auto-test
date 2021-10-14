@@ -54,8 +54,7 @@ from tool.atp import ATP
 class TestCoinswapLimitOrder_010:
 
 	@allure.step('前置条件')
-	@pytest.fixture(scope='function', autouse=True)
-	def setup(self, contract_code):
+	def setup(self,):
 		print(''' 初始化环境准备
 		1、建议准备两个账户，一个用于初始化环境，一个用于测试下单验证。
 		1、建议初始化环境是初始化账户吃掉其他所有买卖挂单，盘口无任何挂单
@@ -72,7 +71,7 @@ class TestCoinswapLimitOrder_010:
 		# ATP.clean_market(contract_code=contract_code, direction='buy')
 		print(" 清盘 -》 挂单 ")
 		ATP.cancel_all_types_order()
-		time.sleep(0.5)
+		time.sleep(1)
 		ATP.clean_market()
 		time.sleep(1)
 		self.current_price = ATP.get_current_price()
