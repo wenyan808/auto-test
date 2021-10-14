@@ -42,9 +42,9 @@ from tool.atp import ATP
 class TestContractTriggerCloseBuy_005:
 
     @allure.step('前置条件')
-    @pytest.fixture(scope='function')
     def setup(self):
-        ATP.close_all_position()
+        ATP.clean_market()
+        time.sleep(1)
         print(''' 使当前交易对有交易盘口  ''')
         print(ATP.make_market_depth())
         print(''' 使当前用户有持仓  ''')

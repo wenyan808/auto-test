@@ -38,6 +38,8 @@ from common.util import compare_dict
 from pprint import pprint
 import pytest, allure, random, time
 
+from tool.atp import ATP
+
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('计划委托')  # 这里填功能
@@ -48,6 +50,10 @@ class TestCoinswapTriggerOrder_003:
     @allure.step('前置条件')
     def setup(self):
         print(''' 不要触发 ''')
+        ATP.make_market_depth()
+        time.sleep(1)
+        ATP.clean_market()
+        time.sleep(2)
 
     @allure.title('计划委托最优5挡开仓测试')
     @allure.step('测试执行')
@@ -108,8 +114,7 @@ class TestCoinswapTriggerOrder_003:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        if self.orderid:
-            r = swap_api.swap_trigger_cancel(contract_code=self.contract_code, order_id=self.orderid)
+        ATP.cancel_all_trigger_order()
 
 
 if __name__ == '__main__':
