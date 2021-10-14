@@ -28,6 +28,8 @@ from tool import atp
 from pprint import pprint
 import pytest, allure, random, time
 
+from tool.atp import ATP
+
 
 @allure.epic('正向永续')  # 这里填业务线
 @allure.feature('计划委托-平多')  # 这里填功能
@@ -45,8 +47,10 @@ class TestLinearTriggerCloseSell_005:
               '\n*、以触发价低于最新价，买入价低于最新价下平仓计划委托单；'
               '\n*、触发计划委托订单；'
               '\n*、验证计划委托订单触发否')
+        ATP.cancel_all_types_order()
+        time.sleep(1)
         print("清盘》》》》", atp.ATP.clean_market())
-        time.sleep(2)
+        time.sleep(1)
         print("恢复杠杆》》》", atp.ATP.switch_level(contract_code=contract_code))
         self.symbol =symbol
         self.contract_code = contract_code
@@ -60,12 +64,9 @@ class TestLinearTriggerCloseSell_005:
         self.highPrice = round(self.currentPrice * 1.01, 2)  # 触发价
         print(contract_code, '最新价 = ', self.currentPrice, ' 触发价 = ', self.highPrice, '买入价 = ', self.lowPrice)
         print('开仓……')
-        linear_api.linear_order(contract_code=contract_code, price=self.currentPrice, order_price_type='limit',
-                                lever_rate=lever_rate, direction='buy', offset=offsetO,
-                                volume=1)
-        linear_api.linear_order(contract_code=contract_code, price=self.currentPrice, order_price_type='limit',
-                                lever_rate=lever_rate, direction='sell', offset=offsetO,
-                                volume=1)
+        ATP.current_user_make_order(direction='buy')
+        ATP.current_user_make_order(direction='sell')
+        time.sleep(1)
 
     @allure.title('计划委托卖出平多触发价小于最新价')
     @allure.step('测试执行')

@@ -33,6 +33,7 @@ class TestSwapNoti_depth_008:
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, contract_code, lever_rate, offsetO, directionB, directionS):
         print("\n清盘》》》》", atp.ATP.clean_market())
+        time.sleep(1)
 
         lever_rate = 5
 

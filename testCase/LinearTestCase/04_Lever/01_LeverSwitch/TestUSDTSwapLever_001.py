@@ -29,6 +29,8 @@ from common.LinearServiceAPI import t as linear_api
 from pprint import pprint
 import pytest, allure, random, time
 
+from tool.atp import ATP
+
 
 @allure.epic('正向永续')  # 这里填业务线
 @allure.feature('杠杆')  # 这里填功能
@@ -42,14 +44,7 @@ class TestUSDTSwapLever_001:
         print(''' 1、用户在该业务线下已开户
         2、用户在合约下没有任何挂单
          ''')
-        r = linear_api.linear_cross_cancelall(contract_code=contract_code)
-        pprint(r)
-        r = linear_api.linear_cross_tpsl_cancelall(contract_code=contract_code)
-        pprint(r)
-        r = linear_api.linear_cross_trigger_cancelall(contract_code=contract_code)
-        pprint(r)
-        r = linear_api.linear_cross_cancelall(contract_code=contract_code)
-        pprint(r)
+        ATP.cancel_all_types_order()
         time.sleep(2)
 
     @allure.title('BTC/USDT全仓当前无挂单切换杠杆倍数测试')
@@ -78,6 +73,7 @@ class TestUSDTSwapLever_001:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
+        ATP.switch_level()
 
 
 if __name__ == '__main__':

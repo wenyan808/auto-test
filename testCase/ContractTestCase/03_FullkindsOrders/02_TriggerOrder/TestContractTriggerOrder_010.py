@@ -12,6 +12,8 @@ from config.conf import *
 from schema import Schema, And, Or, Regex, SchemaError
 from pprint import pprint
 import pytest, allure, random, time
+
+from tool.atp import ATP
 from tool.get_test_data import case_data
 
 
@@ -91,8 +93,7 @@ class TestContractTriggerOrder_0010:
 
     @allure.step("恢复环境")
     def teardown(self):
-        r_cancel = contract_api.contract_cancel(symbol=self.symbol, order_id=self.new_order_id)
-        assert r_cancel.get("status") == "ok", f"撤单失败: {r_cancel}"
+        ATP.cancel_all_types_order()
 
 
 if __name__ == '__main__':

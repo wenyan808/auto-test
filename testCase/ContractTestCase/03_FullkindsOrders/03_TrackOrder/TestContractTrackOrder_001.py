@@ -23,8 +23,6 @@ class TestContractTrackOrder_001:
 
     def test_contract_account_position_info(self, symbol, symbol_period):
         flag = True
-
-        self.setUp()
         print('\n步骤一:获取最近价\n')
         r = contract_api.contract_history_trade(symbol=symbol_period, size='1')
         pprint(r)
