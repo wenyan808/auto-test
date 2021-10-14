@@ -9,7 +9,7 @@ class DingDingMsg:
     ding_ding_msg = '''{
         "msgtype": "text",
         "text": {
-        "content": "env: '${env}' system_type: '${system_type}' test_type: '${test_type}' \\ntotal: ${total} passed: ${passed}  \\nfailed: ${failed}  error: ${error} skipped: ${skipped}  \\nrun_time: ${run_time} \\nreport url: \\nhttp://172.18.6.183:8080/jenkins/view/autotest(%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95)/job/auto-test/${build_num}/allure/"
+        "content": "env: '${env}' system_type: '${system_type}' test_type: '${test_type}' \\ntotal: ${total} passed: ${passed}  \\nfailed: ${failed}  broken: ${broken} skipped: ${skipped}  \\nrun_time: ${run_time} \\nreport url: \\nhttp://172.18.6.183:8080/jenkins/view/autotest(%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95)/job/auto-test/${build_num}/allure/"
         }}'''
 
     @classmethod
@@ -34,7 +34,6 @@ class DingDingMsg:
         path = path.parent / 'report/allure/'
         if not path.exists():
             path.mkdir()
-        total = 0
         case_result_summary = {
             'passed': set(),
             'failed': set(),
@@ -43,13 +42,13 @@ class DingDingMsg:
         }
         for file in os.listdir(path):
             if file.endswith('-result.json'):
-                total += 1
                 with open(path / file) as result_json_file:
                     result_info = json.load(result_json_file)
                     case_result_summary[result_info["status"]].add(result_info['fullName'])
         passed_cases = case_result_summary.pop('passed')
-        result = {'passed': len(passed_cases), 'total': total}
+        result = {'passed': len(passed_cases)}
         result.update({key: len(value - passed_cases) for key, value in case_result_summary.items()})
+        result['total'] = sum([result[key] for key in result])
 
         return result
 
