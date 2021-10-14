@@ -32,7 +32,7 @@ class WebsocketSevice:
             "sub": "market.{}.index.{}".format(contract_code, period),
             "id": "id1"
         }
-        path = '/swap-ws'
+        path = '/ws_index'
         url = self.__url + path
         print(url)
         return sub(url, subs)
