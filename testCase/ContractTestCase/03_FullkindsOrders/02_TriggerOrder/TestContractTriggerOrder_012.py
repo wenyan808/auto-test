@@ -20,7 +20,7 @@ from tool.get_test_data import case_data
 @pytest.mark.stable
 class TestContractTriggerOrder_0012:
 
-    def setUp(self):
+    def setup(self):
         pass
 
     @allure.title('撤销计划委托订单开仓测试')

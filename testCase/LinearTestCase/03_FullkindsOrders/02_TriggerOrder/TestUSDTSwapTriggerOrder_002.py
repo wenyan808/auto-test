@@ -29,6 +29,8 @@ from common.util import compare_dict
 from pprint import pprint
 import pytest, allure, random, time
 
+from tool.atp import ATP
+
 
 @allure.epic('正向永续')  # 这里填业务线
 @allure.feature('计划委托')  # 这里填功能
@@ -40,6 +42,10 @@ class TestUSDTSwapTriggerOrder_002:
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, contract_code):
         print("自买自卖产生持仓")
+        ATP.make_market_depth()
+        time.sleep(1)
+        ATP.clean_market()
+        time.sleep(2)
 
         r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
         pprint(r)
@@ -110,11 +116,7 @@ class TestUSDTSwapTriggerOrder_002:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        if self.orderid:
-            linear_api.linear_cross_trigger_cancel(contract_code=self.contract_code, order_id=self.orderid)
-        r = linear_api.linear_cross_empty_position(contract_code=self.contract_code, price=self.price)
-        print('\n恢复环境操作完毕')
-        return r
+        ATP.cancel_all_trigger_order()
 
 
 if __name__ == '__main__':

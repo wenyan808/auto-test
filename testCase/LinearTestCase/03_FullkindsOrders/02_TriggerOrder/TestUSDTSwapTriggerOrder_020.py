@@ -39,6 +39,7 @@ import common.util
 from common.LinearServiceAPI import LinearServiceAPI
 from config import conf
 from config.conf import URL2, ACCESS_KEY, SECRET_KEY
+from tool.atp import ATP
 
 
 @allure.epic('正向永续')  # 这里填业务线
@@ -49,28 +50,16 @@ class TestUSDTSwapTriggerOrder_020:
     @allure.step('前置条件')
     def setup(self):
         print(''' 有持仓且大于等于10张''')
+        ATP.clean_market()
+        time.sleep(1)
+        ATP.current_user_make_order(direction='sell')
+        time.sleep(1)
+        ATP.current_user_make_order(direction='buy')
+        time.sleep(1)
         self.contract_code = conf.DEFAULT_CONTRACT_CODE
         self.current_user = LinearServiceAPI(url=URL2, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
-        position_larger_than_10 = self.current_user.check_positions_larger_than(contract_code=self.contract_code,
-                                                                                direction="buy", amount=10,
-                                                                                position_type=1)
-        price = 5
-        if not position_larger_than_10:
-            # 获取买一价, 以稍高与买一价的价格进行一次买->卖，制造持仓(逐仓)
-            contract_depth = self.current_user.linear_depth(contract_code=self.contract_code, type="step5")
-            bids = contract_depth.get("tick").get("bids")
-            if bids:
-                highest_price_bid = round(max([i[0] for i in bids]) * 1.1, 1)
-                price = max([price, highest_price_bid])
-            o_buy = self.current_user.linear_order(contract_code=self.contract_code, price=price, volume=10,
-                                                   direction="buy", offset="open", lever_rate=5,
-                                                   order_price_type="limit")
-            assert o_buy.get("status") == "ok", f"下买单失败: {o_buy}"
-            o_sell = self.current_user.linear_order(contract_code=self.contract_code, price=price, volume=10,
-                                                    direction="sell", offset="open", lever_rate=5,
-                                                    order_price_type="limit")
-            assert o_sell.get("status") == "ok", f"下卖单失败: {o_sell}"
-            time.sleep(3)
+        price = ATP.get_current_price()
+
         self.open_price = price
 
     @allure.title('持仓区域下止盈止损最优5档')
@@ -115,6 +104,7 @@ class TestUSDTSwapTriggerOrder_020:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
+        ATP.cancel_all_types_order()
 
 
 if __name__ == '__main__':

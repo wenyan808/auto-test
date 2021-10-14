@@ -44,7 +44,7 @@ class TestCoinswapTrackOrder_001:
                                       order_price_type='formula_price')
 
         pprint(r)
-        time.sleep(0.5)
+        time.sleep(1)
         orderid = r['data']['order_id']
         print('\n步骤三:查询跟踪委托当前委托\n')
 
@@ -65,7 +65,7 @@ class TestCoinswapTrackOrder_001:
 
         r = swap_api.swap_track_cancel(contract_code=contract_code, order_id=orderid)
         pprint(r)
-        time.sleep(0.5)
+        time.sleep(1)
         print('\n步骤五:查询跟踪委托历史委托\n')
 
         r = swap_api.swap_track_hisorders(contract_code=contract_code,status='0',trade_type='0',create_date='1')

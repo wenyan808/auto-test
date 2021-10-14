@@ -54,20 +54,7 @@ class TestCoinswapLever_002:
 		2、用户在当前委托下只有止盈止损挂单 ''')
         self.contract_code = contract_code
         self.orderid = ''
-        # 清除盘口所有卖单
-        print(ATP.clean_market(contract_code=contract_code, direction='sell'))
-        time.sleep(2)
-        # 清除盘口所有买单
-        print(ATP.clean_market(contract_code=contract_code, direction='buy'))
-
-        r = swap_api.swap_cancelall(contract_code=contract_code)
-        pprint(r)
-        r = swap_api.swap_tpsl_cancelall(contract_code=contract_code)
-        pprint(r)
-        r = swap_api.swap_trigger_cancelall(contract_code=contract_code)
-        pprint(r)
-        r = swap_api.swap_cancelall(contract_code=contract_code)
-        pprint(r)
+        ATP.cancel_all_types_order()
         time.sleep(2)
 
     @allure.title('当前有挂单切换杠杆倍数测试')
@@ -84,8 +71,7 @@ class TestCoinswapLever_002:
         with allure.step('5、点击杠杆切换框外的区域，有结果D'):
             r = swap_api.swap_available_level_rate(contract_code=contract_code)
             availableleverlist = r['data'][0]['available_level_rate'].split(',')
-            i = random.choice(availableleverlist)
-            availableleverlist.remove(i)
+            availableleverlist.remove('5')
             j = random.choice(availableleverlist)
             '''下单任意一种杠杆'''
             r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
@@ -98,7 +84,7 @@ class TestCoinswapLever_002:
                                     volume='1',
                                     direction='buy',
                                     offset='open',
-                                    lever_rate='5',
+                                    lever_rate=5,
                                     order_price_type='limit')
             pprint(r)
             self.orderid = r['data']['order_id_str']
@@ -115,9 +101,9 @@ class TestCoinswapLever_002:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        if self.orderid:
-            r = swap_api.swap_cancel(contract_code=self.contract_code, order_id=self.orderid)
-            pprint(r)
+        ATP.cancel_all_types_order()
+        time.sleep(1)
+        ATP.switch_level()
 
 
 if __name__ == '__main__':

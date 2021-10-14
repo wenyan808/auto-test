@@ -38,6 +38,7 @@ import common.util
 from common.LinearServiceAPI import LinearServiceAPI
 from config import conf
 from config.conf import URL2, ACCESS_KEY, SECRET_KEY
+from tool.atp import ATP
 
 
 @allure.epic('正向永续')  # 这里填业务线
@@ -54,7 +55,7 @@ class TestUSDTSwapTriggerOrder_006:
         position_larger_than_10 = self.current_user.check_positions_larger_than(contract_code=self.contract_code,
                                                                                 direction="buy", amount=10,
                                                                                 position_type=1)
-        price = 5
+        price = ATP.get_current_price()
         if not position_larger_than_10:
             # 获取买一价, 以稍高与买一价的价格进行一次买->卖，制造持仓(逐仓)
             contract_depth = self.current_user.linear_depth(contract_code=self.contract_code, type="step5")
@@ -118,6 +119,7 @@ class TestUSDTSwapTriggerOrder_006:
     def teardown(self):
         r_cancel = self.current_user.linear_trigger_cancelall(contract_code=self.contract_code)
         assert r_cancel.get('status') == "ok", f"撤单失败: {r_cancel}"
+        ATP.cancel_all_types_order()
 
 
 if __name__ == '__main__':

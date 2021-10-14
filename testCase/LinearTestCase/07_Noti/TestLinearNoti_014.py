@@ -28,7 +28,6 @@ import pytest
 import time
 
 from common.LinearServiceAPI import t as api
-# @allure.epic('所属分组')  # 这里填业务线
 from tool.atp import ATP
 from tool.common_assert import Assert
 

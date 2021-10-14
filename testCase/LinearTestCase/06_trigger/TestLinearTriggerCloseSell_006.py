@@ -45,6 +45,7 @@ class TestLinearTriggerCloseSell_006:
               '\n*、触发计划委托订单；'
               '\n*、验证计划委托订单触发否')
         print("清盘》》》》", atp.ATP.clean_market())
+        print("恢复杠杆》》》", atp.ATP.switch_level(contract_code=contract_code))
         self.contract_code = contract_code
         self.symbol = symbol
         self.lever_rate = lever_rate
@@ -78,6 +79,27 @@ class TestLinearTriggerCloseSell_006:
         with allure.step('5、输入卖出量10张'):
             pass
         with allure.step('6、点击卖出平多按钮，弹框点击确认'):
+            self.trigger_price = self.lowPrice
+            # ge大于等于(触发价比最新价大)；le小于(触发价比最新价小)
+            if self.trigger_price >= self.currentPrice:
+                self.trigger_type = 'ge'
+            else:
+                self.trigger_type = 'le'
+            orderResult = linear_order.linear_swap_triggerOrder_insert(contract_code=self.contract_code,
+                                                                       trigger_type=self.trigger_type,
+                                                                       trigger_price=self.trigger_price,
+                                                                       order_price=self.lowPrice, volume=1,
+                                                                       direction=self.directionS,
+                                                                       offset=self.offsetC, lever_rate=self.lever_rate,
+                                                                       symbol=self.symbol)
+            # 下单失败则断言失败
+            if 'err_msg' in orderResult:
+                print(orderResult)
+                assert False
+            else:
+                triggerOrderId = orderResult['data']['order_id']
+                print('计划委托单号 = ', triggerOrderId)
+
             orderResult = linear_order.linear_swap_triggerOrder_insert(contract_code=self.contract_code, trigger_type='ge',
                                                                        trigger_price=self.currentPrice,
                                                                        order_price=self.lowPrice, volume=1,

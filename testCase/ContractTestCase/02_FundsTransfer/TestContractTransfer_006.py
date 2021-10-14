@@ -18,7 +18,7 @@ from tool.get_test_data import case_data
 @pytest.mark.stable
 class TestContractTransfer_006:
 
-    def setUp(self):
+    def setup(self):
         print('\n前置条件')
 
 
@@ -28,7 +28,7 @@ class TestContractTransfer_006:
 
         expectedresult = (symbol, float(amount))
 
-        self.setUp()
+        self.setup()
         r = contranct_api.contract_sub_account_info_list(symbol=symbol)
         pprint(r)
         sublist = r['data']['sub_list']
