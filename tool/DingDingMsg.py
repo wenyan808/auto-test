@@ -48,8 +48,8 @@ class DingDingMsg:
                     result_info = json.load(result_json_file)
                     case_result_summary[result_info["status"]].add(result_info['fullName'])
         passed_cases = case_result_summary.pop('passed')
-        result = {'passed': len(passed_cases),'total':total}
-        result.update({key: len(value-passed_cases) for key, value in case_result_summary.items()})
+        result = {'passed': len(passed_cases), 'total': total}
+        result.update({key: len(value - passed_cases) for key, value in case_result_summary.items()})
 
         return result
 
