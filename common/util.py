@@ -198,10 +198,14 @@ def sub(url, subs):
         requestInfo = '\nWS请求信息：url=' + url + ',参数=' + str(subs)
         print('\033[1;32;49m%s\033[0m' % requestInfo)
         i = 0
-        while i<3:
+        while i<5:
             ws.send(sub_str)
             sub_result = json.loads(gzip.decompress(ws.recv()).decode())
-            i = i+1
+            print(sub_result)
+            if dict(sub_result).get('status',"") == "ok":
+                i = i+1
+            else:
+                break
             time.sleep(1)
         ws.close()
         return sub_result

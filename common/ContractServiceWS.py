@@ -38,7 +38,7 @@ class WebsocketSevice:
         return sub(url, subs)
 
     # 【通用】订阅 KLine 数据
-    def contract_sub_kline(self, contract_code, period):
+    def contract_sub_kline(self, contract_code=None, period=None):
         subs = {
             "sub": "market.{}.kline.{}".format(contract_code, period),
             "id": "id1"

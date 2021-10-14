@@ -45,7 +45,7 @@ import pytest, allure, random, time
 from config.conf import URL, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
 
 
-@allure.epic('所属分组')  # 这里填业务线
+@allure.epic('反向永续')  # 这里填业务线
 @allure.feature('计划委托')  # 这里填功能
 @allure.story('计划止损最优5/10/20挡')  # 这里填子功能，没有的话就把本行注释掉
 class TestCoinswapTriggerOrder_009:

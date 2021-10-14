@@ -39,9 +39,10 @@ import common.util
 from common.LinearServiceAPI import LinearServiceAPI
 from config import conf
 from config.conf import URL2, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
+from tool.atp import ATP
 
 
-@allure.epic('所属分组')  # 这里填业务线
+@allure.epic('正向永续')  # 这里填业务线
 @allure.feature('计划委托')  # 这里填功能
 @allure.story('触发计划委托订单平仓测试')  # 这里填子功能，没有的话就把本行注释掉
 class TestUSDTSwapTriggerOrder_011:
@@ -51,44 +52,24 @@ class TestUSDTSwapTriggerOrder_011:
         print(''' 选择正常限价下单 ''')
         self.contract_code = conf.DEFAULT_CONTRACT_CODE
         self.current_user = LinearServiceAPI(url=URL2, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
+        ATP.clean_market()
+        time.sleep(1)
+        ATP.current_user_make_order(direction='buy')
+        time.sleep(1)
+        ATP.current_user_make_order(direction='sell')
+        time.sleep(1)
+
 
     @allure.title('触发计划委托订单平仓测试')
     @allure.step('测试执行')
     def test_execute(self, symbol):
         with allure.step("0、进行一次买卖，保证可平多量至少为10"):
-            position_larger_than_10 = self.current_user.check_positions_larger_than(contract_code=self.contract_code,
-                                                                                    direction="sell", amount=10,
-                                                                                    position_type=1)
-            price = 5
-            if not position_larger_than_10:
-                # 获取买一价, 以稍高与买一价的价格进行一次买->卖，制造持仓(逐仓)
-                contract_depth = self.current_user.linear_depth(contract_code=self.contract_code, type="step5")
-                bids = contract_depth.get("tick").get("bids")
-                if bids:
-                    highest_price_bid = round(max([i[0] for i in bids]) * 1.1, 1)
-                    price = max([price, highest_price_bid])
-                o_buy = self.current_user.linear_order(contract_code=self.contract_code, price=price, volume=10,
-                                                       direction="buy", offset="open", lever_rate=5,
-                                                       order_price_type="limit")
-                assert o_buy.get("status") == "ok", f"下买单失败: {o_buy}"
-                o_sell = self.current_user.linear_order(contract_code=self.contract_code, price=price, volume=10,
-                                                        direction="sell", offset="open", lever_rate=5,
-                                                        order_price_type="limit")
-                assert o_sell.get("status") == "ok", f"下卖单失败: {o_sell}"
-                time.sleep(3)
+            pass
 
         with allure.step('1、登录U本位永续界面'):
-            # 下计划委托前，获取一遍当前计划委托单列表
             current_plan_orders_before = self.current_user.linear_trigger_openorders(
                 contract_code=self.contract_code).get("data").get("orders")
-            # 获取买一价, 如果买一价不存在, 则手动设置买一价为5
-            contract_depth = self.current_user.linear_depth(contract_code=self.contract_code, type="step5")
-            bids = contract_depth.get("tick").get("bids")
-            if bids:
-                highest_price_bid = round(max([i[0] for i in bids]) * 1.1, 1)
-                trigger_price = highest_price_bid
-            else:
-                trigger_price = 5
+            trigger_price = ATP.get_adjust_price()
             order_price = round(trigger_price * 0.9, 1)
             r_order_plan = self.current_user.linear_trigger_order(contract_code=self.contract_code, trigger_type="ge",
                                                                   trigger_price=trigger_price, order_price=order_price,
@@ -148,7 +129,7 @@ class TestUSDTSwapTriggerOrder_011:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-
+        ATP.cancel_all_types_order()
 
 if __name__ == '__main__':
     pytest.main()

@@ -10,11 +10,13 @@ from config.conf import *
 from schema import Schema, And, Or, Regex, SchemaError
 from pprint import pprint
 import pytest, allure, random, time
+
+from tool.atp import ATP
 from tool.get_test_data import case_data
 
 
 @allure.epic('反向交割')
-@allure.feature('')
+@allure.feature('功能')
 @pytest.mark.stable
 class TestContractTriggerOrder_008:
 
@@ -47,13 +49,17 @@ class TestContractTriggerOrder_008:
 
         def sell_and_buy():
             pprint("\n步骤二(1): 挂一个卖单\n")
-            r_temp_buy = c.contract_order(symbol=symbol, contract_type=contract_type, price=100.0, volume=volume_at_least, direction='sell', offset='open', lever_rate=lever_rate, order_price_type="limit")
-            assert r_temp_buy.get("status") == "ok"
-            pprint("\n步骤二(2): 挂一个买单\n")
-            r_temp_buy = c.contract_order(symbol=symbol, contract_type=contract_type, price=100.0, volume=volume_at_least, direction='buy', offset='open', lever_rate=lever_rate, order_price_type="limit")
-            assert r_temp_buy.get("status") == "ok"
+            ATP.current_user_make_order(direction='sell')
+            time.sleep(1)
+            ATP.current_user_make_order(direction='buy')
+            #
+            # r_temp_buy = contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=100.0, volume=volume_at_least, direction='sell', offset='open', lever_rate=lever_rate, order_price_type="limit")
+            # assert r_temp_buy.get("status") == "ok"
+            # pprint("\n步骤二(2): 挂一个买单\n")
+            # r_temp_buy = contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=100.0, volume=volume_at_least, direction='buy', offset='open', lever_rate=lever_rate, order_price_type="limit")
+            # assert r_temp_buy.get("status") == "ok"
             pprint("\n步骤二(3): 等待5s成交\n")
-            time.sleep(5)
+            time.sleep(1)
 
         if not data_r_tract_trade:
             pprint("\n未找到最新价, 准备进行一次买卖制造一个最新价...\n")
@@ -75,7 +81,7 @@ class TestContractTriggerOrder_008:
                         if self.available >= 10:
                             pprint("\n可平量大于等于10个\n")
                             pprint("步骤三: 下单(计划委托止损单)")
-                            order = c.contract_trigger_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code, trigger_type=trigger_type, trigger_price=self.trigger_price, order_price=order_price, order_price_type=order_price_type, volume=self.available,
+                            order = c.contract_trigger_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code, trigger_type=trigger_type, trigger_price=self.trigger_price, order_price=order_price, order_price_type=order_price_type, volume=10,
                                                              direction=direction, offset=offset, lever_rate=lever_rate)
                             time.sleep(5)
                             assert order.get("status") == "ok", "下单出错: {res}".format(res=order)
@@ -105,7 +111,7 @@ class TestContractTriggerOrder_008:
         res_all_his_orders = c.contract_trigger_openorders(symbol=symbol, contract_code=contract_code).get("data").get("orders")
         for r in res_all_his_orders:
             if r.get("order_id") == self.order_id:
-                expected_did = {"trigger_type": trigger_type, "volume": self.available, "lever_rate": lever_rate, "order_price_type": order_price_type, "trigger_price": self.trigger_price, "contract_code": contract_code, "symbol": symbol,
+                expected_did = {"trigger_type": trigger_type, "volume": 10, "lever_rate": lever_rate, "order_price_type": order_price_type, "trigger_price": self.trigger_price, "contract_code": contract_code, "symbol": symbol,
                                 "contract_type": contract_type, "direction": direction, "offset": offset}
                 assert common.util.compare_dict(expected_did, r)
                 return
@@ -115,6 +121,7 @@ class TestContractTriggerOrder_008:
     def teardown(self):
         r_cancel = contract_api.contract_cancel(symbol=self.symbol, order_id=self.order_id)
         assert r_cancel.get("status") == "ok", f"撤单失败: {r_cancel}"
+        ATP.cancel_all_trigger_order()
 
 
 if __name__ == '__main__':

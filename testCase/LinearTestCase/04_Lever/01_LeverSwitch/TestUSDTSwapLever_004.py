@@ -48,19 +48,11 @@ class TestUSDTSwapLever_004:
         self.contract_code = contract_code
         self.orderid = ''
         # 清除盘口所有卖单
-        print(ATP.clean_market(contract_code=contract_code, direction='sell'))
+        print(ATP.clean_market())
         time.sleep(2)
         # 清除盘口所有买单
-        print(ATP.clean_market(contract_code=contract_code, direction='buy'))
 
-        r = linear_api.linear_cancelall(contract_code=contract_code)
-        pprint(r)
-        r = linear_api.linear_tpsl_cancelall(contract_code=contract_code)
-        pprint(r)
-        r = linear_api.linear_trigger_cancelall(contract_code=contract_code)
-        pprint(r)
-        r = linear_api.linear_cancelall(contract_code=contract_code)
-        pprint(r)
+        ATP.cancel_all_types_order()
         time.sleep(2)
     @allure.title('BTC/USDT逐仓当前有挂单切换杠杆倍数测试')
     @allure.step('测试执行')
@@ -108,9 +100,8 @@ class TestUSDTSwapLever_004:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        if self.orderid:
-            r = linear_api.linear_cancel(contract_code=self.contract_code, order_id=self.orderid)
-            pprint(r)
+        ATP.cancel_all_order()
+        ATP.switch_level()
 
 
 if __name__ == '__main__':

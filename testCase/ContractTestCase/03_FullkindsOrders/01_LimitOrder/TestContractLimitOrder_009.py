@@ -13,6 +13,8 @@ from common.ContractServiceAPI import ContractServiceAPI
 from schema import Schema, And, Or, Regex, SchemaError
 from pprint import pprint
 import pytest, allure, random, time
+
+from tool.atp import ATP
 from tool.get_test_data import case_data
 from datetime import datetime
 
@@ -21,12 +23,18 @@ from datetime import datetime
 # tracker 跟踪委托
 # hisorder 限价委托
 @allure.epic('反向交割')
-@allure.feature('')
+@allure.feature('功能')
 @pytest.mark.stable
 class TestContractLimitOrder_009:
 
     def setUp(self):
         print('\n前置条件')
+        ATP.make_market_depth()
+        time.sleep(1)
+
+    @allure.step("恢复环境")
+    def teardown(self):
+        ATP.clean_market()
 
     @allure.title('对手价买入开多卖盘无数据以对手价买入会报对手价不存在')
     def test_contract_limit_order(self, symbol, symbol_period):

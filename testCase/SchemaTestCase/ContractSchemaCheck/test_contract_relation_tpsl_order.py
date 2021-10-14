@@ -6,6 +6,7 @@
 # @Author  : zhangranghan
 
 from common.ContractServiceAPI import t
+from tool.atp import ATP
 from tool.get_test_data import case_data
 from schema import Schema,And,Or,Regex,SchemaError
 from pprint import pprint
@@ -24,7 +25,7 @@ class TestContractTpslRelationTpslOrder:
                              contract_type='this_week',
                              contract_code='',
                              client_order_id='',
-                             price=50000,
+                             price=ATP.get_current_price(),
                              volume=1,
                              direction='buy',
                              offset='open',

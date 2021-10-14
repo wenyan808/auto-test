@@ -16,6 +16,10 @@
         restful请求
 """
 
+import allure
+import pytest
+import time
+
 from common.LinearServiceAPI import t as linear_api
 from common.LinearServiceWS import t as linear_service_ws
 import pytest, allure, random, time

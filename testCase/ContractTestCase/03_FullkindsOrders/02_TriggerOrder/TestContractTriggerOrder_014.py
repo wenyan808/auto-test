@@ -38,7 +38,7 @@ import pytest, allure, random, time
 from config.conf import URL, SECRET_KEY, ACCESS_KEY
 
 
-@allure.epic('交割')  # 这里填业务线
+@allure.epic('反向交割')  # 这里填业务线
 @allure.feature('计划委托')  # 这里填功能
 @allure.story('多个开仓撤单同时撤销')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
