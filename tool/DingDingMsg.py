@@ -34,7 +34,6 @@ class DingDingMsg:
         path = path.parent / 'report/allure/'
         if not path.exists():
             path.mkdir()
-        total = 0
         case_result_summary = {
             'passed': set(),
             'failed': set(),
@@ -43,13 +42,13 @@ class DingDingMsg:
         }
         for file in os.listdir(path):
             if file.endswith('-result.json'):
-                total += 1
                 with open(path / file) as result_json_file:
                     result_info = json.load(result_json_file)
                     case_result_summary[result_info["status"]].add(result_info['fullName'])
         passed_cases = case_result_summary.pop('passed')
-        result = {'passed': len(passed_cases), 'total': total}
+        result = {'passed': len(passed_cases)}
         result.update({key: len(value - passed_cases) for key, value in case_result_summary.items()})
+        result['total'] = sum([result[key] for key in result])
 
         return result
 
