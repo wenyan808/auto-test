@@ -36,6 +36,8 @@ from common.SwapServiceAPI import t as swap_api
 from pprint import pprint
 import pytest, allure, random, time
 
+from tool.atp import ATP
+
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('杠杆')  # 这里填功能
@@ -49,15 +51,7 @@ class TestCoinswapLever_001:
 		print(''' 1、用户在该业务线下已开户
 		2、用户在合约下没有任何挂单
 		 ''')
-		r = swap_api.swap_cancelall(contract_code=contract_code)
-		pprint(r)
-		r = swap_api.swap_tpsl_cancelall(contract_code=contract_code)
-		pprint(r)
-		r = swap_api.swap_trigger_cancelall(contract_code=contract_code)
-		pprint(r)
-		r = swap_api.swap_cancelall(contract_code=contract_code)
-		pprint(r)
-		time.sleep(2)
+		ATP.cancel_all_types_order()
 
 	@allure.title('当前无挂单切换杠杆倍数测试')
 	@allure.step('测试执行')
@@ -73,6 +67,7 @@ class TestCoinswapLever_001:
 		with allure.step('4、在杠杆滑动条上，点击30X后再点击"确定"按钮有结果C'):
 			pass
 		with allure.step('5、将杠杆倍数切换为任意值'):
+			availableleverlist.remove('5')
 			i = random.choice(availableleverlist)
 			time.sleep(4)
 			r = swap_api.swap_switch_lever_rate(contract_code=contract_code, lever_rate=i)
@@ -82,6 +77,7 @@ class TestCoinswapLever_001:
 	@allure.step('恢复环境')
 	def teardown(self):
 		print('\n恢复环境操作')
+		ATP.switch_level()
 
 if __name__ == '__main__':
 	pytest.main()

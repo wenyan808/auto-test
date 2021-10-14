@@ -91,7 +91,7 @@ class TestContractTriggerOrder_0011:
                 after_orders = res_all_orders.get("data").get("orders")
                 time_count += 1
             new_order = [i for i in after_orders if i not in res_before_limit_created_orders][0]
-            expected_dic = {"symbol": symbol, "order_price_type": order_price_type, "lever_rate": lever_rate, "volume": 2, "price": order_price}
+            expected_dic = {"symbol": symbol, "order_price_type": order_price_type, "lever_rate": lever_rate, "volume": 10, "price": order_price}
             assert common.util.compare_dict(expected_dic, new_order)
             self.new_order_id = new_order.get("order_id")
             created_time = datetime.datetime.fromtimestamp(new_order.get("created_at") / 1000)

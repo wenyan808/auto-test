@@ -58,8 +58,8 @@ from tool.atp import ATP
 class TestCoinswapLimitOrder_002:
 
 	@allure.step('前置条件')
-	@pytest.fixture(scope='function', autouse=True)
-	def setup(self, contract_code):
+
+	def setup(self):
 		print(''' 初始化环境准备
 		1、建议准备两个账户，一个用于初始化环境，一个用于测试下单验证。
 		1、建议初始化环境是初始化账户吃掉其他所有买卖挂单，盘口无任何挂单
@@ -67,13 +67,20 @@ class TestCoinswapLimitOrder_002:
 		3、每次完成测试后再还原环境
 		4、本次用例场景为无成交下撤单场景 ''')
 		# 撤销当前用户 某个品种所有限价挂单
-		ATP.cancel_all_order(contract_code=contract_code)
+		ATP.cancel_all_order()
+		time.sleep(1)
 		# 修改当前品种杠杆 默认5倍
-		ATP.switch_level(contract_code=contract_code)
+		ATP.switch_level()
 		# 清除盘口所有卖单
-		ATP.clean_market(contract_code=contract_code, direction='sell')
-		# 清除盘口所有买单
-		ATP.clean_market(contract_code=contract_code, direction='buy')
+		ATP.clean_market()
+		time.sleep(1)
+		ATP.current_user_make_order(direction='buy')
+		ATP.current_user_make_order(direction='sell')
+		time.sleep(1)
+
+
+
+
 
 	@allure.title('限价委托输入价格下单卖出开空后撤单测试')
 	@allure.step('测试执行')
@@ -169,6 +176,7 @@ class TestCoinswapLimitOrder_002:
 	@allure.step('恢复环境')
 	def teardown(self):
 		print('\n恢复环境操作')
+		ATP.cancel_all_order()
 
 if __name__ == '__main__':
     pytest.main()

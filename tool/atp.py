@@ -267,7 +267,7 @@ class ATP:
                              'LinearSwap': common_user_linear_service_api.linear_order,
                              }
             if iscross:
-                order_methods['LinearSwap'] = common_user_linear_service_api.linear_cross_order,
+                order_methods['LinearSwap'] = common_user_linear_service_api.linear_cross_order
 
         else:
             order_methods = {'Delivery': contract_api.contract_order,
@@ -275,7 +275,7 @@ class ATP:
                              'LinearSwap': linear_api.linear_order,
                              }
             if iscross:
-                order_methods['LinearSwap'] = linear_api.linear_cross_order,
+                order_methods['LinearSwap'] = linear_api.linear_cross_order
 
         order_method = order_methods[conf.SYSTEM_TYPE]
         if not contract_code:

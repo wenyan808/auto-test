@@ -58,7 +58,7 @@ class TestCoinswapLimitOrder_011:
 		2、再根据测试场景进行拿初始化账户进行买一卖一挂单作为对手方
 		3、每次完成测试后再还原环境
 		4、本次用例场景为无成交下撤单场景 ''')
-
+		ATP.cancel_all_order()
 		ATP.clean_market()
 		time.sleep(2)
 
