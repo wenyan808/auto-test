@@ -81,6 +81,11 @@ def run(system_type=None, run_env='Test6', test_type=''):
             time.sleep(2)
             ATP.close_all_position()
             time.sleep(2)
+
+            if system_type.capitalize() == 'Linear':
+                ATP.close_all_position(iscross=True)
+                time.sleep(2)
+
             ATP.clean_market()
             time.sleep(2)
             ATP.make_market_depth(market_price=ATP.get_index_price())

@@ -19,7 +19,7 @@ from  tool.atp import ATP
 @pytest.mark.stable
 class TestContractTriggerOrder_007:
 
-    def setUp(self):
+    def setup(self):
         self.available = None
         self.trigger_price = None
         self.order_id = None

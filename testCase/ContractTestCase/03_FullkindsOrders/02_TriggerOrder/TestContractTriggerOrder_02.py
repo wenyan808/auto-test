@@ -18,7 +18,7 @@ from tool.get_test_data import case_data
 @allure.feature('功能')
 @pytest.mark.stable
 class TestContractTriggerOrder_002:
-    def setUp(self):
+    def setup(self):
         self.oder_id = None
         self.symbol = None
 
