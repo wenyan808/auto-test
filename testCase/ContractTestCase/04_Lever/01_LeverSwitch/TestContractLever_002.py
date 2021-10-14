@@ -47,21 +47,13 @@ class TestContractLever_002:
         self.orderid = ''
         self.symbol = symbol
         # 清除盘口所有卖单
-        print(ATP.clean_market(contract_code=symbol_period, direction='sell'))
+        print(ATP.clean_market())
         time.sleep(2)
         # 清除盘口所有买单
-        print(ATP.clean_market(contract_code=symbol_period, direction='buy'))
 
         print(ATP.switch_level(contract_code=symbol_period))
 
-        r = contract_api.contract_cancelall(symbol=symbol)
-        pprint(r)
-        r = contract_api.contract_tpsl_cancelall(symbol=symbol)
-        pprint(r)
-        r = contract_api.contract_trigger_cancelall(symbol=symbol)
-        pprint(r)
-        r = contract_api.contract_cancelall(symbol=symbol)
-        pprint(r)
+        ATP.cancel_all_types_order()
 
         print(symbol)
         print(symbol_period)
@@ -114,9 +106,9 @@ class TestContractLever_002:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        if self.orderid:
-            r = contract_api.contract_cancel(symbol=self.symbol, order_id=self.orderid)
-            pprint(r)
+        ATP.cancel_all_order()
+        time.sleep(1)
+        ATP.switch_level()
 
 
 if __name__ == '__main__':

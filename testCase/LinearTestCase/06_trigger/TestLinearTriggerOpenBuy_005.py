@@ -40,6 +40,7 @@ class TestLinearTriggerOpenBuy_005:
               '\n*、触发计划委托订单；'
               '\n*、验证计划委托订单触发否')
         print("清盘》》》》", atp.ATP.clean_market())
+        print("恢复杠杆》》》", atp.ATP.switch_level(contract_code=contract_code))
         self.symbol = symbol
         self.contract_code = contract_code
         self.lever_rate = lever_rate
@@ -58,19 +59,26 @@ class TestLinearTriggerOpenBuy_005:
         with allure.step('1、行情-最新价更新为49800'):
             pass
         with allure.step('2、计划委托下单，触发价为50000；买入价为49800；'):
+            self.trigger_price = self.lowPrice
+            # ge大于等于(触发价比最新价大)；le小于(触发价比最新价小)
+            if self.trigger_price >= self.currentPrice:
+                self.trigger_type = 'ge'
+            else:
+                self.trigger_type = 'le'
             orderResult = linear_order.linear_swap_triggerOrder_insert(contract_code=self.contract_code,
-                                                                       trigger_type='le',
-                                                                       trigger_price=self.lowPrice,
+                                                                       trigger_type= self.trigger_type,
+                                                                       trigger_price=self.trigger_price,
                                                                        order_price=self.lowPrice, volume=1,
                                                                        direction=self.directionB,
                                                                        offset=self.offsetO, lever_rate=self.lever_rate,
                                                                        symbol=self.symbol)
-            print(orderResult)
-            triggerOrderId = orderResult['data']['order_id']
-            print('计划委托单号 = ', triggerOrderId)
-            # 单号返回为空则下单失败
-            if not triggerOrderId:
+            # 下单失败则断言失败
+            if 'err_msg' in orderResult:
+                print(orderResult)
                 assert False
+            else:
+                triggerOrderId = orderResult['data']['order_id']
+                print('计划委托单号 = ', triggerOrderId)
             pass
         with allure.step('3、行情-最新价更新；使最新价达到50000价，触发计划委托单转换为限制单'):
             linear_api.linear_order(contract_code=self.contract_code, price=self.lowPrice, order_price_type='limit',

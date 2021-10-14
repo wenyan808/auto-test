@@ -10,6 +10,8 @@ from common.ContractServiceOrder import t as contranct_order
 from schema import Schema, And, Or, Regex, SchemaError
 from pprint import pprint
 import pytest, allure, random, time
+
+from tool.atp import ATP
 from tool.get_test_data import case_data
 
 
@@ -20,6 +22,8 @@ class TestCoinswapTrackOrder_002:
 
     def setUp(self):
         print('\n前置条件')
+        ATP.clean_market()
+        time.sleep(1)
 
 
     def test_contract_account_position_info(self, contract_code):

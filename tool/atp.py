@@ -236,6 +236,27 @@ class ATP:
         return current_price
 
     @classmethod
+    def get_index_price(cls, contract_code=None):
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
+
+        index_price_methods = {'Delivery': common_user_contract_service_api.contract_index,
+                               'Swap': common_user_swap_service_api.swap_index,
+                               'LinearSwap': common_user_linear_service_api.linear_index,
+                               }
+        response = index_price_methods[conf.SYSTEM_TYPE](contract_code)
+        print("===获取index价===")
+        pprint(response)
+        err_msg = {'status': 'error', 'err_msg': '获取index价出错', 'response': response}
+        data = response.get('data', {})
+        assert isinstance(data, list) and len(data) == 1, err_msg
+        index_price_record = data[0]
+        assert 'index_price' in index_price_record, err_msg
+        index_price = index_price_record['index_price']
+        print(f"当前index价 ： {index_price}")
+        return index_price
+
+    @classmethod
     def common_user_make_order(cls, contract_code=None, price=None, volume=10, direction='buy', offset='open',
                                lever_rate=5,
                                order_price_type='limit', user='common', iscross=False):
@@ -246,7 +267,7 @@ class ATP:
                              'LinearSwap': common_user_linear_service_api.linear_order,
                              }
             if iscross:
-                order_methods['LinearSwap'] = common_user_linear_service_api.linear_cross_order,
+                order_methods['LinearSwap'] = common_user_linear_service_api.linear_cross_order
 
         else:
             order_methods = {'Delivery': contract_api.contract_order,
@@ -254,7 +275,7 @@ class ATP:
                              'LinearSwap': linear_api.linear_order,
                              }
             if iscross:
-                order_methods['LinearSwap'] = linear_api.linear_cross_order,
+                order_methods['LinearSwap'] = linear_api.linear_cross_order
 
         order_method = order_methods[conf.SYSTEM_TYPE]
         if not contract_code:
@@ -361,8 +382,8 @@ class ATP:
         # 按目标价格成交
         print(cls.common_user_make_order(price=market_price, direction='buy'))
         print(cls.common_user_make_order(price=market_price, direction='sell'))
-        sell_price = cls.get_adjust_price(1.01)
-        buy_price = cls.get_adjust_price(0.99)
+        sell_price = cls.get_adjust_price(1.01, base_price=market_price)
+        buy_price = cls.get_adjust_price(0.99, base_price=market_price)
         print(cls.common_user_make_order(price=buy_price, direction='buy', volume=volume))
         print(cls.common_user_make_order(price=sell_price, direction='sell', volume=volume))
 
@@ -378,20 +399,23 @@ class ATP:
         ATP.cancel_all_tpsl_order(contract_code=contract_code)
 
     @classmethod
-    def get_adjust_price(cls, rate=1.01, contract_code=None):
+    def get_adjust_price(cls, rate=1.01, contract_code=None, base_price=None):
         if not contract_code:
             contract_code = conf.DEFAULT_CONTRACT_CODE
-        current_price = ATP.get_current_price(contract_code=contract_code)
+        if not base_price:
+            base_price = ATP.get_current_price(contract_code=contract_code)
         if contract_code in cls.price_precision:
-            return round(current_price * rate, cls.price_precision[contract_code])
+            return round(base_price * rate, cls.price_precision[contract_code])
         else:
-            return round(current_price * rate, 1)
+            return round(base_price * rate, 1)
 
 
 if __name__ == '__main__':
     system_types = ['Delivery', 'Swap', "LinearSwap"]
     for system_type in system_types:
         conf.set_run_env_and_system_type('Test6', system_type)
+        index_price = ATP.get_index_price()
+        ATP.make_market_depth(market_price=index_price)
         # print(ATP.get_api_test_data("test_linear_account_info"))
         # print(ATP.get_api_test_data("test_linear_account_info", priority_list=["P0", "P1"]))
         #
@@ -406,7 +430,7 @@ if __name__ == '__main__':
         # print(ATP.cancel_all_order())
         # # 修改当前品种杠杆 默认5倍
         # print(ATP.switch_level())
-        print(ATP.make_market_depth())
+        # print(ATP.make_market_depth())
         # print(ATP.close_all_position())
     # conf.set_run_env_and_system_type('Test6', 'Swap')
     # print(ATP.make_market_depth(market_pirce=52000))

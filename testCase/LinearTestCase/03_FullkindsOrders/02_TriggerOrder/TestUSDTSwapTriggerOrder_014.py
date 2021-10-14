@@ -39,6 +39,7 @@ import common.util
 from common.LinearServiceAPI import LinearServiceAPI
 from config import conf
 from config.conf import URL2, ACCESS_KEY, SECRET_KEY
+from tool.atp import ATP
 
 
 @allure.epic('正向永续')  # 这里填业务线
@@ -51,19 +52,20 @@ class TestUSDTSwapTriggerOrder_014:
         print(''' 不要触发，至少2条以上订单 ''')
         self.contract_code = conf.DEFAULT_CONTRACT_CODE
         self.current_user = LinearServiceAPI(url=URL2, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
+        ATP.clean_market()
+        time.sleep(1)
+        ATP.current_user_make_order(direction='buy')
+        time.sleep(1)
+        ATP.current_user_make_order(direction='sell')
+        time.sleep(1)
 
     @allure.title('全部撤销计划委托订单')
     @allure.step('测试执行')
     def test_execute(self, symbol):
         with allure.step('1、登录U本位永续界面'):
-            # 获取买一价, 如果买一价不存在, 则手动设置买一价为5
-            contract_depth = self.current_user.linear_depth(contract_code=self.contract_code, type="step5")
-            bids = contract_depth.get("tick").get("bids")
-            if bids:
-                highest_price_bid = round(max([i[0] for i in bids]) * 1.1, 1)
-                trigger_price = highest_price_bid
-            else:
-                trigger_price = 5
+
+            highest_price_bid = ATP.get_adjust_price()
+            trigger_price = highest_price_bid
             order_price = round(trigger_price * 0.9, 1)
             r_order_plan = self.current_user.linear_trigger_order(contract_code=self.contract_code, trigger_type="ge",
                                                                   trigger_price=trigger_price, order_price=order_price,
@@ -108,6 +110,7 @@ class TestUSDTSwapTriggerOrder_014:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
+        ATP.cancel_all_types_order()
 
 
 if __name__ == '__main__':

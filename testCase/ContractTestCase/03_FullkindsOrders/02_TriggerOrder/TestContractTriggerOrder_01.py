@@ -9,6 +9,8 @@ from common.ContractServiceOrder import t as contract_order
 from schema import Schema, And, Or, Regex, SchemaError
 from pprint import pprint
 import pytest, allure, random, time
+
+from tool.atp import ATP
 from tool.get_test_data import case_data
 
 
@@ -16,7 +18,8 @@ from tool.get_test_data import case_data
 @allure.feature('功能')
 @pytest.mark.stable
 class TestContractTriggerOrder_001:
-    def setUp(self):
+    def setup(self):
+        ATP.clean_market()
         self.oder_id = None
         self.symbol = None
 
@@ -54,8 +57,7 @@ class TestContractTriggerOrder_001:
 
     @allure.step('恢复环境')
     def teardown(self):
-        r_cancel = contract_api.contract_cancel(symbol=self.symbol, order_id=self.order_id)
-        assert r_cancel.get("status") == "ok", f"撤单失败: r{r_cancel}"
+        ATP.cancel_all_trigger_order()
 
 
 if __name__ == '__main__':
