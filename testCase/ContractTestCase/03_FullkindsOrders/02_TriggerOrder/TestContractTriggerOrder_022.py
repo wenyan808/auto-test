@@ -30,15 +30,21 @@ from common.util import compare_dict
 from pprint import pprint
 import pytest, allure, random, time
 
+from tool.atp import ATP
+
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('计划委托')  # 这里填功能
 # @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
+@allure.tag('Script owner : 张广南', 'Case owner : 邱大伟')
 class TestContractTriggerOrder_022:
 
     @allure.step('前置条件')
     def setup(self):
-        print(''' 不要触发 ''')
+        print('\n前置条件')
+        ATP.close_all_position()
+        ATP.clean_market()
 
     @allure.title('全部撤销止盈止损订单')
     @allure.step('测试执行')
@@ -74,7 +80,7 @@ class TestContractTriggerOrder_022:
         with allure.step('4、待限价单成交之后，点击全部撤销选择止盈止损类型，点确定后有结果A'):
             contract_api.contract_order(symbol=symbol, contract_type='this_week', price=orderprice, volume='1',
                                         direction='sell', offset='open', lever_rate='5', order_price_type='limit')
-            time.sleep(2)
+            time.sleep(4)
             r = contract_api.contract_tpsl_openorders(symbol=symbol)
             actual_orderinfo = r['data']['orders'][0]
 
