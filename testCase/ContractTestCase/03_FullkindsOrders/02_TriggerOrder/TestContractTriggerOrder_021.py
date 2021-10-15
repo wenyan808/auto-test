@@ -28,15 +28,21 @@ from common.util import compare_dict
 from pprint import pprint
 import pytest, allure, random, time
 
+from tool.atp import ATP
+
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('计划委托')  # 这里填功能
 # @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
+@allure.tag('Script owner : 张广南', 'Case owner : 邱大伟')
 class TestContractTriggerOrder_021:
 
     @allure.step('前置条件')
     def setup(self):
-        print(''' 不要触发 ''')
+        print('\n前置条件')
+        ATP.close_all_position()
+        ATP.clean_market()
 
     @allure.title('撤销止盈止损订单')
     @allure.step('测试执行')
@@ -48,6 +54,7 @@ class TestContractTriggerOrder_021:
             pass
         with allure.step('3、下一单带有止盈止损的限价单'):
             r = contract_api.contract_history_trade(symbol=symbol_period, size='1')
+            pprint(r)
             self.price = r['data'][0]['data'][0]['price']
             orderprice = round((self.price * 0.99), 1)
             sltriggerprice = round((self.price * 0.97), 1)
@@ -72,8 +79,9 @@ class TestContractTriggerOrder_021:
         with allure.step('4、待限价单成交之后，在当前委托-止盈止损界面点击订单右方的撤销按钮有结果A'):
             contract_api.contract_order(symbol=symbol, contract_type='this_week', price=orderprice, volume='1',
                                         direction='sell', offset='open', lever_rate='5', order_price_type='limit')
-            time.sleep(2)
+            time.sleep(4)
             r = contract_api.contract_tpsl_openorders(symbol=symbol)
+            pprint(r)
             actual_orderinfo = r['data']['orders'][0]
             tporderid = actual_orderinfo['order_id']
             expectdic = {'symbol': symbol,

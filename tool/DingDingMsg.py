@@ -47,8 +47,14 @@ class DingDingMsg:
                     case_result_summary[result_info["status"]].add(result_info['fullName'])
         passed_cases = case_result_summary.pop('passed')
         result = {'passed': len(passed_cases)}
-        result.update({key: len(value - passed_cases) for key, value in case_result_summary.items()})
-        result['total'] = sum([result[key] for key in result])
+        failed_cases = case_result_summary.pop('failed')
+        result['failed'] = len(failed_cases - passed_cases)
+        broken_cases = case_result_summary.pop('broken')
+        result['broken'] = len(broken_cases - failed_cases - passed_cases)
+        result['skipped'] = len(case_result_summary.pop('skipped') - passed_cases - failed_cases - broken_cases)
+        # result.update({key: len(value - passed_cases) for key, value in case_result_summary.items()})
+
+        result['total'] = sum([value for value in result.values()])
 
         return result
 
