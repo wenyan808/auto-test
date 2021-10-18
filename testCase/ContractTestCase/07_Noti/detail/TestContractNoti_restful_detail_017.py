@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """# @Date    : 20211018
-# @Author : 
+# @Author : chenwei
     用例标题
         restful请求批量聚合行情 不传合约代码(日期格式)
     前置条件
@@ -45,8 +45,10 @@ class TestContractNoti_restful_detail_017:
         self.from_time = int(time.time())
         print(''' 制造成交数据 ''')
         ATP.make_market_depth()
-        time.sleep(0.5)
-        ATP.clean_market()
+        sell_price = ATP.get_adjust_price(1.02)
+        buy_price = ATP.get_adjust_price(0.98)
+        ATP.common_user_make_order(price=sell_price, direction='sell')
+        ATP.common_user_make_order(price=buy_price, direction='buy')
         time.sleep(1)
         self.current_price = ATP.get_current_price()
         self.to_time = int(time.time())
