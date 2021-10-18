@@ -2316,7 +2316,8 @@ class LinearServiceAPI:
                 self.linear_cross_order(contract_code=contract_code, price=price, volume=str(volume1), direction='sell',
                                         offset='close', lever_rate=leverrate, order_price_type='limit')
                 time.sleep(2)
-                r = self.linear_cross_position_info(contract_code=contract_code)
+                r = self.linear_cross_position_info(
+                    contract_code=contract_code)
                 count = len(r["data"])
                 if count == 0:
                     print("清除持仓成功")
@@ -2340,7 +2341,8 @@ class LinearServiceAPI:
         @param position_type: 查询的仓位类型, isolated: 逐仓
         @return:
         """
-        position_info = self.linear_position_info(contract_code=contract_code).get("data")
+        position_info = self.linear_position_info(
+            contract_code=contract_code).get("data")
         if not position_info:
             return False
         else:
@@ -2357,4 +2359,5 @@ class LinearServiceAPI:
 
 # 定义t并传入公私钥和URL,供用例直接调用
 t = LinearServiceAPI(URL, ACCESS_KEY, SECRET_KEY)
-common_user_linear_service_api = LinearServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
+common_user_linear_service_api = LinearServiceAPI(
+    URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)

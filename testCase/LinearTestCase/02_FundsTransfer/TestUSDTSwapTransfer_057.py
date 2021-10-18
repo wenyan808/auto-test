@@ -37,7 +37,7 @@ from tool.atp import ATP
 @allure.story('母账户划转到子账户')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : Alex Li')
 @pytest.mark.stable
-class TestUSDTSwapTransfer_052:
+class TestUSDTSwapTransfer_057:
 
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
@@ -59,17 +59,16 @@ class TestUSDTSwapTransfer_052:
             pass
         with allure.step('6、点击“确定按钮”'):
             # 挂空单
-            contract_code = "BTC_USDT"
+            contract_code = 'ETH-USDT'
             current = ATP.get_current_price(contract_code=contract_code)
             offset = 'open'
             direction = 'sell'
             res = ATP.current_user_make_order(
                 contract_code=contract_code, price=current, volume=10, direction=direction, offset=offset)
             pprint(res)
-            # 全仓
-            margin_account = 'USDT'
-            master_account_info = linear_api.linear_cross_account_info(
-                margin_account=margin_account)
+            # 母账户逐仓
+            master_account_info = linear_api.linear_account_info(
+                contract_code=contract_code)
 
             pprint(master_account_info)
             # 可划转数量
@@ -88,7 +87,7 @@ class TestUSDTSwapTransfer_052:
             if margin_balance > withdraw_available:
                 amount = round(
                     withdraw_available+(margin_balance-withdraw_available)/2, 4)
-            res = linear_api.linear_master_sub_transfer(from_margin_account='USDT', to_margin_account='BTC-USDT',
+            res = linear_api.linear_master_sub_transfer(from_margin_account='ETH-USDT', to_margin_account='BTC-USDT',
                                                         amount=amount,
                                                         sub_uid=sub_uid,
                                                         type='master_to_sub', asset="USDT")
