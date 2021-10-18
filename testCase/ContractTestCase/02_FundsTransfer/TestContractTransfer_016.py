@@ -80,7 +80,6 @@ class TestContractTransfer_016:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        print('\n恢复环境操作')
         print(ATP.clean_market())
         # 撤销当前用户 某个品种所有限价挂单
         print(ATP.cancel_all_order())

@@ -190,6 +190,9 @@ class ATP:
             response = api_key_post(conf.URL, conf.POSITION_INFO_URL, json_body, conf.ACCESS_KEY,
                                     conf.SECRET_KEY)
 
+        if 'data' not in response:
+            err_msg = {'status': 'error', 'err_msg': '获取仓位出错', 'response': response}
+            return err_msg
         position_list = response["data"]
         if conf.SYSTEM_TYPE == 'Delivery':
             volume_dict = {item['direction']: int(item['volume']) for item in
@@ -249,9 +252,13 @@ class ATP:
         pprint(response)
         err_msg = {'status': 'error', 'err_msg': '获取index价出错', 'response': response}
         data = response.get('data', {})
-        assert isinstance(data, list) and len(data) == 1, err_msg
+        if not (isinstance(data, list) and len(data) == 1):
+            print(err_msg)
+            return -1
         index_price_record = data[0]
-        assert 'index_price' in index_price_record, err_msg
+        if not 'index_price' in index_price_record:
+            print(err_msg)
+            return -1
         index_price = index_price_record['index_price']
         print(f"当前index价 ： {index_price}")
         return index_price
@@ -282,7 +289,7 @@ class ATP:
             contract_code = conf.DEFAULT_CONTRACT_CODE
         if not price:
             price = cls.get_current_price(contract_code)
-        if price < 0:
+        if not isinstance(price, int) or price < 0:
             return {"status": "err", "err_msg": "获取最新价失败"}
         json_body = cls.get_base_json_body(contract_code)
         order_json = {
@@ -404,6 +411,8 @@ class ATP:
             contract_code = conf.DEFAULT_CONTRACT_CODE
         if not base_price:
             base_price = ATP.get_current_price(contract_code=contract_code)
+            print('base_price is : ', base_price)
+            # if base_price
         if contract_code in cls.price_precision:
             return round(base_price * rate, cls.price_precision[contract_code])
         else:
