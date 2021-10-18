@@ -37,7 +37,7 @@ from tool.atp import ATP
 @allure.story('母账户划转到子账户')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : Alex Li')
 @pytest.mark.stable
-class TestUSDTSwapTransfer_052:
+class TestUSDTSwapTransfer_091:
 
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)

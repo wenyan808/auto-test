@@ -37,7 +37,7 @@ from tool.atp import ATP
 @allure.story('子账户全仓划转到母账户全仓（挂空单）')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : Alex Li')
 @pytest.mark.stable
-class TestUSDTSwapTransfer_071:
+class TestUSDTSwapTransfer_099:
 
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
