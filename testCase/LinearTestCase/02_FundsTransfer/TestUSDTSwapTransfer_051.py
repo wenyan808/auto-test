@@ -7,7 +7,7 @@
 所属分组
     资金划转（含母子划转，借贷币划转）
 用例标题
-    全仓划转到逐仓（挂多单）
+    母账户全仓划转到子账户逐仓（挂多单）
 前置条件
     
 步骤/文本
@@ -44,7 +44,7 @@ class TestUSDTSwapTransfer_056:
     def setup(self, sub_uid):
         print("前置条件  {}".format(sub_uid))
 
-    @allure.title('全仓划转到逐仓（挂多单）')
+    @allure.title('母账户全仓划转到子账户逐仓（挂多单）')
     @allure.step('测试执行')
     def test_execute(self, sub_uid):
         with allure.step('1、登入合约界面'):
