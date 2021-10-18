@@ -101,14 +101,13 @@ def pytest_runtest_setup(item):
 def pytest_runtest_makereport(item):
     outcome = yield
     report = outcome.get_result()
-    if report.when == 'setup':
-        for pytestmark in item.cls.pytestmark:
-            if pytestmark.kwargs == {'label_type': 'epic'}:
-                item.cls.pytestmark.remove(pytestmark)
-                # pytestmark.args = epic_mapping[conf.SYSTEM_TYPE]
+    # if report.when == 'setup':
+    #     for pytestmark in item.cls.pytestmark:
+    #         if pytestmark.kwargs == {'label_type': 'epic'}:
+    #             item.cls.pytestmark.remove(pytestmark)
 
-        pytestmark = Mark(name='allure_label', args=(epic_mapping[conf.SYSTEM_TYPE],), kwargs={'label_type': 'epic'})
-        item.cls.pytestmark.append(pytestmark)
+        # pytestmark = Mark(name='allure_label', args=(epic_mapping[conf.SYSTEM_TYPE],), kwargs={'label_type': 'epic'})
+        # item.cls.pytestmark.append(pytestmark)
     if report.when == 'call':
         api_test_data = item.funcargs.get("api_test_data", {})
         if api_test_data:

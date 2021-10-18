@@ -75,7 +75,8 @@ def run(system_type=None, run_env='Test6', test_type=''):
     elif type(system_type) == str:
         if system_type.capitalize() in ['Contract', 'Swap', 'Linear', 'Option', 'Schema']:
             set_run_env_and_system_type(run_env, system_types[system_type.capitalize()])
-            ATP.make_market_depth(market_price=ATP.get_index_price())
+            index_price = ATP.get_index_price()
+            ATP.make_market_depth(market_price=index_price if index_price > 0 else ATP.get_current_price())
             args.append(f"testCase/{system_type.capitalize()}TestCase")
             pytest.main(args=args)
             ATP.cancel_all_types_order()
