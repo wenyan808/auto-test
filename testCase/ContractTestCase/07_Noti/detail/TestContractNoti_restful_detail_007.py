@@ -27,9 +27,11 @@ from pprint import pprint
 import pytest, allure, random, time
 
 
-@allure.epic('业务线')  # 这里填业务线
-@allure.feature('功能')  # 这里填功能
-@allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@allure.epic('反向交割')  # 这里填业务线
+@allure.feature('行情')  # 这里填功能
+@allure.story('聚合行情')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
+@allure.tag('Script owner : chenwei', 'Case owner : 吉龙')
 class TestContractNoti_restful_detail_007:
 
     @allure.step('前置条件')

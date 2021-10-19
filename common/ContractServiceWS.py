@@ -208,4 +208,23 @@ class WebsocketSevice:
         url = self.__url + path
         return api_key_sub(url, self.__access_key, self.__secret_key, subs)
 
+    #WS订阅成交(req)
+    def contract_req_tradedetail(self, contract_code=None):
+        subs = {
+            "req": "market.{}.trade.detail".format(contract_code),
+            "id": "id1",
+        }
+        path = '/ws'
+        url = self.__url + path
+        return sub(url, subs)
+
+    #WS订阅成交(sub)
+    def contract_sub_tradedetail(self, contract_code=None):
+        subs = {
+            "sub": "market.{}.trade.detail".format(contract_code),
+            "id": "id1",
+        }
+        path = '/ws'
+        url = self.__url + path
+        return sub(url, subs)
 t = WebsocketSevice(WSURL, ACCESS_KEY, SECRET_KEY)

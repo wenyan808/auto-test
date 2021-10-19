@@ -84,6 +84,5 @@ class TestLinearNoti_restful_kline_001:
         print('\n恢复环境操作')
         ATP.clean_market()
 
-
 if __name__ == '__main__':
     pytest.main()

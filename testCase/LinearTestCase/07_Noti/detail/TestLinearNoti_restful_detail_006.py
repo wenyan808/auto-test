@@ -31,6 +31,7 @@ from tool.atp import ATP
 @allure.feature('行情')  # 这里填功能
 @allure.story('聚合行情')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
+@allure.tag('Script owner : chenwei', 'Case owner : 吉龙')
 class TestLinearNoti_restful_detail_006:
 
     from_time = None
