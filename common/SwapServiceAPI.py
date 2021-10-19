@@ -100,11 +100,14 @@ class SwapService:
         """
 
         params = {'contract_code': contract_code,
-                  'period': period,
-                  'from': From,
-                  'to': to}
+                  'period': period}
         if size:
             params['size'] = size
+        if From:
+            params['from'] = From
+        if to:
+            params['to'] = to
+
         url = self.__url + '/swap-ex/market/history/kline'
         return api_http_get(url, params)
 
