@@ -26,6 +26,7 @@ from tool.atp import ATP
 @allure.feature('WS订阅')  # 这里填功能
 @allure.story('订阅BBO')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
+@allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 class TestLinearNoti_004:
 
     @allure.step('前置条件')
