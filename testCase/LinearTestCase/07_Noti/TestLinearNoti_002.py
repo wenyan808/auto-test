@@ -32,48 +32,34 @@ class TestLinearNoti_002:
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, contract_code, lever_rate, offsetO, directionB, directionS):
-        self.lever_rate = lever_rate
-        self.contract_code = contract_code
-        self.order_price_type = 'limit'
-        self.offsetO = offsetO
-        self.currentPrice = ATP.get_current_price()  # 最新价
-        self.lowPrice = round(self.currentPrice * 0.99, 2)  # 买入价
-        self.highPrice = round(self.currentPrice * 1.01, 2)  # 触发价
-        self.directionB = directionB
-        self.directionS = directionS
-        ATP.common_user_make_order(price=self.lowPrice, direction='buy')
-        ATP.common_user_make_order(price=self.highPrice, direction='sell')
-        # 等待深度更新
-        time.sleep(3)
+        print("\n清盘》》》》", ATP.clean_market())
+
+        lever_rate = 5
+
+        # 获取交割合约当前价格
+        sell_price = ATP.get_adjust_price(rate=1.01)
+        buy_price = ATP.get_adjust_price(rate=0.99)
+
+        print('下两单，更新盘口数据')
+        linear_api.linear_order(contract_code=contract_code, price=buy_price, volume='1', direction=directionB,
+                                offset=offsetO, lever_rate=lever_rate, order_price_type='limit')
+        linear_api.linear_order(contract_code=contract_code, price=sell_price, volume='1', direction=directionS,
+                                offset=offsetO, lever_rate=lever_rate, order_price_type='limit')
+
     @allure.title('WS订阅深度(150档不合并，即传参step0)')
     @allure.step('测试执行')
-    def test_execute(self):
+    def test_execute(self,contract_code):
         with allure.step('WS订阅深度(150档不合并，即传参step0)，可参考文档：https://docs.huobigroup.com/docs/usdt_swap/v1/cn/#websocket-3'):
-            self.depthType = 'step0'
+            depthType = 'step0'
             subs = {
-                "sub": "market.{}.depth.{}".format(self.contract_code, self.depthType),
+                "sub": "market.{}.depth.{}".format(contract_code,depthType),
                 "id": "id5"
             }
-            tryTimes = 1
-            while True:
-                result = linear_service_ws.linear_sub(subs)
-                resultStr = '\nDepth返回结果 = ' + str(result)
-                print('\033[1;32;49m%s\033[0m' % resultStr)
-                # 由于Kline可能更新有点慢，等1秒，再执行一次获取结果；避免失败用例造成死循环；这里重试5次
-                if 'tick' in result:
-                    break
-                else:
-                    # 超过5次，跳过循环
-                    if tryTimes > 5:
-                        break
-                    else:
-                        tryTimes = tryTimes + 1
-                        time.sleep(1)
-                        print('k线未返回预期数据，等待1秒，第', tryTimes - 1, '次重试………………')
-            # 请求topic校验
-            assert result['ch'] == "market." + self.contract_code + ".depth." + self.depthType
-            assert result['tick']['bids'] is not None , 'bids为空'
-            assert result['tick']['asks'] is not None , 'asks为空'
+            result = linear_service_ws.linear_sub(subs)
+            result_str = '\nDepth返回结果 = ' + str(result)
+            print('\033[1;32;49m%s\033[0m' % result_str)
+            assert result['tick']['bids'] is not None
+            assert result['tick']['asks'] is not None
             pass
 
     @allure.step('恢复环境')
