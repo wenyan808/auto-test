@@ -30,9 +30,10 @@ from tool.atp import ATP
 
 
 @allure.epic('反向交割')  # 这里填业务线
-@allure.feature('功能')  # 这里填功能
-@allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@allure.feature('行情')  # 这里填功能
+@allure.story('ws k线')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
+@allure.tag('Script owner : chenwei', 'Case owner : 吉龙')
 class TestContractNoti_ws_kline_088:
 
     from_time = None

@@ -34,6 +34,7 @@ from config.conf import COMMON_ACCESS_KEY, COMMON_SECRET_KEY, URL
 @allure.feature('WS订阅')  # 这里填功能
 @allure.story('行情')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
+@allure.tag('Script owner : chenwei', 'Case owner : 吉龙')
 class TestContractNoti_007:
 
     @allure.step('前置条件')
