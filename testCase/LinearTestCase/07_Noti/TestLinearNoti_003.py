@@ -48,33 +48,20 @@ class TestLinearNoti_003:
 
     @allure.title('WS订阅深度(20档不合并，即传参step6)')
     @allure.step('测试执行')
-    def test_execute(self):
+    def test_execute(self,contract_code):
         with allure.step('WS订阅深度(20档不合并，即传参step6)，可参考文档：https://docs.huobigroup.com/docs/usdt_swap/v1/cn/#websocket-3'):
-            self.depthType = 'step6'
+            depthType = 'step6'
             subs = {
-                "sub": "market.{}.depth.{}".format(self.contract_code, self.depthType),
+                "sub": "market.{}.depth.{}".format(contract_code, depthType),
                 "id": "id5"
             }
-            tryTimes = 1
-            while True:
-                result = linear_service_ws.linear_sub(subs)
-                resultStr = '\nDepth返回结果 = ' + str(result)
-                print('\033[1;32;49m%s\033[0m' % resultStr)
-                # 由于Kline可能更新有点慢，等1秒，再执行一次获取结果；避免失败用例造成死循环；这里重试5次
-                if 'tick' in result:
-                    break
-                else:
-                    # 超过5次，跳过循环
-                    if tryTimes > 5:
-                        break
-                    else:
-                        tryTimes = tryTimes + 1
-                        time.sleep(1)
-                        print('k线未返回预期数据，等待1秒，第', tryTimes - 1, '次重试………………')
+            result = linear_service_ws.linear_sub(subs)
+            result_str = '\nDepth返回结果 = ' + str(result)
+            print('\033[1;32;49m%s\033[0m' % result_str)
             # 请求topic校验
-            assert result['ch'] == "market." + self.contract_code + ".depth." + self.depthType
-            assert result['tick']['bids'] is not None, 'bids为空'
-            assert result['tick']['asks'] is not None, 'asks为空'
+            assert result['ch'] == "market." + contract_code + ".depth." + depthType
+            assert result['tick']['bids'] is not None
+            assert result['tick']['asks'] is not None
             pass
 
     @allure.step('恢复环境')

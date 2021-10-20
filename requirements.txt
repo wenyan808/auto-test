@@ -46,3 +46,4 @@ zope.event==4.5.0
 zope.interface==5.2.0
 pytest-rerunfailures==10.2
 redis~=3.5.3
+pymysql==1.0.2

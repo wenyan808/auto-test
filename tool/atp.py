@@ -289,7 +289,7 @@ class ATP:
             contract_code = conf.DEFAULT_CONTRACT_CODE
         if not price:
             price = cls.get_current_price(contract_code)
-        if not isinstance(price, int) or price < 0:
+        if not isinstance(price, (float, int)) or price < 0:
             return {"status": "err", "err_msg": "获取最新价失败"}
         json_body = cls.get_base_json_body(contract_code)
         order_json = {
