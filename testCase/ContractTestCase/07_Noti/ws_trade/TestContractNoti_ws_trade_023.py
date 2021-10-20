@@ -48,6 +48,9 @@ class TestContractNoti_ws_trade_023:
         ATP.common_user_make_order(price=sell_price, direction='sell')
         ATP.common_user_make_order(price=buy_price, direction='buy')
         time.sleep(2)
+        self.current_price = ATP.get_current_price()
+        pprint(self.current_price)
+
 
     @allure.title('WS订阅成交(req) ')
     @allure.step('测试执行')
@@ -60,7 +63,7 @@ class TestContractNoti_ws_trade_023:
                 assert False
             if tradedetail['direction'] == None:
                 assert False
-            if tradedetail['price'] == None:
+            if int(tradedetail['price']) != int(self.current_price):
                 assert False
             if tradedetail['quantity'] == None:
                 assert False

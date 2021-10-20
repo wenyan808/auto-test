@@ -213,6 +213,7 @@ class WebsocketSevice:
         subs = {
             "req": "market.{}.trade.detail".format(contract_code),
             "id": "id1",
+            "size": 1
         }
         path = '/ws'
         url = self.__url + path

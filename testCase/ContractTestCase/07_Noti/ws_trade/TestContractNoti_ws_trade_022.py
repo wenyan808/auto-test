@@ -49,6 +49,8 @@ class TestContractNoti_ws_trade_022:
         time.sleep(2)
         ATP.common_user_make_order(price=buy_price,order_price_type='optimal_20', direction='buy')
         time.sleep(1)
+        self.current_price = ATP.get_current_price()
+        pprint(self.current_price)
 
     @allure.title('WS订阅成交(sub)  爆仓成交')
     @allure.step('测试执行')
@@ -56,12 +58,12 @@ class TestContractNoti_ws_trade_022:
         with allure.step('详见官方文档'):
             result = contract_service_ws.contract_sub_tradedetail(symbol_period)
             pprint(result)
-            tradedetail = result['data'][0]
+            tradedetail = result['tick']['data'][0]
             if tradedetail['amount'] == None:
                 assert False
             if tradedetail['direction'] == None:
                 assert False
-            if tradedetail['price'] == None:
+            if int(tradedetail['price']) != int(self.current_price):
                 assert False
             if tradedetail['quantity'] == None:
                 assert False

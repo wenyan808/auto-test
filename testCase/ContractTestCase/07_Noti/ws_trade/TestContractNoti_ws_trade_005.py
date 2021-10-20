@@ -63,7 +63,7 @@ class TestContractNoti_ws_trade_005:
         with allure.step('详见官方文档'):
             result = contract_service_ws.contract_sub_tradedetail(symbol_period.lower())
             pprint(result)
-            tradedetail = result['data'][0]
+            tradedetail = result['tick']['data'][0]
             if tradedetail['amount'] == None:
                 assert False
             if tradedetail['direction'] == None:
@@ -73,8 +73,6 @@ class TestContractNoti_ws_trade_005:
             if tradedetail['quantity'] == None:
                 assert False
             if tradedetail['id'] == None:
-                assert False
-            if tradedetail['symbol'] == None:
                 assert False
 
     @allure.step('恢复环境')

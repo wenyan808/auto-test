@@ -63,8 +63,8 @@ class TestContractNoti_ws_trade_002:
         with allure.step('详见官方文档'):
             result = contract_service_ws.contract_sub_tradedetail(contract_code="")
             pprint(result)
-            data = result['data']
-            if data != None:
+            errmsg = result['err-msg']
+            if errmsg != "invalid topic market..trade.detail":
                 assert False
 
     @allure.step('恢复环境')
