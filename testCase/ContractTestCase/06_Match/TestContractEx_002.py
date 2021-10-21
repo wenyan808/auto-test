@@ -27,10 +27,12 @@ from pprint import pprint
 import pytest, allure, random, time
 from tool.atp import ATP
 from common.mysqlComm import orderSeq as DB_orderSeq
+
+
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
 @allure.story('委托单')  # 这里填子功能，没有的话就把本行注释掉
-@pytest.mark.willwchen
+@pytest.mark.stable
 @allure.tag('Script owner : chenwei', 'Case owner : 邱大伟')
 class TestContractEx_002:
 
@@ -53,8 +55,8 @@ class TestContractEx_002:
             contract_code = result['this_week']
             sell_price = ATP.get_adjust_price(1.02)
             buy_price = ATP.get_adjust_price(0.98)
-            ATP.common_user_make_order( price=sell_price, direction='sell')
-            orderInfo = ATP.common_user_make_order(price=buy_price, direction='buy')
+            orderInfo = ATP.common_user_make_order( price=sell_price, direction='sell')
+            ATP.common_user_make_order(price=buy_price, direction='buy')
             time.sleep(1)
             self.current_price = ATP.get_current_price()
             orderId = orderInfo['data']['order_id']
