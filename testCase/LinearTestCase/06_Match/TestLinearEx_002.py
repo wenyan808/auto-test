@@ -6,7 +6,7 @@
 所属分组
     合约测试基线用例//03 正向永续//06 撮合//委托单
 用例标题
-    撮合 限价委托 买入 开仓     
+    撮合 限价委托 卖出 开仓     
 前置条件
     
 步骤/文本
@@ -17,7 +17,6 @@
 优先级
     0
 """
-
 from pprint import pprint
 import pytest
 import allure
@@ -26,26 +25,26 @@ from tool.atp import ATP
 
 @allure.epic('正向永续')  # 这里填业务线
 @allure.feature('撮合//委托单')  # 这里填功能
-@allure.story('撮合 限价委托 买入 开仓')  # 这里填子功能，没有的话就把本行注释掉
+@allure.story('撮合 限价委托 卖出 开仓')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : Alex Li')
 @pytest.mark.stable
-class TestLinearEx_001:
+class TestLinearEx_002:
 
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, contract_code):
         print("前置条件  {}".format(contract_code))
 
-    @allure.title('撮合 限价委托 买入 开仓')
+    @allure.title('撮合 限价委托 卖出 开仓')
     @allure.step('测试执行')
     def test_execute(self, contract_code):
-        with allure.step('1、 撮合 限价委托 买入 开仓'):
+        with allure.step('1、 撮合 限价委托 卖出 开仓'):
             pass
         with allure.step('2、点击“确定按钮”'):
 
             current = ATP.get_current_price(contract_code=contract_code)
             offset = 'open'
-            direction = 'buy'
+            direction = 'sell'
             order_price_type = "limit"
             res = ATP.current_user_make_order(order_price_type=order_price_type, contract_code=contract_code,
                                               price=current, volume=10, direction=direction, offset=offset)
