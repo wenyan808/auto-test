@@ -22,20 +22,20 @@ class mysqlComm(object):
 
     def __init__(self, dbConf):
 
-        if not self._is_init:
-            dbConfProperties = str(dbConf).split(';')
-            self.__host = dbConfProperties[0]
-            self.__port = int(dbConfProperties[1])
-            self.__userName = dbConfProperties[2]
-            self.__password = dbConfProperties[3]
-            self.__dbName = dbConfProperties[4]
-            try:
-                self.__db = pymysql.connect(host=self.__host, port=self.__port, user=self.__userName,
-                                            password=self.__password, database=self.__dbName)
-                self._is_init = True
-            except Exception as e:
-                print('pymysql.connect Fail')
-                print(e)
+        # if not self._is_init:
+        dbConfProperties = str(dbConf).split(';')
+        self.__host = dbConfProperties[0]
+        self.__port = int(dbConfProperties[1])
+        self.__userName = dbConfProperties[2]
+        self.__password = dbConfProperties[3]
+        self.__dbName = dbConfProperties[4]
+        try:
+            self.__db = pymysql.connect(host=self.__host, port=self.__port, user=self.__userName,
+                                        password=self.__password, database=self.__dbName)
+            self._is_init = True
+        except Exception as e:
+            print('pymysql.connect Fail')
+            print(e)
 
     def execute(self, sqlStr):
         try:
