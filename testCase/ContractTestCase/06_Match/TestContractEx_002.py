@@ -32,7 +32,7 @@ from common.mysqlComm import orderSeq as DB_orderSeq
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
 @allure.story('委托单')  # 这里填子功能，没有的话就把本行注释掉
-@pytest.mark.stable
+@pytest.mark.willwchen
 @allure.tag('Script owner : chenwei', 'Case owner : 邱大伟')
 class TestContractEx_002:
 
