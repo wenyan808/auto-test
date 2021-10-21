@@ -21,8 +21,9 @@ class mysqlComm(object):
     #     return mysqlComm._instance
 
     def __init__(self, dbConf):
-
+        print("before not")
         if not self._is_init:
+            print("after not")
             dbConfProperties = str(dbConf).split(';')
             self.__host = dbConfProperties[0]
             self.__port = int(dbConfProperties[1])
@@ -30,8 +31,10 @@ class mysqlComm(object):
             self.__password = dbConfProperties[3]
             self.__dbName = dbConfProperties[4]
             try:
+                print("before db")
                 self.__db = pymysql.connect(host=self.__host, port=self.__port, user=self.__userName,
                                             password=self.__password, database=self.__dbName)
+                print("after db")
                 self._is_init = True
             except Exception as e:
                 print('pymysql.connect Fail')
