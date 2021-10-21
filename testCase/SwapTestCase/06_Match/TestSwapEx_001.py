@@ -22,6 +22,7 @@ from common.mysqlComm import orderSeq as DB_orderSeq
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
 @allure.story('限价委托-开多')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 class TestSwapEx_001:
 
