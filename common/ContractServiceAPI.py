@@ -33,7 +33,6 @@ class ContractServiceAPI:
             params['contract_type'] = contract_type
         if contract_code:
             params['contract_code'] = contract_code
-
         url = self.__url + '/api/v1/contract_contract_info'
         return api_http_get(url, params)
 
@@ -127,6 +126,7 @@ class ContractServiceAPI:
         params = {'symbol': symbol}
 
         url = self.__url + '/market/detail/merged'
+        pprint(url)
         return api_http_get(url, params)
 
     # 获取市场最近成交记录

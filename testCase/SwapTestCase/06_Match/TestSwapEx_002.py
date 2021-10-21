@@ -13,7 +13,7 @@
     优先级
         0
     用例别名
-        TestSwapEx_001
+        TestSwapEx_002
 """
 from tool.atp import ATP
 import pytest, allure, random, time

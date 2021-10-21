@@ -10,15 +10,15 @@ from config.conf import MYSQL_ORDERSEQ_CONF
 
 
 class mysqlComm(object):
-    _instance_lock = threading.Lock()
-    _is_init = False
+    # _instance_lock = threading.Lock()
+    # _is_init = False
 
-    def __new__(cls, *args, **kwargs):
-        if not hasattr(mysqlComm, "_instance"):
-            with mysqlComm._instance_lock:
-                if not hasattr(mysqlComm, "_instance"):
-                    mysqlComm._instance = object.__new__(cls)
-        return mysqlComm._instance
+    # def __new__(cls, *args, **kwargs):
+    #     if not hasattr(mysqlComm, "_instance"):
+    #         with mysqlComm._instance_lock:
+    #             if not hasattr(mysqlComm, "_instance"):
+    #                 mysqlComm._instance = object.__new__(cls)
+    #     return mysqlComm._instance
 
     def __init__(self, dbConf):
 

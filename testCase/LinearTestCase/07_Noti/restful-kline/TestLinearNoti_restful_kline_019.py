@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """# @Date    : 20211013
-# @Author : 
+# @Author : chenwei
     用例标题
         restful请求K线 15min 传参from,to
     前置条件
@@ -27,9 +27,9 @@ from pprint import pprint
 import pytest, allure, random, time
 from tool.atp import ATP
 
-@allure.epic('业务线')  # 这里填业务线
-@allure.feature('功能')  # 这里填功能
-@allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@allure.epic('正向永续')  # 这里填业务线
+@allure.feature('行情')  # 这里填功能
+@allure.story('restful k线')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
 class TestLinearNoti_restful_kline_019:
 
@@ -44,8 +44,10 @@ class TestLinearNoti_restful_kline_019:
         self.from_time = int(time.time())
         print(''' 制造成交数据 ''')
         ATP.make_market_depth()
-        time.sleep(0.5)
-        ATP.clean_market()
+        sell_price = ATP.get_adjust_price(1.02)
+        buy_price = ATP.get_adjust_price(0.98)
+        ATP.common_user_make_order(price=sell_price, direction='sell')
+        ATP.common_user_make_order(price=buy_price, direction='buy')
         time.sleep(1)
         self.current_price = ATP.get_current_price()
         self.to_time = int(time.time())
