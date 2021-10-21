@@ -7,7 +7,7 @@ import threading
 import pymysql
 
 from config.conf import MYSQL_ORDERSEQ_CONF
-
+import traceback
 
 class mysqlComm(object):
     _instance_lock = threading.Lock()
@@ -47,7 +47,8 @@ class mysqlComm(object):
             print('执行结果 = ' + str(data))
             return data
         except Exception as e:
-            print('SQL执行异常，操作回滚={}', e)
+            print(traceback.print_exc())
+            print('SQL执行异常，操作回滚={}', str(e))
             self.__db.rollback()
             self.__db.close()
 
