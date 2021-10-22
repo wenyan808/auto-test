@@ -69,7 +69,7 @@ class TestUSDTSwapTransfer_050:
             if master_account_info:
                 margin_balance = float(
                     master_account_info['data'][0]['margin_balance'])
-            # 划转金额大于可转数量
+            # 划转金额大于账户权益
             amount = round(margin_balance+2, 2)
             res = linear_api.linear_master_sub_transfer(from_margin_account='USDT', to_margin_account='BTC-USDT',
                                                         amount=amount,
