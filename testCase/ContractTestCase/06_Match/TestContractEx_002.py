@@ -22,12 +22,13 @@ from common.LinearServiceAPI import t as linear_api
 from common.LinearServiceOrder import t as linear_order
 from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
-
+from config.conf import MYSQL_ORDERSEQ_CONF
 from pprint import pprint
 import pytest, allure, random, time
 from tool.atp import ATP
 from common.mysqlComm import orderSeq as DB_orderSeq
-
+import logging
+import pymysql
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
@@ -49,6 +50,8 @@ class TestContractEx_002:
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
         with allure.step('详见官方文档'):
+            self._is_init = False
+            db = self.getdbconnection(MYSQL_ORDERSEQ_CONF)
             result = contract_api.contract_get_datacode(symbol)
             pprint(result)
             #获取当周合约
@@ -76,6 +79,25 @@ class TestContractEx_002:
                     if n == 5:
                         assert False
 
+    def getdbconnection(self, dbConf):
+        pprint("before not")
+        if not self._is_init:
+            pprint("after not")
+            dbConfProperties = str(dbConf).split(';')
+            self.__host = dbConfProperties[0]
+            self.__port = int(dbConfProperties[1])
+            self.__userName = dbConfProperties[2]
+            self.__password = dbConfProperties[3]
+            self.__dbName = dbConfProperties[4]
+            try:
+                pprint("before db")
+                self.__db = pymysql.connect(host=self.__host, port=self.__port, user=self.__userName,
+                                            password=self.__password, database=self.__dbName)
+                pprint("after db")
+                self._is_init = True
+            except Exception as e:
+                pprint('pymysql.connect Fail')
+                pprint(e)
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
