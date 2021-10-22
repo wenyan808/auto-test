@@ -63,7 +63,7 @@ class TestContractNoti_ws_trade_017:
                 assert False
             if tradedetail['direction'] == None:
                 assert False
-            if int(tradedetail['price']) == int(self.buy_price):
+            if float(tradedetail['price']) == float(self.buy_price):
                 assert False
             if tradedetail['quantity'] == None:
                 assert False

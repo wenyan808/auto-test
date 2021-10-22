@@ -48,17 +48,24 @@ class TestContractEx_003:
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
         with allure.step('详见官方文档'):
-            result = contract_api.contract_get_datacode(symbol)
-            pprint(result)
-            # 获取当周合约
-            contract_code = result['this_week']
+            contracttype = 'this_week'
+            leverrate = 5
+            #获取当周合约
             sell_price = ATP.get_adjust_price(1.02)
             buy_price = ATP.get_adjust_price(0.98)
-            ATP.common_user_make_order(price=sell_price, direction='sell')
-            orderInfo = ATP.common_user_make_order(price=buy_price, direction='buy')
+
+            sell_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=sell_price, volume='1',
+                                            direction='sell', offset='open', lever_rate=leverrate,
+                                            order_price_type='limit')
+            pprint(sell_order)
+            buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=buy_price, volume='1',
+                                            direction='buy', offset='open', lever_rate=leverrate,
+                                            order_price_type='limit')
+            pprint(buy_order)
+
             time.sleep(1)
             self.current_price = ATP.get_current_price()
-            orderId = orderInfo['data']['order_id']
+            orderId = buy_order['data']['order_id']
             strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
                      "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderId)
 
