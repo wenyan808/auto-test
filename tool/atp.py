@@ -375,7 +375,7 @@ class ATP:
                                                   order_price_type=order_price_type, user='current', iscross=iscross)
 
     @classmethod
-    def make_market_depth(cls, contract_code=None, market_price=None, volume=10):
+    def make_market_depth(cls, contract_code=None, market_price=None, volume=10, depth_count=1):
         if not contract_code:
             contract_code = conf.DEFAULT_CONTRACT_CODE
         # 清盘
@@ -389,10 +389,11 @@ class ATP:
         # 按目标价格成交
         print(cls.common_user_make_order(price=market_price, direction='buy'))
         print(cls.common_user_make_order(price=market_price, direction='sell'))
-        sell_price = cls.get_adjust_price(1.01, base_price=market_price)
-        buy_price = cls.get_adjust_price(0.99, base_price=market_price)
-        print(cls.common_user_make_order(price=buy_price, direction='buy', volume=volume))
-        print(cls.common_user_make_order(price=sell_price, direction='sell', volume=volume))
+        for index_depth in range(1, depth_count + 1):
+            sell_price = cls.get_adjust_price(1 + (0.01 * index_depth), base_price=market_price)
+            buy_price = cls.get_adjust_price(1 - (0.01 * index_depth), base_price=market_price)
+            print(cls.common_user_make_order(price=buy_price, direction='buy', volume=volume))
+            print(cls.common_user_make_order(price=sell_price, direction='sell', volume=volume))
 
         return True
 
@@ -424,7 +425,7 @@ if __name__ == '__main__':
     for system_type in system_types:
         conf.set_run_env_and_system_type('Test6', system_type)
         index_price = ATP.get_index_price()
-        ATP.make_market_depth(market_price=index_price)
+        ATP.make_market_depth(market_price=index_price,depth_count=5)
         # print(ATP.get_api_test_data("test_linear_account_info"))
         # print(ATP.get_api_test_data("test_linear_account_info", priority_list=["P0", "P1"]))
         #
