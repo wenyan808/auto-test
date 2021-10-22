@@ -27,22 +27,36 @@ from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
 import pytest, allure, random, time
+from common.SwapServiceWS import t as websocketsevice
+from tool.atp import ATP
 
 
 @allure.epic('反向永续')  # 这里填业务线
-@allure.feature('功能')  # 这里填功能
-@allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@allure.feature('指数基差')  # 这里填功能
+@allure.story('WS订阅')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
+@allure.tag('Script owner : chenwei', 'Case owner : 叶永刚')
 class Test_WS_swap_Index_005:
 
     @allure.step('前置条件')
     def setup(self):
-        print('''  ''')
+        ATP.cancel_all_types_order()
+        print(''' 制造成交数据 ''')
+        ATP.make_market_depth()
+        sell_price = ATP.get_adjust_price(1.02)
+        buy_price = ATP.get_adjust_price(0.98)
+        ATP.common_user_make_order(price=sell_price, direction='sell')
+        ATP.common_user_make_order(price=buy_price, direction='buy')
+        time.sleep(1)
+        self.current_price = ATP.get_current_price()
 
     @allure.title('WS订阅标记价格K线数据')
     @allure.step('测试执行')
-    def test_execute(self, symbol, symbol_period):
+    def test_execute(self, contract_code):
         with allure.step('WS订阅标记价格K线请求1min举例：{ sub": "market.$contract_code.mark_price.$period","id": "id1" }'):
-            pass
+            period = "1min"
+            r = websocketsevice.swap_sub_premium_index(contract_code, period)
+            pprint(r)
         with allure.step('返回成功举例：{"ch": "market.BTC-USD.mark_price.1min","ts": 1489474082831,"tick":{"vol": "0","close": "9800.12","count": "0","high": "9800.12","id": 1529898780,"low": "9800.12","open": "9800.12","trade_turnover": "0","amount": "0"   }}'):
             pass
         with allure.step('参考地址：https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#k-9"'):
@@ -51,6 +65,7 @@ class Test_WS_swap_Index_005:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
+        ATP.clean_market()
 
 
 if __name__ == '__main__':
