@@ -21,6 +21,7 @@
 from pprint import pprint
 import pytest
 import allure
+import time
 from tool.atp import ATP
 
 
@@ -51,7 +52,7 @@ class TestLinearEx_010:
             # 构造对手单
             ATP.common_user_make_order(contract_code=contract_code,
                                        price=current, volume=10, direction='buy', offset=offset)
-
+            time.sleep(1)
             res = ATP.current_user_make_order(order_price_type=order_price_type, contract_code=contract_code,
                                               price=current, volume=10, direction=direction, offset=offset)
             pprint(res)
