@@ -43,8 +43,8 @@ class TestSwapNoti_depth_031:
         print('下两单，更新盘口数据')
         swap_api.swap_order(contract_code=contract_code, price=buy_price, volume='1', direction=directionB,
                             offset=offsetO, lever_rate=lever_rate, order_price_type='limit')
-        swap_api.swap_order(contract_code=contract_code, price=sell_price, volume='1', direction=directionS,
-                            offset=offsetO, lever_rate=lever_rate, order_price_type='limit')
+        # swap_api.swap_order(contract_code=contract_code, price=sell_price, volume='1', direction=directionS,
+        #                     offset=offsetO, lever_rate=lever_rate, order_price_type='limit')
 
         # 等待深度信息更新
         time.sleep(3)
