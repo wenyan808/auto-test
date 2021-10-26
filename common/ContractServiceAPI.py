@@ -33,7 +33,6 @@ class ContractServiceAPI:
             params['contract_type'] = contract_type
         if contract_code:
             params['contract_code'] = contract_code
-
         url = self.__url + '/api/v1/contract_contract_info'
         return api_http_get(url, params)
 
@@ -127,6 +126,7 @@ class ContractServiceAPI:
         params = {'symbol': symbol}
 
         url = self.__url + '/market/detail/merged'
+        pprint(url)
         return api_http_get(url, params)
 
     # 获取市场最近成交记录
@@ -1434,6 +1434,16 @@ class ContractServiceAPI:
     def contract_market_over_view(self):
         request_path = '/market/overview'
         return api_http_get(self.__url + request_path, {})
+    def contract_get_datacode(self,symbol=None):
+        contract_type_dict = {}
+        contract_infos = self.contract_contract_info(symbol=symbol)
+        for contrace_info in contract_infos['data']:
+            contract_code = contrace_info.get("contract_code")
+            contract_type = contrace_info.get("contract_type")
+            contract_type_dict[contract_type] = contract_code
+        return contract_type_dict
+
+
 
 
 # 定义t并传入公私钥和URL,供用例直接调用

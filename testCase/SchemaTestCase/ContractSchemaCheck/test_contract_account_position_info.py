@@ -17,7 +17,7 @@ from tool.get_test_data import case_data
 @allure.feature('获取用户的合约账户和持仓信息')
 class TestContractAccountPositionInfo:
 
-    def setUp(self):
+    def setup(self):
 
         print('前置条件')
 

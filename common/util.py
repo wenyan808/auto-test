@@ -202,7 +202,7 @@ def sub(url, subs):
             ws.send(sub_str)
             sub_result = json.loads(gzip.decompress(ws.recv()).decode())
             print(sub_result)
-            if dict(sub_result).get('status',"") == "ok":
+            if dict(sub_result).get('status',"") == "ok" and dict(sub_result).get('data') == None:
                 i = i+1
             else:
                 break

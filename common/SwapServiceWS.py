@@ -32,7 +32,7 @@ class WebsocketSevice:
             "sub": "market.{}.index.{}".format(contract_code, period),
             "id": "id1"
         }
-        path = '/swap-ws'
+        path = '/ws_index'
         url = self.__url + path
         print(url)
         return sub(url, subs)
@@ -130,7 +130,7 @@ class WebsocketSevice:
             "sub": "market.{}.basis.{}.{}".format(contract_code, period, basis_price_type),
             "id": "id1"
         }
-        path = '/swap-ws'
+        path = '/ws_index'
         url = self.__url + path
         return sub(url, subs)
 
@@ -150,7 +150,7 @@ class WebsocketSevice:
             "sub": "market.{}.premium_index.{}".format(contract_code, period),
             "id": "id1"
         }
-        path = '/swap-ws'
+        path = '/ws_index'
         url = self.__url + path
         return sub(url, subs)
 
@@ -165,12 +165,23 @@ class WebsocketSevice:
         url = self.__url + path
         return sub(url, subs)
 
+    #WS订阅标记价格K线数据
+    def swap_sub_mark_price_index(self, contract_code, period):
+        subs = {
+            "sub": "market.{}.mark_price.{}".format(contract_code, period),
+            "id": "id1"
+        }
+        path = '/ws_index'
+        url = self.__url + path
+        return sub(url, subs)
+
+
     def swap_sub_estimated_rate(self, contract_code, period):
         subs = {
             "req": "market.{}.estimated_rate.{}".format(contract_code, period),
             "id": "id1"
         }
-        path = '/swap-ws'
+        path = '/ws_index'
         url = self.__url + path
         return sub(url, subs)
 

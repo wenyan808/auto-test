@@ -48,20 +48,13 @@ class TestUSDTSwapLever_002:
         self.contract_code = contract_code
         self.orderid = ''
         # 清除盘口所有卖单
-        print(ATP.clean_market(contract_code=contract_code, direction='sell'))
+        ATP.cancel_all_types_order()
         time.sleep(2)
-        # 清除盘口所有买单
-        print(ATP.clean_market(contract_code=contract_code, direction='buy'))
+        print(ATP.clean_market())
+        time.sleep(2)
+        ATP.current_user_make_order(iscross=True)
+        time.sleep(1)
 
-        r = linear_api.linear_cross_cancelall(contract_code=contract_code)
-        pprint(r)
-        r = linear_api.linear_cross_tpsl_cancelall(contract_code=contract_code)
-        pprint(r)
-        r = linear_api.linear_cross_trigger_cancelall(contract_code=contract_code)
-        pprint(r)
-        r = linear_api.linear_cross_cancelall(contract_code=contract_code)
-        pprint(r)
-        time.sleep(2)
     @allure.title('全仓当前有挂单切换杠杆倍数测试')
     @allure.step('测试执行')
     def test_execute(self, contract_code):
@@ -76,10 +69,12 @@ class TestUSDTSwapLever_002:
         with allure.step('5、在杠杆滑动条上，点击30X有结果C'):
             r = linear_api.linear_cross_available_level_rate(contract_code=contract_code)
             availableleverlist = r['data'][0]['available_level_rate'].split(',')
-            i = random.choice(availableleverlist)
-            availableleverlist.remove(i)
+            availableleverlist.remove('5')
             j = random.choice(availableleverlist)
             '''下单任意一种杠杆'''
+
+            # ATP.switch_level(lever_rate=i)
+            # time.sleep(1)
             r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
             price = r['data'][0]['data'][0]['price']
             orderprice = round((price * 1.5), 2)
@@ -89,14 +84,8 @@ class TestUSDTSwapLever_002:
                                               volume='1',
                                               direction='sell',
                                               offset='open',
-                                              lever_rate=i,
+                                              lever_rate=j,
                                               order_price_type='limit')
-            pprint(r)
-            self.orderid = r['data']['order_id_str']
-            pprint(self.orderid)
-            time.sleep(4)
-            '''调整杠杆率'''
-            r = linear_api.linear_cross_switch_lever_rate(contract_code=contract_code, lever_rate=j)
             pprint(r)
 
             assert r['err_msg'] == '当前有挂单,无法切换倍数'
@@ -108,9 +97,9 @@ class TestUSDTSwapLever_002:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        if self.orderid:
-            r = linear_api.linear_cross_cancel(contract_code=self.contract_code, order_id=self.orderid)
-            pprint(r)
+        ATP.cancel_all_types_order()
+        time.sleep(1)
+        ATP.switch_level()
 
 
 if __name__ == '__main__':
