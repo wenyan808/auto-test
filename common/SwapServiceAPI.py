@@ -7,9 +7,9 @@ import time
 from common.util import api_http_get, api_key_post, api_key_get
 from config import conf
 from config.conf import URL, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
-
 from common.util import api_http_get, api_key_post, api_key_get
 from config.conf import URL, ACCESS_KEY, SECRET_KEY
+from config.conf import USERINFO
 import time
 
 
@@ -501,8 +501,8 @@ class SwapService:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 合约下单
-    def swap_order(self, contract_code=None, client_order_id=None, price=None, volume=None, direction=None, offset=None,
-                   lever_rate=None, order_price_type=None, tp_trigger_price=None, tp_order_price=None,
+    def swap_order(self, contract_code=None, client_order_id=None, price=None, volume=1, direction=None, offset='open',
+                   lever_rate=5, order_price_type='limit', tp_trigger_price=None, tp_order_price=None,
                    tp_order_price_type=None,
                    sl_trigger_price=None, sl_order_price=None, sl_order_price_type=None, channel_code=None):
         """
@@ -1385,3 +1385,7 @@ class SwapService:
 # 定义t并传入公私钥和URL,供用例直接调用
 t = SwapService(URL, ACCESS_KEY, SECRET_KEY)
 common_user_swap_service_api = SwapService(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
+userList = eval(USERINFO)
+user01 = SwapService(URL, userList[0]['ACCESS_KEY'], userList[0]['SECRET_KEY'])
+user02 = SwapService(URL, userList[1]['ACCESS_KEY'], userList[1]['SECRET_KEY'])
+user03 = SwapService(URL, userList[2]['ACCESS_KEY'], userList[2]['SECRET_KEY'])
