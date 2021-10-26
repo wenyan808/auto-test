@@ -16,6 +16,9 @@ class mysqlComm(object):
         self.__dbName = dbConfProperties[4]
         self.__db = pymysql.connect(host=self.__host,port=self.__port,user=self.__userName,
                              password=self.__password,database=self.__dbName)
+        print("DB配置信息："+dbConf)
+        if self.__db is None:
+            print("数据库初始化失败")
 
     def execute(self,sqlStr):
         try:
