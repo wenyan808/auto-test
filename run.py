@@ -13,7 +13,7 @@ import pytest
 
 from config.conf import set_run_env_and_system_type
 from tool.DingDingMsg import DingDingMsg
-from tool.atp import ATP
+
 
 """
 pytest 命令中加入 '-n 数字'可实现分布式执行测试用例，数字表示执行用例的机器数，但是由于速度过快被api接口限频，如果需要可考虑调大测试环境限频
@@ -75,6 +75,7 @@ def run(system_type=None, run_env='Test6', test_type=''):
     elif type(system_type) == str:
         if system_type.capitalize() in ['Contract', 'Swap', 'Linear', 'Option', 'Schema']:
             set_run_env_and_system_type(run_env, system_types[system_type.capitalize()])
+            from tool.atp import ATP
             index_price = ATP.get_index_price()
             ATP.make_market_depth(market_price=index_price if index_price > 0 else ATP.get_current_price())
             args.append(f"testCase/{system_type.capitalize()}TestCase")
