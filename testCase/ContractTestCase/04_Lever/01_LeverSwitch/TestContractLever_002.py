@@ -107,6 +107,7 @@ class TestContractLever_002:
     def teardown(self):
         print('\n恢复环境操作')
         ATP.cancel_all_order()
+        time.sleep(1)
         ATP.switch_level()
 
 

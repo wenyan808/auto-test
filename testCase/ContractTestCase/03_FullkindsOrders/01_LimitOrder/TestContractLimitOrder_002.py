@@ -57,9 +57,8 @@ class TestContractLimitOrder_002:
         3、每次完成测试后再还原环境
         4、本次用例场景为无成交下撤单场景 ''')
         # 清除盘口所有卖单
-        ATP.clean_market(contract_code=symbol, direction='sell')
-        # 清除盘口所有买单
-        ATP.clean_market(contract_code=symbol, direction='buy')
+        ATP.clean_market()
+        time.sleep(1)
     @allure.title('限价委托输入价格下单卖出开空后撤单测试')
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
@@ -158,8 +157,7 @@ class TestContractLimitOrder_002:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        if self.orderid1:
-            r = contract_api.contract_cancel(symbol=self.symbol, order_id=self.orderid1)
+        ATP.cancel_all_order()
 
 
 if __name__ == '__main__':

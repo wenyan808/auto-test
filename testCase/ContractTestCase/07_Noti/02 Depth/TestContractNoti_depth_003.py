@@ -32,7 +32,10 @@ class TestContractNoti_depth_003:
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, symbol_period):
+        atp.ATP.cancel_all_types_order()
+        time.sleep(1)
         print("\n清盘》》》》", atp.ATP.clean_market())
+        time.sleep(1)
         contract_types = {'CW': "this_week", 'NW': "next_week", 'CQ': "quarter", 'NQ': "next_quarter"}
         symbol = symbol_period.split('_')[0]
         contract_type = contract_types[symbol_period.split('_')[1]]
@@ -41,6 +44,7 @@ class TestContractNoti_depth_003:
         # 获取交割合约当前价格
         sell_price = atp.ATP.get_adjust_price(rate=1.01)
         buy_price = atp.ATP.get_adjust_price(rate=0.99)
+        time.sleep(1)
 
         contractInfo = contract_api.contract_contract_info(symbol=symbol, contract_type=contract_type)
         print('BTC当周合约信息 = ', contractInfo)

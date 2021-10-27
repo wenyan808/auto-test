@@ -27,16 +27,27 @@ from common.SwapServiceOrder import t as swap_order
 from common.SwapServiceWS import t as websocketsevice
 from pprint import pprint
 import pytest, allure, random, time
+from tool.atp import ATP
 
 
 @allure.epic('反向永续')  # 这里填业务线
-@allure.feature('功能')  # 这里填功能
-@allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@allure.feature('指数基差')  # 这里填功能
+@allure.story('WS订阅')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
+@allure.tag('Script owner : chenwei', 'Case owner : 叶永刚')
 class Test_WS_swap_Index_001:
 
     @allure.step('前置条件')
     def setup(self):
-        print('''  ''')
+        ATP.cancel_all_types_order()
+        print(''' 制造成交数据 ''')
+        ATP.make_market_depth()
+        sell_price = ATP.get_adjust_price(1.02)
+        buy_price = ATP.get_adjust_price(0.98)
+        ATP.common_user_make_order(price=sell_price, direction='sell')
+        ATP.common_user_make_order(price=buy_price, direction='buy')
+        time.sleep(1)
+        self.current_price = ATP.get_current_price()
 
     @allure.title('WS订阅指数K线数据')
     @allure.step('测试执行')
@@ -46,13 +57,30 @@ class Test_WS_swap_Index_001:
             r = websocketsevice.swap_sub_index(contract_code,period)
             pprint(r)
         with allure.step('返回成功举例：{"ch":"market.BTC-USD.index.1min","ts":1604387688243,"tick":{"id":1604387640,"open":"13419.4325","close":"13420.3325","high":"13424.4925","low":"13419.4325","amount":"0","vol":"0","count":0}}'):
-            pass
+            tick = r['tick']
+            if tick['amount'] == None:
+                assert False
+            if tick['close'] == None:
+                assert False
+            if tick['count'] == None:
+                assert False
+            if tick['high'] == None:
+                assert False
+            if tick['id'] == None:
+                assert False
+            if tick['low'] == None:
+                assert False
+            if tick['open'] == None:
+                assert False
+            if tick['vol'] == None:
+                assert False
         with allure.step('参考地址：https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#sub-k'):
             pass
 
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
+        ATP.clean_market()
 
 
 if __name__ == '__main__':

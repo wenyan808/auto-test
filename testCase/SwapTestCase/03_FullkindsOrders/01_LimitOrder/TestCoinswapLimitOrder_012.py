@@ -40,6 +40,8 @@ from common.SwapServiceAPI import t as swap_api
 from pprint import pprint
 import pytest, allure, random, time
 
+from tool.atp import ATP
+
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('限价委托')  # 这里填功能
@@ -48,21 +50,21 @@ import pytest, allure, random, time
 class TestCoinswapLimitOrder_012:
 
 	@allure.step('前置条件')
-	@pytest.fixture(scope='function', autouse=True)
-	def setup(self, contract_code):
+	def setup(self):
 		print(''' 初始化环境准备
 		1、建议准备两个账户，一个用于初始化环境，一个用于测试下单验证。
 		1、建议初始化环境是初始化账户吃掉其他所有买卖挂单，盘口无任何挂单
 		2、再根据测试场景进行拿初始化账户进行买一卖一挂单作为对手方
 		3、每次完成测试后再还原环境
 		4、本次用例场景为无成交下撤单场景 ''')
+		ATP.cancel_all_types_order()
+		time.sleep(1)
+		ATP.clean_market()
+		time.sleep(1)
+		ATP.current_user_make_order(direction='buy')
+		ATP.current_user_make_order(direction='sell')
+		time.sleep(1)
 
-		r = swap_api.swap_depth(contract_code=contract_code, type='step0')
-		pprint(r)
-		#if 'asks' in r['tick']:
-		if 'bids' in r['tick']:
-			print('盘口有买盘，不满足用例要求')
-			assert False
 
 	@allure.title('最优5档卖出开空买盘无数据自动撤单')
 	@allure.step('测试执行')

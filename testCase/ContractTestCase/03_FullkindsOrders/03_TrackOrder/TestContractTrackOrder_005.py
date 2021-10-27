@@ -10,21 +10,26 @@ from common.ContractServiceOrder import t as contranct_order
 from schema import Schema, And, Or, Regex, SchemaError
 from pprint import pprint
 import pytest, allure, random, time
+
+from tool.atp import ATP
 from tool.get_test_data import case_data
 
 
 @allure.epic('反向交割')
 @allure.feature('获取用户的合约账户和持仓信息')
+@pytest.mark.stable
+@allure.tag('Script owner : 张广南', 'Case owner : 封泰')
 class TestContractTrackOrder_005:
 
-    def setUp(self):
+    def setup(self):
         print('\n前置条件')
+        ATP.close_all_position()
+        ATP.clean_market()
 
 
     def test_contract_account_position_info(self, symbol, symbol_period):
         flag = True
 
-        self.setUp()
         print('\n步骤一:获取最近价\n')
         r = contract_api.contract_history_trade(symbol=symbol_period, size='1')
         pprint(r)
@@ -43,7 +48,7 @@ class TestContractTrackOrder_005:
                                               direction='buy',
                                               offset='open',
                                               lever_rate='5',
-                                              volume='9999',
+                                              volume='93000000000',
                                               callback_rate=callbackrate,
                                               active_price=str(activationprice),
                                               order_price_type='formula_price')
@@ -99,10 +104,10 @@ class TestContractTrackOrder_005:
         actual_orderid3 = r['data']['orders'][0]['order_id']
         failreason3 = r['data']['orders'][0]['fail_reason']
 
-        if (status3 != 5) or (actual_orderid3 != orderid) or (failreason3 != '可用担保资产不足'):
+        if (status3 != 5) or (actual_orderid3 != orderid) or (failreason3 != '触发平台限仓,请修改后下单'):
             print("查询跟踪委托历史委托不符合预期")
             print("实际订单状态：%s, 实际单号为%s, 实际失败原因为%s" % (status3, actual_orderid3, failreason3))
-            print("预期订单状态：5 ，4:已委托、5:委托失败 , 预期单号为%s, 预期失败原因：可用担保资产不足" % orderid)
+            print("预期订单状态：5 ，4:已委托、5:委托失败 , 预期单号为%s, 预期失败原因：触发平台限仓,请修改后下单" % orderid)
             flag = False
 
 

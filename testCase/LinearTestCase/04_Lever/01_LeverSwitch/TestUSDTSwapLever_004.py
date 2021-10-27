@@ -48,12 +48,14 @@ class TestUSDTSwapLever_004:
         self.contract_code = contract_code
         self.orderid = ''
         # 清除盘口所有卖单
-        print(ATP.clean_market())
-        time.sleep(2)
-        # 清除盘口所有买单
-
+        ATP.switch_level()
         ATP.cancel_all_types_order()
         time.sleep(2)
+        print(ATP.clean_market())
+        time.sleep(2)
+        ATP.current_user_make_order()
+        time.sleep(1)
+
     @allure.title('BTC/USDT逐仓当前有挂单切换杠杆倍数测试')
     @allure.step('测试执行')
     def test_execute(self, contract_code):
@@ -68,8 +70,7 @@ class TestUSDTSwapLever_004:
         with allure.step('5、在杠杆滑动条上，点击30X有结果C'):
             r = linear_api.linear_available_level_rate(contract_code=contract_code)
             availableleverlist = r['data'][0]['available_level_rate'].split(',')
-            i = random.choice(availableleverlist)
-            availableleverlist.remove(i)
+            availableleverlist.remove('5')
             j = random.choice(availableleverlist)
             '''下单任意一种杠杆'''
             r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
@@ -81,16 +82,9 @@ class TestUSDTSwapLever_004:
                                               volume='1',
                                               direction='sell',
                                               offset='open',
-                                              lever_rate=i,
+                                              lever_rate=j,
                                               order_price_type='limit')
             pprint(r)
-            self.orderid = r['data']['order_id_str']
-            pprint(self.orderid)
-            time.sleep(4)
-            '''调整杠杆率'''
-            r = linear_api.linear_switch_lever_rate(contract_code=contract_code, lever_rate=j)
-            pprint(r)
-
             assert r['err_msg'] == '当前有挂单,无法切换倍数'
         with allure.step('6、点击杠杆切换框外的区域，有结果D'):
             pass
@@ -100,7 +94,8 @@ class TestUSDTSwapLever_004:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        ATP.cancel_all_order()
+        ATP.cancel_all_types_order()
+        time.sleep(1)
         ATP.switch_level()
 
 

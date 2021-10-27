@@ -10,21 +10,26 @@ from common.ContractServiceOrder import t as contranct_order
 from schema import Schema, And, Or, Regex, SchemaError
 from pprint import pprint
 import pytest, allure, random, time
+
+from tool.atp import ATP
 from tool.get_test_data import case_data
 
 
 @allure.epic('反向永续')
 @allure.feature('获取用户的合约账户和持仓信息')
+@pytest.mark.stable
+@allure.tag('Script owner : 张广南', 'Case owner : 封泰')
 class TestCoinswapTrackOrder_005:
 
-    def setUp(self):
+    def setup(self):
         print('\n前置条件')
+        ATP.close_all_position()
+        ATP.clean_market()
 
 
     def test_contract_account_position_info(self, contract_code):
         flag = True
 
-        self.setUp()
         print('\n步骤一:获取最近价\n')
         r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
         pprint(r)
@@ -39,7 +44,7 @@ class TestCoinswapTrackOrder_005:
                                       direction='buy',
                                       offset='open',
                                       lever_rate='5',
-                                      volume='9999',
+                                      volume='40000000000000',
                                       callback_rate=callbackrate,
                                       active_price=str(activationprice),
                                       order_price_type='formula_price')

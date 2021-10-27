@@ -20,7 +20,7 @@ from tool.get_test_data import case_data
 @pytest.mark.stable
 class TestContractTriggerOrder_006:
 
-    def setUp(self):
+    def setup(self):
         self.available = None
         self.trigger_price = None
         self.order_id = None

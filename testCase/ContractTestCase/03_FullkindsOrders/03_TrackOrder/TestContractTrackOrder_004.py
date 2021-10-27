@@ -10,21 +10,26 @@ from common.ContractServiceOrder import t as contranct_order
 from schema import Schema, And, Or, Regex, SchemaError
 from pprint import pprint
 import pytest, allure, random, time
+
+from tool.atp import ATP
 from tool.get_test_data import case_data
 
 
 @allure.epic('反向交割')
 @allure.feature('获取用户的合约账户和持仓信息')
+@pytest.mark.stable
+@allure.tag('Script owner : 张广南', 'Case owner : 封泰')
 class TestContractTrackOrder_004:
 
-    def setUp(self):
+    def setup(self):
         print('\n前置条件')
+        ATP.close_all_position()
+        ATP.clean_market()
 
 
     def test_contract_account_position_info(self, symbol, symbol_period):
         flag = True
 
-        self.setUp()
         print('\n步骤一:获取最近价\n')
         r = contract_api.contract_history_trade(symbol=symbol_period, size='1')
         pprint(r)
