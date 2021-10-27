@@ -48,22 +48,34 @@ class TestContractEx_008:
         with allure.step('详见官方文档'):
             contracttype = 'this_week'
             leverrate = 5
-            sell_price = ATP.get_adjust_price(1.02)
-            buy_price = ATP.get_adjust_price(0.98)
 
-            sell_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=sell_price,
-                                                     volume='1',
-                                                     direction='sell', offset='close', lever_rate=leverrate,
-                                                     order_price_type='opponent')
-            pprint(sell_order)
-            # buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=buy_price,
-            #                                         volume='1',
-            #                                         direction='buy', offset='close', lever_rate=leverrate,
-            #                                         order_price_type='limit')
-            # pprint(buy_order)
+            current = ATP.get_current_price(contract_code=symbol_period)
             time.sleep(1)
+            #先买入
+            offset = 'open'
+            direction = 'buy'
+            res = ATP.current_user_make_order(contract_code=symbol_period, price=current, volume=10, direction=direction, offset=offset)
+            pprint(res)
+            assert res['status'] == 'ok', "撮合失败！"
+            # 撮合成交
+            ATP.common_user_make_order(price=current, direction='sell', offset=offset)
+            time.sleep(1)
+            current1 = ATP.get_current_price(contract_code=symbol_period)
 
-            self.current_price = ATP.get_current_price()
+            sell_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=current1,
+                                                    volume=10,
+                                                    direction='sell', offset='close', lever_rate=leverrate,
+                                                    order_price_type='opponent')
+            pprint(sell_order)
+
+
+            # sell_order = ATP.current_user_make_order(price=current1,
+            #                                          volume=10,
+            #                                          direction='sell', offset='close', lever_rate=leverrate,
+            #                                          order_price_type='opponent')
+
+
+            time.sleep(1)
             orderId = sell_order['data']['order_id']
             strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
                      "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderId)

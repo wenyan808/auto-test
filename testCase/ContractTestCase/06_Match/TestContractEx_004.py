@@ -50,20 +50,19 @@ class TestContractEx_004:
             contracttype = 'this_week'
             leverrate = 5
             # 获取当周合约
-            contract_code = result['this_week']
             sell_price = ATP.get_adjust_price(1.02)
             buy_price = ATP.get_adjust_price(0.98)
 
-            sell_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=sell_price,
+            current = ATP.get_current_price(contract_code=symbol_period)
+            ATP.common_user_make_order(price=current, direction='buy', offset="close")
+            time.sleep(1)
+
+            sell_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=current,
                                                      volume='1',
                                                      direction='sell', offset='close', lever_rate=leverrate,
                                                      order_price_type='limit')
             pprint(sell_order)
-            buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=buy_price,
-                                                    volume='1',
-                                                    direction='buy', offset='open', lever_rate=leverrate,
-                                                    order_price_type='limit')
-            pprint(buy_order)
+
             time.sleep(1)
             self.current_price = ATP.get_current_price()
             orderId = sell_order['data']['order_id']

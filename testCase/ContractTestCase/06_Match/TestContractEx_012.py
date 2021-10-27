@@ -53,17 +53,22 @@ class TestContractEx_012:
         with allure.step('详见官方文档'):
             contracttype = 'this_week'
             leverrate = 5
-            sell_price = ATP.get_adjust_price(1.02)
-            buy_price = ATP.get_adjust_price(0.98)
-            #先持仓
-            buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=sell_price,
-                                                     volume='1',
-                                                     direction='buy', offset='open', lever_rate=leverrate,
-                                                     order_price_type='limit')
+            # 先买入，才能卖出
+            current = ATP.get_current_price(contract_code=symbol_period)
+            offset = 'open'
+            direction = 'buy'
+            res = ATP.current_user_make_order(
+                contract_code=symbol_period, price=current, volume=10, direction=direction, offset=offset)
+            pprint(res)
+            assert res['status'] == 'ok', "撮合失败！"
+            # 撮合成交
+            ATP.common_user_make_order(
+                price=current, direction='sell', offset=offset)
+            time.sleep(1)
+            #卖出平仓
+            current1 = ATP.get_current_price(contract_code=symbol_period)
 
-            pprint(buy_order)
-            time.sleep(2)
-            sell_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=buy_price,
+            sell_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=current1,
                                                      volume='1',
                                                      direction='sell', offset='close', lever_rate=leverrate,
                                                      order_price_type='optimal_5')

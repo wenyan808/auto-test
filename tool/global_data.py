@@ -4,8 +4,8 @@ import requests
 
 
 class GlobalData:
-    ATPHost = 'http://172.18.6.52:8000'
-    # ATPHost = 'http://0.0.0.0:8000'
+    # ATPHost = 'http://172.18.6.52:8000'
+    ATPHost = 'http://172.18.169.20:8000'
     header = {'accept': 'application/json', 'Content-Type': 'application/json'}
 
     @classmethod
