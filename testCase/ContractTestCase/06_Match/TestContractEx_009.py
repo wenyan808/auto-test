@@ -40,7 +40,7 @@ class TestContractEx_009:
         ATP.cancel_all_types_order()
         self.from_time = int(time.time())
         print(''' 制造成交数据 ''')
-        ATP.make_market_depth()
+        ATP.make_market_depth(depth_count=5)
 
     @allure.title('撮合当周 最优5档 买入 开仓               ')
     @allure.step('测试执行')
