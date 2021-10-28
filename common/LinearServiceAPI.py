@@ -8,7 +8,7 @@ from common.util import api_http_get, api_key_post, api_key_get
 from config import conf
 from config.conf import URL2, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY, URL
 import time
-
+from config.conf import USERINFO
 
 class LinearServiceAPI:
 
@@ -744,8 +744,8 @@ class LinearServiceAPI:
         return api_key_get(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 合约下单
-    def linear_order(self, contract_code=None, client_order_id=None, price=None, volume=None, direction=None,
-                     offset=None, lever_rate=None, order_price_type=None, tp_trigger_price=None, tp_order_price=None,
+    def linear_order(self, contract_code=None, client_order_id=None, price=None, volume=1, direction=None,
+                     offset='open', lever_rate=5, order_price_type='limit', tp_trigger_price=None, tp_order_price=None,
                      tp_order_price_type=None,
                      sl_trigger_price=None, sl_order_price=None, sl_order_price_type=None, channel_code=None):
         """
@@ -1010,7 +1010,7 @@ class LinearServiceAPI:
 
     # 计划委托下单接口
     def linear_trigger_order(self, contract_code=None, trigger_type=None, trigger_price=None, order_price=None,
-                             order_price_type=None, volume=None, direction=None, offset=None, lever_rate=None):
+                             order_price_type='limit', volume=1, direction=None, offset='open', lever_rate=5):
 
         params = {'contract_code': contract_code,
                   'trigger_type': trigger_type,
@@ -1058,9 +1058,16 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取计划委托历史委托接口
-    def linear_trigger_hisorders(self, contract_code=None, trade_type=None, status=None, create_date=None, sort_by=None,
-                                 page_index=None, page_size=None):
-
+    def linear_trigger_hisorders(self, contract_code=None, trade_type=0, status=0, create_date=3, sort_by=None,
+                                 page_index=None, page_size=10):
+        # 参数名称	        是否必须	类型	        描述	        取值范围
+        # contract_code	    true	string	    合约代码		BTC-USDT
+        # trade_type	    true	int	        交易类型		0:全部,1:买入开多,2: 卖出开空,3: 买入平空,4: 卖出平多；后台是根据该值转换为offset和direction，然后去查询的； 其他值无法查询出结果
+        # status	        true	String	    订单状态		多个以英文逗号隔开，计划委托单状态：0:全部（表示全部结束状态的订单）、4:已委托、5:委托失败、6:已撤单
+        # create_date	    true	int	        日期		    可随意输入正整数，如果参数超过90则默认查询90天的数据
+        # page_index	    false	int	        页码         不填默认第1页	1	第几页，不填默认第一页
+        # page_size	        false	int	        不填默认20    不得多于50	20	不填默认20，不得多于50
+        # sort_by	        false	string	    排序字段（降序），不填默认按照created_at降序	"created_at"：按订单创建时间进行降序，"update_time"：按订单更新时间进行降序
         params = {'contract_code': contract_code,
                   'trade_type': trade_type,
                   'status': status,
@@ -2358,3 +2365,7 @@ class LinearServiceAPI:
 # 定义t并传入公私钥和URL,供用例直接调用
 t = LinearServiceAPI(URL, ACCESS_KEY, SECRET_KEY)
 common_user_linear_service_api = LinearServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
+userList = eval(USERINFO)
+user01 = LinearServiceAPI(URL, userList[0]['ACCESS_KEY'], userList[0]['SECRET_KEY'])
+user02 = LinearServiceAPI(URL, userList[1]['ACCESS_KEY'], userList[1]['SECRET_KEY'])
+user03 = LinearServiceAPI(URL, userList[2]['ACCESS_KEY'], userList[2]['SECRET_KEY'])
