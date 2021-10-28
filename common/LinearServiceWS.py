@@ -5,7 +5,6 @@
 
 from common.util import sub, api_key_sub
 from config.conf import WSURL, ACCESS_KEY, SECRET_KEY
-import uuid
 
 
 class WebsocketSevice:
@@ -15,14 +14,14 @@ class WebsocketSevice:
         self.__access_key = access_key
         self.__secret_key = secret_key
 
-    #【通用】普通订阅
-    def linear_sub(self,subs):
+    # 【通用】普通订阅
+    def linear_sub(self, subs):
         path = '/linear-swap-ws'
         url = self.__url + path
-        return sub(url,subs)
+        return sub(url, subs)
 
     # 订阅(sub)指数K线数据
-    def linear_sub_index(self,contract_code,period):
+    def linear_sub_index(self, contract_code, period):
         subs = {
             "sub": "market.{}.index.{}".format(contract_code, period),
             "id": "id1"
@@ -116,7 +115,8 @@ class WebsocketSevice:
         path = '/linear-swap-ws'
         url = self.__url + path
         return sub(url, subs)
-    #订阅基差数据
+    # 订阅基差数据
+
     def linear_sub_basis(self, contract_code, period, basis_price_type="open"):
         subs = {
             "sub": "market.{}.basis.{}.{}".format(contract_code, period, basis_price_type),
@@ -180,12 +180,16 @@ class WebsocketSevice:
     def linear_sub_account(self, contract_code):
         subs = {
             "op": "sub",
-            "cid": '11433084',
+            "cid": '11538447',
             "topic": "accounts.{}".format(contract_code)
         }
         path = '/linear-swap-notification'
         url = self.__url + path
         return api_key_sub(url, self.__access_key, self.__secret_key, subs)
+
+    def linear_notification(self, sub):
+        path = '/linear-swap-notification'
+        return api_key_sub(self.__url, self.__access_key, self.__secret_key, sub, path)
 
 
 t = WebsocketSevice(WSURL, ACCESS_KEY, SECRET_KEY)
