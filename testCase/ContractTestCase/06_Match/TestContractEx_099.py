@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211021
+"""# @Date    : 20211028
 # @Author : 
     用例标题
-        撮合当周 only_maker买入 平仓          
+        撮合当周 买入平仓 全部成交单人多笔价格相同的订单     
     前置条件
         
     步骤/文本
@@ -13,7 +13,7 @@
     优先级
         2
     用例别名
-        TestContractEx_023
+        TestContractEx_099
 """
 
 from common.ContractServiceAPI import t as contract_api
@@ -33,7 +33,7 @@ from common.mysqlComm import orderSeq as DB_orderSeq
 @allure.story('委托单')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
 @allure.tag('Script owner : chenwei', 'Case owner : 邱大伟')
-class TestContractEx_023:
+class TestContractEx_099:
 
     @allure.step('前置条件')
     def setup(self):
@@ -45,39 +45,32 @@ class TestContractEx_023:
         ATP.common_user_make_order(price=buy_price, direction='buy')
         time.sleep(1)
 
-    @allure.title('撮合当周 only_maker买入 平仓          ')
+    @allure.title('撮合当周 买入平仓 全部成交单人多笔价格相同的订单     ')
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
         with allure.step('详见官方文档'):
             contracttype = 'this_week'
             leverrate = 5
-
-            contracttype = 'this_week'
-            leverrate = 5
-
             current = ATP.get_current_price(contract_code=symbol_period)
-            time.sleep(1)
-            #先买入
-            offset = 'open'
-            direction = 'buy'
-            res = ATP.current_user_make_order(contract_code=symbol_period, price=current, volume=10, direction=direction, offset=offset)
-            pprint(res)
-            assert res['status'] == 'ok', "撮合失败！"
-            # 撮合成交
-            ATP.common_user_make_order(price=current, direction='sell', offset=offset)
-            time.sleep(1)
-            current1 = ATP.get_current_price(contract_code=symbol_period)
 
-            buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=current1,
-                                                     volume='1',
-                                                     direction='buy', offset='close', lever_rate=leverrate,
-                                                     order_price_type='post_only')
+            res = ATP.current_user_make_order(
+                contract_code=symbol_period, price=current, volume=5, direction="sell", offset="close")
+            pprint(res)
+            time.sleep(2)
+            buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=current,
+                                                    volume=2,
+                                                    direction="buy", offset='close', lever_rate=leverrate,
+                                                    order_price_type='limit')
             pprint(buy_order)
             time.sleep(2)
+            buy_order1 = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=current,
+                                                     volume=3,
+                                                     direction="buy", offset='close', lever_rate=leverrate,
+                                                     order_price_type='limit')
 
-            self.current_price = ATP.get_current_price()
-            orderId = buy_order['data']['order_id']
-
+            pprint(buy_order1)
+            orderId = buy_order1['data']['order_id']
+            time.sleep(2)
             strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
                      "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderId)
 
