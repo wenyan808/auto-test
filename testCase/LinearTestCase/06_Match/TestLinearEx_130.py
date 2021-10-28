@@ -55,6 +55,9 @@ class TestLinearEx_130:
 
             pprint(linear_api.linear_account_position_info(
                 contract_code=contract_code))
+            # 挂单
+            ATP.common_user_make_order(
+                contract_code=contract_code, price=current, volume=10, direction='buy', offset='open')
 
             direction = 'buy'
             order_price_type = 'lightning'
@@ -66,7 +69,7 @@ class TestLinearEx_130:
     @ allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        # print(ATP.clean_market())
+        print(ATP.clean_market())
         # 撤销当前用户 某个品种所有限价挂单
         print(ATP.cancel_all_order())
         print(ATP.make_market_depth())
