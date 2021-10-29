@@ -24,7 +24,7 @@ from tool import atp
 @allure.epic('正向永续')  # 这里填业务线
 @allure.feature('行情')  # 这里填功能
 @allure.story('深度')  # 这里填子功能，没有的话就把本行注释掉
-@pytest.mark.zgn
+@pytest.mark.stable
 @allure.tag('Script owner : 张广南', 'Case owner : 吉龙')
 class TestLinearNoti_depth_001:
 
