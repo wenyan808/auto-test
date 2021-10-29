@@ -13,8 +13,8 @@ from config import conf
 
 
 class ATP:
-    ATPHost = 'http://172.18.6.52:8000'
-    # ATPHost = 'http://0.0.0.0:8000'
+    # ATPHost = 'http://172.18.169.20:8000' #华为云
+    ATPHost = 'http://172.18.6.52:8000' #光环
     header = {'accept': 'application/json', 'Content-Type': 'application/json'}
 
     price_precision = {'ETH-USDT': 3,

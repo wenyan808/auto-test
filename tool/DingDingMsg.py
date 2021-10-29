@@ -44,6 +44,7 @@ class DingDingMsg:
             if file.endswith('-result.json'):
                 with open(path / file) as result_json_file:
                     result_info = json.load(result_json_file)
+                    print(file)
                     case_result_summary[result_info["status"]].add(result_info['fullName'])
         passed_cases = case_result_summary.pop('passed')
         result = {'passed': len(passed_cases)}
