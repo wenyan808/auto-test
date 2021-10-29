@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 2020/7/1
-# @Author  : zhangranghan
+# @Author  : 张广南
 
 
 from common.ContractServiceAPI import t as contranct_api
@@ -22,6 +22,7 @@ class TestContractTransfer_001:
 
 
     def test_contract_account_position_info(self, symbol):
+        print(symbol)
         amount = "0.15"
 
         expectedresult = (symbol, float(amount))
@@ -30,13 +31,14 @@ class TestContractTransfer_001:
         print('\n步骤一\n')
         r = contranct_order.contract_transfer(symbol=symbol, amount=amount, _type="1")
         pprint(r)
-        time.sleep(0.1)
+        time.sleep(2)
         print('\n步骤二\n')
         r2 = contranct_api.contract_financial_record(symbol=symbol,
                                                      type='14',
                                                      create_date='',
                                                      page_index='',
                                                      page_size='')
+        pprint(r2)
         financial_record_lastest = r2['data']['financial_record'][0]
 
         actual = (financial_record_lastest['symbol'], financial_record_lastest['amount'])
