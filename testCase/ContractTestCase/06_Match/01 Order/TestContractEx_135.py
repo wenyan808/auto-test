@@ -28,6 +28,7 @@ import pymysql
 @allure.story('委托单')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
 @allure.tag('Script owner : 张广南', 'Case owner : 吉龙')
+
 class TestContractEx_135:
 
     @allure.step('前置条件')

@@ -29,6 +29,7 @@ from tool import atp
 @allure.feature('行情')  # 这里填功能
 @allure.story('深度')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
+@allure.tag('Script owner : 张广南', 'Case owner : 吉龙')
 class TestContractNoti_depth_001:
 
     @allure.step('前置条件')
