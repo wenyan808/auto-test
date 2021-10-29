@@ -31,6 +31,7 @@ from common.mysqlComm import orderSeq as DB_orderSeq
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
 @allure.story('委托单')  # 这里填子功能，没有的话就把本行注释掉
+@pytest.mark.stable
 @allure.tag('Script owner : chenwei', 'Case owner : 邱大伟')
 class TestContractEx_101:
 
@@ -53,25 +54,27 @@ class TestContractEx_101:
             current = ATP.get_current_price(contract_code=symbol_period)
 
             res = ATP.current_user_make_order(
-                contract_code=symbol_period, price=current, volume=5, direction="buy", offset="close")
+                contract_code=symbol_period, price=current, volume=5, direction="sell", offset="open")
             pprint(res)
             time.sleep(2)
             buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=current,
-                                                    volume=2,
-                                                    direction="sell", offset='close', lever_rate=leverrate,
+                                                    volume=1,
+                                                    direction="buy", offset='open', lever_rate=leverrate,
                                                     order_price_type='limit')
             pprint(buy_order)
             time.sleep(2)
             buy_order1 = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=current,
-                                                     volume=3,
+                                                     volume=1,
                                                      direction="buy", offset='open', lever_rate=leverrate,
                                                      order_price_type='limit')
 
             pprint(buy_order1)
+            buy_order2 = ATP.common_user_make_order(contract_code=symbol_period, price=current)
             orderId = buy_order1['data']['order_id']
+            orderId2 = buy_order2['data']['order_id']
             time.sleep(2)
             strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderId)
+                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderId2)
 
             # 给撮合时间，5秒内还未撮合完成则为失败
             n = 0
