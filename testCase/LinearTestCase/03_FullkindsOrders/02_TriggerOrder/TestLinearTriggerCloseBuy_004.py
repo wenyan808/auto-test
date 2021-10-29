@@ -14,30 +14,34 @@ from tool.atp import ATP
 @allure.tag('Script owner : 余辉青', 'Case owner : 邱大伟')
 class TestLinearTriggerCloseBuy_004:
 
-    ids=['TestLinearTriggerCloseBuy_005 平空-触发价低于最新价',
-         'TestLinearTriggerCloseBuy_006 平空-触发价等于最新价',
-         'TestLinearTriggerCloseBuy_004 平空-触发价高于最新价',
-         'TestLinearTriggerCloseSell_005 平多-触发价低于最新价',
-         'TestLinearTriggerCloseSell_006 平多-触发价等于最新价',
-         'TestLinearTriggerCloseSell_004 平多-触发价高于最新价']
-    params = [('buy',0.99,0.98),('buy',1.00,0.98),('buy',1.01,0.98),
-              ('sell',0.99,0.98),('sell',1.00,0.98),('sell',1.01,0.98)]
+    ids=['TestLinearTriggerCloseBuy_005',
+         'TestLinearTriggerCloseBuy_006',
+         'TestLinearTriggerCloseBuy_004',
+         'TestLinearTriggerCloseSell_005',
+         'TestLinearTriggerCloseSell_006',
+         'TestLinearTriggerCloseSell_004']
+    params = [{'titleName': '平空-触发价低于最新价', 'direction':'buy', 'trgRatio':0.99, 'ordRatio':0.98},
+            {'titleName': '平空-触发价等于最新价', 'direction':'buy', 'trgRatio':1.00, 'ordRatio':0.98},
+            {'titleName': '平空-触发价高于最新价', 'direction':'buy', 'trgRatio':1.01, 'ordRatio':0.98},
+            {'titleName': '平多-触发价低于最新价', 'direction':'sell', 'trgRatio':0.99, 'ordRatio':0.98},
+            {'titleName': '平多-触发价等于最新价', 'direction':'sell', 'trgRatio':1.00, 'ordRatio':0.98},
+            {'titleName': '平多-触发价高于最新价', 'direction':'sell', 'trgRatio':1.01, 'ordRatio':0.98}]
 
-    @allure.title('${ids}')
     @allure.step('测试执行')
-    @allure.description('  \n测试标题：${ids}场景，验证计划委托-委托触发'
-                          '\n*、先清盘避免盘口数据干扰;'
-                          '\n*、以${ids}下单计划委托单；'
-                          '\n*、触发计划委托订单；'
-                          '\n*、验证计划委托订单触发否')
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self,contract_code,params):
         with allure.step('1、行情-最新价更新为49800'):
+            allure.dynamic.title(params['titleName'])
+            allure.dynamic.description('\n测试标题：'+params['titleName']+'场景，验证计划委托-委托触发'
+                                      '\n*、先清盘避免盘口数据干扰;'
+                                      '\n*、以'+params['titleName']+'下单计划委托单；'
+                                      '\n*、触发计划委托订单；'
+                                      '\n*、验证计划委托订单触发否')
             print("清盘》》》》", ATP.clean_market())
             currentPrice = ATP.get_current_price()  # 最新价
-            trigger_price = round(params[1]*currentPrice,2) #触发价
-            order_price = round(params[2]*currentPrice,2) #买入价
+            trigger_price = round(params['trgRatio']*currentPrice,2) #触发价
+            order_price = round(params['ordRatio']*currentPrice,2) #买入价
             # ge大于等于(触发价比最新价大)；le小于(触发价比最新价小)
             if trigger_price >= currentPrice:
                 trigger_type = 'ge'
@@ -49,7 +53,7 @@ class TestLinearTriggerCloseBuy_004:
                                                       trigger_type=trigger_type,
                                                       trigger_price=trigger_price,
                                                       offset='close',
-                                                      order_price=order_price,direction=params[0])
+                                                      order_price=order_price,direction=params['direction'])
             # 下单失败则断言失败
             if 'err_msg' in orderResult:
                 print(orderResult)
