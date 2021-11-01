@@ -30,7 +30,7 @@ from tool.atp import ATP
 @allure.story('撮合 卖出开仓 全部成交单人多笔价格相同的订单  ')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : Alex Li')
 @pytest.mark.stable
-class TestLinearEx_097:
+class TestLinearEx_098:
 
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
