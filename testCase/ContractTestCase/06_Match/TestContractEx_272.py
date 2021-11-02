@@ -7,10 +7,8 @@ from tool.atp import ATP
 import pytest, allure, random, time
 from common.mysqlComm import orderSeq as DB_orderSeq
 from common.ContractServiceAPI import user01
-from config.conf import PERSON
 
 @allure.epic('反向交割')  # 这里填业务线
-@allure.epic(PERSON)  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
 @allure.story('平多')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
