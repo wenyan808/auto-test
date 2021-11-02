@@ -40,7 +40,7 @@ class TestContractEx_010:
         ATP.cancel_all_types_order()
         self.from_time = int(time.time())
         print(''' 制造成交数据 ''')
-        ATP.make_market_depth()
+        ATP.make_market_depth(depth_count=5)
         sell_price = ATP.get_adjust_price(1.02)
         buy_price = ATP.get_adjust_price(0.98)
         ATP.common_user_make_order(price=sell_price, direction='sell')
@@ -55,17 +55,18 @@ class TestContractEx_010:
             leverrate = 5
             sell_price = ATP.get_adjust_price(1.02)
             buy_price = ATP.get_adjust_price(0.98)
-
-            sell_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=sell_price,
+            #先持仓
+            buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=sell_price,
+                                                     volume='1',
+                                                     direction='buy', offset='open', lever_rate=leverrate,
+                                                     order_price_type='limit')
+            pprint(buy_order)
+            time.sleep(2)
+            sell_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=buy_price,
                                                      volume='1',
                                                      direction='sell', offset='open', lever_rate=leverrate,
                                                      order_price_type='optimal_5')
             pprint(sell_order)
-            # buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=buy_price,
-            #                                         volume='1',
-            #                                         direction='buy', offset='open', lever_rate=leverrate,
-            #                                         order_price_type='optimal_5')
-            # pprint(buy_order)
             time.sleep(1)
 
             self.current_price = ATP.get_current_price()

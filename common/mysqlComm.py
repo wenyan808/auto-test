@@ -11,19 +11,8 @@ import traceback,pprint
 import logging
 
 class mysqlComm(object):
-    _instance_lock = threading.Lock()
-    _is_init = False
-
-    def __new__(cls, *args, **kwargs):
-        if not hasattr(mysqlComm, "_instance"):
-            with mysqlComm._instance_lock:
-                if not hasattr(mysqlComm, "_instance"):
-                    mysqlComm._instance = object.__new__(cls)
-        return mysqlComm._instance
 
     def __init__(self, dbConf):
-        if not self._is_init:
-            logging.warning("after not")
             dbConfProperties = str(dbConf).split(';')
             self.__host = dbConfProperties[0]
             self.__port = int(dbConfProperties[1])
@@ -31,17 +20,15 @@ class mysqlComm(object):
             self.__password = dbConfProperties[3]
             self.__dbName = dbConfProperties[4]
             try:
-                logging.warning("before db")
                 self.__db = pymysql.connect(host=self.__host, port=self.__port, user=self.__userName,
                                             password=self.__password, database=self.__dbName)
-                logging.warning("after db")
-                self._is_init = True
             except Exception as e:
                 logging.warning('pymysql.connect Fail')
                 logging.warning(e)
 
     def execute(self, sqlStr):
         try:
+            self.__db.ping(reconnect=True)
             cursor = self.__db.cursor()
             cursor.execute(sqlStr)
             self.__db.commit()
@@ -57,5 +44,3 @@ class mysqlComm(object):
 
 
 orderSeq = mysqlComm(MYSQL_ORDERSEQ_CONF)
-if __name__ == '__main__':
-    print("hello")

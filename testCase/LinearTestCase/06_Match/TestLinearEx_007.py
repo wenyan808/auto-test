@@ -40,7 +40,7 @@ class TestLinearEx_007:
     @allure.title('撮合 对手价 买入 平仓')
     @allure.step('测试执行')
     def test_execute(self, contract_code):
-        with allure.step('1、 撮合 对手价 卖出 开仓'):
+        with allure.step('1、 撮合 对手价 买入 平仓'):
             pass
         with allure.step('2、点击“确定按钮”'):
 
