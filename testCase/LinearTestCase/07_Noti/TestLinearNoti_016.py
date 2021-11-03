@@ -72,7 +72,7 @@ class TestLinearNoti_016:
             assert isinstance(data, list) and len(data) == 1, 'response data is incorrect'
 
             trade_record = data[0]
-            check_keys = ['amount', 'direction', 'id', 'price', 'quantity', 'contract_code', 'trade_turnover', 'ts']
+            check_keys = ['amount', 'direction', 'id', 'price', 'quantity', 'business_type', 'contract_code', 'trade_turnover', 'ts']
             assert set(check_keys) == set(trade_record.keys()), 'response trade_record is incorrect'
 
             amount = int(trade_record.get('amount', '0'))
