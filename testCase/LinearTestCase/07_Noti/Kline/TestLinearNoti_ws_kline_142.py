@@ -51,7 +51,7 @@ class TestLinearNoti_ws_kline_142:
             resultStr = '\nKline返回结果 = ' + str(result)
             print('\033[1;32;49m%s\033[0m' % resultStr)
             # assert 'invalid topic' in result['err-msg']
-            assert 'ok' in result['status'] # 暂时断言，待功能组同事确认结果
+            assert 'error' in result['status'] # 暂时断言，待功能组同事确认结果
             pass
 
     @allure.step('恢复环境')
