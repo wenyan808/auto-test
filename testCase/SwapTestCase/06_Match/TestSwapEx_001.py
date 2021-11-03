@@ -39,11 +39,11 @@ class TestSwapEx_001:
               '\n*、下默认限价单；买入开仓（开多）'
               '\n*、验证撮合成功（查询撮合表有数据）')
 
-    @allure.title('撮合 买入 开仓')
     @allure.step('测试执行')
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
-    def test_execute(self,params, contract_code):
+    def test_execute(self, params, contract_code):
         with allure.step('详见官方文档'):
+            allure.dynamic.title('撮合 买入 开仓 '+params)
             self.currentPrice = ATP.get_current_price()  # 最新价
             user01.swap_order(contract_code=contract_code,price=round(self.currentPrice,2), direction='sell')
             orderInfo = user01.swap_order(contract_code=contract_code,price=round(self.currentPrice,2), direction='buy',order_price_type=params)
