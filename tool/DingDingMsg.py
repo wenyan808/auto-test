@@ -45,8 +45,7 @@ class DingDingMsg:
                 with open(path / file) as result_json_file:
                     result_info = json.load(result_json_file)
                     print(file)
-                    if result_info["status"] != "broken":
-                        case_result_summary[result_info["status"]].add(result_info['fullName'])
+                    case_result_summary[result_info["status"]].add(result_info['fullName'])
         passed_cases = case_result_summary.pop('passed')
         result = {'passed': len(passed_cases)}
         failed_cases = case_result_summary.pop('failed')
