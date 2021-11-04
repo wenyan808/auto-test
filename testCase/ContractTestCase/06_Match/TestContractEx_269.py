@@ -96,6 +96,7 @@ class TestContractEx_269:
             user01.contract_order(symbol=symbol, contract_code=self.contract_code,
                                   price=round(self.currentPrice, 2),
                                   contract_type=self.contract_type, direction='sell')
+            time.sleep(2)
             orderInfo = user01.contract_order(symbol=symbol,contract_code=self.contract_code,
                                               price=round(self.currentPrice, 2),
                                               contract_type=self.contract_type,direction='buy',order_price_type=params['order_price_type'])
@@ -116,6 +117,10 @@ class TestContractEx_269:
                         assert False
             user01.contract_cancelall(symbol=symbol)
             pass
+    @allure.step('恢复环境')
+    def teardown(self):
+        print('\n恢复环境操作')
+        ATP.clean_market()
 
 
 if __name__ == '__main__':
