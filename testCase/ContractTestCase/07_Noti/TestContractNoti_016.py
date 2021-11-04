@@ -91,7 +91,6 @@ class TestContractNoti_016:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        ATP.clean_market()
         ATP.cancel_all_order()
 
 

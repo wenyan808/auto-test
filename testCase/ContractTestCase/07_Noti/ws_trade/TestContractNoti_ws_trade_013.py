@@ -44,8 +44,9 @@ class TestContractNoti_ws_trade_013:
 
     @allure.step('恢复环境')
     def teardown(self):
-        ATP.clean_market()
-        ATP.cancel_all_order()
+        pass
+        # ATP.clean_market()
+        # ATP.cancel_all_order()
 
 
 if __name__ == '__main__':

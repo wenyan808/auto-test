@@ -65,7 +65,6 @@ class TestContractExchangeIndex_Basis_001:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        ATP.clean_market()
 
 
 if __name__ == '__main__':
