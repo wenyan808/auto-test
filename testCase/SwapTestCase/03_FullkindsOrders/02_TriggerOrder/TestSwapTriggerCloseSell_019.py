@@ -47,27 +47,24 @@ class TestSwapTriggerCloseSell_019:
 
     @classmethod
     def setup_class(cls):
-        currentPrice = ATP.get_current_price()  # 最新价
-        user01.swap_order(contract_code=cls.contract_code, price=currentPrice, direction='buy')
-        user01.swap_order(contract_code=cls.contract_code, price=currentPrice, direction='sell')
+        with allure.step('*->持仓'):
+            cls.currentPrice = ATP.get_current_price()  # 最新价
+            user01.swap_order(contract_code=cls.contract_code, price=cls.currentPrice, direction='buy')
+            user01.swap_order(contract_code=cls.contract_code, price=cls.currentPrice, direction='sell')
+            pass
 
-    @allure.step('测试执行')
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, contract_code,params):
         allure.dynamic.title(params['caseName'])
-        with allure.step('1、持仓'):
-            currentPrice = ATP.get_current_price()  # 最新价
-            pass
-        with allure.step('2、'+params['caseName']):
-            self.orderInfo = user01.swap_trigger_order(contract_code=contract_code,trigger_price=currentPrice,trigger_type=params['trigger_type'],
+        with allure.step('*->'+params['caseName']):
+            self.orderInfo = user01.swap_trigger_order(contract_code=contract_code,trigger_price=self.currentPrice,trigger_type=params['trigger_type'],
                                         order_price=None,direction=params['direction'],offset='close',volume=1)
             pass
-        with allure.step('3、验证计划委托止盈下单返回，参数有校验：系统异常'):
+        with allure.step('*->验证'+params['caseName']+'下单返回，下单失败；参数有校验：系统异常'):
             assert '系统异常' in self.orderInfo['err_msg']
             pass
-        with allure.step('4、取消委托，恢复环境'):
-            pass
+
 
 if __name__ == '__main__':
     pytest.main()
