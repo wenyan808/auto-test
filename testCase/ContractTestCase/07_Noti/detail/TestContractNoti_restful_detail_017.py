@@ -91,6 +91,7 @@ class TestContractNoti_restful_detail_017:
     def teardown(self):
         print('\n恢复环境操作')
         ATP.clean_market()
+        ATP.cancel_all_order()
 
 
 if __name__ == '__main__':

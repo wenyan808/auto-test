@@ -28,7 +28,7 @@ from pprint import pprint
 import pytest, allure, random, time
 
 from tool.common_assert import Assert
-
+from tool.atp import ATP
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('合约测试基线用例//01 交割合约//07 行情')  # 这里填功能
@@ -78,6 +78,12 @@ class TestContractNoti_015:
                     assert amount > 0, 'amount or  trade_turnover incorrect'
                 elif amount == 0:
                     assert close == open, 'close or open incorrect'
+
+    @allure.step('恢复环境')
+    def teardown(self):
+        print('\n恢复环境操作')
+        ATP.clean_market()
+        ATP.cancel_all_order()
 
     if __name__ == '__main__':
         pytest.main()

@@ -139,6 +139,7 @@ class TestCoinswapLimitOrder_006:
 	@allure.step('恢复环境')
 	def teardown(self):
 		print('\n恢复环境操作')
+		ATP.cancel_all_order()
 
 if __name__ == '__main__':
     pytest.main()

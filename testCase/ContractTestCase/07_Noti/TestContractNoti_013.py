@@ -30,7 +30,7 @@ import pytest
 from common.ContractServiceAPI import t as api
 from tool.atp import ATP
 from tool.common_assert import Assert
-
+from tool.atp import ATP
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('合约测试基线用例//01 交割合约//07 行情')  # 这里填功能
@@ -99,6 +99,7 @@ class TestContractNoti_013:
     def teardown(self):
         print('\n恢复环境操作')
         ATP.clean_market()
+        ATP.cancel_all_order()
 
 
 if __name__ == '__main__':
