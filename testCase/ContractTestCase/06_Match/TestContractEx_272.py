@@ -7,6 +7,8 @@ from tool.atp import ATP
 import pytest, allure, random, time
 from common.mysqlComm import orderSeq as DB_orderSeq
 from common.ContractServiceAPI import user01
+from common.redisComm import redisConf
+from config.conf import DEFAULT_SYMBOL,DEFAULT_CONTRACT_CODE
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
@@ -78,33 +80,62 @@ class TestContractEx_272:
              {'titleName': '次季 最优5档FOK', 'contest_type': 'next_quarter', 'order_price_type': 'optimal_5_fok'},
              {'titleName': '次季 最优10档FOK', 'contest_type': 'next_quarter', 'order_price_type': 'optimal_10_fok'},
              {'titleName': '次季 最优20档FOK', 'contest_type': 'next_quarter', 'order_price_type': 'optimal_20_fok'}]
+    symbol = DEFAULT_SYMBOL
+    contract_code = DEFAULT_CONTRACT_CODE
+    redisComm = redisConf('redis6379')
+    flag = False
 
+    @classmethod
+    def setup_class(cls):
+        with allure.step('*->挂盘'):
+            cls.currentPrice = ATP.get_current_price()  # 最新价
+            # 获取交割合约信息
+            currContractInfo = user01.contract_contract_info(symbol=cls.symbol, contract_type='quarter')
+            nextContractInfo = user01.contract_contract_info(symbol=cls.symbol, contract_type='next_quarter')
+            cls.curr_contract_code = currContractInfo['data'][0]['contract_code']
+            cls.next_contract_code = nextContractInfo['data'][0]['contract_code']
+            user01.contract_order(symbol=cls.symbol, contract_code=cls.curr_contract_code, price=cls.currentPrice,
+                                  direction='buy', volume=200)
+            user01.contract_order(symbol=cls.symbol, contract_code=cls.curr_contract_code, price=cls.currentPrice,
+                                  direction='sell', volume=100)
 
-    @allure.step('测试执行')
+            user01.contract_order(symbol=cls.symbol, contract_code=cls.next_contract_code, price=cls.currentPrice,
+                                  direction='buy', volume=200)
+            user01.contract_order(symbol=cls.symbol, contract_code=cls.next_contract_code, price=cls.currentPrice,
+                                  direction='sell', volume=100)
+
+            depth = cls.redisComm.getKey('RsT:MarketBusinessPrice:')
+            n = 0
+            while not cls.flag:
+                if cls.currentPrice not in depth:
+                    n = n + 1
+                    time.sleep(1)
+                    if n > 10:
+                        cls.flag = True
+                else:
+                    break
+            pass
+
+    @classmethod
+    def teardown_class(cls):
+        with allure.step('*->恢复环境:取消挂单'):
+            user01.contract_cancelall(symbol=cls.symbol)
+            pass
+
+    @pytest.mark.skipif(condition=flag, reason='盘口环境问题，跳过以下依赖用例')
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
-    @pytest.mark.parametrize('params',datas,ids=ids)
-    def test_execute(self,symbol,params):
+    @pytest.mark.parametrize('params', datas, ids=ids)
+    def test_execute(self, symbol, params):
         with allure.step('详见官方文档'):
             allure.dynamic.title(params['titleName'])
             self.contract_type = params['contest_type']
-            # 获取交割合约信息
-            contractInfo = user01.contract_contract_info(symbol=symbol, contract_type=self.contract_type)
-            self.contract_code = contractInfo['data'][0]['contract_code']
-            self.currentPrice = ATP.get_current_price(contract_code=self.contract_code)
-            # 持仓
-            user01.contract_order(symbol=symbol, contract_code=self.contract_code,
-                                  price=round(self.currentPrice, 2),
-                                  contract_type=self.contract_type, direction='buy')
-            user01.contract_order(symbol=symbol, contract_code=self.contract_code,
-                                  price=round(self.currentPrice, 2),
-                                  contract_type=self.contract_type, direction='sell')
-            # 平仓
-            user01.contract_order(symbol=symbol, contract_code=self.contract_code,
-                                  price=round(self.currentPrice, 2),
-                                  contract_type=self.contract_type, direction='buy',offset='close')
-            orderInfo = user01.contract_order(symbol=symbol,contract_code=self.contract_code,
+            if self.contract_type == 'quarter':
+                self.contract_code = self.curr_contract_code
+            elif self.contract_type == 'next_quarter':
+                self.contract_code = self.next_contract_code
+            orderInfo = user01.contract_order(symbol=symbol, contract_code=self.contract_code,
                                               price=round(self.currentPrice, 2),
-                                              contract_type=self.contract_type,direction='sell',offset='close',
+                                              contract_type=self.contract_type, direction='sell', offset='close',
                                               order_price_type=params['order_price_type'])
             orderId = orderInfo['data']['order_id']
             strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
@@ -121,12 +152,7 @@ class TestContractEx_272:
                     print('等待处理，第' + str(n) + '次重试………………………………')
                     if n == 5:
                         assert False
-            user01.contract_cancelall(symbol=symbol)
             pass
-
-    @allure.step('恢复环境')
-    def teardown(self):
-        print('\n恢复环境操作')
 
 
 if __name__ == '__main__':
