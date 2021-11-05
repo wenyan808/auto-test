@@ -156,6 +156,7 @@ class ATP:
         pprint(response)
         return response
 
+    @classmethod
     def common_user_cancel_all_trigger_order(cls, contract_code=None):
         json_body = cls.get_base_json_body(contract_code)
         response = cls.common_user_key_post(conf.CANCEL_ALL_TRIGGER_ORDER_URL, json_body)
