@@ -36,6 +36,8 @@ class TestLinearEx_077:
     def setup(self, contract_code):
         print("前置条件  {}".format(contract_code))
 
+        ATP.make_market_depth()
+
     @allure.title('撮合 买入开仓全部成交 撤单   ')
     @allure.step('测试执行')
     def test_execute(self, contract_code):
@@ -59,15 +61,15 @@ class TestLinearEx_077:
             res_cancle = linear_api.linear_cancel(
                 order_id=res['data']['order_id_str'], contract_code=contract_code)
             pprint(res_cancle)
+
             assert res_cancle['status'] == 'ok' and res_cancle['data']['successes'] == '', "全部成交，撤单成功"
 
     @ allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        print(ATP.clean_market())
+        
         # 撤销当前用户 某个品种所有限价挂单
         print(ATP.cancel_all_order())
-        print(ATP.make_market_depth())
 
 
 if __name__ == '__main__':
