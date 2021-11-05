@@ -38,6 +38,8 @@ class TestLinearEx_065:
     def setup(self, contract_code):
         print("前置条件  {}".format(contract_code))
 
+        ATP.make_market_depth()
+
     @allure.title('撮合 对手价FOK 卖出 平仓')
     @allure.step('测试执行')
     def test_execute(self, contract_code):
@@ -66,10 +68,9 @@ class TestLinearEx_065:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        print(ATP.clean_market())
+        
         # 撤销当前用户 某个品种所有限价挂单
         print(ATP.cancel_all_order())
-        print(ATP.make_market_depth())
         print('\n恢复环境操作结束')
 
 
