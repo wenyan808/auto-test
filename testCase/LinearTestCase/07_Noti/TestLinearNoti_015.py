@@ -71,7 +71,7 @@ class TestLinearNoti_015:
                 assert set(check_keys) == set(tick.keys()), 'missing keys in data'
 
                 act_symbol: str = tick.get('symbol', '')
-                assert act_symbol.endswith('-USDT'), 'symbol is incorrect'
+                assert act_symbol.find('-USDT') != -1, 'symbol is incorrect'
 
                 close = float(tick.get('close', 0))
                 assert close > 0, 'close 价格 错误'

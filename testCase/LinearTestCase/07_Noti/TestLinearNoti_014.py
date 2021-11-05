@@ -64,7 +64,7 @@ class TestLinearNoti_014:
             tick = ticks[0]
 
             check_keys = ['vol', 'contract_code', 'count', 'open', 'close', 'low', 'high', 'amount', 'trade_turnover',
-                          'ask', 'bid', 'id', 'ts']
+                          'ask', 'bid', 'business_type', 'id', 'ts']
             assert isinstance(tick, dict) and set(check_keys) == set(tick.keys()), 'response 中 tick 缺少字段'
 
             ask = tick.get('ask', [])

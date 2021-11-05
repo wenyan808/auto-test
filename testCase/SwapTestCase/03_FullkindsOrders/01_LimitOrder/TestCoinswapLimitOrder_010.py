@@ -151,6 +151,7 @@ class TestCoinswapLimitOrder_010:
 	def teardown(self):
 		print('\n恢复环境操作')
 		ATP.clean_market()
+		ATP.cancel_all_order()
 
 if __name__ == '__main__':
 	pytest.main()

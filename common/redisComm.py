@@ -1,26 +1,20 @@
 import redis
-
+from config.conf import REDIS_CONF
 
 class redisConf:
 
-    def __init__(self, host, port, password):
-        self.host = host
-        self.port = port
-        self.password = password
+    def __init__(self,redisName):
+        redisConfig = eval(REDIS_CONF)
+        self.host = str(redisConfig[redisName]['host'])
+        self.port = int(redisConfig[redisName]['port'])
+        self.password = str(redisConfig[redisName]['pwd'])
         self.coon = redis.Redis(host=self.host, port=self.port, password=self.password, decode_responses=True, db=0)
 
-    def getAPO(self, userId, contractCode):
-        key = "RsT:APO:" + userId + "#" + contractCode
-        return self.coon.hgetall(key)
-
-    def delAPO(self, userId, contractCode):
-        key = "RsT:APO:" + userId + "#" + contractCode
-        return self.coon.delete(key)
-
-    def keyIsExists(self, userId, contractCode):
-        key = "RsT:APO:" + userId + "#" + contractCode
-        return self.coon.exists(key)
+    def getKey(self,key):
+        values = self.coon.hgetall(key)
+        return  values
 
 
-# t = redisConf()
-# print(t.delAPO('100000000','BTC-USDT'))
+
+
+

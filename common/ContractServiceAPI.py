@@ -3,7 +3,7 @@
 # @Date    : 2020/7/31
 # @Author  : zhangranghan
 from pprint import pprint
-
+from config.conf import USERINFO
 from common.util import api_http_get, api_key_post, api_key_get
 from config import conf
 from config.conf import URL, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
@@ -291,8 +291,8 @@ class ContractServiceAPI:
 
     # 合约下单
     def contract_order(self, symbol=None, contract_type=None, contract_code=None,
-                       client_order_id=None, price=None, volume=None, direction=None, offset=None,
-                       lever_rate=None, order_price_type=None, tp_trigger_price=None, tp_order_price=None,
+                       client_order_id=None, price=None, volume=1, direction=None, offset='open',
+                       lever_rate=5, order_price_type='limit', tp_trigger_price=None, tp_order_price=None,
                        tp_order_price_type=None,
                        sl_trigger_price=None, sl_order_price=None, sl_order_price_type=None, channel_code=None):
         """
@@ -862,7 +862,7 @@ class ContractServiceAPI:
 
     # 闪电平仓
     def lightning_close_position(self, symbol=None, contract_type=None, contract_code=None, client_order_id=None,
-                                 volume=None, direction=None, order_price_type=None, channel_code=None):
+                                 volume=1, direction=None, order_price_type=None, channel_code=None):
         params = {'volume': volume,
                   'direction': direction}
         if symbol:
@@ -1449,3 +1449,7 @@ class ContractServiceAPI:
 # 定义t并传入公私钥和URL,供用例直接调用
 t = ContractServiceAPI(URL, ACCESS_KEY, SECRET_KEY)
 common_user_contract_service_api = ContractServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
+userList = eval(USERINFO)
+user01 = ContractServiceAPI(URL, userList[0]['ACCESS_KEY'], userList[0]['SECRET_KEY'])
+user02 = ContractServiceAPI(URL, userList[1]['ACCESS_KEY'], userList[1]['SECRET_KEY'])
+user03 = ContractServiceAPI(URL, userList[2]['ACCESS_KEY'], userList[2]['SECRET_KEY'])
