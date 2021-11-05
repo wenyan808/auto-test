@@ -61,8 +61,7 @@ class TestLinearEx_077:
             res_cancle = linear_api.linear_cancel(
                 order_id=res['data']['order_id_str'], contract_code=contract_code)
             pprint(res_cancle)
-
-            assert res_cancle['status'] == 'ok' and res_cancle['data']['successes'] == '', "全部成交，撤单成功"
+            assert res_cancle['status'] == 'ok' and res_cancle['data']['successes'] == res['data']['order_id_str'], "全部成交，撤单成功"
 
     @ allure.step('恢复环境')
     def teardown(self):
