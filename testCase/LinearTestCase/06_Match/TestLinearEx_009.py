@@ -26,7 +26,7 @@ from tool.atp import ATP
 
 @allure.epic('正向永续')  # 这里填业务线
 @allure.feature('撮合//委托单')  # 这里填功能
-@allure.story('撮合 最优5档 买入 开仓')  # 这里填子功能，没有的话就把本行注释掉
+#@allure.story('')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : Alex Li')
 @pytest.mark.stable
 class TestLinearEx_009:
@@ -35,6 +35,7 @@ class TestLinearEx_009:
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, contract_code):
         print("前置条件  {}".format(contract_code))
+        ATP.make_market_depth()
 
     @allure.title('撮合 最优5档 买入 开仓')
     @allure.step('测试执行')
@@ -59,10 +60,9 @@ class TestLinearEx_009:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        print(ATP.clean_market())
         # 撤销当前用户 某个品种所有限价挂单
         print(ATP.cancel_all_order())
-        print(ATP.make_market_depth())
+
 
 
 if __name__ == '__main__':
