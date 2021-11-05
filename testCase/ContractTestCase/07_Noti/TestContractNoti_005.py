@@ -27,6 +27,7 @@ from pprint import pprint
 import pytest, allure, random, time
 from tool.atp import ATP
 from common.ContractServiceWS import t as websocketsevice
+from tool.atp import ATP
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('WS订阅')  # 这里填功能
@@ -71,9 +72,7 @@ class TestContractNoti_005:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        ATP.cancel_all_trigger_order()
         ATP.cancel_all_order()
-        ATP.close_all_position()
 
 
 if __name__ == '__main__':
