@@ -105,6 +105,23 @@ class ATP:
         return response
 
     @classmethod
+    def common_user_cancel_all_order(cls, contract_code=None):
+        json_body = cls.get_base_json_body(contract_code)
+
+        response = cls.common_user_key_post(conf.CANCEL_ALL_ORDER_URL, json_body)
+        if conf.SYSTEM_TYPE == 'LinearSwap':
+            cross_response = cls.common_user_key_post(conf.CANCEL_ALL_ORDER_URL.replace('swap_cancelall', 'swap_cross_cancelall'),
+                                          json_body)
+            response = {
+                "cross": cross_response,
+                "isolated": response
+
+            }
+        print('撤销当前用户 某个品种所有限价挂单')
+        pprint(response)
+        return response
+
+    @classmethod
     def switch_level(cls, contract_code=None, lever_rate=5):
         json_body = cls.get_base_json_body(contract_code)
         json_body['lever_rate'] = lever_rate
@@ -139,6 +156,22 @@ class ATP:
         pprint(response)
         return response
 
+    def common_user_cancel_all_trigger_order(cls, contract_code=None):
+        json_body = cls.get_base_json_body(contract_code)
+        response = cls.common_user_key_post(conf.CANCEL_ALL_TRIGGER_ORDER_URL, json_body)
+        if conf.SYSTEM_TYPE == 'LinearSwap':
+            cross_response = cls.common_user_key_post(conf.CANCEL_ALL_TRIGGER_ORDER_URL.replace('swap_trigger_cancelall',
+                                                                                    'swap_cross_trigger_cancelall'),
+                                          json_body)
+            response = {
+                "cross": cross_response,
+                "isolated": response
+
+            }
+        print('撤销当前用户 某个品种所有计划委托挂单')
+        pprint(response)
+        return response
+
     @classmethod
     def cancel_all_tpsl_order(cls, contract_code=None):
         json_body = cls.get_base_json_body(contract_code)
@@ -158,11 +191,46 @@ class ATP:
         return response
 
     @classmethod
+    def common_user_cancel_all_tpsl_order(cls, contract_code=None):
+        json_body = cls.get_base_json_body(contract_code)
+
+        response = cls.common_user_key_post(conf.CANCEL_ALL_TPSL_ORDER_URL, json_body)
+        if conf.SYSTEM_TYPE == 'LinearSwap':
+            cross_response = cls.common_user_key_post(
+                conf.CANCEL_ALL_TPSL_ORDER_URL.replace('swap_tpsl_cancelall',
+                                                       'swap_cross_tpsl_cancelall'), json_body)
+            response = {
+                "cross": cross_response,
+                "isolated": response
+
+            }
+        print('撤销当前用户 某个品种所有止盈止损委托挂单')
+        pprint(response)
+        return response
+
+    @classmethod
     def cancel_all_track_order(cls, contract_code=None):
         json_body = cls.get_base_json_body(contract_code)
         response = cls.key_post(conf.CANCEL_ALL_TRACK_ORDER_URL, json_body)
         if conf.SYSTEM_TYPE == 'LinearSwap':
             cross_response = cls.key_post(
+                conf.CANCEL_ALL_TRACK_ORDER_URL.replace('swap_track_cancelall',
+                                                        'swap_cross_track_cancelall'), json_body)
+            response = {
+                "cross": cross_response,
+                "isolated": response
+
+            }
+        print('撤销当前用户 某个品种所有跟踪委托挂单')
+        pprint(response)
+        return response
+
+    @classmethod
+    def common_user_cancel_all_track_order(cls, contract_code=None):
+        json_body = cls.get_base_json_body(contract_code)
+        response = cls.common_user_key_post(conf.CANCEL_ALL_TRACK_ORDER_URL, json_body)
+        if conf.SYSTEM_TYPE == 'LinearSwap':
+            cross_response = cls.common_user_key_post(
                 conf.CANCEL_ALL_TRACK_ORDER_URL.replace('swap_track_cancelall',
                                                         'swap_cross_track_cancelall'), json_body)
             response = {
@@ -405,6 +473,10 @@ class ATP:
         ATP.cancel_all_trigger_order(contract_code=contract_code)
         ATP.cancel_all_track_order(contract_code=contract_code)
         ATP.cancel_all_tpsl_order(contract_code=contract_code)
+        ATP.common_user_cancel_all_order(contract_code=contract_code)
+        ATP.common_user_cancel_all_trigger_order(contract_code=contract_code)
+        ATP.common_user_cancel_all_track_order(contract_code=contract_code)
+        ATP.common_user_cancel_all_tpsl_order(contract_code=contract_code)
 
     @classmethod
     def get_adjust_price(cls, rate=1.01, contract_code=None, base_price=None):
