@@ -137,6 +137,7 @@ class TestContractEx_271:
                                               price=round(self.currentPrice, 2),
                                               contract_type=self.contract_type,direction='buy',offset='close',
                                               order_price_type=params['order_price_type'])
+            time.sleep(1)
             orderId = orderInfo['data']['order_id']
             strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
                      "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderId)

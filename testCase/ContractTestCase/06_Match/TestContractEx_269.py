@@ -146,6 +146,10 @@ class TestContractEx_269:
                     if n == 5:
                         assert False
             pass
+    @allure.step('恢复环境')
+    def teardown(self):
+        print('\n恢复环境操作')
+        ATP.clean_market()
 
 
 if __name__ == '__main__':

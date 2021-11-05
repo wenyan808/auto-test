@@ -52,9 +52,10 @@ import pytest, allure, random, time
 from tool.atp import ATP
 
 @allure.epic('反向永续')  # 这里填业务线
-@allure.feature('功能')  # 这里填功能
-@allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@allure.feature('全部策略订单')  # 这里填功能
+@allure.story('限价委托')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
+@allure.tag('Script owner : chenwei', 'Case owner : 吉龙')
 class TestCoinswapLimitOrder_001:
 
 	@allure.step('前置条件')
@@ -127,7 +128,7 @@ class TestCoinswapLimitOrder_001:
 									lever_rate=leverrate,
 									order_price_type='limit')
 		pprint(r)
-		time.sleep(5)
+		time.sleep(2)
 		orderid2 = r['data']['order_id']
 		self.orderid2 = orderid2;
 		with allure.step('2、观察盘口有结果A'):
@@ -178,6 +179,7 @@ class TestCoinswapLimitOrder_001:
 	@allure.step('恢复环境')
 	def teardown(self):
 		print('\n恢复环境操作')
+		ATP.cancel_all_order()
 
 if __name__ == '__main__':
     pytest.main()

@@ -49,9 +49,10 @@ import pytest, allure, random, time
 from tool.atp import ATP
 
 @allure.epic('反向永续')  # 这里填业务线
-@allure.feature('功能')  # 这里填功能
-@allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@allure.feature('全部策略订单')  # 这里填功能
+@allure.story('限价委托')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
+@allure.tag('Script owner : chenwei', 'Case owner : 吉龙')
 class TestCoinswapLimitOrder_003:
 
 	@allure.step('前置条件')

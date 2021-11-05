@@ -112,7 +112,7 @@ if __name__ == '__main__':
         test_type = ''
     # for debug
     # test_env = 'Test6'
-    # system_type = 'ALL'
+    # system_type = 'Linear'
     # build_num = 30000
     # test_type = 'stable'
     DingDingMsg.init()
