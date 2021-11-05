@@ -1,20 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211014
-# @Author : 
-    用例标题
-        WS订阅K线(req) period为空
-    前置条件
-        
-    步骤/文本
-        详见官方文档
-    预期结果
-        
-    优先级
-        2
-    用例别名
-        TestLinearNoti_ws_kline_140
-"""
+# @Date    : 20211014
+# @Author :  HuiQing Yu
 
 from common.LinearServiceWS import t as linear_service_ws
 import pytest, allure, random, time
@@ -52,11 +39,6 @@ class TestLinearNoti_ws_kline_140:
             print('\033[1;32;49m%s\033[0m' % resultStr)
             assert 'invalided kline type' in result['err-msg']
             pass
-
-    @allure.step('恢复环境')
-    def teardown(self):
-        print('\n恢复环境操作')
-
 
 if __name__ == '__main__':
     pytest.main()
