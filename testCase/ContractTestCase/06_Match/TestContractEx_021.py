@@ -24,9 +24,13 @@ from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from tool.atp import ATP
 from common.mysqlComm import orderSeq as DB_orderSeq
+
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
@@ -54,9 +58,9 @@ class TestContractEx_021:
             sell_price = ATP.get_adjust_price(1.02)
             buy_price = ATP.get_adjust_price(0.98)
             buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=buy_price,
-                                                     volume='1',
-                                                     direction='buy', offset='open', lever_rate=leverrate,
-                                                     order_price_type='post_only')
+                                                    volume='1',
+                                                    direction='buy', offset='open', lever_rate=leverrate,
+                                                    order_price_type='post_only')
             pprint(buy_order)
             time.sleep(2)
 
@@ -64,7 +68,8 @@ class TestContractEx_021:
             orderId = buy_order['data']['order_id']
 
             strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderId)
+                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (
+                         orderId)
             # 给撮合时间，5秒内还未撮合完成则为失败
             n = 0
             while n < 5:
@@ -81,7 +86,7 @@ class TestContractEx_021:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        ATP.clean_market()
+        ATP.cancel_all_order()
 
 
 if __name__ == '__main__':

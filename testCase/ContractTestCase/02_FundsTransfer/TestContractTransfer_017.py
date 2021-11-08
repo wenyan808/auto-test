@@ -42,6 +42,7 @@ class TestContractTransfer_017:
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, sub_uid):
         print("前置条件 sub_uid： {}".format(sub_uid))
+        print(ATP.make_market_depth())
 
     @allure.title(' 子账户划转到母账户（挂多单））')
     @allure.step('测试执行')
@@ -96,11 +97,8 @@ class TestContractTransfer_017:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        print(ATP.clean_market())
         # 撤销当前用户 某个品种所有限价挂单
         print(ATP.cancel_all_order())
-        print(ATP.make_market_depth())
-        print(ATP.close_all_position())
 
 
 if __name__ == '__main__':

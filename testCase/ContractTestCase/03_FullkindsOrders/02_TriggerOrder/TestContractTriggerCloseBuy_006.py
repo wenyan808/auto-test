@@ -39,12 +39,10 @@ from tool.atp import ATP
 @allure.story('计划委托买入平空触发价等于最新价')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : Alex Li')
 @pytest.mark.stable
-class TestContractTriggerCloseBuy_005:
+class TestContractTriggerCloseBuy_006:
 
     @allure.step('前置条件')
     def setup(self):
-        ATP.clean_market()
-        time.sleep(1)
         print(''' 使当前交易对有交易盘口  ''')
         print(ATP.make_market_depth())
         print(''' 使当前用户有持仓  ''')
@@ -102,7 +100,6 @@ class TestContractTriggerCloseBuy_005:
         print('\n恢复环境操作')
         ATP.cancel_all_trigger_order()
         ATP.cancel_all_order()
-        ATP.close_all_position()
 
 
 if __name__ == '__main__':

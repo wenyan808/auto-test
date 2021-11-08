@@ -102,7 +102,6 @@ class TestContractTriggerCloseSell_004:
         print('\n恢复环境操作')
         ATP.cancel_all_trigger_order()
         ATP.cancel_all_order()
-        ATP.close_all_position()
 
 
 if __name__ == '__main__':

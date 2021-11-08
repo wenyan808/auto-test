@@ -34,7 +34,7 @@ class TestContractLimitOrder_0016:
 
     @allure.step("恢复环境")
     def teardown(self):
-        ATP.clean_market()
+        ATP.cancel_all_order()
 
     @allure.title('最优20档卖出开空买盘无数据自动撤单')
     def test_contract_limit_order(self, symbol, symbol_period):
@@ -43,7 +43,8 @@ class TestContractLimitOrder_0016:
 
         self.setUp()
         pprint('\n步骤一:获取盘口(买)\n')
-        r_trend_req = contract_api.contract_depth(symbol=symbol_period, type="step0")
+        r_trend_req = contract_api.contract_depth(
+            symbol=symbol_period, type="step0")
         pprint(r_trend_req)
         current_bids = r_trend_req.get("tick").get("bids")
         # 如果有买单，则吃掉所有买单;如果没有，则不需要吃盘，直接卖出
@@ -56,14 +57,17 @@ class TestContractLimitOrder_0016:
                 lowest_price.append(each_price)
             lowest_price = min(lowest_price)
             pprint("\n步骤二：用操作账号以当前最低价吃掉所有买单(卖出)\n")
-            service = ContractServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
+            service = ContractServiceAPI(
+                URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
             service.contract_order(symbol=symbol, contract_type='this_week', price=lowest_price, volume=total_bids,
                                    direction='sell', offset='open', lever_rate=lever_rate, order_price_type='limit')
             time.sleep(3)
             pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有买单\n")
-            r_trend_req_confirm = contract_api.contract_depth(symbol=symbol_period, type="step0")
+            r_trend_req_confirm = contract_api.contract_depth(
+                symbol=symbol_period, type="step0")
             current_bids = r_trend_req_confirm.get("tick").get("bids")
-            assert not current_bids, "买盘不为空! 当前买盘: {current_bids}".format(current_bids=current_bids)
+            assert not current_bids, "买盘不为空! 当前买盘: {current_bids}".format(
+                current_bids=current_bids)
         pprint("\n步骤四: 以最优20档卖出做空\n")
         r_sell_opponent = contract_api.contract_order(symbol=symbol, contract_type='this_week',
                                                       order_price_type='optimal_20', price="", direction="sell",
