@@ -31,7 +31,7 @@ class TestSwapTriggerCancel_001:
             else:
                 trigger_type = 'le'
             cls.orderInfo = user01.swap_trigger_order(contract_code=cls.contract_code, trigger_price=trigger_price,
-                                                       trigger_type=trigger_type,
+                                                       trigger_type=trigger_type,offset='open',
                                                        order_price=trigger_price, direction='buy', volume=1)
             pass
 

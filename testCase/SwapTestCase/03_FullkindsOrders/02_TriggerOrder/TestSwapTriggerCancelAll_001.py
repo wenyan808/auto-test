@@ -33,7 +33,7 @@ class TestSwapTriggerCancelAll_001:
             cls.orderInfoList = []
             for i in range (3):
                 orderInfo = user01.swap_trigger_order(contract_code=cls.contract_code, trigger_price=trigger_price,
-                                                           trigger_type=trigger_type,
+                                                           trigger_type=trigger_type,offset='open',
                                                            order_price=trigger_price, direction='buy', volume=1)
                 cls.orderInfoList.append(orderInfo['data']['order_id'])
             pass

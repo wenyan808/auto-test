@@ -820,7 +820,7 @@ class SwapService:
 
     # 计划委托下单接口
     def swap_trigger_order(self, contract_code=None, trigger_type=None, trigger_price=None, order_price=None,
-                           order_price_type=None, volume=None, direction=None, offset=None, lever_rate=None):
+                           order_price_type='limit', volume=None, direction=None, offset='open', lever_rate=5):
         """
             contract_code	true	String	合约代码	BTC-USD
             trigger_type	true	String	触发类型： ge大于等于(触发价比最新价大)；le小于(触发价比最新价小)
