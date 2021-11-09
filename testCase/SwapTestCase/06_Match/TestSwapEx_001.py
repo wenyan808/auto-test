@@ -16,15 +16,10 @@
         TestSwapEx_001
 """
 from tool.atp import ATP
+from config.conf import DEFAULT_CONTRACT_CODE
 import pytest, allure, random, time
 from common.mysqlComm import orderSeq as DB_orderSeq
 from common.SwapServiceAPI import user01
-
-
-caseNames = ['限价单','对手价','做maker单','最优5档','最优10档','最优20档','IOC单','fok单','对手价IOC','对手价FOK',
-             '最优5档IOC','最优10档IOC','最优20档IOC','最优5档FOK','最优10档FOK','最优20档FOK']
-params = ['limit','opponent','post_only','optimal_5','optimal_10','optimal_20','ioc','fok','opponent_ioc','opponent_fok',
-          'optimal_5_ioc','optimal_10_ioc','optimal_20_ioc','optimal_5_fok','optimal_10_fok','optimal_20_fok']
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
@@ -33,24 +28,117 @@ params = ['limit','opponent','post_only','optimal_5','optimal_10','optimal_20','
 @pytest.mark.stable
 class TestSwapEx_001:
 
-    @allure.step('前置条件')
-    def setup(self):
-        print('测试步骤：'
-              '\n*、下默认限价单；买入开仓（开多）'
-              '\n*、验证撮合成功（查询撮合表有数据）')
+    ids = [ "TestSwapEx_001",
+            "TestSwapEx_005",
+            "TestSwapEx_009",
+            "TestSwapEx_013",
+            "TestSwapEx_017",
+            "TestSwapEx_021",
+            "TestSwapEx_025",
+            "TestSwapEx_029",
+            "TestSwapEx_033",
+            "TestSwapEx_037",
+            "TestSwapEx_041",
+            "TestSwapEx_045",
+            "TestSwapEx_049",
+            "TestSwapEx_053",
+            "TestSwapEx_057",
+            "TestSwapEx_061"]
+    params = [
+              {
+                "case_name": "限价单",
+                "order_price_type": "limit"
+              },
+              {
+                "case_name": "对手价",
+                "order_price_type": "opponent"
+              },
+              {
+                "case_name": "做maker单",
+                "order_price_type": "post_only"
+              },
+              {
+                "case_name": "最优5档",
+                "order_price_type": "optimal_5"
+              },
+              {
+                "case_name": "最优10档",
+                "order_price_type": "optimal_10"
+              },
+              {
+                "case_name": "最优20档",
+                "order_price_type": "optimal_20"
+              },
+              {
+                "case_name": "IOC单",
+                "order_price_type": "ioc"
+              },
+              {
+                "case_name": "fok单",
+                "order_price_type": "fok"
+              },
+              {
+                "case_name": "对手价IOC",
+                "order_price_type": "opponent_ioc"
+              },
+              {
+                "case_name": "对手价FOK",
+                "order_price_type": "opponent_fok"
+              },
+              {
+                "case_name": "最优5档IOC",
+                "order_price_type": "optimal_5_ioc"
+              },
+              {
+                "case_name": "最优10档IOC",
+                "order_price_type": "optimal_10_ioc"
+              },
+              {
+                "case_name": "最优20档IOC",
+                "order_price_type": "optimal_20_ioc"
+              },
+              {
+                "case_name": "最优5档FOK",
+                "order_price_type": "optimal_5_fok"
+              },
+              {
+                "case_name": "最优10档FOK",
+                "order_price_type": "optimal_10_fok"
+              },
+              {
+                "case_name": "最优20档FOK",
+                "order_price_type": "optimal_20_fok"
+              }
+            ]
+    contract_code = DEFAULT_CONTRACT_CODE
 
-    @allure.step('测试执行')
+    @classmethod
+    def setup_class(cls):
+        with allure.step('*->挂盘'):
+            cls.currentPrice = ATP.get_current_price()  # 最新价
+            user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='sell',volume=20)
+            pass
+
+    @classmethod
+    def teardown_class(cls):
+        with allure.step('*->恢复环境:取消挂单'):
+            time.sleep(1)
+            user01.swap_cancelall(contract_code=cls.contract_code)
+            pass
+
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
-    def test_execute(self, params, contract_code):
-        with allure.step('详见官方文档'):
-            allure.dynamic.title('撮合 买入 开仓 '+params)
-            self.currentPrice = ATP.get_current_price()  # 最新价
-            user01.swap_order(contract_code=contract_code,price=round(self.currentPrice,2), direction='sell')
-            orderInfo = user01.swap_order(contract_code=contract_code,price=round(self.currentPrice,2), direction='buy',order_price_type=params)
-            orderId=orderInfo['data']['order_id']
+    @pytest.mark.parametrize('params', params, ids=ids)
+    def test_execute(self, params):
+        allure.dynamic.title('撮合 买入 开仓 ' + params['case_name'])
+        with allure.step("测试方案->买入开仓，通过查询撮合结果表验证撮合结果"):
+            pass
+        with allure.step('买入开仓'):
+            orderInfo = user01.swap_order(contract_code=self.contract_code,price=round(self.currentPrice,2), direction='buy',
+                                          order_price_type=params['order_price_type'])
+            pass
+        with allure.step('验证撮合结果'):
             strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" %(orderId)
-
+                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderInfo['data']['order_id'])
             # 给撮合时间，5秒内还未撮合完成则为失败
             n = 0
             while n<5:
@@ -65,11 +153,6 @@ class TestSwapEx_001:
                         assert False
 
             pass
-
-
-    @allure.step('恢复环境')
-    def teardown(self):
-        print('\n恢复环境操作')
 
 
 if __name__ == '__main__':

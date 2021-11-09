@@ -27,17 +27,18 @@ class TestLinearTriggerCloseBuy_004:
             {'titleName': '平多-触发价等于最新价', 'direction':'sell', 'trgRatio':1.00, 'ordRatio':0.98},
             {'titleName': '平多-触发价高于最新价', 'direction':'sell', 'trgRatio':1.01, 'ordRatio':0.98}]
 
-    @allure.step('测试执行')
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self,contract_code,params):
         with allure.step('1、行情-最新价更新为49800'):
             allure.dynamic.title(params['titleName'])
-            allure.dynamic.description('\n测试标题：'+params['titleName']+'场景，验证计划委托-委托触发'
+            allure.dynamic.description('\n测试步骤：'
                                       '\n*、先清盘避免盘口数据干扰;'
                                       '\n*、以'+params['titleName']+'下单计划委托单；'
                                       '\n*、触发计划委托订单；'
                                       '\n*、验证计划委托订单触发否')
+            #撤销所有计划委托
+            user01.linear_trigger_cancelall(contract_code=contract_code)
             print("清盘》》》》", ATP.clean_market())
             currentPrice = ATP.get_current_price()  # 最新价
             trigger_price = round(params['trgRatio']*currentPrice,2) #触发价

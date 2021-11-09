@@ -12,7 +12,7 @@ from config.conf import DEFAULT_CONTRACT_CODE
 
 @allure.epic('反向永续')
 @allure.feature('计划委托')
-@allure.story('开多')
+@allure.story('触发价不同下单')
 @allure.tag('Script owner : 余辉青', 'Case owner : 邱大伟')
 @pytest.mark.stable
 class TestSwapTriggerOpenBuy10_004:
@@ -35,7 +35,8 @@ class TestSwapTriggerOpenBuy10_004:
             "TestSwapTriggerOpenSell20_005",
             "TestSwapTriggerOpenSell20_006"
             ]
-    params = [{
+    params = [
+              {
                 "caseName": "开多-计划委托-最优5档触发价大于最新价",
                 "order_price_type": "optimal_5",
                 "direction":"buy",
@@ -154,7 +155,7 @@ class TestSwapTriggerOpenBuy10_004:
             else:
                 trigger_type = 'le'
             self.orderInfo = user01.swap_trigger_order(contract_code=contract_code,trigger_price=trigger_price,
-                                                       trigger_type=trigger_type,
+                                                       trigger_type=trigger_type,offset='open',
                                                        order_price=self.currentPrice,direction=params['direction'],
                                                        volume=1,order_price_type=params['order_price_type'])
             pass
