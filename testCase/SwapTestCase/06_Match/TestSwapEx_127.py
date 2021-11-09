@@ -15,13 +15,13 @@ from config.conf import DEFAULT_CONTRACT_CODE
 @allure.story('闪电平仓-平多')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.stable
-class TestSwapEx_134:
+class TestSwapEx_127:
 
-    ids = ['TestSwapEx_132', 'TestSwapEx_133', 'TestSwapEx_134']
+    ids = ['TestSwapEx_129', 'TestSwapEx_128', 'TestSwapEx_127']
     params = [
-                {'case_name': '平空 闪电平仓', 'order_price_type': 'lightning', 'direction': 'buy'},
-                {'case_name': '平空 闪电平仓-IOC', 'order_price_type': 'lightning_ioc', 'direction': 'buy'},
-                {'case_name': '平空 闪电平仓-FOK', 'order_price_type': 'lightning_fok', 'direction': 'buy'}
+                {'case_name':'平多 闪电平仓','order_price_type':'lightning','direction':'sell'},
+                {'case_name':'平多 闪电平仓-IOC','order_price_type':'lightning_ioc','direction':'sell'},
+                {'case_name':'平多 闪电平仓-FOK','order_price_type':'lightning_fok','direction':'sell'}
              ]
     contract_code = DEFAULT_CONTRACT_CODE
     @classmethod
@@ -32,8 +32,9 @@ class TestSwapEx_134:
                               volume=10)
             user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='buy',
                               volume=10)
-            user01.swap_order(contract_code=cls.contract_code, volume=10,offset='close',price=round(cls.currentPrice, 2),
-                                                 direction='sell')
+            user01.swap_order(contract_code=cls.contract_code, volume=10, offset='close',
+                              price=round(cls.currentPrice, 2),
+                              direction='buy')
             pass
 
     @classmethod
