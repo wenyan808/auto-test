@@ -34,7 +34,7 @@ class TestContractLimitOrder_0013:
 
     @allure.step("恢复环境")
     def teardown(self):
-        ATP.clean_market()
+        ATP.cancel_all_order()
 
     @allure.title('最优10档买入开多卖盘无数据自动撤单')
     def test_contract_limit_order(self, symbol, symbol_period):
@@ -43,7 +43,8 @@ class TestContractLimitOrder_0013:
 
         self.setUp()
         pprint('\n步骤一:获取盘口(卖)\n')
-        r_trend_req = contract_api.contract_depth(symbol=symbol_period, type="step0")
+        r_trend_req = contract_api.contract_depth(
+            symbol=symbol_period, type="step0")
         pprint(r_trend_req)
         current_asks = r_trend_req.get("tick").get("asks")
         # 如果有卖单，则吃掉所有卖单
@@ -55,14 +56,17 @@ class TestContractLimitOrder_0013:
                 total_asks += each_amount
                 highest_price = max(highest_price, each_price)
             pprint("\n步骤二：用操作账号以当前最高价吃掉(买入)所有卖单\n")
-            service = ContractServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
+            service = ContractServiceAPI(
+                URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
             service.contract_order(symbol=symbol, contract_type='this_week', price=highest_price, volume=total_asks,
                                    direction='buy', offset='open', lever_rate=lever_rate, order_price_type='limit')
             time.sleep(3)
             pprint("\n步骤三：再次查询盘口，确认是否已吃掉所有卖单\n")
-            r_trend_req_confirm = contract_api.contract_depth(symbol=symbol_period, type="step0")
+            r_trend_req_confirm = contract_api.contract_depth(
+                symbol=symbol_period, type="step0")
             current_asks = r_trend_req_confirm.get("tick").get("asks")
-            assert not current_asks, "卖盘不为空! 当前卖盘: {current_asks}".format(current_asks=current_asks)
+            assert not current_asks, "卖盘不为空! 当前卖盘: {current_asks}".format(
+                current_asks=current_asks)
         pprint("\n步骤四: 以最优10档买入开多\n")
         r_buy_opponent = contract_api.contract_order(symbol=symbol, contract_type='this_week',
                                                      order_price_type='optimal_10', price="", direction="buy",

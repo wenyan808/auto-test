@@ -24,7 +24,10 @@ from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from tool.atp import ATP
 from common.mysqlComm import orderSeq as DB_orderSeq
 
@@ -54,7 +57,8 @@ class TestContractEx_004:
             buy_price = ATP.get_adjust_price(0.98)
 
             current = ATP.get_current_price(contract_code=symbol_period)
-            ATP.common_user_make_order(price=current, direction='buy', offset="close")
+            ATP.common_user_make_order(
+                price=current, direction='buy', offset="close")
             time.sleep(1)
 
             sell_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=current,
@@ -67,7 +71,8 @@ class TestContractEx_004:
             self.current_price = ATP.get_current_price()
             orderId = sell_order['data']['order_id']
             strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderId)
+                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (
+                         orderId)
 
             # 给撮合时间，5秒内还未撮合完成则为失败
             n = 0
@@ -85,7 +90,7 @@ class TestContractEx_004:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        ATP.clean_market()
+        ATP.cancel_all_order()
 
 
 if __name__ == '__main__':

@@ -8,7 +8,7 @@
 用例标题
     子账户划转到母账户（挂空单）
 前置条件
-    
+
 步骤/文本
     1、登入合约界面
     2、进入子账号管理界面，点击“划转”按钮
@@ -41,6 +41,7 @@ class TestContractTransfer_018:
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, sub_uid):
+        print(ATP.make_market_depth())
         print("前置条件 sub_uid： {}".format(sub_uid))
 
     @allure.title(' 子账户划转到母账户（挂空单））')
@@ -96,11 +97,8 @@ class TestContractTransfer_018:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        print(ATP.clean_market())
         # 撤销当前用户 某个品种所有限价挂单
         print(ATP.cancel_all_order())
-        print(ATP.make_market_depth())
-        print(ATP.close_all_position())
 
 
 if __name__ == '__main__':

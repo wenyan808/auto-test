@@ -9,7 +9,10 @@ from common.ContractServiceOrder import t as contranct_order
 
 from schema import Schema, And, Or, Regex, SchemaError
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from tool.get_test_data import case_data
 
 
@@ -20,7 +23,6 @@ class TestContractTransfer_006:
 
     def setup(self):
         print('\n前置条件')
-
 
     def test_contract_account_position_info(self, symbol):
         subuid = ""
@@ -49,7 +51,8 @@ class TestContractTransfer_006:
         pprint(r2)
         financial_record_lastest = r2['data']['financial_record'][0]
 
-        actual = (financial_record_lastest['symbol'], financial_record_lastest['amount'])
+        actual = (financial_record_lastest['symbol'],
+                  financial_record_lastest['amount'])
 
         pprint(financial_record_lastest)
 

@@ -24,9 +24,13 @@ from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from tool.atp import ATP
 from common.mysqlComm import orderSeq as DB_orderSeq
+
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
@@ -69,13 +73,15 @@ class TestContractEx_103:
                                                      order_price_type='limit')
 
             pprint(buy_order1)
-            buy_order2 = ATP.common_user_make_order(contract_code=symbol_period, price=current,volume=1, direction='buy', offset='close')
+            buy_order2 = ATP.common_user_make_order(
+                contract_code=symbol_period, price=current, volume=1, direction='buy', offset='close')
             orderId2 = buy_order2['data']['order_id']
             orderId = buy_order1['data']['order_id']
 
             time.sleep(2)
             strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderId2)
+                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (
+                         orderId2)
 
             # 给撮合时间，5秒内还未撮合完成则为失败
             n = 0
@@ -93,7 +99,7 @@ class TestContractEx_103:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        ATP.clean_market()
+        ATP.cancel_all_order()
 
 
 if __name__ == '__main__':

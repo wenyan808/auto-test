@@ -24,9 +24,13 @@ from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from tool.atp import ATP
 from common.mysqlComm import orderSeq as DB_orderSeq
+
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
@@ -54,24 +58,26 @@ class TestContractEx_065:
             offset = 'open'
             direction = 'buy'
 
-
             # 撮合成交
             current = ATP.get_current_price(contract_code=symbol_period)
 
             buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=current,
-                                                     volume=10,
-                                                     direction=direction, offset=offset, lever_rate=leverrate,
-                                                     order_price_type='limit')
+                                                    volume=10,
+                                                    direction=direction, offset=offset, lever_rate=leverrate,
+                                                    order_price_type='limit')
             pprint(buy_order)
 
-            res_position = contract_api.contract_account_position_info(symbol=symbol)
+            res_position = contract_api.contract_account_position_info(
+                symbol=symbol)
             pprint(res_position)
 
             # 爆仓，用另一个用户反向砸单，拉低价格
-            ATP.common_user_make_order(contract_code=symbol_period, price=current*0.9, volume=1000, direction='sell', offset=offset)
+            ATP.common_user_make_order(
+                contract_code=symbol_period, price=current*0.9, volume=1000, direction='sell', offset=offset)
             time.sleep(1)
 
-            res_position = contract_api.contract_account_position_info(symbol=symbol)
+            res_position = contract_api.contract_account_position_info(
+                symbol=symbol)
             pprint(res_position)
 
             # ATP.common_user_make_order(
@@ -86,7 +92,8 @@ class TestContractEx_065:
             orderId = buy_order['data']['order_id']
 
             strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderId)
+                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (
+                         orderId)
 
             # 给撮合时间，5秒内还未撮合完成则为失败
             n = 0
@@ -104,7 +111,7 @@ class TestContractEx_065:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        ATP.clean_market()
+        ATP.cancel_all_order()
 
 
 if __name__ == '__main__':
