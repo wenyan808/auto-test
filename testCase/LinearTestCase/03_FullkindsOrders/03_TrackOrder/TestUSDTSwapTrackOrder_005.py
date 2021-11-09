@@ -48,7 +48,7 @@ class TestUSDTSwapTrackOrder_005:
                                           active_price=str(activationprice),
                                           order_price_type='formula_price')
         pprint(r)
-        time.sleep(0.5)
+        time.sleep(3)
         orderid = r['data']['order_id']
         print('\n步骤三:查询跟踪委托当前委托状态为未激活\n')
 
