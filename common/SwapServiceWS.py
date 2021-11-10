@@ -6,6 +6,7 @@
 from common.util import sub, api_key_sub
 from config.conf import WSURL, ACCESS_KEY, SECRET_KEY
 import uuid
+from config.conf import USERINFO
 
 class WebsocketSevice:
 
@@ -20,6 +21,7 @@ class WebsocketSevice:
         url = self.__url + path
         print(url)
         return sub(url, subs)
+
     # WS鉴权订阅，请求
     def swap_sub_auth(self, subs):
         path = '/swap-notification'
@@ -207,3 +209,7 @@ class WebsocketSevice:
         return api_key_sub(url, self.__access_key, self.__secret_key, subs)
 
 t = WebsocketSevice(WSURL,ACCESS_KEY,SECRET_KEY)
+userList = eval(USERINFO)
+user01 = WebsocketSevice(WSURL, userList[0]['ACCESS_KEY'], userList[0]['SECRET_KEY'])
+user02 = WebsocketSevice(WSURL, userList[1]['ACCESS_KEY'], userList[1]['SECRET_KEY'])
+user03 = WebsocketSevice(WSURL, userList[2]['ACCESS_KEY'], userList[2]['SECRET_KEY'])
