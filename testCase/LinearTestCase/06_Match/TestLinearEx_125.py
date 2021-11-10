@@ -69,10 +69,9 @@ class TestLinearEx_125:
     @ allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        # 
+        
         # 撤销当前用户 某个品种所有限价挂单
-        print(ATP.cancel_all_order())
-        print('\n恢复环境操作结束')
+        print(ATP.cancel_all_types_order())
 
 
 if __name__ == '__main__':
