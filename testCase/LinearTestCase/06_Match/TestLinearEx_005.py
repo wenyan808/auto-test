@@ -62,7 +62,7 @@ class TestLinearEx_005:
     def teardown(self):
         print('\n恢复环境操作')
         # 撤销当前用户 某个品种所有限价挂单
-        print(ATP.cancel_all_order())
+        print(ATP.cancel_all_types_order())
 
 
 
