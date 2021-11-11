@@ -55,7 +55,11 @@ class TestSwapNoti_depth_021:
         with allure.step('参考官方文档'):
             contract_code = contract_code.upper()
             depth_type = 'step0'
-            result = swap_service_ws.swap_sub_depth(contract_code=contract_code, type=depth_type)
+            subs = {
+                "sub": "market.{}.depth.{}".format(contract_code, depth_type),
+                "id": "id5"
+            }
+            result = swap_service_ws.swap_sub(subs)
             result_str = '\nDepth返回结果 = ' + str(result)
             print('\033[1;32;49m%s\033[0m' % result_str)
             assert result['tick']['bids'] is not None

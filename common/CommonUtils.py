@@ -12,10 +12,10 @@ def retryUtil(func, *args):
             break
         else:
             # 超过5次，跳过循环
-            if tryTimes > 5:
+            if tryTimes >= 5:
                 break
             else:
+                print('未返回预期数据，等待1秒，第', tryTimes, '次重试………………')
                 tryTimes = tryTimes + 1
                 time.sleep(1)
-                print('未返回预期数据，等待1秒，第', tryTimes, '次重试………………')
     return func_info
