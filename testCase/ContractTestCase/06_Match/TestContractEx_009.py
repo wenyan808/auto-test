@@ -41,7 +41,6 @@ class TestContractEx_009:
 
     @allure.step('前置条件')
     def setup(self):
-        ATP.cancel_all_types_order()
         self.from_time = int(time.time())
         print(''' 制造成交数据 ''')
         ATP.make_market_depth(depth_count=5)
@@ -89,7 +88,7 @@ class TestContractEx_009:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        ATP.cancel_all_order()
+        ATP.cancel_all_types_order()
 
 
 if __name__ == '__main__':

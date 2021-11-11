@@ -33,7 +33,6 @@ class TestContractEx_145:
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, symbol):
-        ATP.cancel_all_types_order()
         self.from_time = int(time.time())
         print(''' 制造成交数据 ''')
         ATP.make_market_depth()
@@ -99,7 +98,7 @@ class TestContractEx_145:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        ATP.clean_market()
+        ATP.cancel_all_types_order()
 
 
 if __name__ == '__main__':

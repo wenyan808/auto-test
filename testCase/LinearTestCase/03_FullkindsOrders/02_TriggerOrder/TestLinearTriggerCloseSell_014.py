@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 20211103
-# @Author : YuHuiQing
+# @Author : ZhangGuangNan
 
 from common.LinearServiceAPI import user01
 import pytest
@@ -14,7 +14,7 @@ from config.conf import DEFAULT_CONTRACT_CODE
 @allure.epic('正向永续')
 @allure.feature('计划委托')
 @allure.story('止盈止损单')
-@allure.tag('Script owner : 余辉青', 'Case owner : 邱大伟')
+@allure.tag('Script owner : 张广南', 'Case owner : 邱大伟')
 @pytest.mark.stable
 class TestLinearTriggerCloseSell_014:
     ids = ["TestLinearTriggerCloseSell_014",
