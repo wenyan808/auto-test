@@ -1,126 +1,92 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211012
-# @Author : 
-    用例标题
-        WS订阅K线(req 传参from,to) 1min
-    前置条件
-        
-    步骤/文本
-        详见官方文档
-    预期结果
-        id、open、close、low、high价格正确；amount、vol、count值正确,不存在Null,[]
-    优先级
-        0
-    用例别名
-        TestSwapNoti_ws_kline_010
-"""
+# @Date    : 20211012
+# @Author : HuiQing Yu
 
-from common.SwapServiceWS import t as swap_service_ws
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceOrder import t as swap_order
-from tool import atp
-from pprint import pprint
+from common.SwapServiceWS import user01 as ws_user01
+from common.SwapServiceAPI import user01 as api_user01
+from tool.atp import ATP
 import pytest, allure, random, time
-
+from config.conf import DEFAULT_CONTRACT_CODE
+from common.CommonUtils import retryUtil
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('WS订阅')  # 这里填功能
-@allure.story('WS订阅K线(req 传参from,to) 1min')  # 这里填子功能，没有的话就把本行注释掉
+@allure.story('WS订阅K线(req 传参from,to)')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
-class TestSwapNoti_ws_kline_010:
+class TestSwapNoti_ws_kline_001:
+    ids = ['TestSwapNoti_ws_kline_010',
+           'TestSwapNoti_ws_kline_011',
+           'TestSwapNoti_ws_kline_012',
+           'TestSwapNoti_ws_kline_013',
+           'TestSwapNoti_ws_kline_014',
+           'TestSwapNoti_ws_kline_015',
+           'TestSwapNoti_ws_kline_016',
+           'TestSwapNoti_ws_kline_017',
+           'TestSwapNoti_ws_kline_018',
+           'TestSwapNoti_ws_kline_020'
+           ]
+    params = [{'case_name': '1min','period':'1min'},
+              {'case_name': '5min', 'period': '5min'},
+              {'case_name': '15min', 'period': '15min'},
+              {'case_name': '30min', 'period': '30min'},
+              {'case_name': '60min', 'period': '60min'},
+              {'case_name': '4hour', 'period': '4hour'},
+              {'case_name': '1day', 'period': '1day'},
+              {'case_name': '1week', 'period': '1week'},
+              {'case_name': '1mon', 'period': '1mon'},
+              {'case_name': '1min', 'period': '1min'}
+              ]
+    contract_code = DEFAULT_CONTRACT_CODE
 
-    @allure.step('前置条件')
-    @pytest.fixture(scope='function', autouse=True)
-    def setup(self, contract_code, lever_rate, offsetO, offsetC, directionB, directionS):
-        print("\n自动化步骤："
-              "\n*、先执行两笔成交，更新K线数据；"
-              "\n*、再发送req请求from（now - 1分钟） to(now)kline 1min的请求；"
-              "\n*、验证Kline 1min返回结果；各返回值不为空[]")
-        print("\n清盘》》》》", atp.ATP.clean_market())
-        self.contract_code = contract_code
-        self.lever_rate = lever_rate
-        self.offsetO = offsetO
-        self.offsetC = offsetC
-        self.directionB = directionB
-        self.directionS = directionS
-        self.order_price_type = 'limit'
-        self.currentPrice = atp.ATP.get_current_price()  # 最新价
-        self.lowPrice = round(self.currentPrice * 0.99, 2)  # 买入价
-        self.highPrice = round(self.currentPrice * 1.01, 2)  # 触发价
-        print('进行2笔交易，更新Kline数据')
-        swap_api.swap_order(contract_code=self.contract_code, price=self.lowPrice,
-                            order_price_type=self.order_price_type,
-                            lever_rate=self.lever_rate, direction=self.directionB, offset=self.offsetO, volume=1)
+    @classmethod
+    def setup_class(cls):
+        with allure.step('成交更新k线'):
+            cls.currentPrice = ATP.get_current_price()  # 最新价
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='buy')
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='sell')
+            time.sleep(1)#等待成交k线更新
+            pass
 
-        swap_api.swap_order(contract_code=self.contract_code, price=self.lowPrice,
-                            order_price_type=self.order_price_type,
-                            lever_rate=self.lever_rate, direction=self.directionS, offset=self.offsetO, volume=1)
-        # 等待成交刷新最新价
-        time.sleep(1)
-        swap_api.swap_order(contract_code=self.contract_code, price=self.highPrice,
-                            order_price_type=self.order_price_type,
-                            lever_rate=self.lever_rate, direction=self.directionB, offset=self.offsetO, volume=1)
+    @classmethod
+    def teardown_class(cls):
+        with allure.step(''):
+            pass
 
-        swap_api.swap_order(contract_code=self.contract_code, price=self.highPrice,
-                            order_price_type=self.order_price_type,
-                            lever_rate=self.lever_rate, direction=self.directionS, offset=self.offsetO, volume=1)
-
-    @allure.title('WS订阅K线(req 传参from,to) 1min')
-    @allure.step('测试执行')
-    def test_execute(self):
-        with allure.step('详见官方文档'):
-            self.period = '1min'
+    @pytest.mark.flaky(reruns=3, reruns_delay=3)
+    @pytest.mark.parametrize('params', params, ids=ids)
+    def test_execute(self,params):
+        allure.dynamic.title('WS订阅K线(req)' + params['period'])
+        with allure.step('执行sub请求'):
             self.toTime = int(time.time())
-            self.fromTime = self.toTime - 60*1
+            self.fromTime = self.toTime - 60 * 5
             subs = {
-                "req": "market.{}.kline.{}".format(self.contract_code, self.period),
+                "req": "market.{}.kline.{}".format(self.contract_code, params['period']),
                 "id": "id4",
                 "from": self.fromTime,
                 "to": self.toTime
             }
-            tryTimes = 1
-            while True:
-                result = swap_service_ws.swap_sub(subs)
-                resultStr = '\nKline返回结果 = ' + str(result)
-                print('\033[1;32;49m%s\033[0m' % resultStr)
-                # 由于Kline可能更新有点慢，等1秒，再执行一次获取结果；避免失败用例造成死循环；这里重试5次
-                if 'data' in result:
-                    break
-                else:
-                    # 超过5次，跳过循环
-                    if tryTimes > 5:
-                        break
-                    else:
-                        tryTimes = tryTimes + 1
-                        time.sleep(1)
-                        print('k线未返回预期数据，等待1秒，第', tryTimes - 1, '次重试………………')
-            # 请求topic校验
-            assert result['rep'] == "market." + self.contract_code + ".kline." + self.period
-            # 返回的data数量
-            c = 0
-            while c<len(result['data']):
-                # 开仓价校验，不为空
-                assert result['data'][c]['open'] is not None
-                # 收仓价校验
-                assert result['data'][c]['close'] is not None
-                # 最低价校验,不为空
-                assert result['data'][c]['low'] is not None
-                # 最高价校验,不为空
-                assert result['data'][c]['high'] is not None
-                # 币的成交量
-                assert result['data'][c]['amount'] >= 0
-                # 成交量张数。 值是买卖双边之和
-                assert result['data'][c]['vol'] >= 0
-                # 成交笔数。 值是买卖双边之和
-                assert result['data'][c]['count'] >= 0
-                c = c + 1
+            result = retryUtil(ws_user01.swap_sub,subs,'data')
             pass
-
-    @allure.step('恢复环境')
-    def teardown(self):
-        print('\n恢复环境操作')
+        with allure.step('校验返回结果'):
+            # 请求topic校验
+            for data in result['data']:
+                # 开仓价校验，不为空
+                assert data['open'] is not None
+                # 收仓价校验
+                assert data['close'] is not None
+                # 最低价校验,不为空
+                assert data['low'] is not None
+                # 最高价校验,不为空
+                assert data['high'] is not None
+                # 币的成交量
+                assert data['amount'] >= 0
+                # 成交量张数。 值是买卖双边之和
+                assert data['vol'] >= 0
+                # 成交笔数。 值是买卖双边之和
+                assert data['count'] >= 0
+            pass
 
 
 if __name__ == '__main__':
