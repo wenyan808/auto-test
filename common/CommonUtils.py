@@ -8,7 +8,7 @@ def retryUtil(func, *args):
     tryTimes = 1
     while True:
         func_info = func(args[0])
-        if args[1] in func_info:
+        if args[1] in func_info or args[1] == func_info:
             break
         else:
             # 超过5次，跳过循环
