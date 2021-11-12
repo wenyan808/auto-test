@@ -1,74 +1,79 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211018
-# @Author : 
-    用例标题
-        撮合 卖出平仓挂单 撤单
-    前置条件
+# @Date    : 20211018
+# @Author : HuiQing Yu
 
-    步骤/文本
-        详见官方文档
-    预期结果
-        正确撮合
-    优先级
-        0
-    用例别名
-        TestSwapEx_072
-"""
-from common.SwapServiceAPI import user01
 import pytest, allure, random, time
 from tool.atp import ATP
 from common.mysqlComm import orderSeq as DB_orderSeq
-
+from common.SwapServiceAPI import user01,user02
+from config.conf import DEFAULT_CONTRACT_CODE
+from common.CommonUtils import retryUtil
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
-@allure.story('平多')  # 这里填子功能，没有的话就把本行注释掉
+@allure.story('撤单')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.stable
-class TestSwapEx_072:
+class TestSwapEx_070:
+    ids = ["TestSwapEx_072",
+           "TestSwapEx_076",
+           "TestSwapEx_080"]
+    params = [
+        {
+            "case_name": "卖出平仓 挂单 撤销",
+            "ratio": 1.5,
+            "volume":2
+        },{
+            "case_name": "卖出平仓 全部成交 撤销",
+            "ratio": 1.0,
+            "volume":2
+        },{
+            "case_name": "卖出平仓 部分成交 撤销",
+            "ratio": 1.0,
+            "volume":4
+        }
 
-    @allure.step('前置条件')
-    @pytest.fixture(scope='function', autouse=True)
-    def setup(self,contract_code):
-        print('测试步骤：'
-              '\n*、下限价单；卖出平仓（平多）,数据不成交'
-              '\n*、验证撮合成功（查询撮合表有数据）'
-              '\n*、执行撤单')
-        self.currentPrice = ATP.get_current_price()  # 最新价
-        user01.swap_order(contract_code=contract_code, price=round(self.currentPrice, 2), direction='sell')
-        user01.swap_order(contract_code=contract_code, price=round(self.currentPrice, 2), direction='buy')
+    ]
+    contract_code = DEFAULT_CONTRACT_CODE
 
-    @allure.title('撮合 卖出平仓挂单 撤单')
-    @allure.step('测试执行')
-    @pytest.mark.flaky(reruns=3, reruns_delay=3)
-    def test_execute(self, contract_code):
-        with allure.step('详见官方文档'):
-            time.sleep(1)
-            orderInfo = user01.swap_order(contract_code=contract_code, price=round(self.currentPrice * 1.5, 2),
-                                              direction='sell',offset='close')
-            orderId = orderInfo['data']['order_id']
-            strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderId)
-            # 给撮合时间，5秒内还未撮合完成则为失败
-            n = 0
-            while n < 5:
-                isMatch = DB_orderSeq.execute(strStr)[0][0]
-                if 1 == isMatch:
-                    break
-                else:
-                    n = n + 1
-                    time.sleep(1)
-                    print('等待处理，第' + str(n) + '次重试………………………………')
-                    if n == 5:
-                        assert False
-            user01.swap_cancel(contract_code=contract_code, order_id=orderId)
+    @classmethod
+    def setup_class(cls):
+        with allure.step('*->挂盘'):
+            cls.currentPrice = ATP.get_current_price()  # 最新价
+            user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='buy',
+                              volume=8)
+            user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='sell',
+                              volume=4)
             pass
 
-    @allure.step('恢复环境')
-    def teardown(self):
-        print('\n恢复环境操作')
+    @classmethod
+    def teardown_class(cls):
+        with allure.step('*->恢复环境:取消挂单'):
+            user01.swap_cancelall(contract_code=cls.contract_code)
+            user02.swap_cancelall(contract_code=cls.contract_code)
+            pass
 
+    @pytest.mark.flaky(reruns=3, reruns_delay=3)
+    @pytest.mark.parametrize('params', params, ids=ids)
+    def test_execute(self, params):
+        allure.dynamic.title(params['case_name'])
+        allure.dynamic.description("先挂买单4张："
+                                   "\n下单价格为当前价的1.5倍，无法成交；"
+                                   "\n以当前价下单，数量为2，则全部成交;"
+                                   "\n以当前价下单，数量为4；当前买盘只有2张，所以会部分成交；"
+                                   "\n最后撤单所有限价单")
+        with allure.step('下单'):
+            orderInfo = user01.swap_order(contract_code=self.contract_code, price=round(self.currentPrice * params['ratio'], 2),
+                                          volume=params['volume'], direction='sell',offset='close')
+            pass
+        with allure.step('校验撮合表'):
+            sqlStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
+                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderInfo['data']['order_id'])
+            except_result = ((1,),) #预期结果
+            result = retryUtil(DB_orderSeq.execute,sqlStr,except_result)
+            assert result[0][0] == 1
+            pass
 
 if __name__ == '__main__':
     pytest.main()
