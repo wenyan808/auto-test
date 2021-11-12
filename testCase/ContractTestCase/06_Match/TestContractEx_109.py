@@ -62,8 +62,7 @@ class TestContractEx_109:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        ATP.cancel_all_order()
-        ATP.clean_market()
+        ATP.cancel_all_types_order()
 
 
 if __name__ == '__main__':
