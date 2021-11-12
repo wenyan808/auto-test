@@ -6,9 +6,18 @@ import time
 
 def retryUtil(func, *args):
     tryTimes = 1
+    flag = True
+
     while True:
         func_info = func(args[0])
-        if args[1] in func_info or args[1] == func_info:
+        if isinstance(args[1], str):
+            flag = args[1] in func_info
+        elif isinstance(args[1],list) and len(args[1]) == 2:
+            flag = args[1][1] in func_info[args[1][0]] and func_info[args[1][0]][args[1][1]] is not None
+        elif isinstance(args[1],list) and len(args[1]) == 3:
+            flag = args[1][2] in func_info[args[1][0]][args[1][1]] and func_info[args[1][0]][args[1][1]][args[1][2]] is not None
+
+        if flag:
             break
         else:
             # 超过5次，跳过循环

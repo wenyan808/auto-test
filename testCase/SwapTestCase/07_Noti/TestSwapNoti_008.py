@@ -1,67 +1,59 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211009
-# @Author : 
-    用例标题
-        WS订阅批量成交记录(单个合约，即传参contract_code)
-    前置条件
-        
-    步骤/文本
-        WS订阅批量成交记录(单个合约，即传参contract_code)，可参考文档：https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#websocket-3
-    预期结果
-        amount\quantity\turnover\direction\price显示正确,不存在Null,[]
-    优先级
-        0
-    用例别名
-        TestSwapNoti_008
-"""
+# @Date    : 20211009
+# @Author : HuiQing Yu
 
-from common.ContractServiceAPI import t as contract_api
-from common.ContractServiceOrder import t as contract_order
-from common.LinearServiceAPI import t as linear_api
-from common.LinearServiceOrder import t as linear_order
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceOrder import t as swap_order
-
-from pprint import pprint
+from common.SwapServiceWS import user01 as ws_user01
+from common.SwapServiceAPI import user01 as api_user01
 import pytest, allure, random, time
+from config.conf import DEFAULT_CONTRACT_CODE
+from common.CommonUtils import retryUtil
 from tool.atp import ATP
-from common.SwapServiceWS import t as websocketsevice
 
 @allure.epic('反向永续')  # 这里填业务线
-@allure.feature('功能')  # 这里填功能
-@allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@allure.feature('合约交易接口')  # 这里填功能
+@allure.story('市场行情接口')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
+@allure.link(url='https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#a690ab6851',name='文档地址')
+@allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 class TestSwapNoti_008:
+    ids = ['TestSwapNoti_008']
+    params = [{'case_name': '获取批量最近成交记录'}]
+    contract_code = DEFAULT_CONTRACT_CODE
 
-    @allure.step('前置条件')
-    def setup(self):
-        ATP.close_all_position()
-        print(''' 使当前交易对有交易盘口  ''')
-        print(ATP.make_market_depth())
+    @classmethod
+    def setup_class(cls):
+        with allure.step('成交'):
+            cls.current_price = ATP.get_current_price()
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.current_price , 2),
+                                  direction='buy')
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.current_price , 2),
+                                  direction='sell')
+            pass
 
-    @allure.title('WS订阅批量成交记录(单个合约，即传参contract_code)')
-    @allure.step('测试执行')
-    def test_execute(self, contract_code):
-        with allure.step('WS订阅批量成交记录(单个合约，即传参contract_code)，可参考文档：https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#websocket-3'):
-            r = websocketsevice.swap_req_trade_detail(contract_code=contract_code)
-            pprint(r)
-            tradedetail = r['data'][0]
-            if tradedetail['amount'] == None:
-                assert False
-            if tradedetail['direction'] == None:
-                assert False
-            if tradedetail['price'] == None:
-                assert False
-            if tradedetail['quantity'] == None:
-                assert False
+    @classmethod
+    def teardown_class(cls):
+        with allure.step(''):
+            pass
 
-    @allure.step('恢复环境')
-    def teardown(self):
-        print('\n恢复环境操作')
-        ATP.cancel_all_trigger_order()
-        ATP.cancel_all_order()
-        ATP.close_all_position()
+    @pytest.mark.flaky(reruns=1, reruns_delay=1)
+    @pytest.mark.parametrize('params', params, ids=ids)
+    def test_execute(self, params):
+        with allure.step('执行接口'):
+            subs = {
+                     "req": "market.{}.trade.detail".format(self.contract_code),
+                     "size": 5 ,
+                     "id": "id8"
+                    }
+            result = retryUtil(ws_user01.swap_sub, subs, "data")
+            pass
+        with allure.step('校验返回结果'):
+            checked_col = ['amount', 'quantity', 'id', 'price', 'direction', 'contract_code']
+            for data in result['data']:
+                for col in checked_col:
+                    assert data[col] is not None, str(col) + '为None,不符合预期'
+                    allure.step('字段' + str(col) + "不为空校验通过")
+            pass
 
 
 if __name__ == '__main__':

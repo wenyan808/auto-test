@@ -1,59 +1,53 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211009
-# @Author : 
-    用例标题
-        WS订阅批量Overview(所有合约，即不传contract_code)
-    前置条件
-        
-    步骤/文本
-        WS订阅批量Overview(所有合约，即不传contract_code)，可参考文档：https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#websocket-3
-    预期结果
-        open、close、low、high价格正确；amount、vol、count值正确,不存在Null,[]
-    优先级
-        0
-    用例别名
-        TestSwapNoti_006
-"""
+# @Date    : 20211009
+# @Author :  HuiQing Yu
 
-from common.ContractServiceAPI import t as contract_api
-from common.ContractServiceOrder import t as contract_order
-from common.LinearServiceAPI import t as linear_api
-from common.LinearServiceOrder import t as linear_order
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceOrder import t as swap_order
-
-from pprint import pprint
+from common.SwapServiceWS import user01 as ws_user01
 import pytest, allure, random, time
+from config.conf import DEFAULT_CONTRACT_CODE
+from common.CommonUtils import retryUtil
 from tool.atp import ATP
-from common.SwapServiceWS import t as websocketsevice
 
 @allure.epic('反向永续')  # 这里填业务线
-@allure.feature('功能')  # 这里填功能
-@allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@allure.feature('合约交易接口')  # 这里填功能
+@allure.story('市场行情接口')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
+@allure.link(url='https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#0d9cec2a3b',name='文档地址')
+@allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 class TestSwapNoti_006:
+    ids = ['TestSwapNoti_006']
+    params = [{'case_name': '获取聚合行情'}]
+    contract_code = DEFAULT_CONTRACT_CODE
 
-    @allure.step('前置条件')
-    def setup(self):
-        ATP.close_all_position()
-        print(''' 使当前交易对有交易盘口  ''')
-        print(ATP.make_market_depth())
-        print(''' 使当前用户有持仓  ''')
+    @classmethod
+    def setup_class(cls):
+        with allure.step(''):
+            pass
 
-    @allure.title('WS订阅批量Overview(所有合约，即不传contract_code)')
-    @allure.step('测试执行')
-    def test_execute(self, contract_code):
-        with allure.step('WS订阅批量Overview(所有合约，即不传contract_code)，可参考文档：https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#websocket-3'):
-            pass #暂无overview的websocket 说明
+    @classmethod
+    def teardown_class(cls):
+        with allure.step(''):
+            pass
 
-    @allure.step('恢复环境')
-    def teardown(self):
-        print('\n恢复环境操作')
-        ATP.cancel_all_trigger_order()
-        ATP.cancel_all_order()
-        ATP.close_all_position()
+    @pytest.mark.flaky(reruns=3, reruns_delay=1)
+    @pytest.mark.parametrize('params', params, ids=ids)
+    def test_execute(self, params):
+        with allure.step('执行接口'):
+            subs = {
+                  "op": "sub",
+                  "sub": "market.overview",
+                  "zip": 1
+                }
+            result = retryUtil(ws_user01.swap_sub,subs,'data')
+            pass
+        with allure.step('校验返回结果'):
+            checked_col = ['amount','symbol','close','count','high','low','open','vol']
+            for data in result['data']:
+                for col in checked_col:
+                    assert data[col] is not None,str(col)+'为None,不符合预期'
+                    allure.step('字段'+str(col)+"不为空校验通过")
 
-
+            pass
 if __name__ == '__main__':
     pytest.main()

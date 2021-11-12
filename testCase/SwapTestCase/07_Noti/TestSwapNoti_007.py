@@ -1,99 +1,59 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211009
-# @Author : 
-    用例标题
-        WS订阅最新成交记录(单个合约，即传参contract_code)
-    前置条件
-        
-    步骤/文本
-        WS订阅最新成交记录(单个合约，即传参contract_code)，可参考文档：https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#websocket-3
-    预期结果
-        amount\quantity\turnover\direction\price显示正确,不存在Null,[]
-    优先级
-        0
-    用例别名
-        TestSwapNoti_007
-"""
+# @Date    : 20211009
+# @Author : HuiQing Yu
 
-from common.ContractServiceAPI import t as contract_api
-from common.ContractServiceOrder import t as contract_order
-from common.LinearServiceAPI import t as linear_api
-from common.LinearServiceOrder import t as linear_order
-from common.SwapServiceAPI import t as swap_api,SwapService
-from common.SwapServiceOrder import t as swap_order
-from common.LinearServiceAPI import t as linear_api, LinearServiceAPI
-from config.conf import COMMON_ACCESS_KEY, COMMON_SECRET_KEY, URL
-from pprint import pprint
+from common.SwapServiceWS import user01 as ws_user01
+from common.SwapServiceAPI import user01 as api_user01
 import pytest, allure, random, time
+from config.conf import DEFAULT_CONTRACT_CODE
+from common.CommonUtils import retryUtil
 from tool.atp import ATP
-from common.SwapServiceWS import t as websocketsevice
 
 @allure.epic('反向永续')  # 这里填业务线
-@allure.feature('功能')  # 这里填功能
-@allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@allure.feature('合约交易接口')  # 这里填功能
+@allure.story('市场行情接口')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
+@allure.link(url='https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#a690ab6851',name='文档地址')
+@allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 class TestSwapNoti_007:
+    ids = ['TestSwapNoti_007']
+    params = [{'case_name': '获取最新成交记录'}]
+    contract_code = DEFAULT_CONTRACT_CODE
 
-    @allure.step('前置条件')
-    def setup(self):
-        ATP.close_all_position()
-        print(''' 使当前交易对有交易盘口  ''')
-        print(ATP.make_market_depth())
+    @classmethod
+    def setup_class(cls):
+        with allure.step('成交'):
+            # cls.current_price = ATP.get_current_price()
+            # api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.current_price , 2),
+            #                       direction='buy')
+            # api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.current_price , 2),
+            #                       direction='sell')
+            pass
 
-    @allure.title('WS订阅最新成交记录(单个合约，即传参contract_code)')
-    @allure.step('测试执行')
-    def test_execute(self, contract_code):
-        leverrate = '5'
-        print('\n获取最近价\n')
-        r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
-        pprint(r)
-        # 得到最近的价格
-        lastprice = r['data'][0]['data'][0]['price']
-        sellprice = round((lastprice * 0.98), 2)
-        print('\n下一个卖单\n')
-        r = swap_api.swap_order(contract_code=contract_code,
-                                    client_order_id='',
-                                    price=sellprice,
-                                    volume='1',
-                                    direction='sell',
-                                    offset='open',
-                                    lever_rate=leverrate,
-                                    order_price_type='limit')
-        pprint(r)
-        print('\n下一个买单\n')
-        buyprice = round((lastprice * 1.02), 2)
-        service = SwapService(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
-        r = service.swap_order(contract_code=contract_code,
-                                    client_order_id='',
-                                    price=buyprice,
-                                    volume='1',
-                                    direction='buy',
-                                    offset='open',
-                                    lever_rate=leverrate,
-                                    order_price_type='limit')
-        pprint(r)
+    @classmethod
+    def teardown_class(cls):
+        with allure.step(''):
+            pass
 
-        time.sleep(2)
-        with allure.step('WS订阅最新成交记录(单个合约，即传参contract_code)，可参考文档：https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#websocket-3'):
-            r = websocketsevice.swap_sub_trade_detail(contract_code=contract_code)
-            pprint(r)
-            tradedetail = r['tick']['data'][0]
-            if tradedetail['amount'] == None:
-                assert False
-            if tradedetail['direction'] == None:
-                assert False
-            if tradedetail['price'] == None:
-                assert False
-            if tradedetail['quantity'] == None:
-                assert False
+    @pytest.mark.flaky(reruns=3, reruns_delay=1)
+    @pytest.mark.parametrize('params', params, ids=ids)
+    def test_execute(self, params):
+        with allure.step('执行接口'):
+            subs = {
+                     "sub": "market.{}.trade.detail".format(self.contract_code),
+                     "id": "id7"
+                    }
+            result = retryUtil(ws_user01.swap_sub, subs, ["tick", "data"])
+            pass
+        with allure.step('校验返回结果'):
+            checked_col = ['amount', 'quantity', 'id', 'price', 'direction', 'direction']
+            for data in result['tick']['data']:
+                for col in checked_col:
+                    assert data[col] is not None, str(col) + '为None,不符合预期'
+                    allure.step('字段' + str(col) + "不为空校验通过")
 
-    @allure.step('恢复环境')
-    def teardown(self):
-        print('\n恢复环境操作')
-        ATP.cancel_all_trigger_order()
-        ATP.cancel_all_order()
-        ATP.close_all_position()
+            pass
 
 
 if __name__ == '__main__':
