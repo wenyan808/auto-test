@@ -15,17 +15,18 @@ class WebsocketSevice:
         self.default_ws_path = url + '/ws'
         self.__access_key = access_key
         self.__secret_key = secret_key
-    #【WS通用请求】
-    def contract_sub(self,subs):
+
+    # 【WS通用请求】
+    def contract_sub(self, subs):
         path = '/ws'
         url = self.__url + path
-        return sub(url,subs)
+        return sub(url, subs)
 
     # 【WS鉴权请求】
     def contract_sub_auth(self, subs):
         path = '/ws'
         url = self.__url + path
-        return api_key_sub(url,self.__access_key,self.__secret_key,subs)
+        return api_key_sub(url, self.__access_key, self.__secret_key, subs)
 
     # 【指数与基差接口】订阅(sub)指数K线数据
     def contract_sub_index(self, symbol, period):
@@ -74,7 +75,6 @@ class WebsocketSevice:
         path = '/ws'
         url = self.__url + path
         return sub(url, subs)
-
 
     def contract_req_kline(self, contract_code, period, From, to):
         subs = {
@@ -205,10 +205,17 @@ class WebsocketSevice:
             "topic": "accounts.{}".format(contract_code)
         }
         path = '/ws-notification'
-        url = self.__url + path
-        return api_key_sub(url, self.__access_key, self.__secret_key, subs)
+        url = self.__url
+        return api_key_sub(url, self.__access_key, self.__secret_key, subs, path)
 
-    #WS订阅成交(req)
+    # 订阅订单成交数据
+    def contract_notification(self, subs):
+        path = '/notification'
+        url = self.__url
+        print(url)
+        return api_key_sub(url, self.__access_key, self.__secret_key, subs, path)
+
+    # WS订阅成交(req)
     def contract_req_tradedetail(self, contract_code=None):
         subs = {
             "req": "market.{}.trade.detail".format(contract_code),
@@ -219,7 +226,7 @@ class WebsocketSevice:
         url = self.__url + path
         return sub(url, subs)
 
-    #WS订阅成交(sub)
+    # WS订阅成交(sub)
     def contract_sub_tradedetail(self, contract_code=None):
         subs = {
             "sub": "market.{}.trade.detail".format(contract_code),
@@ -228,4 +235,6 @@ class WebsocketSevice:
         path = '/ws'
         url = self.__url + path
         return sub(url, subs)
+
+
 t = WebsocketSevice(WSURL, ACCESS_KEY, SECRET_KEY)
