@@ -12,19 +12,20 @@ from common.CommonUtils import retryUtil
 
 @allure.epic('反向永续')
 @allure.feature('指数基差')
-@allure.story('溢价指数')
-@allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
+@allure.story('预测资金费率')
+@allure.tag('Script owner : 余辉青', 'Case owner : ')
 @pytest.mark.stable
-class TestSwapExIndex_premiumindex_001:
-    ids = ['TestSwapExIndex_premiumindex_001',
-           'TestSwapExIndex_premiumindex_002',
-           'TestSwapExIndex_premiumindex_003',
-           'TestSwapExIndex_premiumindex_004',
-           'TestSwapExIndex_premiumindex_005',
-           'TestSwapExIndex_premiumindex_006',
-           'TestSwapExIndex_premiumindex_007',
-           'TestSwapExIndex_premiumindex_008',
-           'TestSwapExIndex_premiumindex_009']
+class TestSwapExIndex_estimatedrate_001:
+    ids = ['TestSwapExIndex_estimatedrate_001',
+           'TestSwapExIndex_estimatedrate_002',
+           'TestSwapExIndex_estimatedrate_003',
+           'TestSwapExIndex_estimatedrate_004',
+           'TestSwapExIndex_estimatedrate_005',
+           'TestSwapExIndex_estimatedrate_006',
+           'TestSwapExIndex_estimatedrate_007',
+           'TestSwapExIndex_estimatedrate_008',
+           'TestSwapExIndex_estimatedrate_009']
+
     params = [{'case_name':'1min','period':'1min'},
               {'case_name':'5min','period':'5min'},
               {'case_name':'15min','period':'15min'},
@@ -46,19 +47,19 @@ class TestSwapExIndex_premiumindex_001:
         with allure.step(''):
             pass
 
-    # @pytest.mark.flaky(reruns=3, reruns_delay=3)
+    @pytest.mark.flaky(reruns=3, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
-        allure.dynamic.title('溢价指数' + params['case_name'])
+        allure.dynamic.title('预测资金费率 ' + params['case_name'])
         with allure.step('执行req请求'):
             To = int(time.time())
             From = To - 60
-            subs =  {
-                        "req": "market.{}.premium_index.{}".format(self.contract_code,params['period']),
-                        "id": "id1",
-                        "from": From,
-                        "to": To
-                     }
+            subs = {
+                "req": "market.{}.premium_index.{}".format(self.contract_code, params['period']),
+                "id": "id1",
+                "from": From,
+                "to": To
+            }
             result = retryUtil(ws_user01.swap_sub_index,subs,'data')
             pass
         with allure.step('验证响应结果'):

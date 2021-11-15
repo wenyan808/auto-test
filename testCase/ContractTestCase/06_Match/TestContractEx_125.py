@@ -24,7 +24,10 @@ from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 
 
 @allure.epic('业务线')  # 这里填业务线

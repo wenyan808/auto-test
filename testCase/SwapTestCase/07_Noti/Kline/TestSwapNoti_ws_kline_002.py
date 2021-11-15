@@ -17,9 +17,27 @@ from common.redisComm import reid7001Conn
 @pytest.mark.stable
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 class TestSwapNoti_ws_kline_001:
-    ids = ['TestSwapNoti_ws_kline_001'
+    ids = [
+           'TestSwapNoti_ws_kline_002',
+           'TestSwapNoti_ws_kline_003',
+           'TestSwapNoti_ws_kline_004',
+           'TestSwapNoti_ws_kline_005',
+           'TestSwapNoti_ws_kline_006',
+           'TestSwapNoti_ws_kline_007',
+           'TestSwapNoti_ws_kline_008',
+           'TestSwapNoti_ws_kline_009',
+           'TestSwapNoti_ws_kline_019'
            ]
-    params = [{'case_name': '1min','period':'1min'}
+    params = [
+              {'case_name': '5min', 'period': '5min'},
+              {'case_name': '15min', 'period': '15min'},
+              {'case_name': '30min', 'period': '30min'},
+              {'case_name': '60min', 'period': '60min'},
+              {'case_name': '4hour', 'period': '4hour'},
+              {'case_name': '1day', 'period': '1day'},
+              {'case_name': '1week', 'period': '1week'},
+              {'case_name': '1mon', 'period': '1mon'},
+              {'case_name': '1min', 'period': '1min'}
               ]
     contract_code = DEFAULT_CONTRACT_CODE
 
@@ -48,33 +66,25 @@ class TestSwapNoti_ws_kline_001:
             }
             result = retryUtil(ws_user01.swap_sub,subs,'tick')
             pass
-        with  allure.step('查询redis'):
-            # 1609430400 = 2021-01-01 00:00:00
-            currentSecond = int(time.time()) - 1609430400
-            currentSecond = int(currentSecond/60)
-            key = 'market.{}.kline.1min.1609430400'.format(self.contract_code)
-            redis_kline = reid7001Conn.lrange(key,currentSecond,currentSecond)
-            print(redis_kline)
-            kline01 = str(redis_kline[0]).split(',')
-            pass
         with allure.step('校验返回结果'):
             # 请求topic校验
-            assert result['ch'] == "market."+self.contract_code+".kline."+params['period']
+            assert result['ch'] == "market." + self.contract_code + ".kline." + params['period']
             # 开仓价校验，不为空
-            assert str(result['tick']['open']) == kline01[1]
+            assert result['tick']['open'] is not None
             # 收仓价校验
-            assert str(result['tick']['close']) == kline01[2]
+            assert result['tick']['close'] is not None
             # 最低价校验,不为空
-            assert str(result['tick']['low']) == kline01[3]
+            assert result['tick']['low'] is not None
             # 最高价校验,不为空
-            assert str(result['tick']['high']) == kline01[4]
+            assert result['tick']['high'] is not None
             # 币的成交量
-            assert result['tick']['amount'] - float(kline01[5]) < 0.0000000001 #取9位小数精度
+            assert result['tick']['amount'] >= 0
             # 成交量张数。 值是买卖双边之和
-            assert str(result['tick']['vol']) == kline01[6]
+            assert result['tick']['vol'] >= 0
             # 成交笔数。 值是买卖双边之和
-            assert str(result['tick']['count']) == kline01[7]
+            assert result['tick']['count'] >= 0
             pass
+
 
 
 if __name__ == '__main__':
