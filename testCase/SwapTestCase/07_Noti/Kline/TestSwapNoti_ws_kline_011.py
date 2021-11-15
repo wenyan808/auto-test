@@ -9,17 +9,34 @@ from tool.atp import ATP
 import pytest, allure, random, time
 from config.conf import DEFAULT_CONTRACT_CODE
 from common.CommonUtils import retryUtil
-from common.redisComm import reid7001Conn
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('WS订阅')  # 这里填功能
 @allure.story('WS订阅K线(req 传参from,to)')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
-class TestSwapNoti_ws_kline_010:
-    ids = ['TestSwapNoti_ws_kline_010'
+class TestSwapNoti_ws_kline_011:
+    ids = [
+           'TestSwapNoti_ws_kline_011',
+           'TestSwapNoti_ws_kline_012',
+           'TestSwapNoti_ws_kline_013',
+           'TestSwapNoti_ws_kline_014',
+           'TestSwapNoti_ws_kline_015',
+           'TestSwapNoti_ws_kline_016',
+           'TestSwapNoti_ws_kline_017',
+           'TestSwapNoti_ws_kline_018',
+           'TestSwapNoti_ws_kline_020'
            ]
-    params = [{'case_name': '1min','period':'1min'}
+    params = [
+              {'case_name': '5min', 'period': '5min'},
+              {'case_name': '15min', 'period': '15min'},
+              {'case_name': '30min', 'period': '30min'},
+              {'case_name': '60min', 'period': '60min'},
+              {'case_name': '4hour', 'period': '4hour'},
+              {'case_name': '1day', 'period': '1day'},
+              {'case_name': '1week', 'period': '1week'},
+              {'case_name': '1mon', 'period': '1mon'},
+              {'case_name': '1min', 'period': '1min'}
               ]
     contract_code = DEFAULT_CONTRACT_CODE
 
@@ -37,13 +54,13 @@ class TestSwapNoti_ws_kline_010:
         with allure.step(''):
             pass
 
-    # @pytest.mark.flaky(reruns=1, reruns_delay=1)
+    @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self,params):
         allure.dynamic.title('WS订阅K线(req)' + params['period'])
         with allure.step('执行sub请求'):
             self.toTime = int(time.time())
-            self.fromTime = self.toTime - 60 * 10
+            self.fromTime = self.toTime - 60 * 5
             subs = {
                 "req": "market.{}.kline.{}".format(self.contract_code, params['period']),
                 "id": "id4",
@@ -52,16 +69,7 @@ class TestSwapNoti_ws_kline_010:
             }
             result = retryUtil(ws_user01.swap_sub,subs,'data')
             pass
-        with  allure.step('查询redis'):
-            # 1609430400 = 2021-01-01 00:00:00
-            currentSecond = int(time.time()) - 1609430400
-            currentSecond = int(currentSecond / 60)
-            key = 'market.{}.kline.1min.1609430400'.format(self.contract_code)
-            redis_kline = reid7001Conn.lrange(key, currentSecond, currentSecond)
-            print(redis_kline)
-            kline01 = str(redis_kline[0]).split(',')
-            pass
-        with allure.step('校验返回结果：非空校验'):
+        with allure.step('校验返回结果'):
             # 请求topic校验
             for data in result['data']:
                 # 开仓价校验，不为空
@@ -79,31 +87,7 @@ class TestSwapNoti_ws_kline_010:
                 # 成交笔数。 值是买卖双边之和
                 assert data['count'] >= 0
             pass
-        with allure.step('验证点：最后一个1min的数据与redis结果对比校验'):
-            # 请求topic校验
-            assert result['rep'] == "market."+self.contract_code+".kline."+params['period']
-            dataLen=len(result['data'])- 1
-            # 开仓价校验，不为空
-            assert str(result['data'][dataLen]['open']) == kline01[1]
-            # 收仓价校验
-            assert str(result['data'][dataLen]['close']) == kline01[2]
-            # 最低价校验,不为空
-            assert str(result['data'][dataLen]['low']) == kline01[3]
-            # 最高价校验,不为空
-            assert str(result['data'][dataLen]['high']) == kline01[4]
-            # 币的成交量
-            assert result['data'][dataLen]['amount'] - float(kline01[5]) < 0.0000000001 #取9位小数精度
-            # 成交量张数。 值是买卖双边之和
-            assert str(result['data'][dataLen]['vol']) == kline01[6]
-            # 成交笔数。 值是买卖双边之和
-            assert str(result['data'][dataLen]['count']) == kline01[7]
-            pass
-        with allure.step('验证点：数据连续性校验'):
-            for i in range(len(result['data'])):
-                if i == len(result['data'])-1:
-                    break
-                # 开仓价校验，不为空
-                assert result['data'][i]['id'] + 60 == result['data'][i+1]['id']
-            pass
+
+
 if __name__ == '__main__':
     pytest.main()
