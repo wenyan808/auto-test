@@ -98,6 +98,9 @@ class TestSwapNoti_ws_kline_010:
             # 成交笔数。 值是买卖双边之和
             assert str(result['data'][dataLen]['count']) == kline01[7]
             pass
+        with allure.step('验证点：最后一条数据与当前时间对比校验'):
+            assert int(time.time()) - result['data'][dataLen]['id']  < 60
+            pass
         with allure.step('验证点：数据连续性校验'):
             for i in range(len(result['data'])):
                 if i == len(result['data'])-1:

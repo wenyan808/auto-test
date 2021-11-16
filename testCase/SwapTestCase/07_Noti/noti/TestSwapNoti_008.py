@@ -52,7 +52,6 @@ class TestSwapNoti_008:
             for data in result['data']:
                 for col in checked_col:
                     assert data[col] is not None, str(col) + '为None,不符合预期'
-                    allure.step('字段' + str(col) + "不为空校验通过")
             pass
 
 
