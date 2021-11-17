@@ -3,21 +3,15 @@
 # @Date    : 2021/11/10 7:45 下午
 # @Author  : yuhuiqing
 import time
+from common.redisComm import redisConf
+import jsonpath
+from config.conf import DEFAULT_CONTRACT_CODE
 
 def retryUtil(func, *args):
     tryTimes = 1
-    flag = True
-
     while True:
         func_info = func(args[0])
-        if isinstance(args[1], str):
-            flag = args[1] in func_info
-        elif isinstance(args[1],list) and len(args[1]) == 2:
-            flag = args[1][1] in func_info[args[1][0]] and func_info[args[1][0]][args[1][1]] is not None
-        elif isinstance(args[1],list) and len(args[1]) == 3:
-            flag = args[1][2] in func_info[args[1][0]][args[1][1]] and func_info[args[1][0]][args[1][1]][args[1][2]] is not None
-
-        if flag:
+        if jsonpath.jsonpath(func_info,args[1]):
             break
         else:
             # 超过5次，跳过循环
@@ -28,3 +22,14 @@ def retryUtil(func, *args):
                 tryTimes = tryTimes + 1
                 time.sleep(1)
     return func_info
+
+def currentPrice(contract_code=None):
+    # 如果未传合约，获取默认
+    if contract_code is None:
+        contract_code = DEFAULT_CONTRACT_CODE
+    # 创建redis客户端
+    redisClient = redisConf('redis6379').instance()
+    # 查询最新价
+    last_price = str(redisClient.hmget('RsT:BILP:','CP:'+contract_code)[0]).split('#')[0]
+    # 以2个小数点返回结果
+    return round(float(last_price),2)
