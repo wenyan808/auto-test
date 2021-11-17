@@ -6,19 +6,18 @@ import threading
 
 import pymysql
 
-from config.conf import MYSQL_ORDERSEQ_CONF
+from config.conf import MYSQL_CONF
 import traceback,pprint
 import logging
 
 class mysqlComm(object):
 
-    def __init__(self, dbConf):
-            dbConfProperties = str(dbConf).split(';')
-            self.__host = dbConfProperties[0]
-            self.__port = int(dbConfProperties[1])
-            self.__userName = dbConfProperties[2]
-            self.__password = dbConfProperties[3]
-            self.__dbName = dbConfProperties[4]
+    def __init__(self, db):
+            self.__host = MYSQL_CONF[db]['host']
+            self.__port = MYSQL_CONF[db]['port']
+            self.__userName = MYSQL_CONF[db]['userName']
+            self.__password = MYSQL_CONF[db]['passwd']
+            self.__dbName = MYSQL_CONF[db]['dbName']
             try:
                 self.__db = pymysql.connect(host=self.__host, port=self.__port, user=self.__userName,
                                             password=self.__password, database=self.__dbName)
@@ -42,5 +41,3 @@ class mysqlComm(object):
             self.__db.rollback()
             self.__db.close()
 
-
-orderSeq = mysqlComm(MYSQL_ORDERSEQ_CONF)
