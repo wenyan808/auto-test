@@ -1,20 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211013
-# @Author : 
-    用例标题
-        WS订阅K线(req) 1min数据超过2000条
-    前置条件
-        
-    步骤/文本
-        详见官方文档
-    预期结果
-        报错
-    优先级
-        1
-    用例别名
-        TestSwapNoti_ws_kline_148
-"""
+# @Date    : 20211013
+# @Author : HuiQing Yu
 
 from common.SwapServiceWS import t as swap_service_ws
 from common.SwapServiceAPI import t as swap_api
@@ -26,39 +13,46 @@ import pytest, allure, random, time
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('WS订阅')  # 这里填功能
-@allure.story('WS订阅K线(req) 1min数据超过2000条')  # 这里填子功能，没有的话就把本行注释掉
+@allure.story('WS请求(req)')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 class TestSwapNoti_ws_kline_148:
+    ids = [
+        'TestSwapNoti_ws_kline_148',
+        'TestSwapNoti_ws_kline_149',
+        'TestSwapNoti_ws_kline_150',
+        'TestSwapNoti_ws_kline_151',
+        'TestSwapNoti_ws_kline_152',
+        'TestSwapNoti_ws_kline_153',
+    ]
+    params = [
+        {'case_name': 'WS请求(req)-1min 超2000条数据', 'period': '1min'},
+        {'case_name': 'WS请求(req)-5min 超2000条数据', 'period': '5min'},
+        {'case_name': 'WS请求(req)-15min 超2000条数据', 'period': '15min'},
+        {'case_name': 'WS请求(req)-30min 超2000条数据', 'period': '30min'},
+        {'case_name': 'WS请求(req)-60min 超2000条数据', 'period': '60min'},
+        {'case_name': 'WS请求(req)-4hour 超2000条数据', 'period': '4hour'},
+    ]
 
-    @allure.step('前置条件')
-    def setup(self):
-        print("\n自动化步骤："
-              "\n*、发送req请求from to请求kline ，1min数据超过2000条成交获取K线信息；"
-              "\n*、验证Kline 1min返回结果；报错time gap too large")
-    @allure.title('WS订阅K线(req) 1min数据超过2000条')
-    @allure.step('测试执行')
-    def test_execute(self, contract_code):
-        with allure.step('详见官方文档'):
-            self.contract_code = contract_code
-            self.period = '1min'
+    @pytest.mark.flaky(reruns=1, reruns_delay=1)
+    @pytest.mark.parametrize('params', params, ids=ids)
+    def test_execute(self, contract_code,params):
+        allure.dynamic.title(params['case_name'])
+        with allure.step('操作：执行req请求'):
             self.toTime = int(time.time())
-            self.fromTime = self.toTime - 60 * 60 * 24 *7
+            self.fromTime = self.toTime - 60 * 60 * 24 * 30 * 12
             subs = {
-                "req": "market.{}.kline.{}".format(self.contract_code, self.period),
+                "req": "market.{}.kline.{}".format(contract_code, params['period']),
                 "id": "id4",
                 "from": self.fromTime,
                 "to": self.toTime
             }
             result = swap_service_ws.swap_sub(subs)
-            resultStr = '\nKline返回结果 = ' + str(result)
-            print('\033[1;32;49m%s\033[0m' % resultStr)
+            pass
+        with allure.step('验证：返回结果提示time gap too large'):
             assert 'time gap too large' in result['err-msg']
             pass
 
-    @allure.step('恢复环境')
-    def teardown(self):
-        print('\n恢复环境操作')
 
 
 if __name__ == '__main__':

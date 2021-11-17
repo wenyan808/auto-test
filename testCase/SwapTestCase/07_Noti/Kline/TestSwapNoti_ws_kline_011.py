@@ -11,8 +11,8 @@ from config.conf import DEFAULT_CONTRACT_CODE
 from common.CommonUtils import retryUtil
 
 @allure.epic('反向永续')  # 这里填业务线
-@allure.feature('WS订阅')  # 这里填功能
-@allure.story('WS订阅K线(req 传参from,to)')  # 这里填子功能，没有的话就把本行注释掉
+@allure.feature('WS请求')  # 这里填功能
+@allure.story('WS请求K线(req)')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 class TestSwapNoti_ws_kline_011:
@@ -28,15 +28,15 @@ class TestSwapNoti_ws_kline_011:
            'TestSwapNoti_ws_kline_020'
            ]
     params = [
-              {'case_name': '5min', 'period': '5min'},
-              {'case_name': '15min', 'period': '15min'},
-              {'case_name': '30min', 'period': '30min'},
-              {'case_name': '60min', 'period': '60min'},
-              {'case_name': '4hour', 'period': '4hour'},
-              {'case_name': '1day', 'period': '1day'},
-              {'case_name': '1week', 'period': '1week'},
-              {'case_name': '1mon', 'period': '1mon'},
-              {'case_name': '1min', 'period': '1min'}
+              {'case_name': 'WS订阅K线(req)-5min', 'period': '5min'},
+              {'case_name': 'WS订阅K线(req)-15min', 'period': '15min'},
+              {'case_name': 'WS订阅K线(req)-30min', 'period': '30min'},
+              {'case_name': 'WS订阅K线(req)-60min', 'period': '60min'},
+              {'case_name': 'WS订阅K线(req)-4hour', 'period': '4hour'},
+              {'case_name': 'WS订阅K线(req)-1day', 'period': '1day'},
+              {'case_name': 'WS订阅K线(req)-1week', 'period': '1week'},
+              {'case_name': 'WS订阅K线(req)-1mon', 'period': '1mon'},
+              {'case_name': 'WS订阅K线(req)-1min', 'period': '1min'}
               ]
     contract_code = DEFAULT_CONTRACT_CODE
 
@@ -46,7 +46,6 @@ class TestSwapNoti_ws_kline_011:
             cls.currentPrice = ATP.get_current_price()  # 最新价
             api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='buy')
             api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='sell')
-            time.sleep(1)#等待成交k线更新
             pass
 
     @classmethod
@@ -57,7 +56,7 @@ class TestSwapNoti_ws_kline_011:
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self,params):
-        allure.dynamic.title('WS订阅K线(req)' + params['period'])
+        allure.dynamic.title(params['case_name'])
         with allure.step('执行sub请求'):
             self.toTime = int(time.time())
             self.fromTime = self.toTime - 60 * 5
@@ -69,7 +68,7 @@ class TestSwapNoti_ws_kline_011:
             }
             result = retryUtil(ws_user01.swap_sub,subs,'data')
             pass
-        with allure.step('校验返回结果'):
+        with allure.step('验证点:返回字段非空校验'):
             # 请求topic校验
             for data in result['data']:
                 # 开仓价校验，不为空
