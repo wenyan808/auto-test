@@ -45,6 +45,6 @@ class TestSwapNoti_detail_011:
             }
             result = ws_user01.swap_sub(subs)
             pass
-        with allure.step('校验返回结果'):
+        with allure.step('验证：返回结果提示为 invalid topic'):
             assert 'invalid topic' in result['err-msg']
             pass

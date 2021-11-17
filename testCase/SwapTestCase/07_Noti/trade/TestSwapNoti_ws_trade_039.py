@@ -7,12 +7,12 @@ import pytest, allure, random, time
 from common.SwapServiceWS import user01
 from common.SwapServiceAPI import user01 as api_user01
 from config.conf import DEFAULT_CONTRACT_CODE
-
+from common.CommonUtils import currentPrice
 
 @allure.epic('反向永续')
 @allure.feature('行情')
 @allure.story('成交')
-@allure.tag('Script owner : 余辉青', 'Case owner : ')
+@allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.stable
 class TestSwapNoti_ws_trade_039:
     contract_code = DEFAULT_CONTRACT_CODE
@@ -44,7 +44,7 @@ class TestSwapNoti_ws_trade_039:
     @classmethod
     def setup_class(cls):
         with allure.step('挂盘口'):
-            cls.currentPrice = ATP.get_current_price()
+            cls.currentPrice = currentPrice()
             api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2),direction='sell',volume=10)
             pass
 
@@ -54,10 +54,10 @@ class TestSwapNoti_ws_trade_039:
             api_user01.swap_cancelall(cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=3)
+    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
-        allure.dynamic.title('' + params['case_name'])
+        allure.dynamic.title(params['case_name'])
         with allure.step('执行'+params['case_name']):
             api_user01.swap_order(contract_code=self.contract_code, price=round(self.currentPrice, 2),
                                   order_price_type=params['order_price_type'],direction='buy')
@@ -72,13 +72,13 @@ class TestSwapNoti_ws_trade_039:
             }
             trade_info = user01.swap_sub(subs=subs)
             pass
-        with allure.step('验证返回'):
+        with allure.step('验证:返回结果各字段不为空'):
             for d in trade_info['data']:
-                assert d['id'] is not None
-                assert d['amount'] is not None
-                assert d['quantity'] is not None
-                assert d['price'] is not None
-                assert d['direction'] is not None
+                assert d['id']
+                assert d['amount']
+                assert d['quantity']
+                assert d['price']
+                assert d['direction']
             pass
 
 
