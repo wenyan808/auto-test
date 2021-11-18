@@ -1,25 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211018
-# @Author : 
-    用例标题
-        撮合 卖出开仓 全部成交多人多笔价格相同的订单
-    前置条件
-
-    步骤/文本
-        详见官方文档
-    预期结果
-        正确撮合
-    优先级
-        2
-    用例别名
-        TestSwapEx_106
-"""
-
+# @Date    : 20211018
+# @Author : HuiQing Yu
 from common.SwapServiceAPI import user01, user02, user03
 import pytest, allure, random, time
 from tool.atp import ATP
-from common.mysqlComm import orderSeq as DB_orderSeq
+from common.mysqlComm import mysqlComm
 
 
 @allure.epic('反向永续')  # 这里填业务线
@@ -28,7 +14,7 @@ from common.mysqlComm import orderSeq as DB_orderSeq
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.stable
 class TestSwapEx_106:
-
+    DB_orderSeq = mysqlComm('order_seq')
     @allure.step('前置条件')
     def setup(self):
         print('测试步骤：'
@@ -41,7 +27,7 @@ class TestSwapEx_106:
     @allure.step('测试执行')
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
     def test_execute(self, contract_code):
-        with allure.step('详见官方文档'):
+        with allure.step('操作：用户1，2开空订单多笔，用户3开多订单用于成交'):
             self.currentPrice = ATP.get_current_price()  # 最新价
             orderIdList = []
             for user in [user01, user02]:
@@ -54,13 +40,15 @@ class TestSwapEx_106:
             # 用于成交
             user03.swap_order(contract_code=contract_code, price=round(self.currentPrice, 2),
                               direction='buy',volume=4)
+        with allure.step('验证：开空订单多笔是否已存在撮合结果表中'):
+
             for i in range(4):
                 strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
                          "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderIdList[i])
                 # 给撮合时间，5秒内还未撮合完成则为失败
                 n = 0
                 while n < 5:
-                    isMatch = DB_orderSeq.execute(strStr)[0][0]
+                    isMatch = self.DB_orderSeq.execute(strStr)[0][0]
                     if 1 == isMatch:
                         break
                     else:

@@ -6,7 +6,7 @@
 from common.SwapServiceAPI import user01
 from tool.atp import ATP
 import pytest, allure, random, time
-from common.mysqlComm import orderSeq as DB_orderSeq
+from common.mysqlComm import mysqlComm
 from config.conf import DEFAULT_CONTRACT_CODE
 
 
@@ -43,10 +43,11 @@ class TestSwapEx_134:
             user01.swap_cancelall(contract_code=cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=3)
+    # @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title('撮合 闪电平仓 '+params['case_name'])
+        DB_orderSeq = mysqlComm('order_seq')
         with allure.step('执行平仓'):
             orderInfo = user01.swap_lightning_close_position(contract_code=self.contract_code, volume=1, direction=params['direction'],
                                                                order_price_type=params['order_price_type'])

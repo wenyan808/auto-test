@@ -3,11 +3,12 @@
 # @Date    : 20211018
 # @Author : HuiQing Yu
 
-from tool.atp import ATP
+
 import pytest, allure, random, time
-from common.mysqlComm import orderSeq as DB_orderSeq
+from common.mysqlComm import mysqlComm
 from common.SwapServiceAPI import user01
 from config.conf import DEFAULT_CONTRACT_CODE
+from common.CommonUtils import currentPrice,opponentExist
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
@@ -15,8 +16,8 @@ from config.conf import DEFAULT_CONTRACT_CODE
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.stable
 class TestSwapEx_002:
-
-
+    DB_orderSeq = mysqlComm('order_seq')
+    contract_code = DEFAULT_CONTRACT_CODE
     ids = [ "TestSwapEx_002",
             "TestSwapEx_006",
             "TestSwapEx_010",
@@ -99,14 +100,15 @@ class TestSwapEx_002:
                 "order_price_type": "optimal_20_fok"
               }
             ]
-    contract_code = DEFAULT_CONTRACT_CODE
-
+    isExecute = False
     @classmethod
     def setup_class(cls):
         with allure.step('*->挂盘'):
-            cls.currentPrice = ATP.get_current_price()  # 最新价
+            cls.currentPrice = currentPrice()  # 最新价
             user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='buy',
                               volume=20)
+            # 判断对手价是否更新，如果更新（True）则给反值，表示不跳过该用例
+            cls.isExecute = ~opponentExist('BTC', asks='bids')
             pass
 
     @classmethod
@@ -118,28 +120,26 @@ class TestSwapEx_002:
 
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @pytest.mark.parametrize('params', params, ids=ids)
+    @pytest.mark.skipif(condition=isExecute, reason='对手价未刷新跳过用例')
     def test_execute(self, params):
-        with allure.step('详见官方文档'):
+        with allure.step('操作：下单（开空）'):
             allure.dynamic.title('撮合 卖出 开仓 ' + params['case_name'])
             orderInfo = user01.swap_order(contract_code=self.contract_code, price=round(self.currentPrice, 2),
                                           direction='sell', order_price_type=params['order_price_type'])
-
-            strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
+            pass
+        with allure.step('验证：订单是否存在撮合结果表中'):
+            sqlStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
                      "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderInfo['data']['order_id'])
-
+            flag = False
             # 给撮合时间，5秒内还未撮合完成则为失败
-            n = 0
-            while n < 5:
-                isMatch = DB_orderSeq.execute(strStr)[0][0]
+            for i in range(5):
+                isMatch = self.DB_orderSeq.execute(sqlStr)[0][0]
                 if 1 == isMatch:
+                    flag = True
                     break
-                else:
-                    n = n + 1
-                    time.sleep(1)
-                    print('等待处理，第' + str(n) + '次重试………………………………')
-                    if n == 5:
-                        assert False
-
+                time.sleep(1)
+                print('未返回预期结果，第{}次重试………………………………'.format(i))
+            assert flag
             pass
 
 
