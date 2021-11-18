@@ -19,7 +19,7 @@
 from common.SwapServiceAPI import user01, user02, user03
 import pytest, allure, random, time
 from tool.atp import ATP
-from common.mysqlComm import orderSeq as DB_orderSeq
+from common.mysqlComm import mysqlComm
 
 
 @allure.epic('反向永续')  # 这里填业务线
@@ -41,6 +41,7 @@ class TestSwapEx_105:
     @allure.step('测试执行')
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
     def test_execute(self, contract_code):
+        DB_orderSeq = mysqlComm('order_seq')
         with allure.step('详见官方文档'):
             self.currentPrice = ATP.get_current_price()  # 最新价
             orderIdList = []

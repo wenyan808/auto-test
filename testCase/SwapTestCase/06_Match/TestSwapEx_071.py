@@ -4,11 +4,11 @@
 # @Author : HuiQing Yu
 
 import pytest, allure, random, time
-from tool.atp import ATP
-from common.mysqlComm import orderSeq as DB_orderSeq
+from common.CommonUtils import currentPrice
+from common.mysqlComm import mysqlComm
 from common.SwapServiceAPI import user01
 from config.conf import DEFAULT_CONTRACT_CODE
-from common.CommonUtils import retryUtil
+
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
@@ -36,11 +36,11 @@ class TestSwapEx_071:
 
     ]
     contract_code = DEFAULT_CONTRACT_CODE
-
+    DB_orderSeq = mysqlComm('order_seq')
     @classmethod
     def setup_class(cls):
         with allure.step('*->持仓，挂盘'):
-            cls.currentPrice = ATP.get_current_price()  # 最新价
+            cls.currentPrice = currentPrice()  # 最新价
             user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='sell',
                               volume=8)
             user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='buy',
@@ -62,6 +62,7 @@ class TestSwapEx_071:
                                    "\n以当前价下单，数量为2，则全部成交;"
                                    "\n以当前价下单，数量为4；当前买盘只有2张，所以会部分成交；"
                                    "\n最后撤单所有限价单")
+
         with allure.step('下单'):
             orderInfo = user01.swap_order(contract_code=self.contract_code, price=round(self.currentPrice * params['ratio'], 2),
                                           volume=params['volume'], direction='buy',offset='close')
@@ -69,9 +70,16 @@ class TestSwapEx_071:
         with allure.step('校验撮合表'):
             sqlStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
                      "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderInfo['data']['order_id'])
-            except_result = ((1,),) #预期结果
-            result = retryUtil(DB_orderSeq.execute,sqlStr,except_result)
-            assert result[0][0] == 1
+            flag = False
+            # 给撮合时间，5秒内还未撮合完成则为失败
+            for i in range(5):
+                isMatch = self.DB_orderSeq.execute(sqlStr)[0][0]
+                if 1 == isMatch:
+                    flag = True
+                    break
+                time.sleep(1)
+                print('未返回预期结果，第{}次重试………………………………'.format(i))
+            assert flag
             pass
 
 if __name__ == '__main__':

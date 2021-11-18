@@ -13,6 +13,6 @@ class redisConf:
         coon = redis.Redis(host=self.host, port=self.port,password=self.password,  decode_responses=True, db=0)
         return coon
 
-reid7001Conn = redisConf('redis7001').instance()
+
 
 
