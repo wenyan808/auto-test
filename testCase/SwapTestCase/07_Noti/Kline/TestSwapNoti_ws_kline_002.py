@@ -7,7 +7,7 @@ from common.SwapServiceWS import user01 as ws_user01
 from common.SwapServiceAPI import user01 as api_user01
 import pytest, allure, random, time
 from config.conf import DEFAULT_CONTRACT_CODE
-from common.CommonUtils import retryUtil,currentPrice
+from common.CommonUtils import currentPrice
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('WS订阅')  # 这里填功能
@@ -59,7 +59,16 @@ class TestSwapNoti_ws_kline_001:
                 "sub": "market.{}.kline.{}".format(self.contract_code, params['period']),
                 "id": "id1"
             }
-            result = retryUtil(ws_user01.swap_sub,subs,'tick')
+            flag = False
+            # 重试3次未返回预期结果则失败
+            for i in range(1, 4):
+                result = ws_user01.swap_sub(subs)
+                if 'tick' in result:
+                    flag = True
+                    break
+                time.sleep(1)
+                print('未返回预期结果，第{}次重试………………………………'.format(i))
+            assert flag
             pass
         with allure.step('校验返回结果'):
             # 请求topic校验

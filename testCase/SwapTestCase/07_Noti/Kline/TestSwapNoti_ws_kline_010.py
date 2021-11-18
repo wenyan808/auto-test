@@ -7,7 +7,7 @@ from common.SwapServiceWS import user01 as ws_user01
 from common.SwapServiceAPI import user01 as api_user01
 import pytest, allure, random, time
 from config.conf import DEFAULT_CONTRACT_CODE
-from common.CommonUtils import retryUtil,currentPrice
+from common.CommonUtils import currentPrice
 from common.redisComm import redisConf
 
 @allure.epic('反向永续')  # 这里填业务线
@@ -49,7 +49,16 @@ class TestSwapNoti_ws_kline_010:
                 "from": self.fromTime,
                 "to": self.toTime
             }
-            result = retryUtil(ws_user01.swap_sub,subs,'data')
+            flag = False
+            # 重试3次未返回预期结果则失败
+            for i in range(1, 4):
+                result = ws_user01.swap_sub(subs)
+                if 'tick' in result:
+                    flag = True
+                    break
+                time.sleep(1)
+                print('未返回预期结果，第{}次重试………………………………'.format(i))
+            assert flag,'重试3次未返回预期结果'
             pass
         with  allure.step('操作:查询redis'):
             # 1609430400 = 2021-01-01 00:00:00

@@ -17,7 +17,7 @@ class TestSwapNoti_ws_kline_076:
     @allure.title('WS订阅K线(sub) period不存在 合约正确')
     @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self,contract_code):
-        with allure.step('执行sub请求'):
+        with allure.step('操作：执行sub请求'):
             self.period = '1year'  # 不存在的period
             subs = {
                 "sub": "market.{}.kline.{}".format(contract_code, self.period),
