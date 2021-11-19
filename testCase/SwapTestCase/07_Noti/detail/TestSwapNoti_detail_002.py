@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 2021/11/15 2:10 下午
-# @Author  : yuhuiqing
-from tool.atp import ATP
+# @Author  : HuiQing Yu
+
 import pytest, allure, random, time
-from common.SwapServiceAPI import user01
 from common.SwapServiceWS import user01 as ws_user01
 from config.conf import DEFAULT_CONTRACT_CODE
-from common.CommonUtils import retryUtil
 
 @allure.epic('反向永续')
 @allure.feature('行情')
