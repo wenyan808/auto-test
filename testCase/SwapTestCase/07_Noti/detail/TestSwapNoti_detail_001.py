@@ -15,6 +15,7 @@ from common.CommonUtils import currentPrice
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.stable
 class TestSwapNoti_detail_001:
+
     contract_code = DEFAULT_CONTRACT_CODE
     ids = ['TestSwapNoti_detail_001']
     params = [{'case_name':'获取聚合行情','contract_code':contract_code}]
@@ -64,3 +65,6 @@ class TestSwapNoti_detail_001:
             checked_col = ['amount', 'ask', 'bid', 'close', 'count', 'high', 'id', 'low', 'open', 'vol']
             for col in checked_col:
                 assert result['tick'][col], str(col) + '为None,不符合预期'
+
+if __name__ == '__main__':
+    pytest.main()

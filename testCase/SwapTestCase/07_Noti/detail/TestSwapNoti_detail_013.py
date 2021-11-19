@@ -54,3 +54,6 @@ class TestSwapNoti_detail_013:
             for data in result['data']:
                 for col in checked_col:
                     assert data[col] is not None, str(col) + '为None,不符合预期'
+
+if __name__ == '__main__':
+    pytest.main()

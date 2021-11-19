@@ -52,3 +52,6 @@ class TestSwapNoti_detail_002:
         with allure.step('校验返回结果'):
             assert 'invalid topic' in result['err-msg'],'无效的topic'
             pass
+
+if __name__ == '__main__':
+    pytest.main()

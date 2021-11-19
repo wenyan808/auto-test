@@ -61,3 +61,6 @@ class TestSwapNoti_restful_detail_001:
             checked_col = ['amount', 'ask', 'bid', 'close', 'count', 'high', 'id', 'low', 'open', 'vol']
             for col in checked_col:
                 assert result['tick'][col], str(col) + '为None,不符合预期'
+
+if __name__ == '__main__':
+    pytest.main()

@@ -64,3 +64,6 @@ class TestSwapNoti_detail_006:
             assert result['tick']['bids']
             assert result['tick']['asks']
             pass
+
+if __name__ == '__main__':
+    pytest.main()
