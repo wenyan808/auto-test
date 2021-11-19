@@ -12,7 +12,7 @@ from common.CommonUtils import currentPrice
 @allure.epic('反向永续')
 @allure.feature('行情')
 @allure.story('聚合行情')
-@allure.tag('Script owner : 余辉青', 'Case owner : ')
+@allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.stable
 class TestSwapNoti_detail_001:
     contract_code = DEFAULT_CONTRACT_CODE
@@ -31,14 +31,19 @@ class TestSwapNoti_detail_001:
     @classmethod
     def teardown_class(cls):
         with allure.step('撤盘'):
-            # api_user01.swap_cancelall(contract_code=cls.contract_code)
+            api_user01.swap_cancelall(contract_code=cls.contract_code)
             pass
 
-    # @pytest.mark.flaky(reruns=1, reruns_delay=1)
+    @pytest.mark.flaky(reruns=3, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step('ws:执行sub请求'):
+            api_user01.swap_order(contract_code=self.contract_code, price=round(self.currentPrice, 2),
+                                  direction='buy')
+            api_user01.swap_order(contract_code=self.contract_code, price=round(self.currentPrice, 2),
+                                  direction='sell')
+            time.sleep(2)
             subs = {
                 "sub": "market.{}.detail".format(params['contract_code']),
                 "id": "id6"
