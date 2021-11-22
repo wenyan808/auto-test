@@ -1,61 +1,70 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211013
-# @Author : 
-    用例标题
-        WS订阅K线(req) period不存在 合约不存在
-    前置条件
-        
-    步骤/文本
-        详见官方文档
-    预期结果
-        
-    优先级
-        2
-    用例别名
-        TestSwapNoti_ws_kline_138
-"""
-
-from common.SwapServiceWS import t as swap_service_ws
+# @Date    : 20211013
+# @Author : HuiQing Yu
+from common.SwapServiceWS import user01 as ws_user01
 import pytest, allure, random, time
+from config.conf import DEFAULT_CONTRACT_CODE
 
-
-@allure.epic('反向永续')  # 这里填业务线
-@allure.feature('WS订阅')  # 这里填功能
-@allure.story('WS订阅K线(req) period不存在 合约不存在')  # 这里填子功能，没有的话就把本行注释掉
+@allure.epic('反向永续')
+@allure.feature('WS订阅')
+@allure.story('WS请求(req)')
 @pytest.mark.stable
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 class TestSwapNoti_ws_kline_138:
+    contract_code = DEFAULT_CONTRACT_CODE
+    ids = ['TestSwapNoti_ws_kline_138',
+           'TestSwapNoti_ws_kline_139',
+           'TestSwapNoti_ws_kline_140',
+           'TestSwapNoti_ws_kline_141',
+           'TestSwapNoti_ws_kline_142',
+           'TestSwapNoti_ws_kline_143']
+    params = [
+        {
+            "case_name": "period不存在 合约不存在",
+            "period": "1year",
+            "contract_code":"BTC-BTC"
+        },{
+            "case_name": "period不存在 合约正确",
+            "period": "1year",
+            "contract_code": contract_code
+        },{
+            "case_name": "period为空",
+            "period": "",
+            "contract_code":contract_code
+        },{
+            "case_name": "不传period",
+            "period": None,
+            "contract_code":contract_code
+        },{
+            "case_name": "合约代码为空",
+            "period": "1min",
+            "contract_code":""
+        },{
+            "case_name": "不传合约代码",
+            "period": "1min",
+            "contract_code":None
+        }
+    ]
 
-    @allure.step('前置条件')
-    def setup(self):
-        print("\n自动化步骤："
-              "\n*、发送req请求from to请求kline ，请求参数中period不存在，合约不存在；"
-              "\n*、验证Kline 1min返回结果；invalid topic")
-
-    @allure.title('WS订阅K线(req) period不存在 合约不存在')
-    @allure.step('测试执行')
-    def test_execute(self):
-        with allure.step('详见官方文档'):
-            self.contract_code = 'BTC-BTC'  # 不存在的合约
-            self.period = '1year'#不存在的period
+    @pytest.mark.flaky(reruns=1, reruns_delay=1)
+    @pytest.mark.parametrize('params', params, ids=ids)
+    def test_execute(self, params):
+        allure.dynamic.title(params['case_name'])
+        with allure.step('操作：发送req请求'):
             self.toTime = int(time.time())
             self.fromTime = self.toTime - 60 * 3
             subs = {
-                "req": "market.{}.kline.{}".format(self.contract_code, self.period),
+                "req": "market.{}.kline.{}".format(params['contract_code'],params['period']),
                 "id": "id4",
                 "from": self.fromTime,
                 "to": self.toTime
             }
-            result = swap_service_ws.swap_sub(subs)
-            resultStr = '\nKline返回结果 = ' + str(result)
-            print('\033[1;32;49m%s\033[0m' % resultStr)
-            assert 'invalid topic' in result['err-msg']
+            result = ws_user01.swap_sub(subs)
             pass
-
-    @allure.step('恢复环境')
-    def teardown(self):
-        print('\n恢复环境操作')
+        with allure.step('验证：返回结果提示invalid topic'):
+            assert 'invalid topic' or 'invalided kline type' in result['err-msg']
+            pass
 
 
 if __name__ == '__main__':

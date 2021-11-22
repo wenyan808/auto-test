@@ -4,7 +4,6 @@
 # @Author  : yuhuiqing
 from tool.atp import ATP
 import pytest, allure, random, time
-from common.mysqlComm import orderSeq as DB_orderSeq
 from common.SwapServiceAPI import user01
 from common.SwapServiceWS import user01 as ws_user01
 from config.conf import DEFAULT_CONTRACT_CODE

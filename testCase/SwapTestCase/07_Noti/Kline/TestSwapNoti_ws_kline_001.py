@@ -5,11 +5,10 @@
 
 from common.SwapServiceWS import user01 as ws_user01
 from common.SwapServiceAPI import user01 as api_user01
-from tool.atp import ATP
 import pytest, allure, random, time
 from config.conf import DEFAULT_CONTRACT_CODE
-from common.CommonUtils import retryUtil
-from common.redisComm import reid7001Conn
+from common.CommonUtils import currentPrice
+from common.redisComm import redisConf
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('WS订阅')  # 这里填功能
@@ -19,18 +18,16 @@ from common.redisComm import reid7001Conn
 class TestSwapNoti_ws_kline_001:
     ids = ['TestSwapNoti_ws_kline_001'
            ]
-    params = [{'case_name': '1min','period':'1min'}
+    params = [{'case_name': 'WS订阅K线(sub)-1min','period':'1min'}
               ]
     contract_code = DEFAULT_CONTRACT_CODE
+    redisClient = redisConf('redis7001').instance()
 
     @classmethod
     def setup_class(cls):
-        with allure.step('成交更新k线'):
-            cls.currentPrice = ATP.get_current_price()  # 最新价
-            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice*1.01, 2), direction='buy')
-            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice*1.01, 2), direction='sell')
-            time.sleep(1)#等待成交k线更新
-            pass
+        cls.currentPrice = currentPrice()
+        api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice*1.01, 2), direction='buy')
+        api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice*1.01, 2), direction='sell')
 
     @classmethod
     def teardown_class(cls):
@@ -40,24 +37,33 @@ class TestSwapNoti_ws_kline_001:
     @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self,params):
-        allure.dynamic.title('WS订阅K线(sub)' + params['period'])
-        with allure.step('执行sub请求'):
+        allure.dynamic.title(params['case_name'])
+        with allure.step('操作:执行sub请求'):
             subs = {
                 "sub": "market.{}.kline.{}".format(self.contract_code, params['period']),
                 "id": "id1"
             }
-            result = retryUtil(ws_user01.swap_sub,subs,'tick')
+            flag = False
+            # 重试3次未返回预期结果则失败
+            for i in range(1,4):
+                result = ws_user01.swap_sub(subs)
+                if 'tick' in result:
+                    flag = True
+                    break
+                time.sleep(1)
+                print('未返回预期结果，第{}次重试………………………………'.format(i))
+            assert flag
             pass
-        with  allure.step('查询redis'):
+        with  allure.step('操作:查询redis'):
             # 1609430400 = 2021-01-01 00:00:00
             currentSecond = int(time.time()) - 1609430400
             currentSecond = int(currentSecond/60)
             key = 'market.{}.kline.1min.1609430400'.format(self.contract_code)
-            redis_kline = reid7001Conn.lrange(key,currentSecond,currentSecond)
-            print(redis_kline)
+            redis_kline = self.redisClient.lrange(key,currentSecond,currentSecond)
+            print('redis结果：',redis_kline)
             kline01 = str(redis_kline[0]).split(',')
             pass
-        with allure.step('校验返回结果'):
+        with allure.step('验证:返回结果与redis一致'):
             # 请求topic校验
             assert result['ch'] == "market."+self.contract_code+".kline."+params['period']
             # 开仓价校验，不为空

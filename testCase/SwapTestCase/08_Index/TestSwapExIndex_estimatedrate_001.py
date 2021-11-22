@@ -2,18 +2,15 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2021/11/11 2:01 下午
 # @Author  : yuhuiqing
-from tool.atp import ATP
+
 import pytest, allure, random, time
-from common.mysqlComm import orderSeq as DB_orderSeq
-from common.SwapServiceAPI import user01
 from common.SwapServiceWS import user01 as ws_user01
 from config.conf import DEFAULT_CONTRACT_CODE
-from common.CommonUtils import retryUtil
 
 @allure.epic('反向永续')
 @allure.feature('指数基差')
 @allure.story('预测资金费率')
-@allure.tag('Script owner : 余辉青', 'Case owner : ')
+@allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.stable
 class TestSwapExIndex_estimatedrate_001:
     ids = ['TestSwapExIndex_estimatedrate_001',
@@ -51,7 +48,7 @@ class TestSwapExIndex_estimatedrate_001:
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title('预测资金费率 ' + params['case_name'])
-        with allure.step('执行req请求'):
+        with allure.step('操作：执行req请求'):
             To = int(time.time())
             From = To - 60
             subs = {
@@ -60,9 +57,18 @@ class TestSwapExIndex_estimatedrate_001:
                 "from": From,
                 "to": To
             }
-            result = retryUtil(ws_user01.swap_sub_index,subs,'data')
+            flag = False
+            # 重试3次未返回预期结果则失败
+            for i in range(1, 4):
+                result = ws_user01.swap_sub_index(subs)
+                if result['data']:
+                    flag = True
+                    break
+                time.sleep(1)
+                print('未返回预期结果，第{}次重试………………………………'.format(i))
+            assert flag
             pass
-        with allure.step('验证响应结果'):
+        with allure.step('验证：返回结果各字段不为空'):
             assert result['data'] != [], 'data空值'
             # 待校验的字段
             checked_col = ['id', 'open', 'close', 'high', 'low', 'amount', 'vol', 'count']
