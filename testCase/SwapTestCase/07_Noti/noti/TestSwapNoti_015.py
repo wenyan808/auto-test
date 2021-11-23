@@ -1,100 +1,58 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211011
-# @Author : 
+# @Date    : 2021/11/15 2:10 下午
+# @Author  : HuiQing Yu
 
-#script by: lss
-所属分组
-    合约测试基线用例//02 反向永续//07 行情
-用例标题
-    请求批量Overview(所有合约，即不传contract_code)
-前置条件
-    
-步骤/文本
-    请求批量Overview(所有合约，即不传contract_code),可参考文档：https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#websocket-3
-预期结果
-    open、close、low、high价格正确；amount、vol、count值正确,不存在Null,[]
-优先级
-    0
-用例编号
-    TestSwapNoti_015
-自动化作者
-    韩东林
-"""
+import pytest, allure, random, time
+from common.SwapServiceAPI import user01 as api_user01
+from common.SwapServiceWS import user01 as ws_user01
+from config.conf import DEFAULT_CONTRACT_CODE
+from common.CommonUtils import currentPrice
 
-from pprint import pprint
-
-import allure
-import pytest
-import time
-
-from common.SwapServiceAPI import t as api
-from tool.atp import ATP
-from tool.common_assert import Assert
-
-
-@allure.epic('反向永续')  # 这里填业务线
-@allure.feature('合约测试基线用例//02 反向永续//07 行情')  # 这里填功能
-@allure.story('请求批量Overview(所有合约，即不传contract_code)')  # 这里填子功能，没有的话就把本行注释掉
-@allure.tag('Script owner : Donglin Han', 'Case owner : Panfeng Liu')
+@allure.epic('反向永续')
+@allure.feature('行情')
+@allure.story('批量Overview')
+@allure.tag('Script owner : 韩东林', 'Case owner : 柳攀峰')
 @pytest.mark.stable
 class TestSwapNoti_015:
+    contract_code = DEFAULT_CONTRACT_CODE
+    ids = ['TestSwapNoti_015']
+    params = [{'case_name':'批量Overview(所有合约，即不传contract_code)','contract_code':contract_code}]
 
-    @allure.step('前置条件')
-    def setup(self):
-        print(" 清盘 -》 挂单 ")
-        ATP.cancel_all_types_order()
-        time.sleep(0.5)
-        ATP.make_market_depth()
-        time.sleep(1)
-        ATP.clean_market()
-        time.sleep(1)
-        self.current_price = ATP.get_current_price()
+    @classmethod
+    def setup_class(cls):
+        with allure.step('挂盘'):
+            cls.currentPrice = currentPrice()
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice*0.5, 2), direction='buy')
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice*1.5, 2), direction='sell')
+            pass
 
-    @allure.title('请求批量Overview(所有合约，即不传contract_code)')
-    @allure.step('测试执行')
-    def test_execute(self, contract_code):
-        with allure.step('请求批量Overview(所有合约，即不传contract_code),可参考文档：https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#websocket-3'):
-            # open、close、low、high价格正确；amount、vol、count值正确,不存在Null,[]
-            res = api.swap_market_over_view()
-            print()
-            pprint(res)
-            ch = Assert.base_check_response(res, 'ch')
-            assert ch == 'market.overview', 'ch is incorrect'
+    @classmethod
+    def teardown_class(cls):
+        with allure.step('撤盘'):
+            time.sleep(1)
+            api_user01.swap_cancelall(contract_code=cls.contract_code)
+            pass
 
-            data = Assert.base_check_response(res, 'data')
-            assert isinstance(data, list) and len(data) > 1, 'data is incorrect'
+    @pytest.mark.flaky(reruns=1, reruns_delay=1)
+    @pytest.mark.parametrize('params', params, ids=ids)
+    def test_execute(self, params):
+        allure.dynamic.title(params['case_name'])
+        with allure.step('操作:执行api-restful请求'):
 
-            check_keys = ['amount', 'close', 'count', 'high', 'low', 'open', 'symbol' ,'vol']
-
-            for tick in data:
-                assert set(check_keys) == set(tick.keys()), 'missing keys in data'
-
-                act_symbol: str = tick.get('symbol', '')
-                assert act_symbol.endswith('-USD'), 'symbol is incorrect'
-
-                close = float(tick.get('close', 0))
-                assert close > 0, 'close 价格 错误'
-
-                high = float(tick.get('high', 0))
-                assert high >= close, 'high 价格 错误'
-
-                low = float(tick.get('low', 0))
-                assert 0 < low <= close, 'low 价格 错误'
-
-                open = float(tick.get('open', 0))
-                assert low <= open <= high, 'open 价格 错误'
-
-                amount = float(tick.get('amount', -1))
-                if high != low:
-                    assert amount > 0, 'amount or  trade_turnover incorrect'
-                elif amount == 0:
-                    assert close == open, 'close or open incorrect'
-
-    @allure.step('恢复环境')
-    def teardown(self):
-        print('\n恢复环境操作')
-
-
-if __name__ == '__main__':
-    pytest.main()
+            flag = False
+            # 重试3次未返回预期结果则失败
+            for i in range(1, 4):
+                result = api_user01.swap_market_over_view()
+                if 'data' in result:
+                    flag = True
+                    break
+                time.sleep(1)
+                print('未返回预期结果，第{}次重试………………………………'.format(i))
+            assert flag,'未返回预期结果'
+            pass
+        with allure.step('验证：返回结果各字段不为空'):
+            checked_col = [ 'open','close','high', 'low', 'amount', 'count', 'vol','symbol']
+            for data in result['data']:
+                for col in checked_col:
+                    assert data[col] or data[col]==0, str(col) + '为None,不符合预期'

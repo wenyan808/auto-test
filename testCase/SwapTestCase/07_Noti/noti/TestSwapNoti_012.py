@@ -1,83 +1,59 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211011
-# @Author : Donglin Han
+# @Date    : 20211011
+# @Author : DongLin Han
 
-所属分组
-    合约测试基线用例//02 反向永续//07 行情
-用例标题
-    请求BBO(单个合约，即传参code)
-前置条件
-    
-步骤/文本
-    请求BBO(单个合约，即传参code),可参考文档：https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#websocket-3
-预期结果
-    asks,bids 数据正确,不存在Null,[]
-优先级
-    0
-用例编号
-    TestSwapNoti_012
-自动化作者
-    韩东林
-"""
-
-from common.SwapServiceAPI import t as api
-
-from pprint import pprint
+from common.SwapServiceAPI import user01 as api_user01
 import pytest, allure, random, time
+from common.CommonUtils import currentPrice
+from config.conf import DEFAULT_CONTRACT_CODE
 
-from tool.atp import ATP
-
-
-@allure.epic('反向永续')  # 这里填业务线
-@allure.feature('合约测试基线用例//02 反向永续//07 行情')  # 这里填功能
-@allure.story('请求BBO(单个合约，即传参code)')  # 这里填子功能，没有的话就把本行注释掉
-@allure.tag('Script owner : Donglin Han', 'Case owner : Panfeng Liu')
+@allure.epic('反向永续')
+@allure.feature('行情')
+@allure.story('请求BBO(单个合约，即传参code)')
+@allure.tag('Script owner : 韩东林', 'Case owner : 柳攀峰')
 @pytest.mark.stable
 class TestSwapNoti_012:
-    current_price = None
+    contract_code = DEFAULT_CONTRACT_CODE
+    @classmethod
+    def setup_class(cls):
+        with allure.step('挂盘'):
+            cls.currentPrice = currentPrice()
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice * 0.5, 2),
+                                  direction='buy')
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice * 1.5, 2),
+                                  direction='sell')
+            pass
 
-    @allure.step('前置条件')
-    def setup(self):
-        print(" 清盘 -》 挂单 ")
-        ATP.cancel_all_types_order()
-        time.sleep(0.5)
-        ATP.make_market_depth()
-        self.current_price = ATP.get_current_price()
-        sell_price = ATP.get_adjust_price(1.02)
-        buy_price = ATP.get_adjust_price(0.98)
-        ATP.common_user_make_order(price=sell_price, direction='sell')
-        ATP.common_user_make_order(price=buy_price, direction='buy')
-        time.sleep(2)
+    @classmethod
+    def teardown_class(cls):
+        with allure.step('撤盘'):
+            time.sleep(1)
+            api_user01.swap_cancelall(contract_code=cls.contract_code)
+            pass
 
     @allure.title('请求BBO(单个合约，即传参code)')
-    @allure.step('测试执行')
-    def test_execute(self, contract_code):
-        with allure.step(
-                '请求BBO(单个合约，即传参code),可参考文档：https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#websocket-3'):
-            # asks,bids 数据正确,不存在Null,[]
-            res = api.swap_bbo(contract_code)
-            print(res)
-            status = res.get('status', 'error')
-            assert status == 'ok', '获取bbo 返回状态错误'
-            ticks = res.get('ticks', [])
-            assert isinstance(ticks, list) and len(ticks) == 1, '获取bbo ticks 错误'
-            record = ticks[0]
-            contract_code = record.get('contract_code', '')
-            assert contract_code.upper() == contract_code, '获取bbo contract_code 错误'
-            ask = record.get('ask', [])
-            bid = record.get('bid', [])
-            mrid = record.get('mrid', -1)
-            assert isinstance(ask, list) and len(ask) == 2 and ask[0] > 0 and ask[1] == 10 and ask[
-                0] > self.current_price, '获取bbo ask 错误'
-            assert isinstance(bid, list) and len(bid) == 2 and bid[0] > 0 and bid[1] == 10 and bid[
-                0] < self.current_price, '获取bbo bid 错误'
-            assert isinstance(mrid, int) and mrid >= 0, '获取bbo mrid 错误'
+    @pytest.mark.flaky(reruns=1, reruns_delay=1)
+    def test_execute(self):
+        with allure.step('操作：执行api-restful请求'):
+            flag = False
+            # 重试3次未返回预期结果则失败
+            for i in range(1, 4):
+                result = api_user01.swap_bbo(contract_code=self.contract_code)
+                if 'ticks' in result:
+                    flag = True
+                    break
+                time.sleep(1)
+                print('未返回预期结果，第{}次重试………………………………'.format(i))
+            assert flag, '未返回预期结果'
 
-    @allure.step('恢复环境')
-    def teardown(self):
-        print('\n恢复环境操作')
-        ATP.clean_market()
+            pass
+        with allure.step('验证：返回结果ask字段不为空'):
+            assert result['ticks'][0]['ask']
+            pass
+        with allure.step('验证：返回结果bid字段不为空'):
+            assert result['ticks'][0]['bid']
+            pass
 
 
 if __name__ == '__main__':

@@ -6,8 +6,6 @@
 from common.SwapServiceWS import user01 as ws_user01
 import pytest, allure, random, time
 from config.conf import DEFAULT_CONTRACT_CODE
-from common.CommonUtils import retryUtil
-from tool.atp import ATP
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('合约交易接口')  # 这里填功能
@@ -30,18 +28,28 @@ class TestSwapNoti_006:
         with allure.step(''):
             pass
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=1)
+    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
-        with allure.step('执行sub订阅'):
+        allure.dynamic.title(params['case_name'])
+        with allure.step('操作：执行sub订阅'):
             subs = {
                   "op": "sub",
                   "sub": "market.overview",
                   "zip": 1
                 }
-            result = retryUtil(ws_user01.swap_sub,subs,'data')
+            flag = False
+            # 重试3次未返回预期结果则失败
+            for i in range(1, 4):
+                result = ws_user01.swap_sub(subs)
+                if 'data' in result:
+                    flag = True
+                    break
+                time.sleep(1)
+                print('未返回预期结果，第{}次重试………………………………'.format(i))
+            assert flag
             pass
-        with allure.step('校验返回结果'):
+        with allure.step('验证：返回结果data字段下字段不为空'):
             checked_col = ['amount','symbol','close','count','high','low','open','vol']
             for data in result['data']:
                 for col in checked_col:
