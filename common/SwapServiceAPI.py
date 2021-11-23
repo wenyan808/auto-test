@@ -919,11 +919,11 @@ class SwapService:
         params = {}
         if contract_code:
             params['contract_code'] = contract_code
-        if trade_type:
+        if trade_type is not None:
             params['trade_type'] = trade_type
-        if type:
+        if type is not None:
             params['type'] = type
-        if status:
+        if status is not None:
             params['status'] = status
         if start_time:
             params['start_time'] = start_time
@@ -967,7 +967,7 @@ class SwapService:
         params = {}
         if contract_code:
             params['contract_code'] = contract_code
-        if trade_type:
+        if trade_type is not None:
             params['trade_type'] = trade_type
         if start_time:
             params['start_time'] = start_time
@@ -1176,7 +1176,7 @@ class SwapService:
         params = {}
         if contract_code:
             params['contract_code'] = contract_code
-        if status:
+        if status is not None:
             params['status'] = status
         if create_date:
             params['create_date'] = create_date
@@ -1305,9 +1305,9 @@ class SwapService:
         params = {}
         if contract_code:
             params['contract_code'] = contract_code
-        if status:
+        if status is not None:
             params['status'] = status
-        if trade_type:
+        if trade_type is not None:
             params['trade_type'] = trade_type
         if create_date:
             params['create_date'] = create_date
