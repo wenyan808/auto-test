@@ -18,7 +18,7 @@ from config.conf import DEFAULT_CONTRACT_CODE
 class TestSwapNoti_restful_overview_004:
 
     contract_code = DEFAULT_CONTRACT_CODE
-    ids = ['TestSwapNoti_restful_overview_004','TestSwapNoti_restful_overview_005']
+    ids = ['TestSwapNoti_restful_overview_004','TestSwapNoti_restful_overview_007']
     params = [
               {'case_name':'restful请求detail接口 不传参合约代码','contract_code':'','exceptMsg':'contract_code cannot be empty'},
               {'case_name':'restful请求detail接口 合约代码不存在','contract_code':'usd-usd','exceptMsg':'invalid contract code'},
