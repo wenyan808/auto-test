@@ -35,9 +35,7 @@ class TestLinearApiSchema_009:
 
     @allure.step('前置条件')
     def setup(self):
-        self.price = atp.ATP.get_adjust_price()
-
-
+        pass
     @allure.title('获取平台持仓量（全逐通用）')
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
