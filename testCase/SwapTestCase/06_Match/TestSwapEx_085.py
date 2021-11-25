@@ -14,7 +14,6 @@ from config.conf import DEFAULT_CONTRACT_CODE
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.stable
 class TestSwapEx_085:
-    DB_orderSeq = mysqlComm('order_seq')
     contract_code = DEFAULT_CONTRACT_CODE
     @classmethod
     def setup_class(cls):
@@ -31,7 +30,7 @@ class TestSwapEx_085:
 
     @allure.title('撮合-买入开仓-部分成交')
     @pytest.mark.flaky(reruns=1, reruns_delay=1)
-    def test_execute(self, contract_code):
+    def test_execute(self, contract_code,DB_orderSeq):
         with allure.step('操作：开多下单'):
             orderInfo = user01.swap_order(contract_code=contract_code, price=round(self.currentPrice, 2), direction='buy',volume=2)
             pass
@@ -41,7 +40,7 @@ class TestSwapEx_085:
             flag = False
             # 给撮合时间，5秒内还未撮合完成则为失败
             for i in range(5):
-                isMatch = self.DB_orderSeq.execute(sqlStr)[0][0]
+                isMatch = DB_orderSeq.execute(sqlStr)[0][0]
                 if 1 == isMatch:
                     flag = True
                     break

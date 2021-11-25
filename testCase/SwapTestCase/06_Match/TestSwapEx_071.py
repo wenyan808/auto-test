@@ -35,15 +35,16 @@ class TestSwapEx_071:
         }
 
     ]
-    contract_code = DEFAULT_CONTRACT_CODE
-    DB_orderSeq = mysqlComm('order_seq')
     @classmethod
     def setup_class(cls):
+        with allure.step('变量初始化'):
+            cls.contract_code = DEFAULT_CONTRACT_CODE
+            cls.latest_price = currentPrice()
+            pass
         with allure.step('*->持仓，挂盘'):
-            cls.currentPrice = currentPrice()  # 最新价
-            user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='sell',
+            user01.swap_order(contract_code=cls.contract_code, price=round(cls.latest_price, 2), direction='sell',
                               volume=8)
-            user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='buy',
+            user01.swap_order(contract_code=cls.contract_code, price=round(cls.latest_price, 2), direction='buy',
                               volume=4)
             pass
 
@@ -55,7 +56,7 @@ class TestSwapEx_071:
 
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params):
+    def test_execute(self, params,DB_orderSeq):
         allure.dynamic.title(params['case_name'])
         allure.dynamic.description("先挂卖单4张："
                                    "\n下单价格为当前价的一半，无法成交；"
@@ -63,17 +64,17 @@ class TestSwapEx_071:
                                    "\n以当前价下单，数量为4；当前买盘只有2张，所以会部分成交；"
                                    "\n最后撤单所有限价单")
 
-        with allure.step('下单'):
-            orderInfo = user01.swap_order(contract_code=self.contract_code, price=round(self.currentPrice * params['ratio'], 2),
+        with allure.step('操作：下单'):
+            orderInfo = user01.swap_order(contract_code=self.contract_code, price=round(self.latest_price * params['ratio'], 2),
                                           volume=params['volume'], direction='buy',offset='close')
             pass
-        with allure.step('校验撮合表'):
+        with allure.step('验证：撮合结果表中有数据'):
             sqlStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
                      "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderInfo['data']['order_id'])
             flag = False
             # 给撮合时间，5秒内还未撮合完成则为失败
-            for i in range(5):
-                isMatch = self.DB_orderSeq.execute(sqlStr)[0][0]
+            for i in range(3):
+                isMatch = DB_orderSeq.execute(sqlStr)[0][0]
                 if 1 == isMatch:
                     flag = True
                     break

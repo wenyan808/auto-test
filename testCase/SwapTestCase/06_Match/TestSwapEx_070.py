@@ -34,26 +34,27 @@ class TestSwapEx_070:
         }
 
     ]
-    contract_code = DEFAULT_CONTRACT_CODE
-    DB_orderSeq = mysqlComm('order_seq')
 
     @classmethod
     def setup_class(cls):
-        with allure.step('*->挂盘'):
-            cls.currentPrice = currentPrice()  # 最新价
-            user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='buy',
+        with allure.step('变量初始化'):
+            cls.contract_code = DEFAULT_CONTRACT_CODE
+            cls.latest_price = currentPrice()
+            pass
+        with allure.step('挂盘'):
+            user01.swap_order(contract_code=cls.contract_code, price=round(cls.latest_price, 2), direction='buy',
                               volume=4)
             pass
 
     @classmethod
     def teardown_class(cls):
-        with allure.step('*->恢复环境:取消挂单'):
+        with allure.step('恢复环境:取消挂单'):
             user01.swap_cancelall(contract_code=cls.contract_code)
             pass
 
     @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params):
+    def test_execute(self, params,DB_orderSeq):
         allure.dynamic.title(params['case_name'])
         allure.dynamic.description("先挂买单4张："
                                    "\n下单价格为当前价的1.5倍，无法成交；"
@@ -62,7 +63,7 @@ class TestSwapEx_070:
                                    "\n最后撤单所有限价单")
 
         with allure.step('操作：开空下单'):
-            orderInfo = user01.swap_order(contract_code=self.contract_code, price=round(self.currentPrice * params['ratio'], 2),
+            orderInfo = user01.swap_order(contract_code=self.contract_code, price=round(self.latest_price * params['ratio'], 2),
                                           volume=params['volume'], direction='sell')
             pass
         with allure.step('验证：订单存在撮合结果表'):
@@ -70,8 +71,8 @@ class TestSwapEx_070:
                      "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderInfo['data']['order_id'])
             flag = False
             # 给撮合时间，5秒内还未撮合完成则为失败
-            for i in range(5):
-                isMatch = self.DB_orderSeq.execute(sqlStr)[0][0]
+            for i in range(3):
+                isMatch = DB_orderSeq.execute(sqlStr)[0][0]
                 if 1 == isMatch:
                     flag = True
                     break
