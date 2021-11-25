@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 20211012
-# @Author : 张广南
+# @Author : HuiQing Yu
 
 import time
 import allure
@@ -16,21 +16,19 @@ from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
 @allure.feature('行情')  # 这里填功能
 @allure.story('深度')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
-@allure.tag('Script owner : 张广南', 'Case owner : 吉龙')
-class TestSwapNoti_depth_030:
+@allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
+class TestSwapNoti_restful_depth_025:
+    contract_code = DEFAULT_CONTRACT_CODE
     ids = [
-        'TestSwapNoti_depth_030',
-        'TestSwapNoti_depth_033',
+        'TestSwapNoti_restful_depth_025'
     ]
     params = [
-        {'case_name': 'WS订阅深度 150档不合并  无卖单 无买单)', 'type': 'step0'},
-        {'case_name': 'WS订阅深度 20档不合并 无卖单 无买单)', 'type': 'step6'}
+        {'case_name': 'restful请求最优挂单 传参合约code不存在)', 'contract_code': 'usd-usd'}
     ]
 
     @classmethod
     def setup_class(cls):
         with allure.step('实始化变量'):
-            cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.symbol = DEFAULT_SYMBOL
             cls.currentPrice = currentPrice()  # 最新价
             pass
@@ -38,8 +36,7 @@ class TestSwapNoti_depth_030:
 
     @classmethod
     def teardown_class(cls):
-        with allure.step('恢复环境，撤销挂单'):
-            api_user01.swap_cancelall(contract_code=cls.contract_code)
+        with allure.step(''):
             pass
 
     @pytest.mark.flaky(reruns=1, reruns_delay=1)
@@ -47,18 +44,11 @@ class TestSwapNoti_depth_030:
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：执行sub订阅'):
-            subs = {
-                "sub": "market.{}.depth.{}".format(self.contract_code, params['type']),
-                "id": "id5"
-            }
-            result = ws_user01.swap_sub(subs)
-        with allure.step('验证：返回结果无卖单'):
-            assert 'asks' not in result['tick']
+            result = api_user01.swap_bbo(contract_code=params['contract_code'])
             pass
-        with allure.step('验证：返回结果无买单'):
-            assert 'bids' not in result['tick']
+        with allure.step('验证：返回结果提示invalid-request'):
+            assert 'invalid-request' in  result['err-code']
             pass
-
 
 if __name__ == '__main__':
     pytest.main()

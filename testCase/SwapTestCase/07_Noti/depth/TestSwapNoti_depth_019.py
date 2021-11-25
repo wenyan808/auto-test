@@ -1,73 +1,54 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211012
+# @Date    : 20211012
 # @Author : 张广南
-    用例标题
-        WS订阅深度 非SHIB 20档step18
-    前置条件
-        
-    步骤/文本
-        参考官方文档
-    预期结果
-        订阅失败
-    优先级
-        3
-    用例别名
-        TestSwapNoti_depth_019
-"""
 
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceWS import t as swap_service_ws
-import pytest, allure, random, time
+import time
+import allure
+import pytest
 
-from tool import atp
+from common.SwapServiceWS import user01 as ws_user01
+from common.SwapServiceAPI import user01 as api_user01
+from common.CommonUtils import currentPrice, opponentExist
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
+
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('行情')  # 这里填功能
 @allure.story('深度')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
 @allure.tag('Script owner : 张广南', 'Case owner : 吉龙')
-class TestSwapNoti_depth_019:
+class TestSwapNoti_depth_001:
+    ids = [
+        'TestSwapNoti_depth_019',
+        'TestSwapNoti_depth_020',
+    ]
+    params = [
+        {'case_name': 'WS订阅深度 20档0.0000001不合并)', 'type': 'step18'},
+        {'case_name': 'WS订阅深度 20档0.000001不合并)', 'type': 'step19'},
+    ]
 
-    @allure.step('前置条件')
-    @pytest.fixture(scope='function', autouse=True)
-    def setup(self, contract_code, lever_rate, offsetO, directionB, directionS):
-        print("\n清盘》》》》", atp.ATP.clean_market())
+    @classmethod
+    def setup_class(cls):
+        with allure.step('实始化变量'):
+            cls.contract_code = DEFAULT_CONTRACT_CODE
+            cls.symbol = DEFAULT_SYMBOL
+            pass
 
-        lever_rate = 5
-
-        # 获取交割合约当前价格
-        sell_price = atp.ATP.get_adjust_price(rate=1.01)
-        buy_price = atp.ATP.get_adjust_price(rate=0.99)
-
-        print('下两单，更新盘口数据')
-        swap_api.swap_order(contract_code=contract_code, price=buy_price, volume='1', direction=directionB,
-                            offset=offsetO, lever_rate=lever_rate, order_price_type='limit')
-        # swap_api.swap_order(contract_code=contract_code, price=sell_price, volume='1', direction=directionS,
-        #                     offset=offsetO, lever_rate=lever_rate, order_price_type='limit')
-
-        # 等待深度信息更新
-        time.sleep(3)
-
-    @allure.title('WS订阅深度 非SHIB 20档step18')
-    @allure.step('测试执行')
-    def test_execute(self, contract_code):
-        with allure.step('参考官方文档'):
-            depth_type = 'step18'
+    @pytest.mark.flaky(reruns=1, reruns_delay=1)
+    @pytest.mark.parametrize('params', params, ids=ids)
+    def test_execute(self, params):
+        allure.dynamic.title(params['case_name'])
+        with allure.step('操作：执行sub订阅'):
             subs = {
-                "sub": "market.{}.depth.{}".format(contract_code, depth_type),
+                "sub": "market.{}.depth.{}".format(self.contract_code, params['type']),
                 "id": "id5"
             }
-            result = swap_service_ws.swap_sub(subs)
-            result_str = '\nDepth返回结果 = ' + str(result)
-            print('\033[1;32;49m%s\033[0m' % result_str)
-            assert result['err-msg'] == 'invalid topic market.BTC-USD.depth.step18'
-
-    @allure.step('恢复环境')
-    def teardown(self):
-        atp.ATP.cancel_all_types_order()
-        print('\n恢复环境操作')
-
+            result = ws_user01.swap_sub(subs)
+            pass
+        with allure.step('验证：返回结果提示invalid topic'):
+            assert 'invalid topic market.{}.depth.{}'.format(self.contract_code,params['type']) in result['err-msg']
+            pass
 
 if __name__ == '__main__':
     pytest.main()
