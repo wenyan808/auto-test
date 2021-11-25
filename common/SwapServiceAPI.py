@@ -1377,9 +1377,12 @@ class SwapService:
             print("当前持仓状况复杂，无法通过自我成交清空，请人工处理")
             return False
 
-    def swap_market_over_view(self):
+    def swap_market_over_view(self,contract_code=None):
         request_path = '/swap-ex/market/overview'
-        return api_http_get(self.__url + request_path, {})
+        params={}
+        if contract_code:
+            params['contract_code']=contract_code
+        return api_http_get(self.__url + request_path, params)
 
 
 # 定义t并传入公私钥和URL,供用例直接调用
