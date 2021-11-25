@@ -101,7 +101,6 @@ class TestLinearApiSchema_088:
 
     @allure.step('恢复环境')
     def teardown(self):
-        time.sleep(2)
         print(atp.ATP.cancel_all_order())
         print('\n恢复环境操作')
 
