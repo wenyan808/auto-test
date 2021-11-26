@@ -39,7 +39,7 @@ class TestCoinswapLever_001:
             r = user01.swap_switch_lever_rate(contract_code=contract_code, lever_rate=i)
             pass
         with allure.step('验证: 切换成功'):
-            assert r['status'] == 'ok' and i == r['data']['lever_rate']
+            assert r['status'] == 'ok' and int(i) == r['data']['lever_rate']
             pass
 
 
