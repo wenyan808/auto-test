@@ -9,7 +9,7 @@ from common.SwapServiceAPI import t
 
 
 @allure.epic('反向永续')
-@allure.feature('api')
+@allure.feature('18API')
 @allure.story('schema校验')
 @allure.tag('Script owner : 余辉青', 'Case owner : 张让翰')
 @pytest.mark.stable
