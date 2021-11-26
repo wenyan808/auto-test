@@ -20,12 +20,19 @@ from config.case_content import epic, features
 @allure.tag('Script owner : 余辉青', 'Case owner : 叶永刚')
 class TestCoinswapLever_002:
 
-    @allure.title('当前无挂单切换杠杆倍数测试')
+    @classmethod
+    def teardown_class(cls):
+        with allure.step('恢复环境：撤单'):
+            user01.swap_cancelall(contract_code=DEFAULT_CONTRACT_CODE)
+            pass
+
+    @allure.title('当前有挂单切换杠杆倍数测试')
     @allure.step('测试执行')
     def test_execute(self, contract_code):
         with allure.step('操作: 挂个限价单'):
             latest_price = currentPrice()
             user01.swap_order(contract_code=DEFAULT_CONTRACT_CODE,price=round(latest_price*0.5,2),direction='buy')
+            time.sleep(1)
             pass
         with allure.step('操作: 获取可用的杠杆总数'):
             tmp = user01.swap_available_level_rate(contract_code=contract_code)
