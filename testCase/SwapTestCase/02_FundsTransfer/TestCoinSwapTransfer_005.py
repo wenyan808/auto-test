@@ -15,7 +15,7 @@ from common.redisComm import redisConf
 
 @allure.epic('反向永续')
 @allure.feature('02资金划转')
-@allure.story('母子划转')
+@allure.story('02母子划转')
 @allure.tag('Script owner : 张广南', 'Case owner : 叶永刚')
 @pytest.mark.stable
 class TestCoinSwapTransfer_005:
