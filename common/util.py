@@ -246,3 +246,17 @@ def compare_dict(expected, result):
         return True
     else:
         return False
+
+
+def compare_dictkey(expected, result):
+    err = 0
+    for key in expected:
+        if key not in result:
+            print('结果里没有预期的项：', key)
+            print(result)
+            err = err + 1
+            continue
+    if err == 0:
+        return True
+    else:
+        return False

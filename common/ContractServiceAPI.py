@@ -43,7 +43,7 @@ class ContractServiceAPI:
         """
         if symbol:
             if '_' in symbol:
-                symbol=symbol[:-3]
+                symbol = symbol[:-3]
             params = {'symbol': symbol}
         else:
             params = {}
@@ -1026,7 +1026,9 @@ class ContractServiceAPI:
     def contract_hisorders_exact(self, symbol=None, trade_type=None, type=None, status=None, contract_code=None,
                                  order_type=None, start_time=None, end_time=None, from_id=None, size=None, direct=None):
 
-        params = {}
+        params = {'symbol': symbol,
+                  'trade_type': trade_type,
+                  'status': status}
         if symbol:
             params['symbol'] = symbol
         if trade_type:
@@ -1050,6 +1052,7 @@ class ContractServiceAPI:
         if direct:
             params['direct'] = direct
         request_path = '/api/v1/contract_hisorders_exact'
+        pprint(params)
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 组合查询用户财务记录
@@ -1092,7 +1095,8 @@ class ContractServiceAPI:
 
     def contract_matchresults_exact(self, symbol=None, trade_type=None, contract_code=None, start_time=None,
                                     end_time=None, from_id=None, size=None, direct=None):
-        params = {}
+        params = {'symbol': symbol,
+                  'trade_type': trade_type}
         if symbol:
             params['symbol'] = symbol
         if trade_type:
@@ -1235,7 +1239,8 @@ class ContractServiceAPI:
     def contract_tpsl_hisorders(self, symbol=None, contract_code=None, status=None, create_date=None, page_index=None,
                                 page_size=None, sort_by=None):
 
-        params = {}
+        params = {"symbol": symbol, "status": status,
+                  "create_date": create_date}
 
         if symbol:
             params["symbol"] = symbol
@@ -1353,7 +1358,7 @@ class ContractServiceAPI:
     def contract_track_hisorders(self, symbol=None, contract_code=None, status=None, trade_type=None, create_date=None,
                                  page_index=None, page_size=None, sort_by=None):
 
-        params = {}
+        params = {"symbol": symbol, "status": status, "trade_type": trade_type}
         if symbol:
             params['symbol'] = symbol
         if contract_code:
@@ -1434,7 +1439,8 @@ class ContractServiceAPI:
     def contract_market_over_view(self):
         request_path = '/market/overview'
         return api_http_get(self.__url + request_path, {})
-    def contract_get_datacode(self,symbol=None):
+
+    def contract_get_datacode(self, symbol=None):
         contract_type_dict = {}
         contract_infos = self.contract_contract_info(symbol=symbol)
         for contrace_info in contract_infos['data']:
@@ -1444,12 +1450,14 @@ class ContractServiceAPI:
         return contract_type_dict
 
 
-
-
 # 定义t并传入公私钥和URL,供用例直接调用
 t = ContractServiceAPI(URL, ACCESS_KEY, SECRET_KEY)
-common_user_contract_service_api = ContractServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
+common_user_contract_service_api = ContractServiceAPI(
+    URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
 userList = eval(USERINFO)
-user01 = ContractServiceAPI(URL, userList[0]['ACCESS_KEY'], userList[0]['SECRET_KEY'])
-user02 = ContractServiceAPI(URL, userList[1]['ACCESS_KEY'], userList[1]['SECRET_KEY'])
-user03 = ContractServiceAPI(URL, userList[2]['ACCESS_KEY'], userList[2]['SECRET_KEY'])
+user01 = ContractServiceAPI(
+    URL, userList[0]['ACCESS_KEY'], userList[0]['SECRET_KEY'])
+user02 = ContractServiceAPI(
+    URL, userList[1]['ACCESS_KEY'], userList[1]['SECRET_KEY'])
+user03 = ContractServiceAPI(
+    URL, userList[2]['ACCESS_KEY'], userList[2]['SECRET_KEY'])
