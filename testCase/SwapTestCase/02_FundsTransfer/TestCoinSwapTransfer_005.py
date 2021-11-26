@@ -53,10 +53,10 @@ class TestCoinSwapTransfer_005:
             print('母账户当前资金={}，子账户当前资金={}'.format(f_current_account, c_current_account))
             pass
         with allure.step("验证：母账号金额更新正确"):
-            assert amount == float(self.f_account) - float(f_current_account)
+            assert amount == round(float(self.f_account) - float(f_current_account),6)
             pass
         with allure.step("验证：子账号金额更新正确"):
-            assert amount == float(c_current_account) - float(self.c_account)
+            assert amount == round(float(c_current_account) - float(self.c_account),6)
             pass
         with allure.step("验证：存在划转记录"):
             flag = False

@@ -6,6 +6,7 @@
 import allure
 import pytest
 import random
+import time
 from common.SwapServiceAPI import user01
 from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 from common.CommonUtils import currentPrice
@@ -44,7 +45,7 @@ class TestCoinSwapTransfer_009:
             user01.swap_cancelall(contract_code=cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
+
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
@@ -60,6 +61,7 @@ class TestCoinSwapTransfer_009:
             print('母账户：账户权益={}，划转金额={},可划转金额={}'.format(margin_balance,amount,withdraw_available))
             pass
         with allure.step("操作：执行划转，母 划 子"):
+            time.sleep(1)#避免用例执行太快，访问被限制
             result = user01.swap_master_sub_transfer(sub_uid='115395803',contract_code=self.contract_code,amount=amount,type='master_to_sub')
             pass
         with allure.step("验证：划转失败并提示-可划转余额不足"):

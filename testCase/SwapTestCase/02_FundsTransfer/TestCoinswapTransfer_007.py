@@ -36,7 +36,7 @@ class TestCoinSwapTransfer_007:
     @allure.title('母账户划转到子账号-划转金额大于可转数量')
     def test_execute(self, contract_code):
         with allure.step("操作：执行划转，母 划 子"):
-            amount = float(self.f_account)+1
+            amount = round(float(self.f_account)+1,8)
             result = user01.swap_master_sub_transfer(sub_uid='115395803',contract_code=self.contract_code,amount=amount,type='master_to_sub')
             pass
         with allure.step("验证：划转失败并提示-可划转余额不足"):
