@@ -14,7 +14,7 @@ from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
 from common.redisComm import redisConf
 
 @allure.epic('反向永续')
-@allure.feature('资金划转')
+@allure.feature('02资金划转')
 @allure.story('母子划转')
 @allure.tag('Script owner : 张广南', 'Case owner : 叶永刚')
 @pytest.mark.stable
