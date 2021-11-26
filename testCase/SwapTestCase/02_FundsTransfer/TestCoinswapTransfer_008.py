@@ -40,7 +40,13 @@ class TestCoinSwapTransfer_008:
     def test_execute(self, contract_code):
         with allure.step("操作：执行划转，母 划 子"):
             amount = round(float(self.f_account)+1,8)
-            result = user01.swap_master_sub_transfer(sub_uid='115395803',contract_code=self.contract_code,amount=amount,type='master_to_sub')
+            for i in range(3):
+                result = user01.swap_master_sub_transfer(sub_uid='115395803',contract_code=self.contract_code,amount=amount,type='master_to_sub')
+                if '访问次数超出限制' in result['err_msg']:
+                    print('接口限频，第{}次重试……'.format(i + 1))
+                    time.sleep(1)
+                else:
+                    break
             pass
         with allure.step("验证：划转失败并提示-可划转余额不足"):
             assert 'error' in result['status'] and '可划转余额不足' in result['err_msg']
