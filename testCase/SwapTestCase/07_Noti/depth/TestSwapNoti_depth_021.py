@@ -1,26 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211012
+# @Date    : 20211012
 # @Author : 张广南
-    用例标题
-        WS订阅深度 合约代码大写
-    前置条件
-        
-    步骤/文本
-        参考官方文档
-    预期结果
-        订阅成功，数据正常
-    优先级
-        2
-    用例别名
-        TestSwapNoti_depth_021
-"""
 
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceWS import t as swap_service_ws
-import pytest, allure, random, time
+import time
+import allure
+import pytest
 
-from tool import atp
+from common.SwapServiceWS import user01 as ws_user01
+from common.SwapServiceAPI import user01 as api_user01
+from common.CommonUtils import currentPrice,opponentExist
+from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('行情')  # 这里填功能
@@ -28,47 +18,68 @@ from tool import atp
 @pytest.mark.stable
 @allure.tag('Script owner : 张广南', 'Case owner : 吉龙')
 class TestSwapNoti_depth_021:
+    contract_code = DEFAULT_CONTRACT_CODE
+    symbol = DEFAULT_SYMBOL
+    ids = [
+        'TestSwapNoti_depth_021',
+        'TestSwapNoti_depth_022',
+    ]
+    params = [
+        {'case_name': 'WS订阅深度 合约代码大写)', 'contract_code': contract_code},
+        {'case_name': 'WS订阅深度 合约代码大小写)', 'contract_code': symbol+'-usd'}
+    ]
 
-    @allure.step('前置条件')
-    @pytest.fixture(scope='function', autouse=True)
-    def setup(self, contract_code, lever_rate, offsetO, directionB, directionS):
-        print("\n清盘》》》》", atp.ATP.clean_market())
+    @classmethod
+    def setup_class(cls):
+        with allure.step('实始化变量'):
 
-        lever_rate = 5
+            cls.currentPrice = currentPrice()  # 最新价
+            pass
+        with allure.step('挂单更新深度'):
+            for i in range (2):
+                api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice * (1-0.01*i), 2), direction='buy')
+                api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice * (1+0.01*i), 2), direction='sell')
+            pass
+        with allure.step('查询redis深度更新'):
+            for i in range (5):
+                if opponentExist(symbol=cls.symbol,asks='asks',bids='bids'):
+                    break
+                else:
+                    print('深度未更新,第{}次重试……'.format(i+1))
+                    time.sleep(1)
 
-        # 获取交割合约当前价格
-        sell_price = atp.ATP.get_adjust_price(rate=1.01)
-        buy_price = atp.ATP.get_adjust_price(rate=0.99)
 
-        print('下两单，更新盘口数据')
-        swap_api.swap_order(contract_code=contract_code, price=buy_price, volume='1', direction=directionB,
-                            offset=offsetO, lever_rate=lever_rate, order_price_type='limit')
-        swap_api.swap_order(contract_code=contract_code, price=sell_price, volume='1', direction=directionS,
-                            offset=offsetO, lever_rate=lever_rate, order_price_type='limit')
 
-        # 等待深度信息更新
-        time.sleep(3)
+    @classmethod
+    def teardown_class(cls):
+        with allure.step('恢复环境，撤销挂单'):
+            api_user01.swap_cancelall(contract_code=cls.contract_code)
+            pass
 
-    @allure.title('WS订阅深度 合约代码大写')
-    @allure.step('测试执行')
-    def test_execute(self, contract_code):
-        with allure.step('参考官方文档'):
-            contract_code = contract_code.upper()
-            depth_type = 'step0'
+    @pytest.mark.flaky(reruns=1, reruns_delay=1)
+    @pytest.mark.parametrize('params', params, ids=ids)
+    def test_execute(self, params):
+        allure.dynamic.title(params['case_name'])
+        with allure.step('操作：执行sub订阅'):
             subs = {
-                "sub": "market.{}.depth.{}".format(contract_code, depth_type),
+                "sub": "market.{}.depth.step6".format(params['contract_code']),
                 "id": "id5"
             }
-            result = swap_service_ws.swap_sub(subs)
-            result_str = '\nDepth返回结果 = ' + str(result)
-            print('\033[1;32;49m%s\033[0m' % result_str)
-            assert result['tick']['bids'] is not None
-            assert result['tick']['asks'] is not None
-
-    @allure.step('恢复环境')
-    def teardown(self):
-        atp.ATP.cancel_all_types_order()
-        print('\n恢复环境操作')
+            flag = False
+            # 重试3次未返回预期结果则失败
+            for i in range(1, 4):
+                result = ws_user01.swap_sub(subs)
+                if 'tick' in result:
+                    if result['tick']['asks'] and result['tick']['bids']:
+                        flag = True
+                        break
+                time.sleep(1)
+                print('未返回预期结果，第{}次重试………………………………'.format(i))
+            assert flag, '未返回预期结果'
+            pass
+        with allure.step('验证：返回结果买单卖单不为空'):
+            assert result['tick']['bids']
+            assert result['tick']['asks']
 
 
 if __name__ == '__main__':

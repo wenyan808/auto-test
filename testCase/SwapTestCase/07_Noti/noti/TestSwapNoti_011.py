@@ -1,90 +1,62 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211011
-# @Author : Donglin Han
+# @Date    : 20211011
+# @Author : DongLin Han
 
-所属分组
-    合约测试基线用例//02 反向永续//07 行情
-用例标题
-    请求深度(150档不合并)
-前置条件
-    
-步骤/文本
-    请求深度(150档不合并),可参考文档：https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#websocket-3
-预期结果
-    asks,bids 数据正确,不存在Null,[]
-优先级
-    0
-用例编号
-    TestSwapNoti_011
-自动化作者
-    韩东林
-"""
-import time
-from pprint import pprint
+from common.SwapServiceAPI import user01 as api_user01
+import pytest, allure, random, time
+from common.CommonUtils import currentPrice
+from config.conf import DEFAULT_CONTRACT_CODE
 
-import allure
-import pytest
-
-from common.SwapServiceAPI import t as api
-from tool.atp import ATP
-from tool.common_assert import Assert
-
-
-@allure.epic('反向永续')  # 这里填业务线
-@allure.feature('合约测试基线用例//02 反向永续//07 行情')  # 这里填功能
-@allure.story('请求深度(150档不合并)')  # 这里填子功能，没有的话就把本行注释掉
-@allure.tag('Script owner : Donglin Han', 'Case owner : Panfeng Liu')
+@allure.epic('反向永续')
+@allure.feature('行情')
+@allure.story('请求深度(150档不合并)')
+@allure.tag('Script owner : 韩东林', 'Case owner : 柳攀峰')
 @pytest.mark.stable
 class TestSwapNoti_011:
+    contract_code = DEFAULT_CONTRACT_CODE
+    @classmethod
+    def setup_class(cls):
+        with allure.step('挂盘'):
+            cls.currentPrice = currentPrice()
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice * 0.5, 2),
+                                  direction='buy')
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice * 1.5, 2),
+                                  direction='sell')
+            pass
 
-    @allure.step('前置条件')
-    def setup(self):
-        print(''' cancel all types orders ''')
-        ATP.cancel_all_types_order()
-        time.sleep(1)
-        self.current_price = ATP.get_current_price()
-        print(''' make market depth ''')
-        ATP.make_market_depth()
-        sell_price = ATP.get_adjust_price(1.02)
-        buy_price = ATP.get_adjust_price(0.98)
-        ATP.common_user_make_order(price=sell_price, direction='sell')
-        ATP.common_user_make_order(price=buy_price, direction='buy')
-        time.sleep(2)
+    @classmethod
+    def teardown_class(cls):
+        with allure.step('撤盘'):
+            time.sleep(1)
+            api_user01.swap_cancelall(contract_code=cls.contract_code)
+            pass
 
     @allure.title('请求深度(150档不合并)')
-    @allure.step('测试执行')
-    def test_execute(self, contract_code):
-        with allure.step('请求深度(150档不合并),可参考文档：https://docs.huobigroup.com/docs/usdt_swap/v1/cn/#0737c93bf7'):
-            # asks,bids 数据正确,不存在Null,[]
-            res = api.swap_depth(contract_code=contract_code, type='step0')
-            print('深度(150档不合并) response : ')
-            pprint(res)
-            tick = Assert.base_check_response(res, 'tick')
-            check_keys = ['asks', 'bids', 'ch', 'id', 'mrid', 'ts', 'version']
-            assert isinstance(tick, dict) and set(check_keys) == set(tick.keys()), 'response 中 tick 缺少字段'
+    @pytest.mark.flaky(reruns=3, reruns_delay=1)
+    def test_execute(self):
+        with allure.step('操作：执行api-restful请求'):
+            flag = False
+            # 重试3次未返回预期结果则失败
+            for i in range(1, 4):
+                result = api_user01.swap_depth(contract_code=self.contract_code, type='step6')
+                if 'tick' in result:
+                    if result['tick']['asks'] and result['tick']['bids']:
+                        flag = True
+                        break
+                time.sleep(1)
+                print('未返回预期结果，第{}次重试………………………………'.format(i))
+            assert flag, '未返回预期结果'
 
-            ch = tick.get('ch', '')
-            assert ch == f'market.{contract_code.upper()}.depth.step0', 'ch 不正确'
+            pass
+        with allure.step('验证：返回结果asks字段不为空'):
+            assert result['tick']['asks']
+            pass
+        with allure.step('验证：返回结果bids字段不为空'):
+            assert result['tick']['bids']
+            pass
 
-            asks = tick.get('asks', [])
-            bids = tick.get('bids', [])
-            mrid = tick.get('mrid', -1)
-            assert isinstance(asks, list) and len(asks) == 2, 'asks 不正确'
-            for ask in asks:
-                assert isinstance(ask, list) and len(ask) == 2 and ask[0] > 0 and ask[1] == 10 and ask[
-                    0] > self.current_price, 'ask 价格 或 数量 错误'
 
-            assert isinstance(bids, list) and len(bids) == 2, 'bids 不正确'
-            for bid in bids:
-                assert isinstance(bid, list) and len(bid) == 2 and bid[0] > 0 and bid[1] == 10 and bid[
-                    0] < self.current_price, 'bid 价格 或 数量 错误'
-
-            assert isinstance(mrid, int) and mrid >= 0, '获取bbo mrid 错误'
-
-    @allure.step('恢复环境')
-    def teardown(self):
-        print('\n恢复环境操作')
 
 
 if __name__ == '__main__':

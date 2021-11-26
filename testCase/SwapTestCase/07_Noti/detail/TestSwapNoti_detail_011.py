@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 2021/11/15 2:31 下午
-# @Author  : yuhuiqing
-from tool.atp import ATP
+# @Author  : HuiQing Yu
+
 import pytest, allure, random, time
 from common.SwapServiceWS import user01 as ws_user01
-from common.SwapServiceAPI import user01 as api_user01
 from config.conf import DEFAULT_CONTRACT_CODE
-from common.CommonUtils import retryUtil
 
 @allure.epic('反向永续')
 @allure.feature('行情')
 @allure.story('深度图&Overview')
-@allure.tag('Script owner : 余辉青', 'Case owner : ')
+@allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.stable
 class TestSwapNoti_detail_011:
     contract_code = DEFAULT_CONTRACT_CODE
@@ -48,3 +46,6 @@ class TestSwapNoti_detail_011:
         with allure.step('验证：返回结果提示为 invalid topic'):
             assert 'invalid topic' in result['err-msg']
             pass
+
+if __name__ == '__main__':
+    pytest.main()

@@ -1,20 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211013
-# @Author : 
-    用例标题
-        WS订阅K线(req) 合约代码大写
-    前置条件
-        
-    步骤/文本
-        详见官方文档
-    预期结果
-        
-    优先级
-        2
-    用例别名
-        TestSwapNoti_ws_kline_144
-"""
+# @Date    : 20211013
+# @Author : HuiQing Yu
 
 from common.SwapServiceWS import user01 as ws_user01
 import pytest, allure, random, time

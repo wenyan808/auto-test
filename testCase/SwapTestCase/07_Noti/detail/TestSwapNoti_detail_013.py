@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 2021/11/15 2:26 下午
-# @Author  : yuhuiqing
-from tool.atp import ATP
+# @Author  : HuiQing Yu
+
 import pytest, allure, random, time
 from common.SwapServiceWS import user01 as ws_user01
 from config.conf import DEFAULT_CONTRACT_CODE
-from common.CommonUtils import retryUtil
 
 @allure.epic('反向永续')
 @allure.feature('行情')
@@ -38,10 +37,23 @@ class TestSwapNoti_detail_013:
                 "sub": "market.overview",
                 "zip": 1
             }
-            result = retryUtil(ws_user01.swap_sub, subs, 'data')
+            flag = False
+            # 重试3次未返回预期结果则失败
+            for i in range(1, 4):
+                result = ws_user01.swap_sub(subs)
+                if 'data' in result:
+                    flag = True
+                    break
+                time.sleep(1)
+                print('未返回预期结果，第{}次重试………………………………'.format(i))
+            assert flag, '未返回预期结果'
+            pass
             pass
         with allure.step('验证：返回结果各字段不为空'):
             checked_col = ['amount', 'symbol', 'close', 'count', 'high', 'low', 'open', 'vol']
             for data in result['data']:
                 for col in checked_col:
                     assert data[col] is not None, str(col) + '为None,不符合预期'
+
+if __name__ == '__main__':
+    pytest.main()
