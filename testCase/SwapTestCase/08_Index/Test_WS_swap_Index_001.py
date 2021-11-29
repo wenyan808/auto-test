@@ -39,7 +39,7 @@ class Test_WS_swap_Index_001:
         with allure.step(''):
             pass
 
-    @pytest.mark.skip('因环境问题跳过')
+    # @pytest.mark.skip('因环境问题跳过')
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title('指数基差(sub) ' + params['case_name'])
