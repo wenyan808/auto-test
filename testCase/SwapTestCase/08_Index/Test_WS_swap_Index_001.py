@@ -14,6 +14,7 @@ from config.case_content import epic, features
 @allure.feature(features[7])
 @allure.story(features[7]['story'][0])
 @allure.tag('Script owner : 陈维', 'Case owner : 吉龙')
+@pytest.mark.P0
 class Test_WS_swap_Index_001:
     ids = ['Test_WS_swap_Index_001',
            'Test_WS_swap_Index_002',
@@ -25,7 +26,7 @@ class Test_WS_swap_Index_001:
               {'case_name':'WS订阅预测资金费率K线数据','type':'estimated_rate','period':'1min'},
               {'case_name':'WS订阅基差数据','type':'basis','period':'1min.open'},
               {'case_name':'WS订阅标记价格K线数据','type':'mark_price','period':'1min'}]
-
+    isSkip = True
 
     @classmethod
     def setup_class(cls):
@@ -40,6 +41,7 @@ class Test_WS_swap_Index_001:
 
 
     @pytest.mark.parametrize('params', params, ids=ids)
+    @pytest.mark.skipif(condition=isSkip,reason="环境问题跳过")
     def test_execute(self, params):
         allure.dynamic.title('指数基差(sub) ' + params['case_name'])
         with allure.step('操作：执行sub请求'):
