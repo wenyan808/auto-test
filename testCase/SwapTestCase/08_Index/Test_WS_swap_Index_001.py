@@ -14,7 +14,6 @@ from config.case_content import epic, features
 @allure.feature(features[7])
 @allure.story(features[7]['story'][0])
 @allure.tag('Script owner : 陈维', 'Case owner : 吉龙')
-@pytest.mark.stable
 class Test_WS_swap_Index_001:
     ids = ['Test_WS_swap_Index_001',
            'Test_WS_swap_Index_002',

@@ -18,7 +18,6 @@ from config.conf import DEFAULT_CONTRACT_CODE
 @allure.feature(features[7])
 @allure.story(features[7]['story'][0])
 @allure.tag('Script owner : 余辉青', 'Case owner : ')
-@pytest.mark.stable
 class TestSwapExIndex_basis_001:
     ids = ['TestSwapExIndex_basis_001']
     params = [{'case_name':'查询基差1min K线','period':'1min'}]
