@@ -22,6 +22,7 @@
 import allure
 import common.util
 import pytest
+from schema import Schema, Or
 from common.ContractServiceAPI import t as contract_api
 
 
@@ -45,9 +46,18 @@ class TestApiSchema_002:
         with allure.step('2、接口返回的json格式、字段名、字段值正确'):
             res = contract_api.contract_index(symbol='BTC')
             print(res)
-            assert res['status'] == 'ok'
-            assert common.util.compare_dictkey(
-                ["symbol", "index_price", "index_ts"], res.data[0])
+            schema = {
+                "status": "ok",
+                "data": [
+                    {
+                        "symbol": "BTC",
+                        "index_price": Or(float, int),
+                        "index_ts": int
+                    }
+                ],
+                "ts": int
+            }
+            Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):

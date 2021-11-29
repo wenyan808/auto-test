@@ -11,7 +11,7 @@
 前置条件
 
 步骤/文本
-    1.调用接口：api/v1/contract_estimated_settlement_price
+    1.调用接口：/api/v1/contract_api_state
 预期结果
     A)接口返回的json格式、字段名、字段值正确
 优先级
@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -43,7 +44,7 @@ class TestApiSchema_016:
     @allure.title('查询系统状态')
     @allure.step('测试执行')
     def test_execute(self):
-        with allure.step('1、调用接口：api/v1/contract_estimated_settlement_price'):
+        with allure.step('1、调用接口：/api/v1/contract_api_state'):
             pass
         with allure.step('2、接口返回的json格式、字段名、字段值正确'):
             # 构造持仓量
@@ -55,9 +56,24 @@ class TestApiSchema_016:
             res = contract_api.contract_api_state(
                 symbol='BTC')
             print(res)
-            assert res['status'] == 'ok'
-            assert common.util.compare_dictkey(
-                ["symbol", "open", "close", "cancel", "transfer_in", "transfer_out", "master_transfer_sub", "sub_transfer_master"], res.data[0])
+            if res["status"] != 'error':
+                schema = {
+                    "status": "ok",
+                    "data": [
+                        {
+                            "symbol": str,
+                            "open": int,
+                            "close": int,
+                            "cancel": int,
+                            "transfer_in": int,
+                            "transfer_out": int,
+                            "master_transfer_sub": int,
+                            "sub_transfer_master": int
+                        }
+                    ],
+                    "ts": int
+                }
+                Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):

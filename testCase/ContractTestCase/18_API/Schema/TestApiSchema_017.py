@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -55,9 +56,28 @@ class TestApiSchema_017:
             res = contract_api.contract_account_info(
                 symbol='BTC')
             print(res)
-            assert res['status'] == 'ok'
-            assert common.util.compare_dictkey(
-                ["symbol", "margin_balance", "margin_position", "margin_frozen", "margin_available", "profit_real", "profit_unreal", "risk_rate", "withdraw_available", "liquidation_price", "lever_rate", "adjust_factor", "margin_static"], res.data[0])
+            if res["status"] != 'error':
+                schema = {'status': 'ok',
+                          'data': [
+                              {'symbol': 'BTC',
+                               'margin_balance': Or(float, int),
+                               'margin_position': Or(float, int),
+                               'margin_frozen': Or(float, int),
+                               'margin_available': Or(float, int),
+                               'profit_real': Or(float, int),
+                               'profit_unreal': Or(float, int),
+                               'risk_rate': Or(float, int),
+                               'withdraw_available': Or(float, int),
+                               'liquidation_price': Or(float, int),
+                               'lever_rate': Or(float, int),
+                               'adjust_factor': Or(float, int),
+                               'margin_static': Or(float, int),
+                               'is_debit': Or(float, int),
+                               'transfer_profit_ratio': Or(float, int, None)
+                               }],
+                          'ts': int
+                          }
+                Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):

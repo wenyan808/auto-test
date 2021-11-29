@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -55,7 +56,22 @@ class TestApiSchema_019:
             res = contract_api.contract_sub_auth(
                 sub_uid=sub_uid, sub_auth=1)
             print(res)
-            assert res['status'] == 'ok'
+            if res["status"] != 'error':
+                schema = {
+                    "status": "ok",
+                    "data": {
+                        "errors": [
+                            {
+                                "sub_uid": str,
+                                "err_code": int,
+                                "err_msg": "Account doesnt exist."
+                            }
+                        ],
+                        "successes": str
+                    },
+                    "ts": int
+                }
+                Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):

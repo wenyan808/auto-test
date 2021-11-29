@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -52,12 +53,34 @@ class TestApiSchema_018:
                 symbol="BTC", contract_type="this_week", price=price, volume=1, direction="buy", offset="open")
             contract_api.contract_order(
                 symbol="BTC", contract_type="this_week", price=price, volume=1, direction="sell", offset="open")
-            res = contract_api.contract_account_info(
+            res = contract_api.contract_position_info(
                 symbol='BTC')
             print(res)
-            assert res['status'] == 'ok'
-            assert common.util.compare_dictkey(
-                ["symbol", "contract_code", "contract_type", "volume", "available", "frozen", "cost_open", "cost_hold", "profit_unreal", "profit_rate", "lever_rate", "position_margin", "direction", "profit", "last_price"], res.data[0])
+            if res["status"] != 'error':
+                schema = {
+                    "status": "ok",
+                    "data": [
+                        {
+                            "symbol": "BTC",
+                            "contract_code": str,
+                            "contract_type": str,
+                            "volume": Or(float, int),
+                            "available": Or(float, int),
+                            "frozen": Or(float, int),
+                            "cost_open": Or(float, int),
+                            "cost_hold": Or(float, int),
+                            "profit_unreal": Or(float, int),
+                            "profit_rate": Or(float, int),
+                            "lever_rate": Or(float, int),
+                            "position_margin": Or(float, int),
+                            "direction": str,
+                            "profit": Or(float, int),
+                            "last_price": Or(float, int),
+                        }
+                    ],
+                    "ts": int
+                }
+                Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):

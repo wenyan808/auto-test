@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -54,13 +55,31 @@ class TestApiSchema_014:
                 symbol="BTC", contract_type="this_week", price=price, volume=1, direction="sell", offset="open")
             res = contract_api.contract_settlement_records(symbol='BTC')
             print(res)
-            assert res['status'] == 'ok'
-            assert common.util.compare_dictkey(
-                ["total_page", "current_page", "total_size", "settlement_record"], res.data)
-            assert common.util.compare_dictkey(
-                ["symbol", "settlement_time", "clawback_ratio", "list"], res.data.settlement_record[0])
-            assert common.util.compare_dictkey(
-                ["contract_code", "settlement_price", "settlement_type"], res.data.settlement_record[0].list[0])
+            if res["status"] != 'error':
+                schema = {
+                    "status": "ok",
+                    "data": {
+                        "total_page": int,
+                        "current_page": int,
+                        "total_size": int,
+                        "settlement_record": [
+                            {
+                                "symbol": "BTC",
+                                "settlement_time": int,
+                                "clawback_ratio": Or(float, int),
+                                "list": [
+                                    {
+                                        "contract_code": str,
+                                        "settlement_price": Or(float, int),
+                                        "settlement_type": str
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "ts": int
+                }
+                Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):

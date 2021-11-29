@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -47,21 +48,53 @@ class TestApiSchema_026:
             pass
         with allure.step('2、接口返回的json格式、字段名、字段值正确'):
             # 构造持仓量
-            price = ATP.get_current_price()
+            price = ATP.get_current_price(contract_code="BTC")
             common_contract_api.contract_order(
                 symbol="BTC", contract_type="this_week", price=price, volume=1, direction="buy", offset="open")
             contract_api.contract_order(
                 symbol="BTC", contract_type="this_week", price=price, volume=1, direction="sell", offset="open")
             res = contract_api.contract_user_settlement_records(
-                symbol="BTC", size=10)
+                symbol="BTC")
             print(res)
-            assert res['status'] == 'ok'
-            assert common.util.compare_dictkey(
-                ["total_page", "current_page", "total_size", "settlement_records"], res.data)
-            assert common.util.compare_dictkey(
-                ["symbol", "margin_balance_init", "margin_balance", "settlement_profit_real", "settlement_time", "clawback", "delivery_fee", "offset_profitloss", "fee", "fee_asset", "positions"], res.data.settlement_records)
-            assert common.util.compare_dictkey(
-                ["symbol", "contract_code", "direction", "volume", "cost_open", "cost_hold_pre", "cost_hold", "settlement_profit_unreal", "settlement_price", "settlement_type"], res.data.settlement_records[0].positions[0])
+            if res["status"] != "error":
+                schema = {
+                    "status": "ok",
+                    "data": {
+                        "total_page": int,
+                        "current_page": int,
+                        "total_size": int,
+                        "settlement_records": [
+                            {
+                                "symbol": str,
+                                "margin_balance_init": Or(float, int, None),
+                                "margin_balance": Or(float, int, None),
+                                "settlement_profit_real": Or(float, int, None),
+                                "settlement_time": int,
+                                "clawback": Or(float, int, None),
+                                "delivery_fee": Or(float, int, None),
+                                "offset_profitloss": Or(float, int, None),
+                                "fee": Or(float, int, None),
+                                "fee_asset": str,
+                                "positions": [
+                                    {
+                                        "symbol": str,
+                                        "contract_code": str,
+                                        "direction": str,
+                                        "volume": Or(float, int, None),
+                                        "cost_open": Or(float, int, None),
+                                        "cost_hold_pre": Or(float, int, None),
+                                        "cost_hold": Or(float, int, None),
+                                        "settlement_profit_unreal": Or(float, int, None),
+                                        "settlement_price": Or(float, int, None),
+                                        "settlement_type": str
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "ts": int
+                }
+                Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):

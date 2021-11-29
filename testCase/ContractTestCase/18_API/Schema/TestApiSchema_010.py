@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -54,14 +55,32 @@ class TestApiSchema_010:
                 symbol="BTC", contract_type="this_week", price=price, volume=1, direction="sell", offset="open")
             res = contract_api.contract_ladder_margin(symbol='BTC')
             print(res)
-            assert res['status'] == 'ok'
-            assert common.util.compare_dictkey(["symbol", "list"], res.data[0])
-            assert common.util.compare_dictkey(
-                ["lever_rate", "ladders"], res.data[0].list[0])
-            assert common.util.compare_dictkey(
-                ["min_margin_balance", "max_margin_balance", "min_margin_available", "max_margin_available"], res.data[0].list[0].ladders[0])
+            if res["status"] != 'error':
+                schema = {
+                    "status": "ok",
+                    "data": [
+                        {
+                            "symbol": "BTC",
+                            "list": [
+                                {
+                                    "lever_rate": int,
+                                    "ladders": [
+                                        {
+                                            "min_margin_balance": Or(float, int, None),
+                                            "max_margin_balance": Or(float, int, None),
+                                            "min_margin_available": Or(float, int, None),
+                                            "max_margin_available": Or(float, int, None)
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "ts": int
+                }
+                Schema(schema).validate(res)
 
-    @allure.step('恢复环境')
+    @ allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
         print(ATP.clean_market())

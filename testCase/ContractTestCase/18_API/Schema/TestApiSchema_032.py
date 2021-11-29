@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -55,8 +56,15 @@ class TestApiSchema_032:
             res = contract_api.contract_master_sub_transfer(
                 sub_uid=sub_uid, symbol="BTC", amount=1, type="master_to_sub")
             print(res)
-            assert res['status'] == 'ok'
-            assert common.util.compare_dictkey(["order_id"], res.data)
+            if res["status"] != "error":
+                schema = {
+                    "status": "ok",
+                    "data": {
+                        "order_id": str
+                    },
+                    "ts": int
+                }
+                Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):
