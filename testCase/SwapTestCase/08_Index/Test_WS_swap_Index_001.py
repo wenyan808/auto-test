@@ -10,9 +10,12 @@ from common.SwapServiceWS import user01 as ws_user01
 from config.conf import DEFAULT_CONTRACT_CODE
 from config.case_content import epic, features
 
-@allure.epic(epic[1])
-@allure.feature(features[7])
-@allure.story(features[7]['story'][0])
+# @allure.epic(epic[1])
+# @allure.feature(features[7])
+# @allure.story(features[7]['story'][0])
+@allure.epic('反向永续')  # 这里填业务线
+@allure.feature('撮合')  # 这里填功能
+@allure.story('开多')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : 陈维', 'Case owner : 吉龙')
 @pytest.mark.P0
 class Test_WS_swap_Index_001:
