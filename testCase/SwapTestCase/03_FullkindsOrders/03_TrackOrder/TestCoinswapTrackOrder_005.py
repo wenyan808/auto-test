@@ -1,110 +1,74 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# @Date    : 2020/7/1
-# @Author  : zhangranghan
+# @Date    : 20210916
+# @Author : 余辉青
 
 
-from common.SwapServiceAPI import t as swap_api
-from common.ContractServiceOrder import t as contranct_order
+import allure
+import pytest
+import time
 
-from schema import Schema, And, Or, Regex, SchemaError
-from pprint import pprint
-import pytest, allure, random, time
-
-from tool.atp import ATP
-from tool.get_test_data import case_data
+from common.SwapServiceAPI import user01,user02
+from config.case_content import epic, features
+from common.CommonUtils import currentPrice
+from config.conf import DEFAULT_CONTRACT_CODE
 
 
-@allure.epic('反向永续')
-@allure.feature('获取用户的合约账户和持仓信息')
+@allure.epic(epic[1])
+@allure.feature(features[2]['feature'])
+@allure.story(features[2]['story'][3])
 @pytest.mark.stable
 @allure.tag('Script owner : 张广南', 'Case owner : 封泰')
 class TestCoinswapTrackOrder_005:
+    ids = ["TestCoinswapTrackOrder_005",
+           ]
+    params = [
+        {
+            "case_name": "跟踪委托单-买入开多-委托单因资金不足委托失败测试",
+            "direction": "buy",
+            "ratio":0.95,
+            "order_price_type": "formula_price",
+            "trade_type":1
+        }
+    ]
 
-    def setup(self):
-        print('\n前置条件')
-        ATP.close_all_position()
-        ATP.clean_market()
+    @classmethod
+    def setup_class(cls):
+        with allure.step("变量初始化"):
+            cls.contract_code = DEFAULT_CONTRACT_CODE
+            cls.latest_price = currentPrice()
+            pass
 
+    @classmethod
+    def teardown_class(cls):
+        with allure.step('撤销挂单'):
+            user01.swap_track_cancelall(contract_code=cls.contract_code)  # 避免用例失败未能撤销订单
+            pass
 
-    def test_contract_account_position_info(self, contract_code):
-        flag = True
-
-        print('\n步骤一:获取最近价\n')
-        r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
-        pprint(r)
-        price = r['data'][0]['data'][0]['price']
-        activationprice = round((price * 0.98), 2)
-        callbackrate = 0.05
-        triggerprice = round((activationprice * (1.01 + callbackrate)), 2)
-
-        print('\n步骤二:按激活价下单\n')
-
-        r = swap_api.swap_track_order(contract_code=contract_code,
-                                      direction='buy',
-                                      offset='open',
-                                      lever_rate='5',
-                                      volume='40000000000000',
-                                      callback_rate=callbackrate,
-                                      active_price=str(activationprice),
-                                      order_price_type='formula_price')
-        pprint(r)
-        time.sleep(0.5)
-        orderid = r['data']['order_id']
-        print('\n步骤三:查询跟踪委托当前委托状态为未激活\n')
-
-        r = swap_api.swap_track_openorders(contract_code=contract_code)
-        pprint(r)
-
-        actual_activestate = r['data']['orders'][0]['is_active']
-        actual_orderid = r['data']['orders'][0]['order_id']
-
-        if (actual_activestate != 0) or (actual_orderid != orderid):
-            print("查询跟踪委托当前委托不符合预期")
-            print("实际状态为：%s, 实际单号为%s" % (actual_activestate, actual_orderid))
-            print("预期状态为：%s, 预期单号为%s" % (0, orderid))
-            flag = False
-
-        print('\n步骤四:控制现价到激活价格\n')
-
-        swap_api.swap_control_price(contract_code=contract_code, price=activationprice, lever_rate='5')
-
-        print('\n步骤五:查询跟踪委托当前委托状态为已激活\n')
-
-        r = swap_api.swap_track_openorders(contract_code=contract_code)
-        pprint(r)
-
-        actual_activestate2 = r['data']['orders'][0]['is_active']
-        actual_orderid2 = r['data']['orders'][0]['order_id']
-
-        if (actual_activestate2 != 1) or (actual_orderid2 != orderid):
-            print("查询跟踪委托当前委托不符合预期")
-            print("实际状态为：%s, 实际单号为%s" % (actual_activestate2, actual_orderid2))
-            print("预期状态为：%s, 预期单号为%s" % (1, orderid))
-            flag = False
-
-        print('\n步骤六:控制现价到触发价格\n')
-
-        swap_api.swap_control_price(contract_code=contract_code, price=triggerprice, lever_rate='5')
-
-        time.sleep(0.5)
-
-        print('\n步骤七: 查询跟踪委托历史委托\n')
-
-        r = swap_api.swap_track_hisorders(contract_code=contract_code, status='0', trade_type='0', create_date='1')
-        pprint(r['data']['orders'][0])
-
-        status3 = r['data']['orders'][0]['status']
-        actual_orderid3 = r['data']['orders'][0]['order_id']
-        failreason3 = r['data']['orders'][0]['fail_reason']
-
-        if (status3 != 5) or (actual_orderid3 != orderid) or (failreason3 != '可用担保资产不足'):
-            print("查询跟踪委托历史委托不符合预期")
-            print("实际订单状态：%s, 实际单号为%s, 实际失败原因为%s" % (status3, actual_orderid3, failreason3))
-            print("预期订单状态：5 ，4:已委托、5:委托失败 , 预期单号为%s, 预期失败原因：可用担保资产不足" % orderid)
-            flag = False
-
-        assert flag == True
+    @pytest.mark.parametrize('params', params, ids=ids)
+    @pytest.mark.skip("委托环境问题转时跳过")
+    def test_execute(self, params):
+        allure.dynamic.title(params['case_name'])
+        with allure.step('操作：下跟踪委托单'):
+            active_price = round(self.latest_price*params['ratio'],2)
+            track_order = user01.swap_track_order(contract_code=self.contract_code, volume=1, offset='open',
+                                                  lever_rate=5, callback_rate=0.01,
+                                                  active_price=active_price,
+                                                  order_price_type=params['order_price_type'],
+                                                  direction=params['direction'])
+            order_id = track_order['data']['order_id_str']
+            time.sleep(1)#等待数据刷新入库
+            pass
+        with allure.step('操作：成交操作刷新最新价，使跟踪委托单激活'):
+            user02.swap_order(contract_code=self.contract_code,price=active_price,direction='buy')
+            user02.swap_order(contract_code=self.contract_code,price=active_price,direction='sell')
+            pass
+        with allure.step("操作：通过母子划转将钱划到子账号，致使金额不足"):
+            pass
+        with allure.step("操作：使委托下单"):
+            pass
+        with allure.step("验证：因金额不足委托失败"):
+            pass
 
 
 if __name__ == '__main__':

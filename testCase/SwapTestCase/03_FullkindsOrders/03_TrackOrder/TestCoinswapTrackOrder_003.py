@@ -1,136 +1,81 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# @Date    : 2020/7/1
-# @Author  : zhangranghan
+# @Date    : 20210916
+# @Author : 余辉青
 
 
-from common.SwapServiceAPI import t as swap_api
-from common.ContractServiceOrder import t as contranct_order
+import allure
+import pytest
+import time
 
-from schema import Schema, And, Or, Regex, SchemaError
-from pprint import pprint
-import pytest, allure, random, time
-
-from tool.atp import ATP
-from tool.get_test_data import case_data
+from common.SwapServiceAPI import user01,user02
+from config.case_content import epic, features
+from common.CommonUtils import currentPrice
+from config.conf import DEFAULT_CONTRACT_CODE
 
 
-@allure.epic('反向永续')
-@allure.feature('获取用户的合约账户和持仓信息')
+@allure.epic(epic[1])
+@allure.feature(features[2]['feature'])
+@allure.story(features[2]['story'][3])
 @pytest.mark.stable
 @allure.tag('Script owner : 张广南', 'Case owner : 封泰')
 class TestCoinswapTrackOrder_003:
+    ids = ["TestCoinswapTrackOrder_003",
+           ]
+    params = [
+        {
+            "case_name": "跟踪委托单-买入开多-委托激活和触发测试",
+            "direction": "buy",
+            "ratio":0.95,
+            "order_price_type": "formula_price",
+            "trade_type":1
+        }
+    ]
 
-    def setup(self):
-        print('\n前置条件')
-        ATP.close_all_position()
-        ATP.clean_market()
+    @classmethod
+    def setup_class(cls):
+        with allure.step("变量初始化"):
+            cls.contract_code = DEFAULT_CONTRACT_CODE
+            cls.latest_price = currentPrice()
+            pass
 
-    def test_contract_account_position_info(self, contract_code):
-        flag = True
+    @classmethod
+    def teardown_class(cls):
+        with allure.step('撤销挂单'):
+            user01.swap_track_cancelall(contract_code=cls.contract_code)  # 避免用例失败未能撤销订单
+            pass
 
-        print('\n步骤一:获取最近价\n')
-        r = swap_api.swap_history_trade(contract_code=contract_code, size='1')
-        pprint(r)
-        price = r['data'][0]['data'][0]['price']
-        activationprice = round((price * 0.98), 2)
-        callbackrate = 0.05
-        triggerprice = round((activationprice * (1.01+callbackrate)), 2)
-
-        print('\n步骤二:按激活价下单\n')
-
-        r = swap_api.swap_track_order(contract_code=contract_code,
-                                          direction='buy',
-                                          offset='open',
-                                          lever_rate='5',
-                                          volume='1',
-                                          callback_rate=callbackrate,
-                                          active_price=str(activationprice),
-                                          order_price_type='formula_price')
-        pprint(r)
-        time.sleep(0.5)
-        orderid = r['data']['order_id']
-        print('\n步骤三:查询跟踪委托当前委托状态为未激活\n')
-
-        r = swap_api.swap_track_openorders(contract_code=contract_code)
-        pprint(r)
-
-        actual_activestate = r['data']['orders'][0]['is_active']
-        actual_orderid = r['data']['orders'][0]['order_id']
-
-        if (actual_activestate != 0) or (actual_orderid != orderid):
-            print("查询跟踪委托当前委托不符合预期")
-            print("实际状态为：%s, 实际单号为%s" % (actual_activestate, actual_orderid))
-            print("预期状态为：%s, 预期单号为%s" % (0, orderid))
+    @pytest.mark.parametrize('params', params, ids=ids)
+    @pytest.mark.skip("委托环境问题转时跳过")
+    def test_execute(self, params):
+        allure.dynamic.title(params['case_name'])
+        with allure.step('操作：下跟踪委托单'):
+            active_price = round(self.latest_price*params['ratio'],2)
+            track_order = user01.swap_track_order(contract_code=self.contract_code, volume=1, offset='open',
+                                                  lever_rate=5, callback_rate=0.01,
+                                                  active_price=active_price,
+                                                  order_price_type=params['order_price_type'],
+                                                  direction=params['direction'])
+            order_id = track_order['data']['order_id_str']
+            time.sleep(1)#等待数据刷新入库
+            pass
+        with allure.step('操作：成交操作刷新最新价，使跟踪委托单激活'):
+            user02.swap_order(contract_code=self.contract_code,price=active_price,direction='buy')
+            user02.swap_order(contract_code=self.contract_code,price=active_price,direction='sell')
+            pass
+        with allure.step("验证：委托单被激活"):
+            time.sleep(1)#等待数据更新
+            cur_list_order = user01.swap_track_openorders(contract_code=self.contract_code,trade_type=params['trade_type'],page_index=1,page_size=3)
             flag = False
+            for order in cur_list_order['data']['orders']:
+                if order_id in order['order_id_str']:
+                    assert order['is_active'] == 1,'未被激活'
+                    flag = True
+                    break
+            assert flag,'未存在当前委托列表'
 
-        print('\n步骤四:控制现价到激活价格\n')
+            pass
 
-        swap_api.swap_control_price(contract_code=contract_code, price=activationprice, lever_rate='5')
-
-        print('\n步骤五:查询跟踪委托当前委托状态为已激活\n')
-
-        r = swap_api.swap_track_openorders(contract_code=contract_code)
-        pprint(r)
-
-        actual_activestate2 = r['data']['orders'][0]['is_active']
-        actual_orderid2 = r['data']['orders'][0]['order_id']
-
-        if (actual_activestate2 != 1) or (actual_orderid2 != orderid):
-            print("查询跟踪委托当前委托不符合预期")
-            print("实际状态为：%s, 实际单号为%s" % (actual_activestate2, actual_orderid2))
-            print("预期状态为：%s, 预期单号为%s" % (1, orderid))
-            flag = False
-
-
-        print('\n步骤六:控制现价到触发价格\n')
-
-        swap_api.swap_control_price(contract_code=contract_code, price=triggerprice, lever_rate='5')
-
-        time.sleep(4)
-
-        print('\n步骤七:查询当前未成交委托\n')
-
-        r = swap_api.swap_openorders(contract_code=contract_code, page_index='', page_size='')
-        pprint(r)
-
-        ordersource = r['data']['orders'][0]['order_source']
-        limitorderid = r['data']['orders'][0]['order_id_str']
-
-        if ordersource != 'track':
-            print("订单来源不符合预期")
-            print("实际状态为：%s" %ordersource)
-            print("预期状态为：track")
-            flag = False
-
-        print('\n步骤八: 查询跟踪委托历史委托\n')
-
-        r = swap_api.swap_track_hisorders(contract_code=contract_code, status='0', trade_type='0', create_date='1')
-        pprint(r['data']['orders'][0])
-
-        status3 = r['data']['orders'][0]['status']
-        actual_orderid3 = r['data']['orders'][0]['order_id']
-        relationorderid = r['data']['orders'][0]['relation_order_id']
-
-        if (status3 != 4) or (actual_orderid3 != orderid):
-            print("查询跟踪委托历史委托不符合预期")
-            print("预期订单类型：%s, 实际单号为%s" % (status3, actual_orderid3))
-            print("预期订单类型：4 ，4:已委托、5:委托失败 , 预期单号为%s" % orderid)
-            flag = False
-        time.sleep(0.5)
-        if relationorderid != limitorderid:
-            print('限价单ID为', limitorderid)
-            print('历史委托中的关联限价单ID为', relationorderid)
-            print("历史委托中的关联限价单ID和当前存在的限价单ID不一致")
-            flag = False
-
-        print('\n恢复环境:撤单\n')
-
-        r = swap_api.swap_cancel(contract_code=contract_code, order_id=limitorderid)
-        pprint(r)
-
-
-        assert flag == True
 
 if __name__ == '__main__':
     pytest.main()
