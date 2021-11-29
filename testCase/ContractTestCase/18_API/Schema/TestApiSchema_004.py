@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -55,9 +56,24 @@ class TestApiSchema_004:
             res = contract_api.contract_open_interest(
                 symbol='BTC', contract_type="this_week")
             print(res)
-            assert res['status'] == 'ok'
-            assert common.util.compare_dictkey(
-                ["volume", "amount", "symbol", "contract_type", "contract_code", "trade_amount", "trade_volume", "trade_turnover"], res.data[0])
+            if res["status"] != 'error':
+                schema = {
+                    "status": "ok",
+                    "data": [
+                        {
+                            "volume": int,
+                            "amount": Or(float, int),
+                            "symbol": "BTC",
+                            "contract_type": "this_week",
+                            "contract_code": str,
+                            "trade_amount": Or(float, int),
+                            "trade_volume": int,
+                            "trade_turnover": int
+                        }
+                    ],
+                    "ts": int
+                }
+                Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):

@@ -20,8 +20,9 @@
 
 
 import allure
-import common.util
+from attr import validate
 import pytest
+from schema import Schema, Or
 from common.ContractServiceAPI import t as contract_api
 
 
@@ -46,9 +47,21 @@ class TestApiSchema_003:
             res = contract_api.contract_price_limit(
                 symbol='BTC', contract_type="this_week")
             print(res)
-            assert res['status'] == 'ok'
-            assert common.util.compare_dictkey(
-                ["symbol", "index_price", "contract_type", "high_limit", "low_limit"], res.data[0])
+
+            schema = {
+                "status": "ok",
+                "data": [
+                    {
+                        "symbol": "BTC",
+                        "contract_code": str,
+                        "contract_type": str,
+                        "high_limit": float,
+                        "low_limit": Or(float, int)
+                    }
+                ],
+                "ts": int
+            }
+            Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):
