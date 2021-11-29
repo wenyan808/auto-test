@@ -21,6 +21,8 @@ TIMEOUT = 15
 
 # 各种请求,获取数据方式
 def api_http_get(url, params, add_to_headers=None):
+    requestInfo = '\n请求地址='+url+'\n请求参数 = '+str(params)
+    print('\033[1;32;49m%s\033[0m' % requestInfo)
     headers = {
         "Content-type": "application/x-www-form-urlencoded",
         "Accept-language": "zh-CN",
@@ -31,8 +33,9 @@ def api_http_get(url, params, add_to_headers=None):
     postdata = urllib.parse.urlencode(params)
 
     try:
-        response = requests.get(
-            url, postdata, headers=headers, timeout=TIMEOUT)
+        response = requests.get(url, postdata, headers=headers, timeout=TIMEOUT)
+        responseStr = '返回结果 = ' + str(response.json())
+        print('\033[1;32;49m%s\033[0m' % responseStr)
         if response.status_code == 200:
             return response.json()
         else:
@@ -53,10 +56,9 @@ def api_http_post(url, params, add_to_headers=None):
         headers.update(add_to_headers)
     postdata = json.dumps(params)
     try:
-        print("请求地址 = ", url, "参数 = ", postdata)
-        response = requests.post(
-            url, postdata, headers=headers, timeout=TIMEOUT)
-        print("响应结果 = ", str(response.text))
+        print('\033[1;32;49m%s\033[0m' % "\n请求地址 = {}".format(url),'\033[1;32;49m%s\033[0m' % "\n参数 = {}".format(postdata))
+        response = requests.post(url, postdata, headers=headers, timeout=TIMEOUT)
+        print('\033[1;32;49m%s\033[0m' % "响应结果 = {}".format(str(response.text)))
         if response.status_code == 200:
             return response.json()
         else:
@@ -76,8 +78,7 @@ def api_key_get(url, request_path, params, ACCESS_KEY, SECRET_KEY):
 
     host_url = url
     host_name = urllib.parse.urlparse(host_url).hostname.lower()
-    params['Signature'] = createSign(
-        params, method, host_name, request_path, SECRET_KEY)
+    params['Signature'] = createSign(params, method, host_name, request_path, SECRET_KEY)
     url = host_url + request_path
     return api_http_get(url, params)
 
@@ -92,10 +93,8 @@ def api_key_post(url, request_path, params, ACCESS_KEY, SECRET_KEY):
 
     host_url = url
     host_name = urllib.parse.urlparse(host_url).hostname.lower()
-    params_to_sign['Signature'] = createSign(
-        params_to_sign, method, host_name, request_path, SECRET_KEY)
-    url = host_url + request_path + '?' + \
-        urllib.parse.urlencode(params_to_sign)
+    params_to_sign['Signature'] = createSign(params_to_sign, method, host_name, request_path, SECRET_KEY)
+    url = host_url + request_path + '?' + urllib.parse.urlencode(params_to_sign)
     return api_http_post(url, params)
 
 
@@ -160,7 +159,7 @@ def createSign(pParams, method, host_url, request_path, secret_key):
 
 
 # 鉴权订阅
-def api_key_sub(url, access_key, secret_key, subs, path='/notification'):
+def api_key_sub(url, access_key, secret_key, subs):
     host_url = urllib.parse.urlparse(url).hostname.lower()
     print(host_url)
     timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
@@ -171,13 +170,13 @@ def api_key_sub(url, access_key, secret_key, subs, path='/notification'):
         "Accept-language": "zh-CN",
         "Timestamp": timestamp
     }
-    sign = createSign(data, "GET", host_url, path, secret_key)
+    # sign = createSign(data, "GET", host_url, '/linear_swap_notification', secret_key)
+    sign = createSign(data, "GET", host_url, '/notification', secret_key)
     data["op"] = "auth"
     data["type"] = "api"
-    data["cid"] = "11538447"
     data["Signature"] = sign
     try:
-        ws = websocket.create_connection(url+path)
+        ws = websocket.create_connection(url)
         msg_str = json.dumps(data)
         print("msg_str is:", msg_str)
         ws.send(msg_str)
@@ -187,20 +186,7 @@ def api_key_sub(url, access_key, secret_key, subs, path='/notification'):
         print("sub_str is:", sub_str)
         ws.send(sub_str)
         sub_result = json.loads(gzip.decompress(ws.recv()).decode())
-        try_times = 1
-        while try_times < 3:
-            try_times += 1
-            if "op" in sub_result and sub_result.get("op") == "ping":
-                pong_msg = {"op": "pong", "ts": sub_result.get("ts")}
-                ws.send(json.dumps(pong_msg))
-                print(f"发送心跳包 send: {pong_msg}")
-                continue
-            elif 'topic' in sub_result:
-                break
-            else:
-                ws.send(sub_str)
-                sub_result = json.loads(gzip.decompress(ws.recv()).decode())
-                print("sub_result is :", sub_result)
+        print("sub_result is :", sub_result)
         ws.close()
         return sub_result
     except Exception as e:
@@ -213,18 +199,12 @@ def sub(url, subs):
     try:
         ws = websocket.create_connection(url)
         sub_str = json.dumps(subs)
-        requestInfo = '\nWS请求信息：url=' + url + ',参数=' + str(subs)
-        print('\033[1;32;49m%s\033[0m' % requestInfo)
-        i = 0
-        while i < 5:
-            ws.send(sub_str)
-            sub_result = json.loads(gzip.decompress(ws.recv()).decode())
-            print(sub_result)
-            if dict(sub_result).get('status', "") == "ok" and dict(sub_result).get('data') == None:
-                i = i+1
-            else:
-                break
-            time.sleep(1)
+        request_info = '\nWS请求信息：\n\turl=' + url + ',\n\t参数=' + str(subs)
+        print('\033[1;32;49m%s\033[0m' % request_info)
+        ws.send(sub_str)
+        sub_result = json.loads(gzip.decompress(ws.recv()).decode())
+        result_info = '请求结果：\n\t'+str(sub_result)
+        print('\033[1;32;49m%s\033[0m' % result_info)
         ws.close()
         return sub_result
     except Exception as e:
@@ -256,13 +236,11 @@ def compare_dict(expected, result):
             continue
         if isinstance(result[key], int) or isinstance(result[key], float):
             if float(result[key]) != float(expected[key]):
-                print('%s的值实际和预期不一致，实际：%s，预期：%s' %
-                      (key, result[key], expected[key]))
+                print('%s的值实际和预期不一致，实际：%s，预期：%s' % (key, result[key], expected[key]))
                 err = err + 1
         else:
             if str(result[key]) != str(expected[key]):
-                print('%s的值实际和预期不一致，实际：%s，预期：%s' %
-                      (key, result[key], expected[key]))
+                print('%s的值实际和预期不一致，实际：%s，预期：%s' % (key, result[key], expected[key]))
                 err = err + 1
     if err == 0:
         return True

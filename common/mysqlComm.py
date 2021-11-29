@@ -13,11 +13,12 @@ import logging
 class mysqlComm(object):
 
     def __init__(self, db):
-            self.__host = MYSQL_CONF[db]['host']
-            self.__port = MYSQL_CONF[db]['port']
-            self.__userName = MYSQL_CONF[db]['userName']
-            self.__password = MYSQL_CONF[db]['passwd']
-            self.__dbName = MYSQL_CONF[db]['dbName']
+            conf = eval(MYSQL_CONF)
+            self.__host = conf[db]['host']
+            self.__port = conf[db]['port']
+            self.__userName = conf[db]['userName']
+            self.__password = conf[db]['passwd']
+            self.__dbName = conf[db]['dbName']
             try:
                 self.__db = pymysql.connect(host=self.__host, port=self.__port, user=self.__userName,
                                             password=self.__password, database=self.__dbName)

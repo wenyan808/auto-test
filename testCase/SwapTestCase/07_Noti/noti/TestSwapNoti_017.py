@@ -1,102 +1,56 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211011
-# @Author : 
+# @Date    : 2021/11/15 2:10 下午
+# @Author  : HuiQing Yu
 
-#script by: lss
-所属分组
-    合约测试基线用例//02 反向永续//07 行情
-用例标题
-    请求批量成交记录(单个合约，即传参contract_code)
-前置条件
-    
-步骤/文本
-    请求批量成交记录(单个合约，即传参contract_code),可参考文档：https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#websocket-3
-预期结果
-    amount\quantity\turnover\direction\price显示正确,不存在Null,[]
-优先级
-    0
-用例编号
-    TestSwapNoti_017
-自动化作者
-    韩东林
-"""
+import pytest, allure, random, time
+from common.SwapServiceAPI import user01 as api_user01
+from common.SwapServiceWS import user01 as ws_user01
+from config.conf import DEFAULT_CONTRACT_CODE
+from common.CommonUtils import currentPrice
 
-from pprint import pprint
-
-import allure
-import pytest
-import time
-
-from common.SwapServiceAPI import t as api
-from tool.atp import ATP
-from tool.common_assert import Assert
-
-
-@allure.epic('反向永续')  # 这里填业务线
-@allure.feature('合约测试基线用例//02 反向永续//07 行情')  # 这里填功能
-@allure.story('请求批量成交记录(单个合约，即传参contract_code)')  # 这里填子功能，没有的话就把本行注释掉
-@allure.tag('Script owner : Donglin Han', 'Case owner : Panfeng Liu')
+@allure.epic('反向永续')
+@allure.feature('行情')
+@allure.story('批量成交记录(单个合约，即传参contract_code)')
+@allure.tag('Script owner : 韩东林', 'Case owner : 柳攀峰')
 @pytest.mark.stable
 class TestSwapNoti_017:
+    contract_code = DEFAULT_CONTRACT_CODE
+    ids = ['TestSwapNoti_017']
+    params = [{'case_name':'批量成交记录(单个合约，即传参contract_code)'}]
 
-    @allure.step('前置条件')
-    def setup(self):
-        print(" 清盘 -》 挂单 ")
-        ATP.cancel_all_types_order()
-        time.sleep(0.5)
-        self.current_price = ATP.get_current_price()
-        ATP.common_user_make_order(price=self.current_price, direction='sell')
-        time.sleep(1)
-        ATP.common_user_make_order(price=self.current_price, direction='buy')
-        time.sleep(1)
-        ATP.common_user_make_order(price=self.current_price, direction='sell')
-        time.sleep(1)
-        ATP.common_user_make_order(price=self.current_price, direction='buy')
-        time.sleep(1)
+    @classmethod
+    def setup_class(cls):
+        with allure.step('挂盘'):
+            cls.currentPrice = currentPrice()
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='buy')
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='sell')
+            pass
 
-    @allure.title('请求批量成交记录(单个合约，即传参contract_code)')
-    @allure.step('测试执行')
-    def test_execute(self, contract_code):
-        with allure.step(
-                '请求批量成交记录(单个合约，即传参contract_code),可参考文档：https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#websocket-3'):
-            # amount\quantity\turnover\direction\price显示正确,不存在Null,[]
-            res = api.swap_history_trade(contract_code, 2)
-            print()
-            pprint(res)
+    @classmethod
+    def teardown_class(cls):
+        with allure.step(''):
+            pass
 
-            data = Assert.base_check_response(res, 'data')
-            assert isinstance(data, list) and len(data) == 2, 'response data is incorrect'
-            for tick in data:
-                check_keys = ['data', 'id', 'ts']
-                assert set(check_keys) == set(tick.keys()), 'response tick is incorrect'
-
-                ch = Assert.base_check_response(res, 'ch')
-                assert ch == f'market.{contract_code.upper()}.trade.detail', 'response ch is incorrect'
-
-                data = tick.get('data', [])
-                assert isinstance(data, list) and len(data) == 1, 'response data is incorrect'
-
-                trade_record = data[0]
-                check_keys = ['amount', 'direction', 'id', 'price', 'quantity', 'ts']
-                assert set(check_keys) == set(trade_record.keys()), 'response trade_record is incorrect'
-
-                amount = int(trade_record.get('amount', '0'))
-                direction = trade_record.get('direction', '')
-                id = trade_record.get('id', 0)
-                price = float(trade_record.get('price', '0'))
-                quantity = float(trade_record.get('quantity', '0'))
-
-                assert amount == 20, 'amount is incorrect'
-                assert direction == 'buy', 'direction is incorrect'
-                assert id > 0, 'id is incorrect'
-                assert price == self.current_price, 'price is incorrect'
-                assert quantity > 0, 'quantity is incorrect'
-
-    @allure.step('恢复环境')
-    def teardown(self):
-        print('\n恢复环境操作')
-
-
-if __name__ == '__main__':
-    pytest.main()
+    @pytest.mark.flaky(reruns=1, reruns_delay=1)
+    @pytest.mark.parametrize('params', params, ids=ids)
+    def test_execute(self, params):
+        allure.dynamic.title(params['case_name'])
+        with allure.step('操作:执行api-restful请求'):
+            flag = False
+            # 重试3次未返回预期结果则失败
+            for i in range(1, 4):
+                result = api_user01.swap_history_trade(contract_code=self.contract_code,size=2)
+                if 'data' in result:
+                    flag = True
+                    break
+                time.sleep(1)
+                print('未返回预期结果，第{}次重试………………………………'.format(i))
+            assert flag,'未返回预期结果'
+            pass
+        with allure.step('验证：返回结果各字段不为空'):
+            checked_col = [ 'amount','quantity','ts', 'id', 'price', 'direction']
+            for data01 in result['data']:
+                for data in data01['data']:
+                    for col in checked_col:
+                        assert data[col] or data[col]==0, str(col) + '为None,不符合预期'

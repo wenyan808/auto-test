@@ -8,7 +8,7 @@ from common.SwapServiceAPI import user01 as api_user01
 from tool.atp import ATP
 import pytest, allure, random, time
 from config.conf import DEFAULT_CONTRACT_CODE
-from common.CommonUtils import retryUtil
+from common.CommonUtils import currentPrice
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('WS请求')  # 这里填功能
@@ -43,7 +43,7 @@ class TestSwapNoti_ws_kline_011:
     @classmethod
     def setup_class(cls):
         with allure.step('成交更新k线'):
-            cls.currentPrice = ATP.get_current_price()  # 最新价
+            cls.currentPrice = currentPrice()  # 最新价
             api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='buy')
             api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='sell')
             pass
@@ -57,7 +57,7 @@ class TestSwapNoti_ws_kline_011:
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self,params):
         allure.dynamic.title(params['case_name'])
-        with allure.step('执行sub请求'):
+        with allure.step('操作：执行req请求'):
             self.toTime = int(time.time())
             self.fromTime = self.toTime - 60 * 5
             subs = {
@@ -66,7 +66,16 @@ class TestSwapNoti_ws_kline_011:
                 "from": self.fromTime,
                 "to": self.toTime
             }
-            result = retryUtil(ws_user01.swap_sub,subs,'data')
+            flag = False
+            # 重试3次未返回预期结果则失败
+            for i in range(1, 4):
+                result = ws_user01.swap_sub(subs)
+                if 'data' in result:
+                    flag = True
+                    break
+                time.sleep(1)
+                print('未返回预期结果，第{}次重试………………………………'.format(i))
+            assert flag, '重试3次未返回预期结果'
             pass
         with allure.step('验证点:返回字段非空校验'):
             # 请求topic校验

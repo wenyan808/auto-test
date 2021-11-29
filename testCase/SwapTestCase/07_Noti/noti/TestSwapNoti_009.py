@@ -7,8 +7,7 @@ from common.SwapServiceWS import user01 as ws_user01
 from common.SwapServiceAPI import user01 as api_user01
 import pytest, allure, random, time
 from config.conf import DEFAULT_CONTRACT_CODE
-from common.CommonUtils import retryUtil
-from tool.atp import ATP
+from common.CommonUtils import currentPrice
 
 @allure.epic('反向永续')  # 这里填业务线
 @allure.feature('合约交易接口')  # 这里填功能
@@ -24,7 +23,7 @@ class TestSwapNoti_009:
     @classmethod
     def setup_class(cls):
         with allure.step('更新深度'):
-            cls.current_price = ATP.get_current_price()
+            cls.current_price = currentPrice()
             for i in range(10):
                 api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.current_price*(1-i*0.01) , 2),
                                       direction='buy')
@@ -41,18 +40,31 @@ class TestSwapNoti_009:
     @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
-        with allure.step('执行接口'):
+        allure.dynamic.title(params['case_name'])
+        with allure.step('操作：执行sub订阅'):
             subs = {
                       "sub": "market.{}.depth.percent10".format(self.contract_code),
                       "id": "test_depth_id"
                     }
-            result = retryUtil(ws_user01.swap_sub, subs, ["tick", "bids"])
+            flag = False
+            # 重试3次未返回预期结果则失败
+            for i in range(1, 4):
+                result = ws_user01.swap_sub(subs)
+                if result['tick']['bids'] and result['tick']['asks']:
+                    flag = True
+                    break
+                time.sleep(1)
+                print('未返回预期结果，第{}次重试………………………………'.format(i))
+            assert flag
             pass
-        with allure.step('校验返回结果'):
-            assert result['tick']['bids'] is not None
-            allure.step("字段bids不为空校验通过")
-            assert result['tick']['asks'] is not None
-            allure.step("字段bids不为空校验通过")
+        with allure.step('验证：返回结果tick字段不为空'):
+            assert result['tick'], '返回结果无tick,校验不通过'
+            pass
+        with allure.step('验证：返回结果bids买盘字段不为空'):
+            assert result['tick']['bids'], '返回结果无买盘,校验不通过'
+            pass
+        with allure.step('验证：返回结果asks卖盘字段不为空'):
+            assert result['tick']['asks'], '返回结果无卖盘,校验不通过'
             pass
 
 
