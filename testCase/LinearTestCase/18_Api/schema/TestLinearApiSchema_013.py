@@ -30,7 +30,7 @@ from common.LinearServiceAPI import t as linear_api
 @allure.story('schema校验')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : 张广南', 'Case owner : 张让翰')
 @pytest.mark.stable
-class TestLinearApiSchema_013:#疑似BUG
+class TestLinearApiSchema_013:
 
     @allure.step('前置条件')
     def setup(self):
