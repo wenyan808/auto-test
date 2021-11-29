@@ -34,10 +34,12 @@ class TestSwapNoti_freq_001:
             api_user01.swap_cancelall(contract_code=cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
+        with allure.step('睡眠：等待深度更新(2秒)'):
+            time.sleep(2)
+            pass
         with allure.step('操作：执行深度sub订阅'):
             subs = {
                       "sub": "market.{}.depth.{}.high_freq".format(self.contract_code,params['size']),
