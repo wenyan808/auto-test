@@ -16,6 +16,7 @@ from config.case_content import epic,features
 @allure.story(features[1]['story'][2])
 @allure.tag('Script owner : Alex Li', 'Case owner : 叶永刚')
 @pytest.mark.stable
+@pytest.mark.transfer
 class TestCoinSwapTransfer_009:
 
     ids = ["TestCoinSwapTransfer_009","TestCoinSwapTransfer_010"]
@@ -62,10 +63,10 @@ class TestCoinSwapTransfer_009:
             pass
         with allure.step("操作：执行划转，母 划 子"):
             for i in range(3):
-                result = user01.swap_master_sub_transfer(sub_uid='115395803',contract_code=self.contract_code,amount=amount,type='master_to_sub')
+                result = user01.swap_master_sub_transfer(sub_uid='115395803',contract_code=self.contract_code,amount=round(amount,6),type='master_to_sub')
                 if '访问次数超出限制' in result['err_msg']:
                     print('接口限频，第{}次重试……'.format(i + 1))
-                    time.sleep(1)
+                    time.sleep(3)
                 else:
                     break
             pass

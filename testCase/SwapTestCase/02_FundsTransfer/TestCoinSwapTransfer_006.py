@@ -48,15 +48,16 @@ class TestCoinSwapTransfer_006:
             assert 'ok' in result['status'] and result['data']['order_id']
             pass
         with allure.step("操作：获取当前母子账号资金信息"):
+            time.sleep(1)#等待划转数据更新
             f_current_account = str(self.redisClient.hmget('RsT:APO:11538483#'+self.symbol,'Account:#'+self.symbol)).split(',')[26]
             c_current_account = str(self.redisClient.hmget('RsT:APO:11539580#'+self.symbol,'Account:#'+self.symbol)).split(',')[26]
             print('母账户当前资金={}，子账户当前资金={}'.format(f_current_account, c_current_account))
             pass
         with allure.step("验证：母账号金额更新正确"):
-            assert amount == round(float(f_current_account),6) - round(float(self.f_account),6)
+            assert amount == float(f_current_account) - float(self.f_account)
             pass
         with allure.step("验证：子账号金额更新正确"):
-            assert -amount == round(float(c_current_account),6) - round(float(self.c_account),6)
+            assert -amount == float(c_current_account) - float(self.c_account)
             pass
         with allure.step("验证：存在划转记录"):
             flag = False

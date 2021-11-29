@@ -62,10 +62,10 @@ class TestCoinSwapTransfer_017:
             pass
         with allure.step("操作：执行划转，子 划 母"):
             for i in range(3):
-                result = user01.swap_master_sub_transfer(sub_uid='115395803',contract_code=self.contract_code,amount=amount,type='sub_to_master')
+                result = user01.swap_master_sub_transfer(sub_uid='115395803',contract_code=self.contract_code,amount=round(amount,6),type='sub_to_master')
                 if '访问次数超出限制' in result['err_msg']:
                     print('接口限频，第{}次重试……'.format(i + 1))
-                    time.sleep(1)
+                    time.sleep(3)
                 else:
                     break
             pass
