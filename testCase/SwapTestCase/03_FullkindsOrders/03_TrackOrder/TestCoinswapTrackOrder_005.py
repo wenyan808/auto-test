@@ -45,7 +45,6 @@ class TestCoinswapTrackOrder_005:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    @pytest.mark.skip("委托环境问题转时跳过")
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：下跟踪委托单'):
