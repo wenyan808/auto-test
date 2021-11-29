@@ -10,12 +10,9 @@ from common.SwapServiceWS import user01 as ws_user01
 from config.conf import DEFAULT_CONTRACT_CODE
 from config.case_content import epic, features
 
-# @allure.epic(epic[1])
-# @allure.feature(features[7])
-# @allure.story(features[7]['story'][0])
-@allure.epic('反向永续')  # 这里填业务线
-@allure.feature('撮合')  # 这里填功能
-@allure.story('开多')  # 这里填子功能，没有的话就把本行注释掉
+@allure.epic(epic[1])
+@allure.feature(features[7])
+@allure.story(features[7]['story'][0])
 @allure.tag('Script owner : 陈维', 'Case owner : 吉龙')
 @pytest.mark.P0
 class Test_WS_swap_Index_001:
@@ -42,9 +39,7 @@ class Test_WS_swap_Index_001:
         with allure.step(''):
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
-    @pytest.mark.skipif(condition=isSkip,reason="环境问题跳过")
     def test_execute(self, params):
         allure.dynamic.title('指数基差(sub) ' + params['case_name'])
         with allure.step('操作：执行sub请求'):
