@@ -57,7 +57,7 @@ class TestSwapNoti_restful_depth_001:
 
     @classmethod
     def setup_class(cls):
-        with allure.step('实始化变量'):
+        with allure.step('初始化变量'):
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.symbol = DEFAULT_SYMBOL
             cls.currentPrice = currentPrice()  # 最新价
@@ -83,7 +83,6 @@ class TestSwapNoti_restful_depth_001:
             api_user01.swap_cancelall(contract_code=cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])

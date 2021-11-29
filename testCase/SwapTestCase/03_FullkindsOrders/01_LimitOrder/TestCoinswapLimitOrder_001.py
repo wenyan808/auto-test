@@ -73,6 +73,7 @@ class TestCoinswapLimitOrder_001:
             assert round(self.latest_price*params['ratio'],2) == limit_order_info['data'][0]['price'],'下单价格校验失败'
             pass
         with allure.step("操作：获取用户资金信息-得出冻结资金"):
+            time.sleep(1)
             account_info = user01.swap_account_info(contract_code=self.contract_code)
             cur_margin_frozen =account_info['data'][0]['margin_frozen']
             pass
