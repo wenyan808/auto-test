@@ -39,7 +39,7 @@ class Test_WS_swap_Index_001:
         with allure.step(''):
             pass
 
-
+    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     @pytest.mark.skipif(condition=isSkip,reason="环境问题跳过")
     def test_execute(self, params):
