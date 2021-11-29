@@ -16,6 +16,7 @@ from config.conf import DEFAULT_CONTRACT_CODE
 @allure.feature(features[7])
 @allure.story(features[7]['story'][0])
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
+@pytest.mark.stable
 class TestSwapExIndex_estimatedrate_001:
     ids = ['TestSwapExIndex_estimatedrate_001',
            'TestSwapExIndex_estimatedrate_002',
@@ -47,7 +48,6 @@ class TestSwapExIndex_estimatedrate_001:
         with allure.step(''):
             pass
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title('预测资金费率 ' + params['case_name'])

@@ -36,7 +36,6 @@ class TestSwapExIndex_basis_001:
         with allure.step(''):
             pass
 
-    @pytest.mark.skip('因环境问题跳过')
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])

@@ -16,6 +16,7 @@ from config.conf import DEFAULT_CONTRACT_CODE
 @allure.feature(features[7])
 @allure.story(features[7]['story'][0])
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
+@pytest.mark.stable
 class TestSwapExIndex_premiumindex_001:
     ids = ['TestSwapExIndex_premiumindex_001',
            'TestSwapExIndex_premiumindex_002',

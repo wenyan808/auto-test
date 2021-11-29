@@ -48,7 +48,6 @@ class TestSwapExIndex_kline_001:
         with allure.step(''):
             pass
 
-    @pytest.mark.skip('因环境问题跳过')
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title('指数K线' + params['case_name'])
