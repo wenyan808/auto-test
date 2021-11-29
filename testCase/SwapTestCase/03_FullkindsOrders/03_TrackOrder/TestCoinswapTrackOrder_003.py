@@ -17,7 +17,6 @@ from config.conf import DEFAULT_CONTRACT_CODE
 @allure.epic(epic[1])
 @allure.feature(features[2]['feature'])
 @allure.story(features[2]['story'][3])
-@pytest.mark.stable
 @allure.tag('Script owner : 张广南', 'Case owner : 封泰')
 class TestCoinswapTrackOrder_003:
     ids = ["TestCoinswapTrackOrder_003",
