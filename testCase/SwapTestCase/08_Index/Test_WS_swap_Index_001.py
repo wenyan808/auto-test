@@ -15,6 +15,7 @@ from config.case_content import epic, features
 @allure.story(features[7]['story'][0])
 @allure.tag('Script owner : 陈维', 'Case owner : 吉龙')
 @pytest.mark.P0
+@pytest.mark.skipif(condition=True, reason='因环境问题跳过')
 class Test_WS_swap_Index_001:
     ids = ['Test_WS_swap_Index_001',
            'Test_WS_swap_Index_002',
@@ -41,7 +42,6 @@ class Test_WS_swap_Index_001:
 
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    @pytest.mark.skipif(condition=True, reason='因环境问题跳过')
     def test_execute(self, params):
         allure.dynamic.title('指数基差(sub) ' + params['case_name'])
         with allure.step('操作：执行sub请求'):
