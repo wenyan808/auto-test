@@ -6,9 +6,10 @@
 import allure
 import pytest
 import time
+
+from common.SwapServiceWS import user01 as ws_user01
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
-from common.SwapServiceWS import user01 as ws_user01
 
 
 @allure.epic(epic[1])
@@ -16,55 +17,28 @@ from common.SwapServiceWS import user01 as ws_user01
 @allure.story(features[7]['story'][0])
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.stable
-class TestSwapExIndex_estimatedrate_001:
-    ids = [
-        "TestSwapExIndex_estimatedrate_001",
-        "TestSwapExIndex_estimatedrate_002",
-        "TestSwapExIndex_estimatedrate_003",
-        "TestSwapExIndex_estimatedrate_004",
-        "TestSwapExIndex_estimatedrate_005",
-        "TestSwapExIndex_estimatedrate_006",
-        "TestSwapExIndex_estimatedrate_007",
-        "TestSwapExIndex_estimatedrate_008",
-        "TestSwapExIndex_estimatedrate_009"
-    ]
+class TestSwapExIndex_premiumindex_001:
+
+    ids = ['TestSwapExIndex_premiumindex_001',
+           'TestSwapExIndex_premiumindex_002',
+           'TestSwapExIndex_premiumindex_003',
+           'TestSwapExIndex_premiumindex_004',
+           'TestSwapExIndex_premiumindex_005',
+           'TestSwapExIndex_premiumindex_006',
+           'TestSwapExIndex_premiumindex_007',
+           'TestSwapExIndex_premiumindex_008',
+           'TestSwapExIndex_premiumindex_009']
+
     params = [
-        {
-            "case_name": "预测资金费率-1min",
-            "period": "1min"
-        },
-        {
-            "case_name": "预测资金费率-5min",
-            "period": "5min"
-        },
-        {
-            "case_name": "预测资金费率-15min",
-            "period": "15min"
-        },
-        {
-            "case_name": "预测资金费率-30min",
-            "period": "30min"
-        },
-        {
-            "case_name": "预测资金费率-60min",
-            "period": "60min"
-        },
-        {
-            "case_name": "预测资金费率-4hour",
-            "period": "4hour"
-        },
-        {
-            "case_name": "预测资金费率-1day",
-            "period": "1day"
-        },
-        {
-            "case_name": "预测资金费率-1week",
-            "period": "1week"
-        },
-        {
-            "case_name": "预测资金费率-1mon",
-            "period": "1mon"
-        }
+        {'case_name': '溢价指数-1min', 'period': '1min'},
+        {'case_name': '溢价指数-5min', 'period': '5min'},
+        {'case_name': '溢价指数-15min', 'period': '15min'},
+        {'case_name': '溢价指数-30min', 'period': '30min'},
+        {'case_name': '溢价指数-60min', 'period': '60min'},
+        {'case_name': '溢价指数-4hour', 'period': '4hour'},
+        {'case_name': '溢价指数-1day', 'period': '1day'},
+        {'case_name': '溢价指数-1week', 'period': '1week'},
+        {'case_name': '溢价指数-1mon', 'period': '1mon'}
     ]
 
     @classmethod
@@ -81,7 +55,6 @@ class TestSwapExIndex_estimatedrate_001:
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
-        allure.dynamic.title('test')
         with allure.step('操作：执行req请求'):
             To = int(time.time())
             From = To - 60
@@ -102,12 +75,15 @@ class TestSwapExIndex_estimatedrate_001:
                 print('未返回预期结果，第{}次重试………………………………'.format(i))
             assert flag
             pass
-        with allure.step('验证：返回结果各字段不为空'):
+        with allure.step('验证:返回结果各字段不为空'):
             assert result['data'], 'data空值'
             # 待校验的字段
             checked_col = ['id', 'open', 'close', 'high', 'low', 'amount', 'vol', 'count']
             for data in result['data']:
                 for col in checked_col:
                     assert data[col] is not None
-
             pass
+
+
+if __name__ == '__main__':
+    pytest.main()
