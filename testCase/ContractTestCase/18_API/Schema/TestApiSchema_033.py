@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -55,11 +56,28 @@ class TestApiSchema_033:
             res = contract_api.contract_master_sub_transfer_record(
                 symbol="BTC")
             print(res)
-            assert res['status'] == 'ok'
-            assert common.util.compare_dictkey(
-                ["total_page", "current_page", "total_size", "transfer_record"], res.data)
-            assert common.util.compare_dictkey(
-                ["id", "symbol", "transfer_type", "amount", "ts", "sub_uid", "sub_account_name"], res.data.transfer_record[0])
+            if res["status"] != "error":
+                schema = {
+                    "status": "ok",
+                    "data": {
+                        "total_page": 1,
+                        "current_page": 1,
+                        "total_size": 2,
+                        "transfer_record": [
+                            {
+                                "id": int,
+                                "symbol": str,
+                                "transfer_type": int,
+                                "amount": Or(float, int),
+                                "ts": int,
+                                "sub_uid": str,
+                                "sub_account_name": str
+                            }
+                        ]
+                    },
+                    "ts": int
+                }
+                Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):

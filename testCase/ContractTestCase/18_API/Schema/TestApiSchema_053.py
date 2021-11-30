@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -60,11 +61,46 @@ class TestApiSchema_053:
             res = contract_api.contract_trigger_hisorders(
                 symbol="BTC", trade_type=0, status=0, create_date=30)
             print(res)
-            assert res['status'] == 'ok'
-            assert common.util.compare_dictkey(
-                ["symbol", "contract_code", "contract_type", "trigger_type", "volume", "order_type", "direction", "offset", "lever_rate",
-                 "order_id", "order_id_str", "relation_order_id", "order_price_type", "status", "order_source", "trigger_price", "triggered_price", "order_price", "created_at", "triggered_at", "order_insert_at",
-                 "update_time", "canceled_at", "fail_code", "fail_reason"], res["data"]["orders"][0])
+            if res["status"] != "error":
+                schema = {
+                    "status": "ok",
+                    "data": {
+                        "orders": [
+                            {
+                                "symbol": str,
+                                "contract_code": str,
+                                "contract_type": str,
+                                "trigger_type": str,
+                                "volume": Or(float, int),
+                                "order_type": int,
+                                "direction": str,
+                                "offset": str,
+                                "lever_rate": Or(float, int),
+                                "order_id": int,
+                                "order_id_str": str,
+                                "relation_order_id": str,
+                                "order_price_type": str,
+                                "status": int,
+                                "order_source": str,
+                                "trigger_price": Or(float, int),
+                                "triggered_price": Or(float, int, None),
+                                "order_price": Or(float, int),
+                                "created_at": int,
+                                "triggered_at": Or(float, int, None),
+                                "order_insert_at": int,
+                                "update_time": int,
+                                "canceled_at": int,
+                                "fail_code": Or(float, int, None),
+                                "fail_reason": Or(float, int, None)
+                            }
+                        ],
+                        "total_page": int,
+                        "current_page": int,
+                        "total_size": int
+                    },
+                    "ts": int
+                }
+                Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):
