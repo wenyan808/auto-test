@@ -36,11 +36,11 @@ import pytest
 import allure
 import time
 from tool.atp import ATP
+from config.case_content import epic, features
 
-
-@allure.epic('反向永续')  # 这里填业务线
-@allure.feature('计划委托')  # 这里填功能
-@allure.story('计划委托卖出平多触发价小于最新价')  # 这里填子功能，没有的话就把本行注释掉
+@allure.epic(epic[1])
+@allure.feature(features[2]['feature'])
+@allure.story(features[2]['story'][2])
 @allure.tag('Script owner : Alex Li', 'Case owner : Alex Li')
 @pytest.mark.stable
 class TestSwapTriggerCloseSell_005:

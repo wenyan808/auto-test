@@ -10,10 +10,11 @@ import time
 from common.SwapServiceAPI import user01
 from tool.atp import ATP
 from config.conf import DEFAULT_CONTRACT_CODE
+from config.case_content import epic, features
 
-@allure.epic('反向永续')  # 这里填业务线
-@allure.feature('计划委托')  # 这里填功能
-@allure.story('撤销委托')  # 这里填子功能，没有的话就把本行注释掉
+@allure.epic(epic[1])
+@allure.feature(features[2]['feature'])
+@allure.story(features[2]['story'][2])
 @allure.tag('Script owner : 余辉青', 'Case owner : 邱大伟')
 @pytest.mark.stable
 class TestSwapTriggerCancelAll_001:

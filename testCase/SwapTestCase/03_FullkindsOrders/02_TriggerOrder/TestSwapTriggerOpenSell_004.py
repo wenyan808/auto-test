@@ -38,11 +38,11 @@ from pprint import pprint
 import pytest, allure, random, time
 
 from tool.atp import ATP
+from config.case_content import epic, features
 
-
-@allure.epic('反向永续')  # 这里填业务线
-@allure.feature('合约测试基线用例//02 反向永续//03 全部策略订单//02 计划委托//正常限价开仓')  # 这里填功能
-@allure.story('计划委托卖出开空触发价大于最新价')  # 这里填子功能，没有的话就把本行注释掉
+@allure.epic(epic[1])
+@allure.feature(features[2]['feature'])
+@allure.story(features[2]['story'][2])
 @allure.tag('Script owner : Donglin Han', 'Case owner : Donglin Han')
 @pytest.mark.stable
 class TestSwapTriggerOpenSell_004:

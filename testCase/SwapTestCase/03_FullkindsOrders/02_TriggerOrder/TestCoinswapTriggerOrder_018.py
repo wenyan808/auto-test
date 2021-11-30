@@ -46,11 +46,11 @@ from pprint import pprint
 import pytest, allure, random, time
 
 from config.conf import URL, SECRET_KEY, ACCESS_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
+from config.case_content import epic, features
 
-
-@allure.epic('反向永续')  # 这里填业务线
-@allure.feature('计划委托')  # 这里填功能
-@allure.story('下单区域下止盈止损最优5/10/20档限价单成交测试')  # 这里填子功能，没有的话就把本行注释掉
+@allure.epic(epic[1])
+@allure.feature(features[2]['feature'])
+@allure.story(features[2]['story'][2])
 class TestCoinswapTriggerOrder_018:
 
     @allure.step('前置条件')

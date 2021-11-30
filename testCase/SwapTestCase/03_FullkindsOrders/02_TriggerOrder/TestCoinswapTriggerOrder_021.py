@@ -27,11 +27,11 @@ from common.SwapServiceAPI import t as swap_api
 from common.util import compare_dict
 from pprint import pprint
 import pytest, allure, random, time
+from config.case_content import epic, features
 
-
-@allure.epic('反向永续')  # 这里填业务线
-@allure.feature('计划委托')  # 这里填功能
-# @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@allure.epic(epic[1])
+@allure.feature(features[2]['feature'])
+@allure.story(features[2]['story'][2])
 @pytest.mark.stable
 class TestCoinswapTriggerOrder_021:
 
