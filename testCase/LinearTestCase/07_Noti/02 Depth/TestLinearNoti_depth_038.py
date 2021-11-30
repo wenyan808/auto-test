@@ -67,10 +67,9 @@ class TestLinearNoti_depth_038:
                 "id": "id5"
             }
             result = linear_service_ws.linear_sub(subs)
-            pass
+
         with allure.step('验证：返回结果提示invalid topic'):
             assert 'bad-request' in result['err-code']
-            pass
 
 
 if __name__ == '__main__':
