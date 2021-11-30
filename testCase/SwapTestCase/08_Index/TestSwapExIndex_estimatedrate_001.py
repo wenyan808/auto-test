@@ -78,7 +78,8 @@ class TestSwapExIndex_estimatedrate_001:
             pass
 
     # @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params):
+    # def test_execute(self, params):
+    def test_execute(self):
         # allure.dynamic.title(params['case_name'])
         allure.dynamic.title('test')
         with allure.step('操作：执行req请求'):
