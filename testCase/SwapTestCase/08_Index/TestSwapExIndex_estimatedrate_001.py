@@ -11,16 +11,13 @@ from config.conf import DEFAULT_CONTRACT_CODE
 from common.SwapServiceWS import user01 as ws_user01
 
 
-@allure.epic(epic[1])
-@allure.feature(features[7])
-@allure.story(features[7]['story'][1])
+
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.P0
 class TestSwapExIndex_estimatedrate_001:
 
     contract_code = DEFAULT_CONTRACT_CODE
     def test_execute(self):
-
         with allure.step('操作：执行req请求'):
 
 
