@@ -8,10 +8,12 @@ from common.SwapServiceAPI import user01 as api_user01
 import pytest, allure, random, time
 from config.conf import DEFAULT_CONTRACT_CODE
 from common.CommonUtils import currentPrice
+from config.case_content import epic, features
 
-@allure.epic('反向永续')  # 这里填业务线
-@allure.feature('合约交易接口')  # 这里填功能
-@allure.story('市场行情接口')  # 这里填子功能，没有的话就把本行注释掉
+
+@allure.epic(epic[1])
+@allure.feature(features[6]['feature'])
+@allure.story(features[6]['story'][0])
 @pytest.mark.stable
 @allure.link(url='https://docs.huobigroup.com/docs/coin_margined_swap/v1/cn/#a690ab6851',name='文档地址')
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')

@@ -4,10 +4,12 @@
 # @Author : HuiQing Yu
 from common.SwapServiceWS import user01 as ws_user01
 import pytest, allure, random, time
+from config.case_content import epic, features
 
-@allure.epic('反向永续')  # 这里填业务线
-@allure.feature('WS订阅')  # 这里填功能
-@allure.story('WS请求(req)')  # 这里填子功能，没有的话就把本行注释掉
+
+@allure.epic(epic[1])
+@allure.feature(features[6]['feature'])
+@allure.story(features[6]['story'][6])
 @pytest.mark.stable
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 class TestSwapNoti_ws_kline_089:

@@ -17,7 +17,6 @@ from config.conf import DEFAULT_CONTRACT_CODE
 @allure.epic(epic[1])
 @allure.feature(features[2]['feature'])
 @allure.story(features[2]['story'][3])
-@pytest.mark.stable
 @allure.tag('Script owner : 张广南', 'Case owner : 封泰')
 class TestCoinswapTrackOrder_005:
     ids = ["TestCoinswapTrackOrder_005",
@@ -46,7 +45,6 @@ class TestCoinswapTrackOrder_005:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    @pytest.mark.skip("委托环境问题转时跳过")
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：下跟踪委托单'):

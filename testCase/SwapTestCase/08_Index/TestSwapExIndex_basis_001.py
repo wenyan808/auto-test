@@ -15,10 +15,9 @@ from config.conf import DEFAULT_CONTRACT_CODE
 
 
 @allure.epic(epic[1])
-@allure.feature(features[7])
+@allure.feature(features[7]['feature'])
 @allure.story(features[7]['story'][0])
 @allure.tag('Script owner : 余辉青', 'Case owner : ')
-@pytest.mark.stable
 class TestSwapExIndex_basis_001:
     ids = ['TestSwapExIndex_basis_001']
     params = [{'case_name':'查询基差1min K线','period':'1min'}]
@@ -37,7 +36,6 @@ class TestSwapExIndex_basis_001:
         with allure.step(''):
             pass
 
-    @pytest.mark.skip('因环境问题跳过')
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])

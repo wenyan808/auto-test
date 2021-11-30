@@ -11,10 +11,9 @@ from config.conf import DEFAULT_CONTRACT_CODE
 from config.case_content import epic, features
 
 @allure.epic(epic[1])
-@allure.feature(features[7])
+@allure.feature(features[7]['feature'])
 @allure.story(features[7]['story'][0])
 @allure.tag('Script owner : 陈维', 'Case owner : 吉龙')
-@pytest.mark.stable
 class Test_WS_swap_Index_001:
     ids = ['Test_WS_swap_Index_001',
            'Test_WS_swap_Index_002',
@@ -26,7 +25,7 @@ class Test_WS_swap_Index_001:
               {'case_name':'WS订阅预测资金费率K线数据','type':'estimated_rate','period':'1min'},
               {'case_name':'WS订阅基差数据','type':'basis','period':'1min.open'},
               {'case_name':'WS订阅标记价格K线数据','type':'mark_price','period':'1min'}]
-
+    isSkip = True
 
     @classmethod
     def setup_class(cls):
@@ -39,7 +38,6 @@ class Test_WS_swap_Index_001:
         with allure.step(''):
             pass
 
-    @pytest.mark.skip('因环境问题跳过')
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title('指数基差(sub) ' + params['case_name'])
@@ -60,7 +58,7 @@ class Test_WS_swap_Index_001:
             assert flag
             pass
         with allure.step('验证：返回结果各字段不为空'):
-            assert result['tick'] != [], 'data空值'
+            assert result['tick'], 'data空值'
             # 待校验的字段
             checked_col = ['id', 'open', 'close', 'high', 'low', 'amount', 'vol', 'count']
             for col in checked_col:

@@ -9,11 +9,11 @@ import pytest
 from common.CommonUtils import opponentExist,currentPrice
 from common.SwapServiceAPI import user01
 from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
+from config.case_content import epic,features
 
-
-@allure.epic('反向永续')
-@allure.feature('撮合')
-@allure.story('平多')
+@allure.epic(epic[1])
+@allure.feature(features[5]['feature'])
+@allure.story(features[5]['story'][1])
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.stable
 class TestSwapEx_004:

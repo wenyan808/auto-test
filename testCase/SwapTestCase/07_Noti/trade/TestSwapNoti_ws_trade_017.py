@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 2021/11/10 4:03 下午
-# @Author  : yuhuiqing
-import pytest, allure, random, time
-from common.SwapServiceWS import user01
+# @Author  : HuiQing Yu
+
+import allure
+import pytest
+import time
+
+from common.SwapServiceWS import user01 as ws_user01
 from common.SwapServiceAPI import user01 as api_user01
+from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
 from common.CommonUtils import currentPrice
 
-@allure.epic('反向永续')
-@allure.feature('行情')
-@allure.story('成交')
+
+@allure.epic(epic[1])
+@allure.feature(features[6]['feature'])
+@allure.story(features[6]['story'][5])
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.stable
 class TestSwapNoti_ws_trade_017:
@@ -73,7 +79,7 @@ class TestSwapNoti_ws_trade_017:
                 "sub": "market.{}.trade.detail".format(self.contract_code),
                 "id": "id1",
             }
-            trade_info = user01.swap_sub(subs=subs)
+            trade_info = ws_user01.swap_sub(subs=subs)
             pass
         with allure.step('验证:返回结果各字段不为空'):
             for d in trade_info['tick']['data']:
