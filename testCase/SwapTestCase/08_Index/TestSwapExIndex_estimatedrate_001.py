@@ -81,31 +81,31 @@ class TestSwapExIndex_estimatedrate_001:
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：执行req请求'):
-            To = int(time.time())
-            From = To - 60
-            subs = {
-                "req": "market.{}.premium_index.{}".format(self.contract_code, params['period']),
-                "id": "id1",
-                "from": From,
-                "to": To
-            }
-            flag = False
-            # 重试3次未返回预期结果则失败
-            for i in range(1, 4):
-                result = ws_user01.swap_sub_index(subs)
-                if result['data']:
-                    flag = True
-                    break
-                time.sleep(1)
-                print('未返回预期结果，第{}次重试………………………………'.format(i))
-            assert flag
-            pass
-        with allure.step('验证：返回结果各字段不为空'):
-            assert result['data'] != [], 'data空值'
-            # 待校验的字段
-            checked_col = ['id', 'open', 'close', 'high', 'low', 'amount', 'vol', 'count']
-            for data in result['data']:
-                for col in checked_col:
-                    assert data[col] is not None
+        #     To = int(time.time())
+        #     From = To - 60
+        #     subs = {
+        #         "req": "market.{}.premium_index.{}".format(self.contract_code, params['period']),
+        #         "id": "id1",
+        #         "from": From,
+        #         "to": To
+        #     }
+        #     flag = False
+        #     # 重试3次未返回预期结果则失败
+        #     for i in range(1, 4):
+        #         result = ws_user01.swap_sub_index(subs)
+        #         if result['data']:
+        #             flag = True
+        #             break
+        #         time.sleep(1)
+        #         print('未返回预期结果，第{}次重试………………………………'.format(i))
+        #     assert flag
+        #     pass
+        # with allure.step('验证：返回结果各字段不为空'):
+        #     assert result['data'] != [], 'data空值'
+        #     # 待校验的字段
+        #     checked_col = ['id', 'open', 'close', 'high', 'low', 'amount', 'vol', 'count']
+        #     for data in result['data']:
+        #         for col in checked_col:
+        #             assert data[col] is not None
 
             pass
