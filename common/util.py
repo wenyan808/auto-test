@@ -194,16 +194,21 @@ def api_key_sub(url, access_key, secret_key, subs):
 
 
 # 普通订阅
-def sub(url, subs):
+def sub(url, subs, keyword=''):
     try:
         ws = websocket.create_connection(url)
         sub_str = json.dumps(subs)
         request_info = '\nWS请求信息：\n\turl=' + url + ',\n\t参数=' + str(subs)
         print('\033[1;32;49m%s\033[0m' % request_info)
         ws.send(sub_str)
-        gzip.decompress(ws.recv()).decode()
-        gzip.decompress(ws.recv()).decode()
         sub_result = json.loads(gzip.decompress(ws.recv()).decode())
+        if keyword:
+            for i in range(3):
+                if keyword in sub_result:
+                    break
+                else:
+                    sub_result = json.loads(gzip.decompress(ws.recv()).decode())
+
         result_info = '请求结果：\n\t'+str(sub_result)
         print('\033[1;32;49m%s\033[0m' % result_info)
         ws.close()

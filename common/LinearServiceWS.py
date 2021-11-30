@@ -75,7 +75,8 @@ class WebsocketSevice:
         }
         path = '/linear-swap-ws'
         url = self.__url + path
-        return sub(url, subs)
+        keyword = 'tick'
+        return sub(url, subs, keyword)
 
     def linear_sub_depth_high_freq(self, data_type, contract_code, size, ):
         subs = {
@@ -189,7 +190,8 @@ class WebsocketSevice:
 
     def linear_notification(self, sub):
         path = '/linear-swap-notification'
-        return api_key_sub(self.__url, self.__access_key, self.__secret_key, sub, path)
+        url = self.__url + path
+        return api_key_sub(url, self.__access_key, self.__secret_key, sub)
 
 
 t = WebsocketSevice(WSURL, ACCESS_KEY, SECRET_KEY)
