@@ -18,6 +18,7 @@ from config.conf import DEFAULT_CONTRACT_CODE
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.P0
 class TestSwapExIndex_premiumindex_001:
+
     ids = ['TestSwapExIndex_premiumindex_001',
            'TestSwapExIndex_premiumindex_002',
            'TestSwapExIndex_premiumindex_003',
@@ -27,15 +28,18 @@ class TestSwapExIndex_premiumindex_001:
            'TestSwapExIndex_premiumindex_007',
            'TestSwapExIndex_premiumindex_008',
            'TestSwapExIndex_premiumindex_009']
-    params = [{'case_name': '溢价指数-1min', 'period': '1min'},
-              {'case_name': '溢价指数-5min', 'period': '5min'},
-              {'case_name': '溢价指数-15min', 'period': '15min'},
-              {'case_name': '溢价指数-30min', 'period': '30min'},
-              {'case_name': '溢价指数-60min', 'period': '60min'},
-              {'case_name': '溢价指数-4hour', 'period': '4hour'},
-              {'case_name': '溢价指数-1day', 'period': '1day'},
-              {'case_name': '溢价指数-1week', 'period': '1week'},
-              {'case_name': '溢价指数-1mon', 'period': '1mon'}]
+
+    params = [
+        {'case_name': '溢价指数-1min', 'period': '1min'},
+        {'case_name': '溢价指数-5min', 'period': '5min'},
+        {'case_name': '溢价指数-15min', 'period': '15min'},
+        {'case_name': '溢价指数-30min', 'period': '30min'},
+        {'case_name': '溢价指数-60min', 'period': '60min'},
+        {'case_name': '溢价指数-4hour', 'period': '4hour'},
+        {'case_name': '溢价指数-1day', 'period': '1day'},
+        {'case_name': '溢价指数-1week', 'period': '1week'},
+        {'case_name': '溢价指数-1mon', 'period': '1mon'}
+    ]
 
     @classmethod
     def setup_class(cls):

@@ -27,15 +27,44 @@ class TestSwapExIndex_estimatedrate_001:
            'TestSwapExIndex_estimatedrate_007',
            'TestSwapExIndex_estimatedrate_008',
            'TestSwapExIndex_estimatedrate_009']
-    params = [{'case_name':'1min','period':'1min'},
-              {'case_name':'5min','period':'5min'},
-              {'case_name':'15min','period':'15min'},
-              {'case_name':'30min','period':'30min'},
-              {'case_name':'60min','period':'60min'},
-              {'case_name':'4hour','period':'4hour'},
-              {'case_name':'1day','period':'1day'},
-              {'case_name':'1week','period':'1week'},
-              {'case_name':'1mon','period':'1mon'}]
+    params = [
+        {
+            "case_name": "预测资金费率-1min",
+            "period": "1min"
+        },
+        {
+            "case_name": "预测资金费率-5min",
+            "period": "5min"
+        },
+        {
+            "case_name": "预测资金费率-15min",
+            "period": "15min"
+        },
+        {
+            "case_name": "预测资金费率-30min",
+            "period": "30min"
+        },
+        {
+            "case_name": "预测资金费率-60min",
+            "period": "60min"
+        },
+        {
+            "case_name": "预测资金费率-4hour",
+            "period": "4hour"
+        },
+        {
+            "case_name": "预测资金费率-1day",
+            "period": "1day"
+        },
+        {
+            "case_name": "预测资金费率-1week",
+            "period": "1week"
+        },
+        {
+            "case_name": "预测资金费率-1mon",
+            "period": "1mon"
+        }
+    ]
 
     @classmethod
     def setup_class(cls):
@@ -50,7 +79,7 @@ class TestSwapExIndex_estimatedrate_001:
 
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
-        allure.dynamic.title('预测资金费率 ' + params['case_name'])
+        allure.dynamic.title(params['case_name'])
         with allure.step('操作：执行req请求'):
             To = int(time.time())
             From = To - 60
