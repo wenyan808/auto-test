@@ -48,7 +48,7 @@ class TestApiSchema_038:
             pass
         with allure.step('2、接口返回的json格式、字段名、字段值正确'):
             # 构造持仓量
-            price = ATP.get_current_price(contract_code="BTC")
+            price = ATP.get_current_price(contract_code="BTC_CW")
             common_contract_api.contract_order(
                 symbol="BTC", contract_type="this_week", price=price, volume=1, direction="buy", offset="open")
             res_sell = contract_api.contract_order(
