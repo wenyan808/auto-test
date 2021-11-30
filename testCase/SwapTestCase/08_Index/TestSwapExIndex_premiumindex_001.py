@@ -82,5 +82,8 @@ class TestSwapExIndex_premiumindex_001:
             for data in result['data']:
                 for col in checked_col:
                     assert data[col] is not None
-
             pass
+
+
+if __name__ == '__main__':
+    pytest.main()
