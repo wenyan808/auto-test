@@ -16,16 +16,11 @@
         TestLinearNoti_005
 """
 
-from common.ContractServiceAPI import t as contract_api
-from common.ContractServiceOrder import t as contract_order
 from common.LinearServiceAPI import t as linear_api
-from common.LinearServiceOrder import t as linear_order
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceOrder import t as swap_order
-
-from pprint import pprint
-import pytest, allure, random, time
 from common.LinearServiceWS import t as linear_service_ws
+import pytest, allure, random, time
+from tool.atp import ATP
+from common.LinearServiceWS import t as websocketsevice
 
 @allure.epic('正向永续')  # 这里填业务线
 @allure.feature('WS订阅')  # 这里填功能
@@ -35,32 +30,16 @@ class TestLinearNoti_005:
 
     @allure.step('前置条件')
     def setup(self):
-        lever_rate = 5
-        contractCode = 'BTC-USDT'
-        order_price_type = 'limit'
-        offset = 'open'
-        buyPrice = '45000'
-        sellPrice = '50000'
-        buy = 'buy'
-        sell = 'sell'
-        print('进行挂单，更新买卖单数据')
-        linear_api.linear_order(contract_code=contractCode, price=buyPrice, order_price_type=order_price_type,
-                                lever_rate=lever_rate,
-                                direction=buy, offset=offset,
-                                volume=10)
-        linear_api.linear_order(contract_code=contractCode, price=sellPrice, order_price_type=order_price_type,
-                                lever_rate=lever_rate,
-                                direction=sell, offset=offset,
-                                volume=10)
-        # 等待深度更新
-        time.sleep(3)
+        ATP.close_all_position()
+        print(''' 使当前交易对有交易盘口  ''')
+        print(ATP.make_market_depth())
 
     @allure.title('WS订阅聚合行情(单个合约，即传参contract_code)')
     @allure.step('测试执行')
     def test_execute(self, contract_code):
         with allure.step('WS订阅聚合行情(单个合约，即传参contract_code)，可参考文档：https://docs.huobigroup.com/docs/usdt_swap/v1/cn/#websocket-3'):
-            contractCode = 'BTC-USDT'
-            result = linear_service_ws.linear_sub_detail(contract_code=contractCode)
+
+            result = websocketsevice.linear_sub_detail(contract_code=contract_code)
             resultStr = '\n聚合行情（Market detail ）返回结果 = ' + str(result)
             print('\033[1;32;49m%s\033[0m' % resultStr)
             if not result['tick']['bid']:
@@ -71,7 +50,8 @@ class TestLinearNoti_005:
 
     @allure.step('恢复环境')
     def teardown(self):
-        print('')
+        ATP.cancel_all_types_order()
+        print('\n恢复环境操作')
 
 
 if __name__ == '__main__':
