@@ -101,7 +101,7 @@ class TestSwapExIndex_estimatedrate_001:
         #     assert flag
         #     pass
         # with allure.step('验证：返回结果各字段不为空'):
-        #     assert result['data'] != [], 'data空值'
+        #     assert result['data'], 'data空值'
         #     # 待校验的字段
         #     checked_col = ['id', 'open', 'close', 'high', 'low', 'amount', 'vol', 'count']
         #     for data in result['data']:
