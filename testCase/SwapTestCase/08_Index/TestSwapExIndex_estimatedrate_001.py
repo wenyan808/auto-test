@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 2021/11/11 2:01 下午
-# @Author  : yuhuiqing
+# @Author  : HuiQing Yu
 
 import allure
 import pytest
@@ -16,7 +16,7 @@ from config.conf import DEFAULT_CONTRACT_CODE
 @allure.feature(features[7])
 @allure.story(features[7]['story'][0])
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
-@pytest.mark.stable
+@pytest.mark.P0
 class TestSwapExIndex_estimatedrate_001:
     ids = ['TestSwapExIndex_estimatedrate_001',
            'TestSwapExIndex_estimatedrate_002',

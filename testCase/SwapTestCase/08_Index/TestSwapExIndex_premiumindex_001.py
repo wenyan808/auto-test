@@ -16,7 +16,7 @@ from config.conf import DEFAULT_CONTRACT_CODE
 @allure.feature(features[7])
 @allure.story(features[7]['story'][0])
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
-@pytest.mark.stable
+@pytest.mark.P0
 class TestSwapExIndex_premiumindex_001:
     ids = ['TestSwapExIndex_premiumindex_001',
            'TestSwapExIndex_premiumindex_002',
@@ -27,15 +27,15 @@ class TestSwapExIndex_premiumindex_001:
            'TestSwapExIndex_premiumindex_007',
            'TestSwapExIndex_premiumindex_008',
            'TestSwapExIndex_premiumindex_009']
-    params = [{'case_name': '1min', 'period': '1min'},
-              {'case_name': '5min', 'period': '5min'},
-              {'case_name': '15min', 'period': '15min'},
-              {'case_name': '30min', 'period': '30min'},
-              {'case_name': '60min', 'period': '60min'},
-              {'case_name': '4hour', 'period': '4hour'},
-              {'case_name': '1day', 'period': '1day'},
-              {'case_name': '1week', 'period': '1week'},
-              {'case_name': '1mon', 'period': '1mon'}]
+    params = [{'case_name': '溢价指数-1min', 'period': '1min'},
+              {'case_name': '溢价指数-5min', 'period': '5min'},
+              {'case_name': '溢价指数-15min', 'period': '15min'},
+              {'case_name': '溢价指数-30min', 'period': '30min'},
+              {'case_name': '溢价指数-60min', 'period': '60min'},
+              {'case_name': '溢价指数-4hour', 'period': '4hour'},
+              {'case_name': '溢价指数-1day', 'period': '1day'},
+              {'case_name': '溢价指数-1week', 'period': '1week'},
+              {'case_name': '溢价指数-1mon', 'period': '1mon'}]
 
     @classmethod
     def setup_class(cls):
@@ -50,7 +50,7 @@ class TestSwapExIndex_premiumindex_001:
 
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
-        allure.dynamic.title('溢价指数' + params['case_name'])
+        allure.dynamic.title(params['case_name'])
         with allure.step('操作：执行req请求'):
             To = int(time.time())
             From = To - 60
@@ -72,7 +72,7 @@ class TestSwapExIndex_premiumindex_001:
             assert flag
             pass
         with allure.step('验证:返回结果各字段不为空'):
-            assert result['data'] != [], 'data空值'
+            assert result['data'], 'data空值'
             # 待校验的字段
             checked_col = ['id', 'open', 'close', 'high', 'low', 'amount', 'vol', 'count']
             for data in result['data']:
