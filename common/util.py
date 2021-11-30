@@ -201,6 +201,8 @@ def sub(url, subs):
         request_info = '\nWS请求信息：\n\turl=' + url + ',\n\t参数=' + str(subs)
         print('\033[1;32;49m%s\033[0m' % request_info)
         ws.send(sub_str)
+        gzip.decompress(ws.recv()).decode()
+        gzip.decompress(ws.recv()).decode()
         sub_result = json.loads(gzip.decompress(ws.recv()).decode())
         result_info = '请求结果：\n\t'+str(sub_result)
         print('\033[1;32;49m%s\033[0m' % result_info)
