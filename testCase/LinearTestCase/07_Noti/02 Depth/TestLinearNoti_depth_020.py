@@ -53,7 +53,11 @@ class TestLinearNoti_depth_020:
     def test_execute(self, contract_code):
         with allure.step('参考官方文档'):
             depth_type = 'step19'
-            result = linear_service_ws.linear_sub_depth(contract_code=contract_code, type=depth_type)
+            subs = {
+                "sub": "market.{}.depth.{}".format(contract_code, depth_type),
+                "id": "id5"
+            }
+            result = linear_service_ws.linear_sub(subs)
             result_str = '\nDepth返回结果 = ' + str(result)
             print('\033[1;32;49m%s\033[0m' % result_str)
             assert result['err-msg'] == 'invalid topic market.ETH-USDT.depth.step19'
