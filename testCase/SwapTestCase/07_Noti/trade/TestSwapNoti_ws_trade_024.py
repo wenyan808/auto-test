@@ -5,7 +5,7 @@
 import allure
 import pytest
 
-from common.SwapServiceWS import user01
+from common.SwapServiceWS import user01 as ws_user01
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
 
@@ -17,7 +17,7 @@ from config.conf import DEFAULT_CONTRACT_CODE
 @pytest.mark.stable
 class TestSwapNoti_ws_trade_024:
     ids = ['TestSwapNoti_ws_trade_024']
-    params = [{'case_name':'合约代码为空'}]
+    params = [{'case_name': '合约代码为空'}]
     contract_code = DEFAULT_CONTRACT_CODE
 
     @classmethod
@@ -40,8 +40,8 @@ class TestSwapNoti_ws_trade_024:
                 "size": 5,
                 "id": "id1",
             }
-            trade_info = user01.swap_sub(subs=subs)
+            trade_info = ws_user01.swap_sub(subs=subs)
             pass
         with allure.step('验证:返回结果提示 invalid topic'):
-            assert 'invalid topic' in trade_info['err-msg'],'未传合代码预期应该提示invalid topic，实际返回：'+ str(trade_info)
+            assert 'invalid topic' in trade_info['err-msg'], '未传合代码预期应该提示invalid topic，实际返回：' + str(trade_info)
             pass

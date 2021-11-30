@@ -4,10 +4,12 @@
 # @Author  : HuiQing Yu
 import allure
 import pytest
-
-from common.SwapServiceWS import user01
+import time
+from common.SwapServiceWS import user01 as ws_user01
+from common.SwapServiceAPI import user01 as api_user01
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
+from common.CommonUtils import currentPrice
 
 
 @allure.epic(epic[1])
@@ -71,7 +73,7 @@ class TestSwapNoti_ws_trade_039:
                 "size":10,
                 "id": "id1",
             }
-            trade_info = user01.swap_sub(subs=subs)
+            trade_info = ws_user01.swap_sub(subs=subs)
             pass
         with allure.step('验证:返回结果各字段不为空'):
             for d in trade_info['data']:
