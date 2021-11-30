@@ -66,17 +66,7 @@ class TestSwapExIndex_estimatedrate_001:
             "period": "1mon"
         }
     ]
-
-    @classmethod
-    def setup_class(cls):
-        with allure.step('变量初始化'):
-            cls.contract_code = DEFAULT_CONTRACT_CODE
-            pass
-
-    @classmethod
-    def teardown_class(cls):
-        with allure.step(''):
-            pass
+    contract_code = DEFAULT_CONTRACT_CODE
 
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
