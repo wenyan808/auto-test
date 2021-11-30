@@ -21,8 +21,7 @@ TIMEOUT = 15
 
 # 各种请求,获取数据方式
 def api_http_get(url, params, add_to_headers=None):
-    requestInfo = '\n请求地址='+url+'\n请求参数 = '+str(params)
-    print('\033[1;32;49m%s\033[0m' % requestInfo)
+
     headers = {
         "Content-type": "application/x-www-form-urlencoded",
         "Accept-language": "zh-CN",
@@ -34,8 +33,8 @@ def api_http_get(url, params, add_to_headers=None):
 
     try:
         response = requests.get(url, postdata, headers=headers, timeout=TIMEOUT)
-        responseStr = '返回结果 = ' + str(response.json())
-        print('\033[1;32;49m%s\033[0m' % responseStr)
+        print('\033[1;32;49m%s\033[0m' % '\n请求地址= {}\n请求参数 = {}'.format(url,str(params)))
+        print('\033[1;32;49m%s\033[0m' % '返回结果 = {}'.format(str(response.json())))
         if response.status_code == 200:
             return response.json()
         else:
@@ -242,6 +241,20 @@ def compare_dict(expected, result):
             if str(result[key]) != str(expected[key]):
                 print('%s的值实际和预期不一致，实际：%s，预期：%s' % (key, result[key], expected[key]))
                 err = err + 1
+    if err == 0:
+        return True
+    else:
+        return False
+
+
+def compare_dictkey(expected, result):
+    err = 0
+    for key in expected:
+        if key not in result:
+            print('结果里没有预期的项：', key)
+            print(result)
+            err = err + 1
+            continue
     if err == 0:
         return True
     else:

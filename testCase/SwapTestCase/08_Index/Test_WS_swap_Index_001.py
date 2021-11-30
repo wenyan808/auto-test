@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 2021/11/11 2:01 下午
-# @Author  : yuhuiqing
-from tool.atp import ATP
-import pytest, allure, random, time
+# @Author  : HuiQing Yu
+import allure
+import pytest
+import time
+
 from common.SwapServiceWS import user01 as ws_user01
 from config.conf import DEFAULT_CONTRACT_CODE
+from config.case_content import epic, features
 
-@allure.epic('反向永续')
-@allure.feature('指数基差')
-@allure.story('sub订阅')
+@allure.epic(epic[1])
+@allure.feature(features[7])
+@allure.story(features[7]['story'][0])
 @allure.tag('Script owner : 陈维', 'Case owner : 吉龙')
 @pytest.mark.stable
 class Test_WS_swap_Index_001:
@@ -23,11 +26,12 @@ class Test_WS_swap_Index_001:
               {'case_name':'WS订阅预测资金费率K线数据','type':'estimated_rate','period':'1min'},
               {'case_name':'WS订阅基差数据','type':'basis','period':'1min.open'},
               {'case_name':'WS订阅标记价格K线数据','type':'mark_price','period':'1min'}]
-    contract_code = DEFAULT_CONTRACT_CODE
+
 
     @classmethod
     def setup_class(cls):
-        with allure.step(''):
+        with allure.step('变量初始化'):
+            cls.contract_code = DEFAULT_CONTRACT_CODE
             pass
 
     @classmethod
@@ -35,7 +39,7 @@ class Test_WS_swap_Index_001:
         with allure.step(''):
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
+    @pytest.mark.skip('因环境问题跳过')
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title('指数基差(sub) ' + params['case_name'])

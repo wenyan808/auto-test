@@ -6,11 +6,11 @@
 import pytest, allure, random, time
 from schema import Schema, Or
 from common.SwapServiceAPI import user01
+from config.case_content import epic,features
 
-
-@allure.epic('反向永续')
-@allure.feature('api')
-@allure.story('schema校验')
+@allure.epic(epic[1])
+@allure.feature(features[17]['feature'])
+@allure.story(features[17]['story'][1])
 @allure.tag('Script owner : 余辉青', 'Case owner : 张让翰')
 @pytest.mark.stable
 class TestSwapApiSchema_016:

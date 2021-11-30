@@ -3,13 +3,18 @@
 # @Date    : 2021/11/11 2:01 下午
 # @Author  : yuhuiqing
 
-import pytest, allure, random, time
+import allure
+import pytest
+import time
+
 from common.SwapServiceWS import user01 as ws_user01
+from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
 
-@allure.epic('反向永续')
-@allure.feature('指数基差')
-@allure.story('预测资金费率')
+
+@allure.epic(epic[1])
+@allure.feature(features[7])
+@allure.story(features[7]['story'][0])
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.stable
 class TestSwapExIndex_estimatedrate_001:
@@ -22,7 +27,6 @@ class TestSwapExIndex_estimatedrate_001:
            'TestSwapExIndex_estimatedrate_007',
            'TestSwapExIndex_estimatedrate_008',
            'TestSwapExIndex_estimatedrate_009']
-
     params = [{'case_name':'1min','period':'1min'},
               {'case_name':'5min','period':'5min'},
               {'case_name':'15min','period':'15min'},
@@ -32,11 +36,11 @@ class TestSwapExIndex_estimatedrate_001:
               {'case_name':'1day','period':'1day'},
               {'case_name':'1week','period':'1week'},
               {'case_name':'1mon','period':'1mon'}]
-    contract_code = DEFAULT_CONTRACT_CODE
 
     @classmethod
     def setup_class(cls):
-        with allure.step(''):
+        with allure.step('变量初始化'):
+            cls.contract_code = DEFAULT_CONTRACT_CODE
             pass
 
     @classmethod

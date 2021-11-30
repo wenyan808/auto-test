@@ -1,107 +1,78 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# @Date    : 2021/10/13
-# @Author  : Alex Li
-"""
-所属分组
-    资金划转（含母子划转，借贷币划转)母子划转
-用例标题
-    子账户划转到母账户（挂多单）
-前置条件
-    
-步骤/文本
-    1、登入合约界面
-    2、进入子账号管理界面，点击“划转”按钮
-    3、币种选择（如：BTC）
-    4、选择“主账号-币本位永续合约账户”划转到“子账号-币本位永续合约账户”
-    5、输入划转金额（可转数量<划转金额<账户权益）
-    6、点击“确定按钮”
-预期结果
-    A)划转失败，报“可划转余额不足”
-优先级
-    1
-"""
+# @Date    : 2020/7/1
+# @Author  : HuiQing Yu
 
-
-from common.SwapServiceAPI import t as swap_api
-from pprint import pprint
-import pytest
 import allure
-
-from tool.atp import ATP
-
-
-@allure.epic('反向永续')  # 这里填业务线
-@allure.feature('资金划转（含母子划转，借贷币划转)母子划转')  # 这里填功能
-@allure.story('子账户转到母账户划，输入划转金额（可转数量<划转金额<账户权益）')  # 这里填子功能，没有的话就把本行注释掉
-@allure.tag('Script owner : Alex Li', 'Case owner : Alex Li')
+import pytest
+import random
+import time
+from common.SwapServiceAPI import user01,user01Child01
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
+from common.CommonUtils import currentPrice
+from config.case_content import epic,features
+@allure.epic(epic[1])
+@allure.feature(features[1]['feature'])
+@allure.story(features[1]['story'][2])
+@allure.tag('Script owner : Alex Li', 'Case owner : 叶永刚')
 @pytest.mark.stable
-class TestCoinswapTransfer_017:
+class TestCoinSwapTransfer_017:
 
-    @allure.step('前置条件')
-    @pytest.fixture(scope='function', autouse=True)
-    def setup(self, sub_uid):
-        print("前置条件 sub_uid： {}".format(sub_uid))
+    ids = ["TestCoinSwapTransfer_017","TestCoinSwapTransfer_018"]
+    params = [
+        {
+            "case_name": "母账户划转到子账号-有挂(多)单-可转数量<划转金额<账户权益",
+            "ratio": 0.5,
+            "direction":"buy"
+        },{
+            "case_name": "母账户划转到子账号-有挂(空)单-可转数量<划转金额<账户权益",
+            "ratio": 1.5,
+            "direction":"sell"
+        }
+    ]
 
-    @allure.title(' 子账户划转到母账户（挂多单））')
-    @allure.step('测试执行')
-    def test_execute(self, sub_uid):
-        with allure.step('1、登入合约界面'):
+    @classmethod
+    def setup_class(cls):
+        with allure.step("变量初始化"):
+            cls.contract_code = DEFAULT_CONTRACT_CODE
+            cls.symbol = DEFAULT_SYMBOL
+            cls.latest_price = currentPrice()
             pass
-        with allure.step('2、进入子账号管理界面，点击“划转”按钮'):
+
+    @classmethod
+    def teardown_class(cls):
+        with allure.step('撤销挂单'):
+            user01Child01.swap_cancelall(contract_code=cls.contract_code)
             pass
-        with allure.step('3、币种选择（如：BTC）'):
+
+
+    @pytest.mark.parametrize('params', params, ids=ids)
+    def test_execute(self, params):
+        allure.dynamic.title(params['case_name'])
+        with allure.step("操作：挂单"):
+            user01Child01.swap_order(contract_code=self.contract_code,price=round(self.latest_price*params['ratio'],2),
+                              direction=params['direction'],)
             pass
-        with allure.step('4、选择“主账号-币本位永续合约账户”划转到“子账号-币本位永续合约账户”'):
+        with allure.step('操作：获取当前子账号可划转资金信息'):
+            c_account_info = user01Child01.swap_account_info(contract_code=self.contract_code)
+            margin_balance=c_account_info['data'][0]['margin_balance']
+            withdraw_available=c_account_info['data'][0]['withdraw_available']
+            amount = round(random.uniform(withdraw_available, margin_balance),8)
+            print('子账户：账户权益={}，划转金额={},可划转金额={}'.format(margin_balance,amount,withdraw_available))
             pass
-        with allure.step('5、输入划转金额（可转数量<划转金额<账户权益）'):
+        with allure.step("操作：执行划转，子 划 母"):
+            for i in range(3):
+                result = user01.swap_master_sub_transfer(sub_uid='115395803',contract_code=self.contract_code,amount=round(amount,6),type='sub_to_master')
+                if '访问次数超出限制' in result['err_msg']:
+                    print('接口限频，第{}次重试……'.format(i + 1))
+                    time.sleep(3)
+                else:
+                    break
             pass
-        with allure.step('6、点击“确定按钮”'):
-            contract_code = "BTC-USD"
+        with allure.step("验证：划转失败并提示-可划转余额不足"):
+            assert 'error' in result['status'] and '可划转余额不足' in result['err_msg']
+            pass
 
-            # 子账号挂多单，TODO
-            # current = ATP.get_current_price()
-            # offset = 'open'
-            # direction = 'buy'
-            # res = ATP.current_user_make_order(
-            #     price=current, volume=10, direction=direction, offset=offset)
-            # pprint(res)
-
-            sub_account_info = swap_api.swap_sub_account_info(
-                contract_code=contract_code, sub_uid=sub_uid)
-
-            pprint(sub_account_info)
-            # 账户权益数量
-            margin_balance = -1
-            withdraw_available = -1
-            if sub_account_info:
-                margin_balance = float(
-                    sub_account_info['data'][0]['margin_balance'])
-                withdraw_available = float(
-                    sub_account_info['data'][0]['withdraw_available'])
-
-            assert margin_balance-withdraw_available >= 0, '账户权益数量<可划转数量'
-            # 划转金额大于账户权益,可转数量<划转金额<账户权益
-            amount = round(withdraw_available+0.0001, 4)
-            if margin_balance > withdraw_available:
-                amount = round(
-                    withdraw_available+(margin_balance-withdraw_available)/2, 4)
-            res = swap_api.swap_master_sub_transfer(contract_code=contract_code,
-                                                    amount=amount,
-                                                    sub_uid=sub_uid,
-                                                    type='sub_to_master')
-            pprint(res)
-            assert res['status'] == 'error', "划转金额大于账户权益数量执行成功！"
-            assert res['err_msg'] == '可划转余额不足', "划转金额大于账户权益数量执行成功！"
-
-    @allure.step('恢复环境')
-    def teardown(self):
-        print('\n恢复环境操作')
-        print(ATP.clean_market())
-        # 撤销当前用户 某个品种所有限价挂单
-        print(ATP.cancel_all_order())
-        print(ATP.make_market_depth())
-        print(ATP.close_all_position())
 
 
 if __name__ == '__main__':
