@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -47,16 +48,30 @@ class TestApiSchema_038:
             pass
         with allure.step('2、接口返回的json格式、字段名、字段值正确'):
             # 构造持仓量
-            price = ATP.get_current_price()
+            price = ATP.get_current_price(contract_code="BTC")
             common_contract_api.contract_order(
                 symbol="BTC", contract_type="this_week", price=price, volume=1, direction="buy", offset="open")
             res_sell = contract_api.contract_order(
-                symbol="BTC", contract_type="this_week", price=price+1, volume=1, direction="sell", offset="open")
+                symbol="BTC", contract_type="this_week", price=price, volume=1, direction="sell", offset="open")
             res = contract_api.contract_cancel(
                 symbol="BTC", order_id=res_sell["data"]["order_id"])
             print(res)
-            assert res['status'] == 'ok'
-            assert res["data"]["successes"] == res_sell["data"]["order_id_str"]
+            if res["status"] != "error":
+                schema = {
+                    "status": "ok",
+                    "data": {
+                        "errors": [
+                            {
+                                "order_id": str,
+                                "err_code": int,
+                                "err_msg": str
+                            }
+                        ],
+                        "successes": str
+                    },
+                    "ts": int
+                }
+                Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):

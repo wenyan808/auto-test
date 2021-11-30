@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -58,12 +59,17 @@ class TestApiSchema_062:
 
             res = contract_api.contract_track_cancelall(
                 symbol="BTC", contract_type="this_week")
-            if res['status'] == 'ok':
-                assert res['status'] == 'ok'
-                assert common.util.compare_dictkey(
-                    ["errors", "successes"], res["data"])
-            else:
-                assert res['status'] == 'error'
+            print(res)
+            if res["status"] != "error":
+                schema = {
+                    "status": "ok",
+                    "data": {
+                        "errors": [],
+                        "successes": str
+                    },
+                    "ts": int
+                }
+                Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):

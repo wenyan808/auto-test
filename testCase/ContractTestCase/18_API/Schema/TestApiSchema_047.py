@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -61,10 +62,40 @@ class TestApiSchema_047:
             res = contract_api.contract_matchresults_exact(
                 symbol="BTC", trade_type=0)
             print(res)
-            assert res['status'] == 'ok'
-            assert common.util.compare_dictkey(
-                ["query_id", "match_id", "symbol", "contract_type", "contract_code", "direction", "offset", "trade_volume", "trade_price", "trade_turnover",
-                 "trade_fee", "offset_profitloss", "create_date", "role", "order_source", "order_id_str", "fee_asset", "real_profit", "id"], res["data"]["trades"][0])
+            if res["status"] != "error":
+                schema = {
+                    "status": "ok",
+                    "data": {
+                        "trades": [
+                            {
+                                "query_id": int,
+                                "match_id": int,
+                                "order_id": int,
+                                "symbol": str,
+                                "contract_type": str,
+                                "contract_code": str,
+                                "direction": str,
+                                "offset": str,
+                                "trade_volume": Or(float, int),
+                                "trade_price": Or(float, int),
+                                "trade_turnover": Or(float, int),
+                                "trade_fee": Or(float, int),
+                                "offset_profitloss": Or(float, int),
+                                "create_date": int,
+                                "role": str,
+                                "order_source": str,
+                                "order_id_str": str,
+                                "fee_asset": str,
+                                "real_profit": Or(float, int),
+                                "id": str
+                            }
+                        ],
+                        "remain_size": int,
+                        "next_id": int
+                    },
+                    "ts": int
+                }
+                Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):

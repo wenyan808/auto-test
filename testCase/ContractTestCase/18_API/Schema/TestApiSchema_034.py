@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -54,13 +55,37 @@ class TestApiSchema_034:
                 symbol="BTC", contract_type="this_week", price=price, volume=1, direction="sell", offset="open")
             res = contract_api.contract_api_trading_status()
             print(res)
-            assert res['status'] == 'ok'
-            assert common.util.compare_dictkey(
-                ["is_disable", "order_price_types", "disable_reason", "disable_interval", "recovery_time", "COR", "TDN"], res.data[0])
-            assert common.util.compare_dictkey(
-                ["orders_threshold", "orders", "invalid_cancel_orders", "cancel_ratio_threshold", "cancel_ratio", "is_trigger", "is_active"], res.data[0].COR)
-            assert common.util.compare_dictkey(
-                ["disables_threshold", "disables", "is_trigger", "is_active"], res.data[0].TDN)
+            if res["status"] != "error":
+                schema = {
+                    "status": "ok",
+                    "data":
+                    {
+                        "is_disable": int,
+                        "order_price_types": str,
+                        "disable_reason": str,
+                        "disable_interval": int,
+                        "recovery_time": int,
+                        "COR":
+                        {
+                            "orders_threshold": int,
+                            "orders": int,
+                            "invalid_cancel_orders": int,
+                            "cancel_ratio_threshold": Or(float, int),
+                            "cancel_ratio": Or(float, int),
+                            "is_trigger": int,
+                            "is_active": int
+                        },
+                        "TDN":
+                        {
+                            "disables_threshold": int,
+                            "disables": int,
+                            "is_trigger": int,
+                            "is_active": int
+                        }
+                    },
+                    "ts": int
+                }
+                Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):

@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -56,37 +57,59 @@ class TestApiSchema_059:
             res = contract_api.contract_relation_tpsl_order(
                 symbol="BTC", order_id=res_buy["data"]["order_id"])
             print(res)
-            if res['status'] == 'ok':
-                assert res['status'] == 'ok'
-                if len(res["data"]["orders"]) > 0:
-                    assert common.util.compare_dictkey(
-                        ["symbol",
-                         "contract_code",
-                         "contract_type",
-                         "volume",
-                         "price",
-                         "order_price_type",
-                         "direction",
-                         "offset",
-                         "lever_rate",
-                         "order_id",
-                         "order_id_str",
-                         "client_order_id",
-                         "created_at",
-                         "trade_volume",
-                         "trade_turnover",
-                         "fee",
-                         "trade_avg_price",
-                         "margin_frozen",
-                         "profit",
-                         "status",
-                         "order_type",
-                         "order_source",
-                         "fee_asset",
-                         "canceled_at",
-                         "tpsl_order_info"], res["data"])
-            else:
-                assert res['status'] == 'error'
+            if res["status"] != "error":
+                schema = {
+                    "status": "ok",
+                    "data": {
+                        "symbol": str,
+                        "contract_code": str,
+                        "contract_type": str,
+                        "volume": Or(float, int),
+                        "price": int,
+                        "order_price_type": str,
+                        "direction": str,
+                        "offset": str,
+                        "lever_rate": Or(float, int),
+                        "order_id": int,
+                        "order_id_str": str,
+                        "client_order_id": Or(float, int, None),
+                        "created_at": int,
+                        "trade_volume": Or(float, int),
+                        "trade_turnover": Or(float, int),
+                        "fee": Or(float, int),
+                        "trade_avg_price": Or(float, int, None),
+                        "margin_frozen": Or(float, int, None),
+                        "profit": Or(float, int, None),
+                        "status": int,
+                        "order_type": int,
+                        "order_source": str,
+                        "fee_asset": str,
+                        "canceled_at": int,
+                        "tpsl_order_info": [
+                            {
+                                "volume": Or(float, int),
+                                "direction": str,
+                                "tpsl_order_type": str,
+                                "order_id": int,
+                                "order_id_str": str,
+                                "trigger_type": str,
+                                "trigger_price": int,
+                                "order_price": Or(float, int),
+                                "created_at": int,
+                                "order_price_type": str,
+                                "relation_tpsl_order_id": str,
+                                "status": int,
+                                "canceled_at": int,
+                                "fail_code": Or(float, int, None),
+                                "fail_reason": Or(float, int, None),
+                                "triggered_price": Or(float, int, None),
+                                "relation_order_id": str
+                            }
+                        ]
+                    },
+                    "ts": int
+                }
+                Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):

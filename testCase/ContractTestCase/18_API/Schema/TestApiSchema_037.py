@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -47,7 +48,7 @@ class TestApiSchema_037:
             pass
         with allure.step('2、接口返回的json格式、字段名、字段值正确'):
             # 构造持仓量
-            price = ATP.get_current_price()
+            price = ATP.get_current_price(contract_code="BTC")
             common_contract_api.contract_order(
                 symbol="BTC", contract_type="this_week", price=price, volume=1, direction="buy", offset="open")
             contract_api.contract_order(
@@ -55,9 +56,28 @@ class TestApiSchema_037:
             res = contract_api.contract_batchorder({"orders_data": [{"symbol": "BTCD", "contract_type": "this_week", "volume": 1, "price": price, "direction": "buy", "offset": "open", "leverRate": 5, "orderPriceType": "limit"},
                                                                     {"symbol": "BTC", "contract_type": "this_week", "volume": 1, "price": price,  "direction": "sell", "offset": "open", "leverRate": 5, "orderPriceType": "limit"}]})
             print(res)
-            assert res['status'] == 'ok'
-            assert common.util.compare_dictkey(
-                ["errors", "success"], res["data"])
+            if res["status"] != "error":
+                schema = {
+                    "status": "ok",
+                    "data": {
+                        "errors": [
+                            {
+                                "index": int,
+                                "err_code": int,
+                                "err_msg": str
+                            }
+                        ],
+                        "success": [
+                            {
+                                "order_id": int,
+                                "index": int,
+                                "order_id_str": str
+                            }
+                        ]
+                    },
+                    "ts": int
+                }
+                Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):
