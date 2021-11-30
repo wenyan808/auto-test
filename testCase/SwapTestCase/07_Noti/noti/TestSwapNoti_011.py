@@ -7,10 +7,12 @@ from common.SwapServiceAPI import user01 as api_user01
 import pytest, allure, random, time
 from common.CommonUtils import currentPrice
 from config.conf import DEFAULT_CONTRACT_CODE
+from config.case_content import epic, features
 
-@allure.epic('反向永续')
-@allure.feature('行情')
-@allure.story('请求深度(150档不合并)')
+
+@allure.epic(epic[1])
+@allure.feature(features[6]['feature'])
+@allure.story(features[6]['story'][0])
 @allure.tag('Script owner : 韩东林', 'Case owner : 柳攀峰')
 @pytest.mark.stable
 class TestSwapNoti_011:

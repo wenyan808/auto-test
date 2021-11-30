@@ -24,8 +24,6 @@ class TestSwapEx_106:
               '\n*、验证开空笔订单撮合成功（查询撮合表有数据）')
 
     @allure.title('撮合 卖出开仓 全部成交多人多笔价格相同的订单')
-    @allure.step('测试执行')
-    @pytest.mark.flaky(reruns=3, reruns_delay=3)
     def test_execute(self, contract_code):
         with allure.step('操作：用户1，2开空订单多笔，用户3开多订单用于成交'):
             self.currentPrice = ATP.get_current_price()  # 最新价

@@ -8,10 +8,12 @@ from common.SwapServiceAPI import user01 as api_user01
 from common.SwapServiceWS import user01 as ws_user01
 from config.conf import DEFAULT_CONTRACT_CODE
 from common.CommonUtils import currentPrice
+from config.case_content import epic, features
 
-@allure.epic('反向永续')
-@allure.feature('行情')
-@allure.story('最新成交记录(单个合约，即传参contract_code)')
+
+@allure.epic(epic[1])
+@allure.feature(features[6]['feature'])
+@allure.story(features[6]['story'][0])
 @allure.tag('Script owner : 韩东林', 'Case owner : 柳攀峰')
 @pytest.mark.stable
 class TestSwapNoti_016:
