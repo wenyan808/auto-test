@@ -48,24 +48,6 @@ class WebsocketSevice:
         url = self.__url + path
         return sub(url, subs)
 
-    def contract_req_kline(self, contract_code, period, From, to):
-        subs = {
-            "req": "market.{}.kline.{}".format(contract_code, period),
-            "from": From,
-            "to": to
-        }
-        return sub(self.default_ws_path, subs)
-
-    # 【通用】订阅 Market Depth 数据
-    def contract_sub_depth(self, contract_code, type):
-        subs = {
-            "sub": "market.{}.depth.{}".format(contract_code, type),
-            "id": "id5"
-        }
-        path = '/ws'
-        url = self.__url + path
-        return sub(url, subs)
-
     # 【通用】买一卖一逐笔行情推送 BBO
     def contract_sub_bbo(self, contract_code):
         subs = {
@@ -94,10 +76,8 @@ class WebsocketSevice:
         }
         path = '/ws'
         url = self.__url + path
-        print(url)
-        requestInfo = '\n请求信息：url=' + url + ',参数=' + str(subs)
-        print('\033[1;32;49m%s\033[0m' % requestInfo)
-        return sub(url, subs)
+        keyword = 'tick'
+        return sub(url, subs, keyword)
 
     def contract_sub_depth_high_freq(self, data_type, contract_code, size, ):
         subs = {
