@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -59,10 +60,38 @@ class TestApiSchema_052:
             print(res_sell)
             res = contract_api.contract_trigger_openorders(symbol="BTC")
             print(res)
-            assert res['status'] == 'ok'
-            assert common.util.compare_dictkey(
-                ["symbol", "contract_code", "contract_type", "trigger_type", "volume", "order_type", "direction", "offset", "lever_rate",
-                 "order_id", "order_id_str", "order_source", "trigger_price", "order_price", "created_at", "order_price_type", "status"], res["data"]["orders"][0])
+            if res["status"] != "error":
+                schema = {
+                    "status": "ok",
+                    "data": {
+                        "orders": [
+                            {
+                                "symbol": str,
+                                "contract_code": str,
+                                "contract_type": str,
+                                "trigger_type": str,
+                                "volume": Or(float, int),
+                                "order_type": Or(float, int),
+                                "direction": str,
+                                "offset": str,
+                                "lever_rate": Or(float, int),
+                                "order_id": int,
+                                "order_id_str": str,
+                                "order_source": str,
+                                "trigger_price": Or(float, int),
+                                "order_price": Or(float, int),
+                                "created_at": int,
+                                "order_price_type": str,
+                                "status": int
+                            }
+                        ],
+                        "total_page": int,
+                        "current_page": int,
+                        "total_size": int
+                    },
+                    "ts": int
+                }
+                Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):

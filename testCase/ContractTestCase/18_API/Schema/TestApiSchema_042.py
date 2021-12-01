@@ -24,6 +24,7 @@ import common.util
 import pytest
 from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
+from schema import Or, Schema
 from tool.atp import ATP
 
 
@@ -60,10 +61,61 @@ class TestApiSchema_042:
             res = contract_api.contract_order_detail(
                 symbol="BTC", order_id=res_sell["data"]["order_id"])
             print(res)
-            assert res['status'] == 'ok'
-            assert common.util.compare_dictkey(
-                ["symbol", "contract_code", "contract_type", "instrument_price", "final_interest", "adjust_value", "lever_rate", "direction", "offset", "volume", "price", "created_at", "canceled_at", "order_source", "order_price_type", "margin_frozen", "profit",
-                 "total_page", "current_page", "total_size", "liquidation_type", "fee_asset", "order_id", "order_id_str", "client_order_id", "order_type", "status", "trade_avg_price", "trade_turnover", "trade_volume", "is_tpsl", "real_profit", "fee"], res["data"])
+            if res["status"] != "error":
+                schema = {
+                    "status": "ok",
+                    "data": {
+                        "symbol": str,
+                        "contract_code": str,
+                        "contract_type": str,
+                        "instrument_price":  Or(float, int),
+                        "final_interest":  Or(float, int),
+                        "adjust_value":  Or(float, int),
+                        "lever_rate":  Or(float, int),
+                        "direction": str,
+                        "offset": str,
+                        "volume":  Or(float, int),
+                        "price":  Or(float, int),
+                        "created_at": int,
+                        "canceled_at": int,
+                        "order_source": str,
+                        "order_price_type": str,
+                        "margin_frozen": int,
+                        "profit": int,
+                        "trades": [
+                            {
+                                "trade_id": int,
+                                "trade_price":  Or(float, int),
+                                "trade_volume":  Or(float, int),
+                                "trade_turnover":  Or(float, int),
+                                "trade_fee":  Or(float, int),
+                                "created_at": int,
+                                "role": str,
+                                "real_profit": int,
+                                "profit": int,
+                                "id": str
+                            }
+                        ],
+                        "total_page": int,
+                        "current_page": int,
+                        "total_size": int,
+                        "liquidation_type": str,
+                        "fee_asset": str,
+                        "order_id": int,
+                        "order_id_str": str,
+                        "client_order_id":  Or(float, int, None),
+                        "order_type": str,
+                        "status": int,
+                        "trade_avg_price":  Or(float, int),
+                        "trade_turnover":  Or(float, int),
+                        "trade_volume":  Or(float, int),
+                        "is_tpsl": int,
+                        "real_profit": Or(float, int),
+                        "fee": float
+                    },
+                    "ts": int
+                }
+                Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):
