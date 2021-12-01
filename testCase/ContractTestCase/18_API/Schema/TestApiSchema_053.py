@@ -91,7 +91,7 @@ class TestApiSchema_053:
                                 "update_time": int,
                                 "canceled_at": int,
                                 "fail_code": Or(float, int, None),
-                                "fail_reason": Or(float, int, None)
+                                "fail_reason": Or(str, None)
                             }
                         ],
                         "total_page": int,
