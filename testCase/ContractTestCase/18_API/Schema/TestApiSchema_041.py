@@ -81,7 +81,7 @@ class TestApiSchema_041:
                             "trade_volume": Or(float, int),
                             "trade_turnover": Or(float, int),
                             "fee": Or(float, int),
-                            "trade_avg_price": Or(float, int),
+                            "trade_avg_price": Or(float, int, None),
                             "margin_frozen": Or(float, int),
                             "profit": Or(float, int),
                             "status": int,
