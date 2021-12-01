@@ -53,7 +53,11 @@ class TestContractNoti_depth_040:
     def test_execute(self, symbol, symbol_period):
         with allure.step('参考官方文档'):
             depth_type = 'step6'
-            result = contract_service_ws.contract_sub_depth(contract_code='BTC_CC', type=depth_type)
+            subs = {
+                "sub": "market.{}.depth.{}".format('BTC_CC', depth_type),
+                "id": "id5"
+            }
+            result = contract_service_ws.contract_sub(subs)
             result_str = '\nDepth返回结果 = ' + str(result)
             print('\033[1;32;49m%s\033[0m' % result_str)
             assert result['err-code'] == 'bad-request'
