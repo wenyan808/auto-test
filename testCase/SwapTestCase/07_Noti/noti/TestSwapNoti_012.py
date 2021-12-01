@@ -35,7 +35,6 @@ class TestSwapNoti_012:
             pass
 
     @allure.title('请求BBO(单个合约，即传参code)')
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self):
         with allure.step('操作：执行api-restful请求'):
             flag = False

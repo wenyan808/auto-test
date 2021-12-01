@@ -35,7 +35,6 @@ class TestSwapEx_087:
 
 
     @allure.title('撮合-买入平仓-部分成交单笔订单')
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, contract_code):
         with allure.step('操作：平空下单'):
             orderInfo = user01.swap_order(contract_code=contract_code, price=round(self.currentPrice, 2),offset='close',

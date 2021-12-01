@@ -27,7 +27,6 @@ class TestSwapApiSchema_059:
         pass
 
     @allure.title("获取止盈止损当前委托")
-    # @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：挂单'):
             user01.swap_tpsl_order(contract_code=contract_code, volume=1, direction='sell',

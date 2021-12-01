@@ -23,7 +23,6 @@ class TestSwapApiSchema_055:
         pass
 
     @allure.title("获取计划委托历史委托")
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
             r = user01.swap_trigger_hisorders(contract_code=contract_code, trade_type=0, create_date=7, status=0,

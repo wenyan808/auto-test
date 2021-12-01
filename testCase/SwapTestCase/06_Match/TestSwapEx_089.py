@@ -31,7 +31,6 @@ class TestSwapEx_089:
             pass
 
     @allure.title('撮合-买入开仓-全部成交')
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, contract_code):
         with allure.step('操作：开多下单'):
             orderInfo = user01.swap_order(contract_code=contract_code, price=round(self.currentPrice, 2), direction='buy')

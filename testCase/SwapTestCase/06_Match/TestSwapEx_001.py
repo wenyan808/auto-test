@@ -123,7 +123,6 @@ class TestSwapEx_001:
             user01.swap_cancelall(contract_code=cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     @pytest.mark.skipif(condition=isExecute,reason='对手价未刷新跳过用例')
     def test_execute(self, params,DB_orderSeq):

@@ -59,7 +59,6 @@ class TestSwapTriggerCloseBuy10_007:
             cls.currentPrice = ATP.get_current_price()  # 最新价
             pass
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, contract_code,params):
         allure.dynamic.title(params['caseName'])

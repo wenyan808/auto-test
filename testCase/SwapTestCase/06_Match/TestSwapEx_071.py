@@ -54,7 +54,6 @@ class TestSwapEx_071:
             user01.swap_cancelall(contract_code=cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params,DB_orderSeq):
         allure.dynamic.title(params['case_name'])

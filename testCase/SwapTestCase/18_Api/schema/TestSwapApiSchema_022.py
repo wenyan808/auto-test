@@ -16,7 +16,6 @@ from config.case_content import epic,features
 class TestSwapApiSchema_022:
 
     @allure.title("批量获取子账户资产信息")
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
             r = t.swap_sub_account_info_list(contract_code=contract_code, page_index=1, page_size=1)

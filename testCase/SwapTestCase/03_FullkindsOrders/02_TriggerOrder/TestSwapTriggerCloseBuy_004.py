@@ -1,104 +1,74 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211008
-# @Author : Donglin Han
+# @Date    : 20211008
+# @Author : DongLin Han
 
-所属分组
-    合约测试基线用例//02 反向永续//03 全部策略订单//02 计划委托//正常限价平仓
-用例标题
-    计划委托买入平空触发价大于最新价
-前置条件
-    
-步骤/文本
-    1、登录合约交易系统
-    2、选择币种BTC，选择杠杆5X，点击平仓-计划按钮
-    3、输入触发价（如：50000，最新价：49999）
-    4、输入买入价（如：45000）
-    5、输入买入量10张
-    6、点击买入平空按钮，弹框点击确认
-预期结果
-    A)提示下单成功
-    B)当前委托-计划委托列表查询创建订单
-优先级
-    1
-用例编号
-    TestSwapTriggerCloseBuy_004
-自动化作者
-    韩东林
-"""
 
 import time
-
 import allure
 import pytest
 
-from common.SwapServiceAPI import t as swap_api
-from tool.atp import ATP
 from config.case_content import epic, features
+from common.CommonUtils import currentPrice
+from common.SwapServiceAPI import user01 as api_user01
+from config.conf import DEFAULT_CONTRACT_CODE
 
 @allure.epic(epic[1])
 @allure.feature(features[2]['feature'])
 @allure.story(features[2]['story'][2])
-@allure.tag('Script owner : Donglin Han', 'Case owner : Donglin Han')
+@allure.tag('Script owner : 韩东林', 'Case owner : 邱大伟')
 @pytest.mark.stable
 class TestSwapTriggerCloseBuy_004:
+    ids = [
+        "TestSwapTriggerCloseBuy_004",
+    ]
+    params = [
+        {
+            "caseName": "正常限价平仓-平空-触发价大于最新价",
+            "order_price_type": "limit",
+            "ratio": 1.01,
+            "trigger_type": "ge",
+            "offset": "close",
+            "direction": "buy",
+        }
+    ]
 
-    @allure.step('前置条件')
-    def setup(self, ):
-        ATP.close_all_position()
-        print(''' 使当前交易对有交易盘口  ''')
-        print(ATP.make_market_depth())
-        print(''' 使当前用户有持仓  ''')
-        time.sleep(0.5)
-        print(ATP.current_user_make_order(order_price_type='opponent'))
-
-    @allure.title('计划委托买入平空触发价大于最新价')
-    @allure.step('测试执行')
-    def test_execute(self, contract_code):
-        with allure.step('1、登录合约交易系统'):
+    @classmethod
+    def setup_class(cls):
+        with allure.step('变量初始化'):
+            cls.latest_price = currentPrice()  # 最新价
+            cls.contract_code = DEFAULT_CONTRACT_CODE
             pass
-        with allure.step('2、选择币种BTC，选择杠杆5X，点击平仓-计划按钮'):
+
+    @classmethod
+    def teardown_class(cls):
+        with allure.step('恢复环境:取消委托'):
+            api_user01.swap_trigger_cancelall(contract_code=cls.contract_code)
             pass
-        with allure.step('3、输入触发价（如：50000，最新价：49999）'):
-            current = ATP.get_current_price()
-            trigger_price = round(current * 1.01, 1)
-            offset = 'close'
-            direction = 'buy'
-            res = ATP.current_user_make_trigger_order(trigger_price=trigger_price, direction=direction, offset=offset)
-            print(res)
 
-            # 提示下单成功
-            assert res['status'] == 'ok', '计划委托单下单失败'
-            data = res.get('data', {})
-            assert 'order_id' in data and 'order_id_str' in data, '计划委托单下单失败'
-            order_id = data['order_id']
-
-        with allure.step('4、输入买入价（如：45000）'):
+    @pytest.mark.parametrize('params', params, ids=ids)
+    def test_execute(self,params, contract_code,DB_contract_trade):
+        with allure.step('操作：执行下单'):
+            trigger_order = api_user01.swap_trigger_order(contract_code=self.contract_code,trigger_type=params['trigger_type'],
+                                          volume=1,offset=params['offset'],direction=params['direction'],
+                                          order_price_type=params['order_price_type'],trigger_price=round(currentPrice()*params['ratio'],2),
+                                          order_price=round(currentPrice()*params['ratio'],2))
             pass
-        with allure.step('5、输入买入量10张'):
+        with allure.step('验证：下单成功'):
+            orderId = trigger_order['data']['order_id']
+            assert 'ok' in trigger_order['status'] and orderId
             pass
-        with allure.step('6、点击买入平空按钮，弹框点击确认'):
-            # B)当前委托 - 计划委托列表查询创建订单
-            time.sleep(3)
-            res = swap_api.swap_trigger_openorders(contract_code=contract_code)
-            print(res)
-
-            assert res['status'] == 'ok', '查询计划委托单失败'
-            data = res.get('data', {})
-            assert 'orders' in data, '查询计划委托单失败'
-            assert isinstance(data['orders'], list) and len(data['orders']) > 0, '未查询到计划委托单'
-            assert isinstance(data['orders'][0], dict) and 'order_id' in data['orders'][0], '未查询到计划委托单'
-            assert data['orders'][0]['order_id'] == order_id, '查询到的计划委托单 与 下单不相符'
-            assert data['orders'][0]['offset'] == offset, '查询到的计划委托单 与 下单不相符'
-            assert data['orders'][0]['direction'] == direction, '查询到的计划委托单 与 下单不相符'
-
-    @allure.step('恢复环境')
-    def teardown(self):
-        print('\n恢复环境操作')
-        ATP.cancel_all_trigger_order()
-        ATP.cancel_all_order()
-        ATP.close_all_position()
-
+        with allure.step('验证：订单数据与下单数据一致'):
+            sqlStr = f'select case t.direction when 1 then "buy" when 2 then "sell" end as direction '\ 
+                     f'from t_trigger_order t ' \
+                     f'where user_order_id = {orderId} '
+            db_info = DB_contract_trade.execute(sqlStr)[0]
+            assert params['direction'] in db_info[0],'订单方向 买|卖 校验失败'
+            # assert round(currentPrice()*params['ratio'],2) in db_info[1],'触发价校验失败'
+            # assert params['trigger_type'] in db_info[2],'触发类型校验失败'
+            # assert db_info[3] == 5,'杠杆位数校验失败'
+            # assert params['offset'] in db_info[4],'订单仓位 开|平 校验失败'
+            pass
 
 if __name__ == '__main__':
     pytest.main()

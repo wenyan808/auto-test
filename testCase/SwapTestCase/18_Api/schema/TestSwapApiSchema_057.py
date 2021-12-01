@@ -27,7 +27,6 @@ class TestSwapApiSchema_057:
             pass
 
     @allure.title("止盈止损订单撤单")
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：挂单'):
             orderInfo = user01.swap_tpsl_order(contract_code=contract_code, volume=1, direction='sell',

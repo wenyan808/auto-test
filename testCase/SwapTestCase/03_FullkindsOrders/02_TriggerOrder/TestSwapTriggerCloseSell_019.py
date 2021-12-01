@@ -54,7 +54,6 @@ class TestSwapTriggerCloseSell_019:
             user01.swap_order(contract_code=cls.contract_code, price=cls.currentPrice, direction='sell')
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, contract_code,params):
         allure.dynamic.title(params['caseName'])

@@ -144,7 +144,6 @@ class TestSwapTriggerOpenBuy10_004:
             user01.swap_trigger_cancelall(contract_code=cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, contract_code,params):
         allure.dynamic.title(params['caseName'])

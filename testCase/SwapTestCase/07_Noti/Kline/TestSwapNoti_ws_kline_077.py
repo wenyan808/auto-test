@@ -16,7 +16,6 @@ from config.case_content import epic, features
 class TestSwapNoti_ws_kline_077:
 
     @allure.title('WS订阅K线(sub) period为空')
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, contract_code):
         with allure.step('操作：执行sub订阅'):
             subs = {

@@ -25,7 +25,6 @@ class TestSwapNoti_ws_kline_157:
         {'case_name': 'WS订阅K线(req)-period大小写', 'period': '1MiN'}
     ]
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])

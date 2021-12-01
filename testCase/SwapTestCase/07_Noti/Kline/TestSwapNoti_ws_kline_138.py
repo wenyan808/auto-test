@@ -49,7 +49,6 @@ class TestSwapNoti_ws_kline_138:
         }
     ]
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])

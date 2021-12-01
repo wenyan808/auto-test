@@ -33,7 +33,6 @@ class TestSwapEx_090:
             pass
 
     @allure.title('撮合-卖出开仓-全部成交')
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, contract_code):
         with allure.step('操作：开空下单'):
             self.currentPrice = currentPrice()  # 最新价
