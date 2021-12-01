@@ -29,7 +29,7 @@ class mysqlComm(object):
     def execute(self, sqlStr):
         try:
             self.__db.ping(reconnect=True)
-            cursor = self.__db.cursor()
+            cursor = self.__db.cursor(cursor=pymysql.cursors.DictCursor)
             cursor.execute(sqlStr)
             self.__db.commit()
             data = cursor.fetchall()
