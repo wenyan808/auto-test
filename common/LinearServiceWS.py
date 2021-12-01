@@ -184,8 +184,8 @@ class WebsocketSevice:
             "topic": "accounts.{}".format(contract_code)
         }
         path = '/linear-swap-notification'
-        url = self.__url + path
-        return api_key_sub(url, self.__access_key, self.__secret_key, subs)
+        url = self.__url
+        return api_key_sub(url, self.__access_key, self.__secret_key, subs, path)
 
     def linear_notification(self, sub):
         path = '/linear-swap-notification'
