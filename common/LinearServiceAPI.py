@@ -2357,6 +2357,15 @@ class LinearServiceAPI:
                     return True
             return False
 
+    def linear_balance_valuation(self, valuation_asset=None):
+
+        params = {}
+        if valuation_asset:
+            params['valuation_asset'] = valuation_asset
+
+        request_path = '/linear-swap-api/v1/swap_balance_valuation'
+        return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
+
     def linear_market_over_view(self):
         request_path = '/linear-swap-ex/market/overview'
         return api_http_get(self.__url + request_path, {})

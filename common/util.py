@@ -21,8 +21,7 @@ TIMEOUT = 15
 
 # 各种请求,获取数据方式
 def api_http_get(url, params, add_to_headers=None):
-    requestInfo = '\n请求地址='+url+'\n请求参数 = '+str(params)
-    print('\033[1;32;49m%s\033[0m' % requestInfo)
+
     headers = {
         "Content-type": "application/x-www-form-urlencoded",
         "Accept-language": "zh-CN",
@@ -33,10 +32,9 @@ def api_http_get(url, params, add_to_headers=None):
     postdata = urllib.parse.urlencode(params)
 
     try:
-        response = requests.get(
-            url, postdata, headers=headers, timeout=TIMEOUT)
-        responseStr = '返回结果 = ' + str(response.json())
-        print('\033[1;32;49m%s\033[0m' % responseStr)
+        response = requests.get(url, postdata, headers=headers, timeout=TIMEOUT)
+        print('\033[1;32;49m%s\033[0m' % '\n请求地址= {}\n请求参数 = {}'.format(url,str(params)))
+        print('\033[1;32;49m%s\033[0m' % '返回结果 = {}'.format(str(response.json())))
         if response.status_code == 200:
             return response.json()
         else:
@@ -203,7 +201,7 @@ def api_key_sub(url, access_key, secret_key, subs, path='/notification'):
 
 
 # 普通订阅
-def sub(url, subs):
+def sub(url, subs, keyword=''):
     try:
         ws = websocket.create_connection(url)
         sub_str = json.dumps(subs)
@@ -211,6 +209,13 @@ def sub(url, subs):
         print('\033[1;32;49m%s\033[0m' % request_info)
         ws.send(sub_str)
         sub_result = json.loads(gzip.decompress(ws.recv()).decode())
+        if keyword:
+            for i in range(3):
+                if keyword in sub_result:
+                    break
+                else:
+                    sub_result = json.loads(gzip.decompress(ws.recv()).decode())
+
         result_info = '请求结果：\n\t'+str(sub_result)
         print('\033[1;32;49m%s\033[0m' % result_info)
         ws.close()

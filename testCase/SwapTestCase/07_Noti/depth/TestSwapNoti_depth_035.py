@@ -11,10 +11,12 @@ from common.SwapServiceWS import user01 as ws_user01
 from common.SwapServiceAPI import user01 as api_user01
 from common.CommonUtils import currentPrice,opponentExist
 from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
+from config.case_content import epic, features
 
-@allure.epic('反向永续')  # 这里填业务线
-@allure.feature('行情')  # 这里填功能
-@allure.story('深度')  # 这里填子功能，没有的话就把本行注释掉
+
+@allure.epic(epic[1])
+@allure.feature(features[6]['feature'])
+@allure.story(features[6]['story'][4])
 @pytest.mark.stable
 @allure.tag('Script owner : 张广南', 'Case owner : 吉龙')
 class TestSwapNoti_depth_035:

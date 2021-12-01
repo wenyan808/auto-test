@@ -8,11 +8,12 @@ import pytest
 
 from common.SwapServiceAPI import user01
 from config.conf import DEFAULT_CONTRACT_CODE
+from config.case_content import epic, features
 
 
-@allure.epic('反向永续')
-@allure.feature('行情')
-@allure.story('深度图&Overview')
+@allure.epic(epic[1])
+@allure.feature(features[6]['feature'])
+@allure.story(features[6]['story'][2])
 @allure.tag('Script owner : 余辉青', 'Case owner : ')
 @pytest.mark.stable
 class TestSwapNoti_restful_overview_004:
