@@ -41,7 +41,7 @@ class TestLinearNotification_015:
     @allure.title('订阅逐仓资金变动（有资金变动）')
     @allure.step('测试执行')
     def test_execute(self):
-        contract_code = 'BSV-USDT'
+        contract_code = 'BTC-USDT'
         with allure.step('1、订阅逐仓资金变动（有资金变动）'):
             sub = {
                 "op": "sub",
