@@ -11,10 +11,12 @@ from common.SwapServiceWS import user01 as ws_user01
 from common.SwapServiceAPI import user01 as api_user01
 from common.CommonUtils import currentPrice,opponentExist
 from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
+from config.case_content import epic, features
 
-@allure.epic('反向永续')  # 这里填业务线
-@allure.feature('行情')  # 这里填功能
-@allure.story('深度')  # 这里填子功能，没有的话就把本行注释掉
+
+@allure.epic(epic[1])
+@allure.feature(features[6]['feature'])
+@allure.story(features[6]['story'][4])
 @pytest.mark.stable
 @allure.tag('Script owner : 张广南', 'Case owner : 吉龙')
 class TestSwapNoti_restful_depth_001:
@@ -57,7 +59,7 @@ class TestSwapNoti_restful_depth_001:
 
     @classmethod
     def setup_class(cls):
-        with allure.step('实始化变量'):
+        with allure.step('初始化变量'):
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.symbol = DEFAULT_SYMBOL
             cls.currentPrice = currentPrice()  # 最新价
@@ -83,7 +85,6 @@ class TestSwapNoti_restful_depth_001:
             api_user01.swap_cancelall(contract_code=cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])

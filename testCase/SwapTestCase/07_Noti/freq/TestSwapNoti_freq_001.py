@@ -8,10 +8,12 @@ from common.SwapServiceWS import user01 as ws_user01
 from common.SwapServiceAPI import user01 as api_user01
 from config.conf import DEFAULT_CONTRACT_CODE
 from common.CommonUtils import currentPrice
+from config.case_content import epic, features
 
-@allure.epic('反向永续')
-@allure.feature('行情')
-@allure.story('增量')
+
+@allure.epic(epic[1])
+@allure.feature(features[6]['feature'])
+@allure.story(features[6]['story'][3])
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.stable
 class TestSwapNoti_freq_001:
@@ -34,10 +36,12 @@ class TestSwapNoti_freq_001:
             api_user01.swap_cancelall(contract_code=cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
+        with allure.step('睡眠：等待深度更新(2秒)'):
+            time.sleep(2)
+            pass
         with allure.step('操作：执行深度sub订阅'):
             subs = {
                       "sub": "market.{}.depth.{}.high_freq".format(self.contract_code,params['size']),

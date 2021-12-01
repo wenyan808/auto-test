@@ -6,6 +6,7 @@
 import allure
 import pytest
 import random
+import time
 from common.SwapServiceAPI import user01,user01Child01
 from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 from common.CommonUtils import currentPrice
@@ -44,7 +45,7 @@ class TestCoinSwapTransfer_017:
             user01Child01.swap_cancelall(contract_code=cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
+
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
@@ -60,7 +61,13 @@ class TestCoinSwapTransfer_017:
             print('子账户：账户权益={}，划转金额={},可划转金额={}'.format(margin_balance,amount,withdraw_available))
             pass
         with allure.step("操作：执行划转，子 划 母"):
-            result = user01.swap_master_sub_transfer(sub_uid='115395803',contract_code=self.contract_code,amount=amount,type='sub_to_master')
+            for i in range(3):
+                result = user01.swap_master_sub_transfer(sub_uid='115395803',contract_code=self.contract_code,amount=round(amount,6),type='sub_to_master')
+                if '访问次数超出限制' in result['err_msg']:
+                    print('接口限频，第{}次重试……'.format(i + 1))
+                    time.sleep(3)
+                else:
+                    break
             pass
         with allure.step("验证：划转失败并提示-可划转余额不足"):
             assert 'error' in result['status'] and '可划转余额不足' in result['err_msg']

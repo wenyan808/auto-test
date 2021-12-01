@@ -1,30 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211018
-# @Author : 
-    用例标题
-        撮合 卖出平仓 全部成交多人多笔价格相同的订单
-    前置条件
+# @Date    : 20211018
+# @Author : HuiQing Yu
 
-    步骤/文本
-        详见官方文档
-    预期结果
-        正确撮合
-    优先级
-        2
-    用例别名
-        TestSwapEx_108
-"""
+import allure
+import pytest
+import time
 
 from common.SwapServiceAPI import user01, user02, user03
-import pytest, allure, random, time
-from tool.atp import ATP
 from common.mysqlComm import mysqlComm
+from config.case_content import epic, features
+from tool.atp import ATP
 
 
-@allure.epic('反向永续')  # 这里填业务线
-@allure.feature('撮合')  # 这里填功能
-@allure.story('平多')  # 这里填子功能，没有的话就把本行注释掉
+@allure.epic(epic[1])
+@allure.feature(features[5]['feature'])
+@allure.story(features[5]['story'][1])
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.stable
 class TestSwapEx_108:
@@ -49,8 +40,6 @@ class TestSwapEx_108:
                           direction='sell',volume=2)
 
     @allure.title('撮合 买入平仓 全部成交多人多笔价格相同的订单')
-    @allure.step('测试执行')
-    @pytest.mark.flaky(reruns=1, reruns_delay=3)
     def test_execute(self, contract_code):
         DB_orderSeq = mysqlComm('order_seq')
         with allure.step('详见官方文档'):
