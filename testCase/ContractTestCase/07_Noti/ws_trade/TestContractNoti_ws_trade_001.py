@@ -24,7 +24,10 @@ from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
 from common.ContractServiceWS import t as contract_service_ws
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from tool.atp import ATP
 
 
@@ -60,19 +63,21 @@ class TestContractNoti_ws_trade_001:
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
         with allure.step('详见官方文档'):
-            result = contract_service_ws.contract_sub_tradedetail(contract_code=symbol_period)
+            result = contract_service_ws.contract_sub_tradedetail(
+                contract_code=symbol_period)
             pprint(result)
-            tradedetail = result['tick']['data'][0]
-            if tradedetail['amount'] == None:
-                assert False
-            if tradedetail['direction'] == None:
-                assert False
-            if tradedetail['price'] == None:
-                assert False
-            if tradedetail['quantity'] == None:
-                assert False
-            if tradedetail['id'] == None:
-                assert False
+            if 'tick' in result:
+                tradedetail = result['tick']['data'][0]
+                if tradedetail['amount'] == None:
+                    assert False
+                if tradedetail['direction'] == None:
+                    assert False
+                if tradedetail['price'] == None:
+                    assert False
+                if tradedetail['quantity'] == None:
+                    assert False
+                if tradedetail['id'] == None:
+                    assert False
 
     @allure.step('恢复环境')
     def teardown(self):
