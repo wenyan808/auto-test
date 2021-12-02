@@ -47,8 +47,8 @@ class TestContractEx_004:
             contracttype = 'this_week'
             leverrate = 5
             # 获取当周合约
-            sell_price = ATP.get_adjust_price(1.02)
-            buy_price = ATP.get_adjust_price(0.98)
+            sell_price = ATP.get_adjust_price(1.01)
+            buy_price = ATP.get_adjust_price(0.99)
 
             current = ATP.get_current_price(contract_code=symbol_period)
             ATP.common_user_make_order(price=current, direction='buy', offset="close")

@@ -46,8 +46,8 @@ class TestContractEx_006:
         with allure.step('详见官方文档'):
             contracttype = 'this_week'
             leverrate = 5
-            sell_price = ATP.get_adjust_price(1.02)
-            buy_price = ATP.get_adjust_price(0.98)
+            sell_price = ATP.get_adjust_price(1.01)
+            buy_price = ATP.get_adjust_price(0.99)
 
             sell_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=sell_price,
                                                      volume='1',
