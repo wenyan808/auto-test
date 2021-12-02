@@ -123,7 +123,6 @@ class TestSwapEx_001:
             user01.swap_cancelall(contract_code=cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     @pytest.mark.skipif(condition=isExecute,reason='对手价未刷新跳过用例')
     def test_execute(self, params,DB_orderSeq):
@@ -133,17 +132,18 @@ class TestSwapEx_001:
                                           order_price_type=params['order_price_type'])
             pass
         with allure.step('验证：订单存在撮合结果表中'):
-            sqlStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderInfo['data']['order_id'])
+            orderId = orderInfo['data']['order_id_str']
+            sqlStr = f'select count(1) as count from t_exchange_match_result ' \
+                     f'WHERE f_id = (select f_id from t_order_sequence where f_order_id= {orderId})'
             flag = False
             # 给撮合时间，5秒内还未撮合完成则为失败
             for i in range(3):
-                isMatch = DB_orderSeq.execute(sqlStr)[0][0]
+                isMatch = DB_orderSeq.dictCursor(sqlStr)[0]['count']
                 if 1 == isMatch:
                     flag = True
                     break
                 time.sleep(1)
-                print('未返回预期结果，第{}次重试………………………………'.format(i))
+                print(f'未返回预期结果，第{i+1}次重试………………………………')
             assert flag
             pass
 

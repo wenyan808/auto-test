@@ -16,7 +16,6 @@ from config.case_content import epic,features
 class TestSwapApiSchema_036:
 
     @allure.title("新增获取用户API指标禁用信息")
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
             r = user01.swap_api_trading_status()

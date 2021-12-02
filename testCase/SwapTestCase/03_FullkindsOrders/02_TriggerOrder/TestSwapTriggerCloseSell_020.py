@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 20211103
-# @Author : YuHuiQing
+# @Author : HuiQing Yu
 
 from common.SwapServiceAPI import user01
 import pytest
@@ -9,10 +9,11 @@ import allure
 import time
 from tool.atp import ATP
 from config.conf import DEFAULT_CONTRACT_CODE
+from config.case_content import epic, features
 
-@allure.epic('反向永续')
-@allure.feature('计划委托')
-@allure.story('止盈止损单')
+@allure.epic(epic[1])
+@allure.feature(features[2]['feature'])
+@allure.story(features[2]['story'][2])
 @allure.tag('Script owner : 余辉青', 'Case owner : 邱大伟')
 @pytest.mark.stable
 class TestSwapTriggerCloseSell_020:
@@ -53,7 +54,6 @@ class TestSwapTriggerCloseSell_020:
             user01.swap_order(contract_code=cls.contract_code, price=cls.currentPrice, direction='sell')
             pass
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, contract_code,params):
         allure.dynamic.title(params['caseName'])

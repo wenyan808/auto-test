@@ -18,7 +18,6 @@ from config.case_content import epic,features
 class TestSwapApiSchema_052:
 
     @allure.title("合约计划委托撤单")
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：先挂计划委托单'):
             self.currentPrice = currentPrice()

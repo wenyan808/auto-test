@@ -16,7 +16,6 @@ from config.case_content import epic,features
 class TestSwapApiSchema_009:
 
     @allure.title("获取平台阶梯保证金")
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
             r = user01.swap_ladder_margin(contract_code=contract_code)

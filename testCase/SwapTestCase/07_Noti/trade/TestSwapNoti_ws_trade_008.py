@@ -30,7 +30,6 @@ class TestSwapNoti_ws_trade_008:
         with allure.step(''):
             pass
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])

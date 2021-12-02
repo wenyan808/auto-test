@@ -16,7 +16,6 @@ from config.case_content import epic,features
 class TestSwapApiSchema_011:
 
     @allure.title("精英账户多空持仓对比-持仓量")
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
             r = user01.swap_elite_position_ratio(contract_code=contract_code, period='1day')

@@ -28,7 +28,6 @@ class TestSwapNoti_001:
         with allure.step(''):
             pass
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self,params):
         with allure.step('操作：执行sub请求'):

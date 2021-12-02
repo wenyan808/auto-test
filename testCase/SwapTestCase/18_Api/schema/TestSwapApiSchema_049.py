@@ -18,7 +18,6 @@ from config.case_content import epic,features
 class TestSwapApiSchema_049:
 
     @allure.title("组合查询用户历史成交记录")
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
             r = user01.swap_matchresults_exact(contract_code=contract_code, trade_type=0,size=3)

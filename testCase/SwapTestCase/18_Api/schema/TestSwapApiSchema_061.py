@@ -28,7 +28,6 @@ class TestSwapApiSchema_061:
         pass
 
     @allure.title("查询开仓单关联的止盈止损订单详情")
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：开仓'):
             orderInfo = user01.swap_order(contract_code=contract_code, price=self.currentPrice, direction='buy',

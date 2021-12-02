@@ -35,7 +35,6 @@ class TestSwapNoti_011:
             pass
 
     @allure.title('请求深度(150档不合并)')
-    @pytest.mark.flaky(reruns=3, reruns_delay=1)
     def test_execute(self):
         with allure.step('操作：执行api-restful请求'):
             flag = False

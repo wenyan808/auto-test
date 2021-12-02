@@ -18,7 +18,6 @@ from config.case_content import epic,features
 class TestSwapApiSchema_053:
 
     @allure.title("合约计划委托全部撤单")
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：先挂计划委托单'):
             self.currentPrice = currentPrice()
@@ -31,7 +30,7 @@ class TestSwapApiSchema_053:
             # 重试3次未返回预期结果则失败
             for i in range(1, 4):
                 r = user01.swap_trigger_cancelall(contract_code=contract_code)
-                if r['data']['successes']:
+                if 'ok' in r['status'] and r['data']['successes']:
                     flag = True
                     break
                 time.sleep(1)

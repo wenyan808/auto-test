@@ -18,6 +18,10 @@ def DB_orderSeq():
     return  mysqlComm('order_seq')
 
 @pytest.fixture()
+def DB_contract_trade():
+    return  mysqlComm('contract_trade')
+
+@pytest.fixture()
 def contract_code():
     contract_code = conf.DEFAULT_CONTRACT_CODE
     return contract_code

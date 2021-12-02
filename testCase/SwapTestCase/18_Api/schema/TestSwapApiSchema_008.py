@@ -16,7 +16,6 @@ from config.case_content import epic,features
 class TestSwapApiSchema_008:
 
     @allure.title("获取平台持仓量")
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
             r = user01.swap_his_open_interest(contract_code=contract_code,period='1day',size=1,amount_type=1)

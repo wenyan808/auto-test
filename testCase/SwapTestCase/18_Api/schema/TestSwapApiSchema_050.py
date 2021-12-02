@@ -18,7 +18,6 @@ from config.case_content import epic,features
 class TestSwapApiSchema_050:
 
     @allure.title("合约闪电平仓下单")
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
             r = user01.swap_lightning_close_position(contract_code=contract_code, volume=1,

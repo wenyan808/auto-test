@@ -27,7 +27,6 @@ class TestSwapApiSchema_062:
         pass
 
     @allure.title("跟踪委托下单")
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
             r = user01.swap_track_order(contract_code=contract_code,volume=1,direction='buy',order_price_type='optimal_5',

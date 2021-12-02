@@ -16,7 +16,6 @@ from config.case_content import epic,features
 class TestSwapApiSchema_035:
 
     @allure.title("获取母账户下的所有母子账户划转记录")
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
             r = user01.swap_master_sub_transfer_record(contract_code=contract_code,create_date=7, transfer_type='34', page_index=1,
