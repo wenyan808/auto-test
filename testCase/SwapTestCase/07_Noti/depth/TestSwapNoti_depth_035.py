@@ -38,7 +38,7 @@ class TestSwapNoti_depth_035:
             pass
         with allure.step('挂单更新深度'):
             for i in range (151):
-                api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice * (1-0.01*i), 2), direction='buy')
+                api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice * (1-0.001*i), 2), direction='buy')
             pass
         with allure.step('查询redis深度更新'):
             for i in range (5):
@@ -61,7 +61,7 @@ class TestSwapNoti_depth_035:
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：执行sub订阅'):
             subs = {
-                "sub": "market.{}.depth.step6".format(self.contract_code,params['type']),
+                "sub": "market.{}.depth.{}".format(self.contract_code,params['type']),
                 "id": "id5"
             }
             flag = False
