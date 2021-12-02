@@ -61,6 +61,9 @@ class TestLinearApiSchema_074:
                         'margin_account': str,
                         'margin_mode': 'cross',
                         'direction': str,
+                        'contract_type': 'swap',
+                        'business_type': 'swap',
+                        'pair': str,
                         'last_price': Or(float, int)
                     }
                 ],
