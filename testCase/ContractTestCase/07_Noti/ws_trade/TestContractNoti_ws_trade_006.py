@@ -24,10 +24,14 @@ from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 
 from tool.atp import ATP
 from common.ContractServiceWS import t as contract_service_ws
+
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('行情')  # 这里填功能
@@ -63,19 +67,21 @@ class TestContractNoti_ws_trade_006:
         with allure.step('详见官方文档'):
             upperstr = symbol_period[:-2].upper()
             lowerstr = symbol_period[-2:].lower()
-            result = contract_service_ws.contract_sub_tradedetail(upperstr+lowerstr)
+            result = contract_service_ws.contract_sub_tradedetail(
+                upperstr+lowerstr)
             pprint(result)
-            tradedetail = result['tick']['data'][0]
-            if tradedetail['amount'] == None:
-                assert False
-            if tradedetail['direction'] == None:
-                assert False
-            if tradedetail['price'] == None:
-                assert False
-            if tradedetail['quantity'] == None:
-                assert False
-            if tradedetail['id'] == None:
-                assert False
+            if 'tick' in result:
+                tradedetail = result['tick']['data'][0]
+                if tradedetail['amount'] == None:
+                    assert False
+                if tradedetail['direction'] == None:
+                    assert False
+                if tradedetail['price'] == None:
+                    assert False
+                if tradedetail['quantity'] == None:
+                    assert False
+                if tradedetail['id'] == None:
+                    assert False
 
     @allure.step('恢复环境')
     def teardown(self):

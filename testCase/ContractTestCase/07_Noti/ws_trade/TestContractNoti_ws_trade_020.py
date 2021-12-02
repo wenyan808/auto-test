@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """# @Date    : 20211019
-# @Author : 
+# @Author :
     用例标题
         WS订阅成交(sub)  最优10档成交
     前置条件
-        
+
     步骤/文本
         详见官方文档
     预期结果
-        
+
     优先级
         1
     用例别名
@@ -24,9 +24,13 @@ from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from tool.atp import ATP
 from common.ContractServiceWS import t as contract_service_ws
+
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('行情')  # 这里填功能
@@ -43,12 +47,14 @@ class TestContractNoti_ws_trade_020:
         self.current_price = ATP.get_current_price()
         print(''' make market depth ''')
         ATP.make_market_depth()
-        #限价委托成交
+        # 限价委托成交
         sell_price = ATP.get_adjust_price(0.98)
         buy_price = ATP.get_adjust_price(1.02)
-        ATP.common_user_make_order(price=sell_price, order_price_type='optimal_10', direction='sell')
+        ATP.common_user_make_order(
+            price=sell_price, order_price_type='optimal_10', direction='sell')
         time.sleep(2)
-        ATP.common_user_make_order(price=buy_price,order_price_type='optimal_10', direction='buy')
+        ATP.common_user_make_order(
+            price=buy_price, order_price_type='optimal_10', direction='buy')
         time.sleep(1)
         self.current_price = ATP.get_current_price()
         pprint(self.current_price)
@@ -57,19 +63,21 @@ class TestContractNoti_ws_trade_020:
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
         with allure.step('详见官方文档'):
-            result = contract_service_ws.contract_sub_tradedetail(symbol_period)
+            result = contract_service_ws.contract_sub_tradedetail(
+                symbol_period)
             pprint(result)
-            tradedetail = result['tick']['data'][0]
-            if tradedetail['amount'] == None:
-                assert False
-            if tradedetail['direction'] == None:
-                assert False
-            if float(tradedetail['price']) != float(self.current_price):
-                assert False
-            if tradedetail['quantity'] == None:
-                assert False
-            if tradedetail['id'] == None:
-                assert False
+            if 'tick' in result:
+                tradedetail = result['tick']['data'][0]
+                if tradedetail['amount'] == None:
+                    assert False
+                if tradedetail['direction'] == None:
+                    assert False
+                if float(tradedetail['price']) != float(self.current_price):
+                    assert False
+                if tradedetail['quantity'] == None:
+                    assert False
+                if tradedetail['id'] == None:
+                    assert False
 
     @allure.step('恢复环境')
     def teardown(self):
