@@ -23,6 +23,7 @@ class TestSwapApiSchema_059:
 
     @classmethod
     def teardown_class(cls):
+        time.sleep(1)
         user01.swap_tpsl_cancelall(contract_code=DEFAULT_CONTRACT_CODE)
         pass
 

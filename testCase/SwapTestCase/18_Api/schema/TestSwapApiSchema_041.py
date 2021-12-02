@@ -21,8 +21,13 @@ class TestSwapApiSchema_041:
         with allure.step('操作：执行api'):
             self.currentPrice = currentPrice()
             user01.swap_order(contract_code=contract_code,price=round(self.currentPrice*0.5,2),direction='buy')
-            time.sleep(1)
-            r = user01.swap_cancelall(contract_code=contract_code)
+            for i in range(3):
+                r = user01.swap_cancelall(contract_code=contract_code)
+                if 'ok' in r['status'] and r['data']['successes']:
+                    break
+                else:
+                    print(f'撤销失败，第{i+1}次重试……')
+                    time.sleep(1)
             pass
         with allure.step('验证：schema响应字段校验'):
             schema = {
