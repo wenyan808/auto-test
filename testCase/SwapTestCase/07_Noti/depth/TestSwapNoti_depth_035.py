@@ -66,19 +66,25 @@ class TestSwapNoti_depth_035:
             }
             flag = False
             # 重试3次未返回预期结果则失败
-            for i in range(1, 4):
+            for i in range(3):
                 result = ws_user01.swap_sub(subs)
                 if 'tick' in result:
                     if result['tick']['bids']:
                         flag = True
                         break
                 time.sleep(1)
-                print('未返回预期结果，第{}次重试………………………………'.format(i))
+                print(f'未返回预期结果，第{i+1}次重试………………………………')
             assert flag, '未返回预期结果'
             pass
         with allure.step('验证：返回结果买盘长度{}'.format(params['exceptLength'])):
-            assert len(result['tick']['bids']) == params['exceptLength']
-
+            flag = False
+            for i in range(3):
+                if len(result['tick']['bids']) == params['exceptLength']:
+                    flag = True
+                    break
+                else:
+                    time.sleep(1)
+            assert flag,'三次重试断言失败'
 
 
 if __name__ == '__main__':
