@@ -72,7 +72,7 @@ class TestCoinswapTriggerOrder_012:
             sqlStr = f'select t.state ' \
                      f'from t_trigger_order t ' \
                      f'where user_order_id = {orderId} and order_type = 2 '
-            db_result = DB_contract_trade.execute(sqlStr)[0]
+            db_result = DB_contract_trade.dictCursor(sqlStr)[0]
             assert 'ok' in order_reps['status'], '撤单执行失败'
             assert 6 == db_result['state'],'订单状态校验失败'
             pass

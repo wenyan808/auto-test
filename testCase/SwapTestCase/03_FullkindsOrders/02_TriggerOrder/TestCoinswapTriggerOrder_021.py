@@ -69,7 +69,7 @@ class TestCoinswapTriggerOrder_020:
             time.sleep(1)#等待生效数据更新
             limit_order_id = limit_order['data']['order_id']
             sqlStr = f'select count(1) as tpIsExesit,user_order_id from t_tpsl_trigger_order where client_order_id= {limit_order_id}'
-            tpsl_order_info = DB_contract_trade.execute(sqlStr)[0]
+            tpsl_order_info = DB_contract_trade.dictCursor(sqlStr)[0]
             assert 1 <= tpsl_order_info['tpIsExesit'], '校验生成止盈单失败'
             pass
         with allure.step('操作：撤销止盈订单'):
@@ -81,7 +81,7 @@ class TestCoinswapTriggerOrder_020:
         with allure.step('验证：撤销后订单存在历史订单中'):
             for i in range(3):
                 sqlStr = f'select state from t_tpsl_trigger_order where client_order_id= {limit_order_id} and order_type = 2'
-                tpsl_order_info = DB_contract_trade.execute(sqlStr)[0]
+                tpsl_order_info = DB_contract_trade.dictCursor(sqlStr)[0]
                 if tpsl_order_info['state']==2:
                     print(f'校验失败，第{i+1}次重试……')
                     time.sleep(1)

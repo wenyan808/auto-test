@@ -64,7 +64,7 @@ class TestCoinswapTriggerOrder_019:
         with allure.step("验证：状态为待委托"):
             time.sleep(1)#等待数据更新
             sqlStr = f'select state from t_tpsl_trigger_order where user_order_id={tp_order_id}'
-            db_info = DB_contract_trade.execute(sqlStr)[0]
+            db_info = DB_contract_trade.dictCursor(sqlStr)[0]
             assert 2 == db_info['state'],'状态为待委托校验失败'
 
 if __name__ == '__main__':

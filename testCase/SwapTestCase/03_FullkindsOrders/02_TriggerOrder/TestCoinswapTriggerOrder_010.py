@@ -81,7 +81,7 @@ class TestCoinswapTriggerOrder_010:
                      f'from t_trigger_order t ' \
                      f'where user_order_id = {orderId}'
             for i in range(3):
-                db_info = DB_contract_trade.execute(sqlStr)[0]
+                db_info = DB_contract_trade.dictCursor(sqlStr)[0]
                 if len(db_info) == 0:
                     print(f'查询为空，第{i}一次重试……')
                     time.sleep(1)
@@ -107,7 +107,7 @@ class TestCoinswapTriggerOrder_010:
                 sqlStr = f'select t.state,t.order_id,t.triggered_at ' \
                          f'from t_trigger_order t ' \
                          f'where user_order_id = {orderId}'
-                is_trigger = DB_contract_trade.execute(sqlStr)[0]
+                is_trigger = DB_contract_trade.dictCursor(sqlStr)[0]
                 if is_trigger['state'] == 2:
                     print(f'校验失败，第{i+1}次重试……')
                     time.sleep(1)
