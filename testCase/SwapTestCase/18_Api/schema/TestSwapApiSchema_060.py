@@ -28,7 +28,16 @@ class TestSwapApiSchema_060:
     @allure.title("查询止盈止损订单历史委托")
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
-            r = user01.swap_tpsl_hisorders(contract_code=contract_code,status=0,create_date=7,page_size=1,page_index=1)
+            flag = False
+            # 重试3次未返回预期结果则失败
+            for i in range(3):
+                r = user01.swap_tpsl_hisorders(contract_code=contract_code,status=0,create_date=7,page_size=1,page_index=1)
+                if 'ok' in r['status'] and r['data']['orders']:
+                    flag = True
+                    break
+                time.sleep(1)
+                print(f'未返回预期结果，第{i + 1}次重试………………………………')
+            assert flag, '重试3次未返回预期结果'
             pass
         with allure.step('验证：schema响应字段校验'):
             schema = {
