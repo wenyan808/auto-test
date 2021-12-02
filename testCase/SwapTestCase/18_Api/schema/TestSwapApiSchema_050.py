@@ -17,6 +17,24 @@ from config.case_content import epic,features
 @pytest.mark.stable
 class TestSwapApiSchema_050:
 
+    @classmethod
+    def setup_class(cls):
+        with allure.step("变量初始化"):
+            cls.contract_code = DEFAULT_CONTRACT_CODE
+            cls.latest_price = currentPrice()
+            pass
+        with allure.step("挂单"):
+            user01.swap_order(contract_code=cls.contract_code,price=cls.latest_price,direction='buy')
+            pass
+
+    @classmethod
+    def teardown_class(cls):
+        with allure.step('恢复环境:取消挂单'):
+            time.sleep(1)
+            user01.swap_cancelall(contract_code=cls.contract_code)
+            user01.swap_trigger_cancelall(contract_code=cls.contract_code)
+            pass
+
     @allure.title("合约闪电平仓下单")
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):

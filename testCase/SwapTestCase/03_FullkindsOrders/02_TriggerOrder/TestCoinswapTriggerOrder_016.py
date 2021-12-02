@@ -68,12 +68,12 @@ class TestCoinswapTriggerOrder_016:
             for i in range(5):
                 relation_tpsl_order = user01.swap_relation_tpsl_order(contract_code=self.contract_code,
                                                                       order_id=limit_order['data']['order_id'])
-                tpsl_order_info = relation_tpsl_order['data']['tpsl_order_info'][0]
-                if 1 == tpsl_order_info['status']:
+                if relation_tpsl_order['data']['tpsl_order_info'] and 1 == relation_tpsl_order['data']['tpsl_order_info'][0]['status']:
                     print(f'触发后数据未更新，第{i+1}次重试')
                     time.sleep(1)
                 else:
                     break
+            tpsl_order_info = relation_tpsl_order['data']['tpsl_order_info'][0]
             assert 2 == tpsl_order_info['status'], '成交前状态校验失败'
             pass
         with allure.step('验证：未成交时，止盈信息'):
