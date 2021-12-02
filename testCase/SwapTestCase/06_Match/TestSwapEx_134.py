@@ -3,15 +3,15 @@
 # @Date    : 20211018
 # @Author :  HuiQing Yu
 
-import allure
-import pytest
 import time
 
-from common.SwapServiceAPI import user01
-from common.mysqlComm import mysqlComm
-from config.conf import DEFAULT_CONTRACT_CODE
+import allure
+import pytest
+
 from common.CommonUtils import currentPrice
+from common.SwapServiceAPI import user01
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE
 
 
 @allure.epic(epic[1])
@@ -58,12 +58,12 @@ class TestSwapEx_134:
                                                              order_price_type=params['order_price_type'])
             pass
         with allure.step('验证：订单存在撮合结果表'):
-            strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
+            strStr = "select count(1) as count from t_exchange_match_result WHERE f_id = " \
                      "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderInfo['data']['order_id'])
             flag = False
             # 给撮合时间，5秒内还未撮合完成则为失败
             for i in range(5):
-                isMatch = DB_orderSeq.execute(strStr)[0][0]
+                isMatch = DB_orderSeq.execute(strStr)[0]['count']
                 if 1 == isMatch:
                     flag = True
                     break

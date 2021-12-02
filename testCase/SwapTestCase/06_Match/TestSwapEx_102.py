@@ -3,14 +3,14 @@
 # @Date    : 20211018
 # @Author : HuiQing Yu
 
-import allure
-import pytest
 import time
 
+import allure
+import pytest
+
 from common.SwapServiceAPI import user01, user02, user03
-from common.mysqlComm import mysqlComm
 from config.case_content import epic, features
-from tool.atp import ATP
+from common.CommonUtils import currentPrice
 
 
 @allure.epic(epic[1])
@@ -20,19 +20,16 @@ from tool.atp import ATP
 @pytest.mark.stable
 class TestSwapEx_102:
 
-    @allure.step('前置条件')
-    def setup(self):
-        print('测试步骤：'
+
+    @allure.title('撮合 卖出开仓 部分成交多人多笔价格相同的订单')
+    def test_execute(self, contract_code,DB_orderSeq):
+        allure.dynamic.description('测试步骤：'
               '\n*、下限价单；买入开仓（开空）'
               '\n*、3用户下单，用户1，用户2各下2笔开空单，用户3下2笔开多单'
               '\n*、用户1与用户2的开空单与用户3的开多单成交'
               '\n*、验证开空笔订单撮合成功（查询撮合表有数据）')
-
-    @allure.title('撮合 卖出开仓 部分成交多人多笔价格相同的订单')
-    def test_execute(self, contract_code):
-        DB_orderSeq = mysqlComm('order_seq')
         with allure.step('详见官方文档'):
-            self.currentPrice = ATP.get_current_price()  # 最新价
+            self.currentPrice = currentPrice()  # 最新价
             orderIdList = []
             for user in [user01, user02]:
                 orderInfo = user.swap_order(contract_code=contract_code, price=round(self.currentPrice * 0.99, 2),
@@ -45,12 +42,12 @@ class TestSwapEx_102:
             user03.swap_order(contract_code=contract_code, price=round(self.currentPrice * 0.99, 2),
                               direction='buy',volume=2)
             for i in range(4):
-                strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
+                strStr = "select count(1) as count from t_exchange_match_result WHERE f_id = " \
                          "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderIdList[i])
                 # 给撮合时间，5秒内还未撮合完成则为失败
                 n = 0
                 while n < 5:
-                    isMatch = DB_orderSeq.execute(strStr)[0][0]
+                    isMatch = DB_orderSeq.execute(strStr)[0]['count']
                     if 1 == isMatch:
                         break
                     else:
