@@ -111,7 +111,7 @@ class WebsocketSevice:
 
     def contract_sub_trade_detail(self, symbol):
         subs = {
-            "sub": "market.{}.trade.detail".format(symbol),
+            "req": "market.{}.trade.detail".format(symbol),
             "id": "id1"
         }
         path = '/ws'
