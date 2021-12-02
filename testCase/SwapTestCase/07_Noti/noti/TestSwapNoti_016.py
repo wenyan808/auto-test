@@ -40,13 +40,13 @@ class TestSwapNoti_016:
         with allure.step('操作:执行api-restful请求'):
             flag = False
             # 重试3次未返回预期结果则失败
-            for i in range(1, 4):
+            for i in range(3):
                 result = api_user01.swap_trade(contract_code=self.contract_code)
                 if 'tick' in result:
                     flag = True
                     break
                 time.sleep(1)
-                print('未返回预期结果，第{}次重试………………………………'.format(i))
+                print(f'未返回预期结果，第{i+1}次重试………………………………')
             assert flag,'未返回预期结果'
             pass
         with allure.step('验证：返回结果各字段不为空'):
