@@ -22,7 +22,6 @@ from pprint import pprint
 import allure
 import pytest
 from schema import Schema, Or
-from tool import atp
 from common.LinearServiceAPI import t as linear_api
 from tool.atp import ATP
 
@@ -36,7 +35,7 @@ class TestLinearApiSchema_089:
 
     @allure.step('前置条件')
     def setup(self):
-        self.price = atp.ATP.get_adjust_price(rate=0.98)
+        pass
 
     @allure.title('获取用户的合约订单明细信息（全仓）')
     @allure.step('测试执行')
@@ -146,8 +145,8 @@ class TestLinearApiSchema_089:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        print(atp.ATP.cancel_all_order())
-        print(atp.ATP.close_all_position())
+        print(ATP.cancel_all_order())
+        print(ATP.close_all_position())
 
 
 
