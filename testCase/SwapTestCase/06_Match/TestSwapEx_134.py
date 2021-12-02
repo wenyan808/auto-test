@@ -63,7 +63,7 @@ class TestSwapEx_134:
             flag = False
             # 给撮合时间，5秒内还未撮合完成则为失败
             for i in range(5):
-                isMatch = DB_orderSeq.execute(strStr)[0]['count']
+                isMatch = DB_orderSeq.dictCursor(strStr)[0]['count']
                 if 1 == isMatch:
                     flag = True
                     break

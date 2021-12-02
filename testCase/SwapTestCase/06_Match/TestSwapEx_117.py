@@ -50,7 +50,7 @@ class TestSwapEx_117:
                 # 给撮合时间，5秒内还未撮合完成则为失败
                 n = 0
                 while n < 5:
-                    isMatch = DB_orderSeq.execute(strStr)[0]['count']
+                    isMatch = DB_orderSeq.dictCursor(strStr)[0]['count']
                     if 1 == isMatch:
                         break
                     else:

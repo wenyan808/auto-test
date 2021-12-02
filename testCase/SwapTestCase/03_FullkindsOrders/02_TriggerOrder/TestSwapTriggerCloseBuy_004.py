@@ -156,19 +156,19 @@ class TestSwapTriggerCloseBuy_004:
                      f'from t_trigger_order t ' \
                      f'where user_order_id = {orderId}'
             for i in range(3):
-                db_info = DB_contract_trade.execute(sqlStr)[0]
-                if len(db_info)==0:
+                db_info_list = DB_contract_trade.dictCursor(sqlStr)
+                if len(db_info_list)==0:
                     print(f'查询为空，第{i}一次重试……')
                     time.sleep(1)
                 else:
                     break
-
-            assert params['direction'] in db_info['direction'],'订单方向 买|卖 校验失败'
-            assert params['trigger_type'] in db_info['trigger_type'],'触发类型校验失败'
-            assert round(Decimal(currentPrice()*params['ratio']),2) == round(db_info['trigger_price'],2),'触发价校验失败'
-            assert round(Decimal(currentPrice()*params['ratio']),2) == round(db_info['order_price'],2),'订单价校验失败'
-            assert 5 == db_info['lever_rate'],'杠杆位数校验失败'
-            assert params['offset'] in db_info['offset'],'订单仓位 开|平 校验失败'
+            for db_info in db_info_list:
+                assert params['direction'] in db_info['direction'],'订单方向 买|卖 校验失败'
+                assert params['trigger_type'] in db_info['trigger_type'],'触发类型校验失败'
+                assert round(Decimal(currentPrice()*params['ratio']),2) == round(db_info['trigger_price'],2),'触发价校验失败'
+                assert round(Decimal(currentPrice()*params['ratio']),2) == round(db_info['order_price'],2),'订单价校验失败'
+                assert 5 == db_info['lever_rate'],'杠杆位数校验失败'
+                assert params['offset'] in db_info['offset'],'订单仓位 开|平 校验失败'
             pass
 
 if __name__ == '__main__':

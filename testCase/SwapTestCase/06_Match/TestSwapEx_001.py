@@ -138,12 +138,12 @@ class TestSwapEx_001:
             flag = False
             # 给撮合时间，5秒内还未撮合完成则为失败
             for i in range(3):
-                isMatch = DB_orderSeq.execute(sqlStr)[0]['count']
+                isMatch = DB_orderSeq.dictCursor(sqlStr)[0]['count']
                 if 1 == isMatch:
                     flag = True
                     break
                 time.sleep(1)
-                print('未返回预期结果，第{}次重试………………………………'.format(i))
+                print(f'未返回预期结果，第{i+1}次重试………………………………')
             assert flag
             pass
 
