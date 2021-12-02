@@ -63,7 +63,11 @@ class TestContractNoti_depth_019:
     def test_execute(self, symbol, symbol_period):
         with allure.step('WS订阅深度(150档不合并，即传参step0)，可参考文档：https://docs.huobigroup.com/docs/dm/v1/cn/#websocket-3'):
             depth_type = 'step18'
-            result = contract_service_ws.contract_sub_depth(contract_code=symbol_period, type=depth_type)
+            subs = {
+                "sub": "market.{}.depth.{}".format(symbol_period, depth_type),
+                "id": "id5"
+            }
+            result = contract_service_ws.contract_sub(subs)
             result_str = '\nDepth返回结果 = ' + str(result)
             print('\033[1;32;49m%s\033[0m' % result_str)
             assert result['err-msg'] == 'invalid topic market.BTC_CW.depth.step18'
