@@ -1374,7 +1374,7 @@ class LinearServiceAPI:
 
     # 合约下单--全仓
     def linear_cross_order(self, contract_code=None, pair=None, contract_type=None, client_order_id=None, price=None,
-                           volume=None, direction=None, offset=None, lever_rate=None, order_price_type=None,
+                           volume=1, direction=None, offset='open', lever_rate=5, order_price_type=None,
                            tp_trigger_price=None, tp_order_price=None, tp_order_price_type=None,
                            sl_trigger_price=None, sl_order_price=None, sl_order_price_type=None, channel_code=None):
 
@@ -2312,15 +2312,15 @@ class LinearServiceAPI:
             print("当前只持仓一种单，无法通过自我成交清空，请人工处理")
             return False
         elif count == 2:
-            volume1 = str(int(r["data"][0]['volume']))
-            volume2 = str(int(r["data"][1]['volume']))
+            volume1 = int(r["data"][0]['volume'])
+            volume2 = int(r["data"][1]['volume'])
             leverrate = r["data"][0]['lever_rate']
 
             if volume1 == volume2:
-                self.linear_cross_order(contract_code=contract_code, price=price, volume=str(volume1), direction='buy',
+                self.linear_cross_order(contract_code=contract_code, price=price, volume=volume1, direction='buy',
                                         offset='close', lever_rate=leverrate, order_price_type='limit')
                 time.sleep(0.5)
-                self.linear_cross_order(contract_code=contract_code, price=price, volume=str(volume1), direction='sell',
+                self.linear_cross_order(contract_code=contract_code, price=price, volume=volume1, direction='sell',
                                         offset='close', lever_rate=leverrate, order_price_type='limit')
                 time.sleep(2)
                 r = self.linear_cross_position_info(contract_code=contract_code)
