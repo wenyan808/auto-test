@@ -17,13 +17,30 @@ from config.case_content import epic,features
 @pytest.mark.stable
 class TestSwapApiSchema_051:
 
+    @classmethod
+    def teardown_class(cls):
+        with allure.step('恢复环境:取消挂单'):
+            time.sleep(1)
+            user01.swap_trigger_cancelall(contract_code=DEFAULT_CONTRACT_CODE)
+            pass
+
     @allure.title("合约计划委托下单")
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
-            self.currentPrice = currentPrice()
-            r = user01.swap_trigger_order(contract_code=contract_code, volume=1, trigger_price=round(self.currentPrice*1.01,2),
-                                          order_price=round(self.currentPrice*0.99,2), trigger_type="ge", direction="buy")
-
+            flag = False
+            # 重试3次未返回预期结果则失败
+            for i in range(3):
+                self.currentPrice = currentPrice()
+                r = user01.swap_trigger_order(contract_code=contract_code, volume=1,
+                                              trigger_price=round(self.currentPrice * 1.01, 2),
+                                              order_price=round(self.currentPrice * 0.99, 2), trigger_type="ge",
+                                              direction="buy")
+                if 'ok' in r['status'] and r['data']['order_id']:
+                    flag = True
+                    break
+                time.sleep(1)
+                print(f'未返回预期结果，第{i + 1}次重试………………………………')
+            assert flag, '重试3次未返回预期结果'
             pass
         with allure.step('验证：schema响应字段校验'):
             schema = {

@@ -20,8 +20,17 @@ class TestSwapApiSchema_048:
     @allure.title("获取用户的合约历史成交记录")
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
-            r = user01.swap_matchresults(contract_code=contract_code, trade_type=0, page_size=3, page_index=1,
-                                         create_date=7)
+            flag = False
+            # 重试3次未返回预期结果则失败
+            for i in range(3):
+                r = user01.swap_matchresults(contract_code=contract_code, trade_type=0, page_size=3, page_index=1,
+                                             create_date=7)
+                if 'ok' in r['status'] and r['data']['trades']:
+                    flag = True
+                    break
+                time.sleep(1)
+                print(f'未返回预期结果，第{i + 1}次重试………………………………')
+            assert flag, '重试3次未返回预期结果'
             pass
         with allure.step('验证：schema响应字段校验'):
             schema = {

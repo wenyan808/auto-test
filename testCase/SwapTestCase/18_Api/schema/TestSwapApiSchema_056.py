@@ -26,15 +26,26 @@ class TestSwapApiSchema_056:
 
     @classmethod
     def teardown_class(cls):
-        with allure.step(''):
+        with allure.step('撤单'):
+            time.sleep(1)
+            user01.swap_tpsl_cancelall(contract_code=DEFAULT_CONTRACT_CODE)
             pass
 
     @allure.title("对仓位设置止盈止损订单")
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
-            r = user01.swap_tpsl_order(contract_code=contract_code, volume=1, direction='sell',
-                                       tp_trigger_price=round(self.currentPrice * 1.01, 2),
-                                       tp_order_price_type='optimal_5',sl_order_price_type='optimal_5')
+            flag = False
+            # 重试3次未返回预期结果则失败
+            for i in range(3):
+                r = user01.swap_tpsl_order(contract_code=contract_code, volume=1, direction='sell',
+                                           tp_trigger_price=round(self.currentPrice * 1.01, 2),
+                                           tp_order_price_type='optimal_5', sl_order_price_type='optimal_5')
+                if 'ok' in r['status'] and r['data']['tp_order']:
+                    flag = True
+                    break
+                time.sleep(1)
+                print(f'未返回预期结果，第{i+1}次重试………………………………')
+            assert flag, '重试3次未返回预期结果'
             pass
         with allure.step('验证：schema响应字段校验'):
             schema = {

@@ -65,15 +65,15 @@ class TestCoinswapTriggerOrder_016:
                                             tp_trigger_price=round(self.latest_price * 1.5, 2))
             pass
         with allure.step('验证：未成交时，止盈单状态未触发'):
-            for i in range(3):
+            for i in range(5):
                 relation_tpsl_order = user01.swap_relation_tpsl_order(contract_code=self.contract_code,
                                                                       order_id=limit_order['data']['order_id'])
-                tpsl_order_info = relation_tpsl_order['data']['tpsl_order_info'][0]
-                if 1 == tpsl_order_info['status']:
+                if relation_tpsl_order['data']['tpsl_order_info'] and 1 == relation_tpsl_order['data']['tpsl_order_info'][0]['status']:
                     print(f'触发后数据未更新，第{i+1}次重试')
                     time.sleep(1)
                 else:
                     break
+            tpsl_order_info = relation_tpsl_order['data']['tpsl_order_info'][0]
             assert 2 == tpsl_order_info['status'], '成交前状态校验失败'
             pass
         with allure.step('验证：未成交时，止盈信息'):
@@ -83,7 +83,6 @@ class TestCoinswapTriggerOrder_016:
                 assert round(self.latest_price * 1.5, 2)  == round(tpsl_order_info['order_price'], 2), '止盈价校验失败'
             else:
                 assert 0E-18 == round(tpsl_order_info['order_price'], 2), '止盈价校验失败'
-
             assert params['tp_order_price_type'] == tpsl_order_info['order_price_type'], '订单类型校验失败'
             pass
 
