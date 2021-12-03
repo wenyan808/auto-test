@@ -4,15 +4,16 @@
 # @Author : 张广南
 
 import time
+
 import allure
 import pytest
 
+from common.CommonUtils import currentPrice
 from common.SwapServiceWS import user01 as ws_user01
-from common.SwapServiceAPI import user01 as api_user01
-from common.CommonUtils import currentPrice,opponentExist
-from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 from tool.atp import ATP
+
 
 @allure.epic(epic[1])
 @allure.feature(features[6]['feature'])

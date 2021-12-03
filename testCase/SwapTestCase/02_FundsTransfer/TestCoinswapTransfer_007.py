@@ -16,7 +16,6 @@ from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 @allure.story(features[1]['story'][2])
 @allure.tag('Script owner : 张广南', 'Case owner : 叶永刚')
 @pytest.mark.stable
-@pytest.mark.transfer
 class TestCoinSwapTransfer_007:
 
     @classmethod

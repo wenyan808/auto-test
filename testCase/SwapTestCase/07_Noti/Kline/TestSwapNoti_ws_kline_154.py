@@ -3,12 +3,11 @@
 # @Date    : 20211013
 # @Author : HuiQing Yu
 
+import allure
+import pytest
+import time
+
 from common.SwapServiceWS import t as swap_service_ws
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceOrder import t as swap_order
-from tool import atp
-from pprint import pprint
-import pytest, allure, random, time
 from config.case_content import epic, features
 
 

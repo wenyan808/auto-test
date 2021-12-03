@@ -13,7 +13,7 @@ from common.CommonUtils import currentPrice
 from common.SwapServiceAPI import user01,user02
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
-
+import jsonpath
 
 @allure.epic(epic[1])
 @allure.feature(features[2]['feature'])
@@ -75,7 +75,14 @@ class TestCoinswapTriggerOrder_020:
             pass
         with allure.step('操作：撤销止盈订单'):
             if 'cancel' in params['operate_type']:
-                user01.swap_tpsl_cancel(contract_code=self.contract_code,order_id=tpsl_order_info[0]['user_order_id'])
+                for i in range(5):
+                    cancelResult = user01.swap_tpsl_cancel(contract_code=self.contract_code, order_id=tpsl_order_info[0]['user_order_id'])
+                    if jsonpath.jsonpath(cancelResult,'$.data.errors[0].err_msg'):
+                        print(f'止盈订单未生效,第{i + 1}次重试……')
+                        time.sleep(1)
+                    else:
+                        break
+
             elif 'cancelAll' in params['operate_type']:
                 user01.swap_tpsl_cancelall(contract_code=self.contract_code)
             pass

@@ -79,6 +79,7 @@ class TestSwapNoti_depth_035:
         with allure.step('验证：返回结果买盘长度{}'.format(params['exceptLength'])):
             flag = False
             for i in range(3):
+                result = ws_user01.swap_sub(subs)
                 if len(result['tick']['bids']) == params['exceptLength']:
                     flag = True
                     break
