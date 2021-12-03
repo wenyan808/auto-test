@@ -41,7 +41,7 @@ class TestSwapNoti_012:
             # 重试3次未返回预期结果则失败
             for i in range(3):
                 result = api_user01.swap_bbo(contract_code=self.contract_code)
-                if 'ticks' in result:
+                if 'ticks' in result and 'bid' in result['ticks'][0] and 'ask' in result['ticks'][0]:
                     flag = True
                     break
                 time.sleep(1)

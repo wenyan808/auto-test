@@ -48,8 +48,8 @@ class TestCoinswapTriggerOrder_020:
     @classmethod
     def teardown_class(cls):
         with allure.step('撤销挂单'):
-            # user01.swap_cancelall(contract_code=cls.contract_code)  # 避免用例失败未能撤销订单
-            # user01.swap_tpsl_cancelall(contract_code=cls.contract_code)
+            user01.swap_cancelall(contract_code=cls.contract_code)  # 避免用例失败未能撤销订单
+            user01.swap_tpsl_cancelall(contract_code=cls.contract_code)
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
@@ -83,7 +83,7 @@ class TestCoinswapTriggerOrder_020:
             for i in range(3):
                 sqlStr = f'select state from t_tpsl_trigger_order where client_order_id= {limit_order_id} and order_type = 2'
                 tpsl_order_info = DB_contract_trade.dictCursor(sqlStr)
-                if tpsl_order_info!=[] and tpsl_order_info[0]['state']==2:
+                if tpsl_order_info==() or tpsl_order_info[0]['state']==2:
                     print(f'校验失败，第{i+1}次重试……')
                     time.sleep(1)
                 else:
