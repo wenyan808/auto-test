@@ -18,7 +18,6 @@ from config.case_content import epic,features
 @allure.story(features[1]['story'][2])
 @allure.tag('Script owner : 张广南', 'Case owner : 叶永刚')
 @pytest.mark.stable
-@pytest.mark.transfer
 class TestCoinSwapTransfer_008:
 
     @classmethod

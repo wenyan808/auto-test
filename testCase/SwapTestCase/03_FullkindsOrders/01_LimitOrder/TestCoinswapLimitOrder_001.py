@@ -45,6 +45,7 @@ class TestCoinswapLimitOrder_001:
     @classmethod
     def teardown_class(cls):
         with allure.step('撤销挂单'):
+            time.sleep(1)
             user01.swap_cancelall(contract_code=cls.contract_code)#避免用例失败未能撤销订单
             pass
 
