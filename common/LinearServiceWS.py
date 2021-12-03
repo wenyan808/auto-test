@@ -190,8 +190,8 @@ class WebsocketSevice:
 
     def linear_notification(self, sub):
         path = '/linear-swap-notification'
-        url = self.__url + path
-        return api_key_sub(url, self.__access_key, self.__secret_key, sub)
+        url = self.__url
+        return api_key_sub(url, self.__access_key, self.__secret_key, sub, path)
 
 
 t = WebsocketSevice(WSURL, ACCESS_KEY, SECRET_KEY)
