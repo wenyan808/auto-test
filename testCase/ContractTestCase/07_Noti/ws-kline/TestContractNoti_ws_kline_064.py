@@ -24,7 +24,10 @@ from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from common.ContractServiceWS import t as contract_service_ws
 from tool.atp import ATP
 
@@ -58,27 +61,29 @@ class TestContractNoti_ws_kline_064:
     def test_execute(self, symbol, symbol_period):
         with allure.step('详见官方文档'):
             period = "1min"
-            result = contract_service_ws.contract_sub_kline(contract_code=symbol_period.lower(), period=period)
+            result = contract_service_ws.contract_sub_kline(
+                contract_code=symbol_period.lower(), period=period)
             pprint(result)
-            tradedetail = result['tick']
-            if tradedetail['amount'] == None:
-                assert False
-            if tradedetail['close'] == None:
-                assert False
-            if tradedetail['count'] == None:
-                assert False
-            if tradedetail['high'] == None:
-                assert False
-            if tradedetail['id'] == None:
-                assert False
-            if tradedetail['low'] == None:
-                assert False
-            if tradedetail['mrid'] == None:
-                assert False
-            if tradedetail['open'] == None:
-                assert False
-            if tradedetail['vol'] == None:
-                assert False
+            if 'tick' in result:
+                tradedetail = result['tick']
+                if tradedetail['amount'] == None:
+                    assert False
+                if tradedetail['close'] == None:
+                    assert False
+                if tradedetail['count'] == None:
+                    assert False
+                if tradedetail['high'] == None:
+                    assert False
+                if tradedetail['id'] == None:
+                    assert False
+                if tradedetail['low'] == None:
+                    assert False
+                if tradedetail['mrid'] == None:
+                    assert False
+                if tradedetail['open'] == None:
+                    assert False
+                if tradedetail['vol'] == None:
+                    assert False
 
     @allure.step('恢复环境')
     def teardown(self):
