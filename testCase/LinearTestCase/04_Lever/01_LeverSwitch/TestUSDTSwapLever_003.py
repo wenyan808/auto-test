@@ -25,10 +25,13 @@
         TestUSDTSwapLever_003
 """
 
-from common.LinearServiceAPI import t as linear_api
+import random
+import time
 from pprint import pprint
-import pytest, allure, random, time
 
+import allure
+import pytest
+from common.LinearServiceAPI import t as linear_api
 from tool.atp import ATP
 
 
@@ -36,7 +39,7 @@ from tool.atp import ATP
 @allure.feature('杠杆')  # 这里填功能
 @allure.story('杠杆调节')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
-class TestUSDTSwapLever_001:
+class TestUSDTSwapLever_003:
 
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
@@ -48,7 +51,6 @@ class TestUSDTSwapLever_001:
         ATP.cancel_all_types_order()
         time.sleep(2)
 
-
     @allure.title('BTC/USDT逐仓当前无挂单切换杠杆倍数测试')
     @allure.step('测试执行')
     def test_execute(self, contract_code):
@@ -57,9 +59,11 @@ class TestUSDTSwapLever_001:
         with allure.step('2、选择逐仓模式'):
             pass
         with allure.step('3、观察杠杆倍数指示按钮有结果A'):
-            r = linear_api.linear_available_level_rate(contract_code=contract_code)
+            r = linear_api.linear_available_level_rate(
+                contract_code=contract_code)
             pprint(r)
-            availableleverlist = r['data'][0]['available_level_rate'].split(',')
+            availableleverlist = r['data'][0]['available_level_rate'].split(
+                ',')
         with allure.step('4、点击杠杆切换按钮有结果B'):
             pass
         with allure.step('5、在杠杆滑动条上，点击30X后再点击"确定"按钮有结果C'):
@@ -68,7 +72,8 @@ class TestUSDTSwapLever_001:
             availableleverlist.remove('5')
             i = random.choice(availableleverlist)
             time.sleep(4)
-            r = linear_api.linear_switch_lever_rate(contract_code=contract_code, lever_rate=i)
+            r = linear_api.linear_switch_lever_rate(
+                contract_code=contract_code, lever_rate=i)
             pprint(r)
 
             assert r['status'] == 'ok'
