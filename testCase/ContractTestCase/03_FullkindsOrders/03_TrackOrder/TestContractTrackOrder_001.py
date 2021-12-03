@@ -85,6 +85,7 @@ class TestContractTrackOrder_001:
                 actual_orderid2 = kw['order_id']
                 if (actual_price2 == activationprice) and (actual_symbol2 == symbol) and (actual_orderid2 == orderid):
                     flag = True
+                    break
                 else:
                     print("查询跟踪委托历史委托不符合预期")
                     print("实际价格为：%s, 实际币种为%s, 实际单号为%s" %

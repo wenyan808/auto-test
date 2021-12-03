@@ -21,9 +21,13 @@ from common.ContractServiceOrder import t as contract_order
 from common.ContractServiceWS import t as contract_service_ws
 
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from tool import atp
 from tool.atp import ATP
+
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('订阅')  # 这里填功能
@@ -60,10 +64,12 @@ class TestContractNoti_002:
         self.currentPrice = atp.ATP.get_current_price()  # 最新价
         self.lowPrice = round(self.currentPrice * 0.99, 2)  # 买入价
         self.highPrice = round(self.currentPrice * 1.01, 2)  # 触发价
-        print(self.symbol_period, '最新价 = ', self.currentPrice, ' 触发价 = ', self.highPrice, '买入价 = ', self.lowPrice)
+        print(self.symbol_period, '最新价 = ', self.currentPrice,
+              ' 触发价 = ', self.highPrice, '买入价 = ', self.lowPrice)
 
         # 获取交割合约信息
-        contractInfo = contract_api.contract_contract_info(symbol=symbol, contract_type=self.contract_type)
+        contractInfo = contract_api.contract_contract_info(
+            symbol=symbol, contract_type=self.contract_type)
         print(self.symbol, '合约信息 = ', contractInfo)
         contract_code = contractInfo['data'][0]['contract_code']
 
@@ -92,10 +98,11 @@ class TestContractNoti_002:
             result = contract_service_ws.contract_sub(subs)
             resultStr = '\nDepth返回结果 = ' + str(result)
             print('\033[1;32;49m%s\033[0m' % resultStr)
-            if not result['tick']['bids']:
-                assert False
-            if not result['tick']['asks']:
-                assert False
+            if 'tick' in result:
+                if not result['tick']['bids']:
+                    assert False
+                if not result['tick']['asks']:
+                    assert False
 
     @allure.step('恢复环境')
     def teardown(self):
