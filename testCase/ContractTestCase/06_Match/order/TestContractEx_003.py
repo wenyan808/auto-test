@@ -12,7 +12,7 @@ from config.conf import DEFAULT_SYMBOL, DEFAULT_CONTRACT_CODE
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
-@allure.story('平空')  # 这里填子功能，没有的话就把本行注释掉
+@allure.story('委托单')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
 @allure.tag('Script owner : 张广南', 'Case owner : 吉龙')
 class TestContractEx_003:
