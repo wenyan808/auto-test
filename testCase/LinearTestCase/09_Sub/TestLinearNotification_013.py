@@ -30,7 +30,7 @@ from common.LinearServiceWS import t as linear_service_ws
 @allure.feature('订单推送')  # 这里填功能
 @allure.story('订阅合约信息（无合约信息）')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : 柳攀峰')
-# @pytest.mark.stable
+@pytest.mark.stable
 class TestLinearNotification_013:
 
     @allure.step('前置条件:非colo域名')
