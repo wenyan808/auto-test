@@ -49,8 +49,8 @@ class TestSwapNoti_004:
             # 重试3次未返回预期结果则失败
             for i in range(3):
                 result = ws_user01.swap_sub(subs)
-                if result['tick']:
-                    if 'bid' in result['tick'] and ['ask'] in result['tick']:
+                if 'tick' in result:
+                    if 'bid' in result['tick'] and 'ask' in result['tick']:
                         flag = True
                         break
                 time.sleep(1)
