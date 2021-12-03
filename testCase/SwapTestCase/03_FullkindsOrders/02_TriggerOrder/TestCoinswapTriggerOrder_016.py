@@ -68,7 +68,7 @@ class TestCoinswapTriggerOrder_016:
             for i in range(5):
                 relation_tpsl_order = user01.swap_relation_tpsl_order(contract_code=self.contract_code,
                                                                       order_id=limit_order['data']['order_id'])
-                if relation_tpsl_order['data']['tpsl_order_info'] and 1 == relation_tpsl_order['data']['tpsl_order_info'][0]['status']:
+                if relation_tpsl_order['data']['tpsl_order_info'] or 1 != relation_tpsl_order['data']['tpsl_order_info'][0]['status']:
                     print(f'触发后数据未更新，第{i+1}次重试')
                     time.sleep(1)
                 else:
