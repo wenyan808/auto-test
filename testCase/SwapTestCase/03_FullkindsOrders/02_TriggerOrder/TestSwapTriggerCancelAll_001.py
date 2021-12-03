@@ -12,7 +12,7 @@ import pytest
 from common.SwapServiceAPI import user01
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
-from tool.atp import ATP
+from common.CommonUtils import currentPrice
 
 
 @allure.epic(epic[1])
@@ -27,7 +27,7 @@ class TestSwapTriggerCancelAll_001:
     @classmethod
     def setup_class(cls):
         with allure.step('*->计划委托下单(多单)'):
-            cls.currentPrice = ATP.get_current_price()  # 最新价
+            cls.currentPrice = currentPrice()  # 最新价
             trigger_price = round(cls.currentPrice, 2)
             # ge大于等于(触发价比最新价大)；le小于(触发价比最新价小)
             if trigger_price >= cls.currentPrice:

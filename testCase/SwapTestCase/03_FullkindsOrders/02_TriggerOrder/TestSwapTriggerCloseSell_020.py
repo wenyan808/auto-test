@@ -9,7 +9,7 @@ import pytest
 from common.SwapServiceAPI import user01
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
-from tool.atp import ATP
+from common.CommonUtils import currentPrice
 
 
 @allure.epic(epic[1])
@@ -50,7 +50,7 @@ class TestSwapTriggerCloseSell_020:
     @classmethod
     def setup_class(cls):
         with allure.step('*->持仓'):
-            cls.currentPrice = ATP.get_current_price()  # 最新价
+            cls.currentPrice = currentPrice()  # 最新价
             user01.swap_order(contract_code=cls.contract_code, price=cls.currentPrice, direction='buy')
             user01.swap_order(contract_code=cls.contract_code, price=cls.currentPrice, direction='sell')
             pass
