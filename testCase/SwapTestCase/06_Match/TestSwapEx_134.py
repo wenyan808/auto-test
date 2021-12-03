@@ -53,9 +53,16 @@ class TestSwapEx_134:
     def test_execute(self, params, DB_orderSeq):
         allure.dynamic.title('撮合 闪电平仓 ' + params['case_name'])
         with allure.step('操作：执行平仓'):
-            orderInfo = user01.swap_lightning_close_position(contract_code=self.contract_code, volume=1,
-                                                             direction=params['direction'],
-                                                             order_price_type=params['order_price_type'])
+            for i in range(3):
+                orderInfo = user01.swap_lightning_close_position(contract_code=self.contract_code, volume=1,
+                                                                 direction=params['direction'],
+                                                                 order_price_type=params['order_price_type'])
+                if 'ok' in orderInfo['status']:
+                    break
+                else:
+                    print(f'盘口未更新，第{i+1}次重试……')
+                    time.sleep(1)
+
             pass
         with allure.step('验证：订单存在撮合结果表'):
             strStr = "select count(1) as count from t_exchange_match_result WHERE f_id = " \
