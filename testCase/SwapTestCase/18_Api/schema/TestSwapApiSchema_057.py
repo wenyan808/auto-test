@@ -27,7 +27,6 @@ class TestSwapApiSchema_057:
             pass
 
     @allure.title("止盈止损订单撤单")
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：挂单'):
             orderInfo = user01.swap_tpsl_order(contract_code=contract_code, volume=1, direction='sell',
@@ -38,13 +37,13 @@ class TestSwapApiSchema_057:
         with allure.step('操作：执行api'):
             flag = False
             # 重试3次未返回预期结果则失败
-            for i in range(1, 4):
+            for i in range(3):
                 r = user01.swap_tpsl_cancel(contract_code=contract_code, order_id=orderId)
-                if r['data']['successes']:
+                if 'ok' in r['status'] and r['data']['successes']:
                     flag = True
                     break
                 time.sleep(1)
-                print('未返回预期结果，第{}次重试………………………………'.format(i))
+                print(f'未返回预期结果，第{i+1}次重试………………………………')
             assert flag, '重试3次未返回预期结果'
             pass
         with allure.step('验证：schema响应字段校验'):

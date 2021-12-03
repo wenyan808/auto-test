@@ -16,7 +16,6 @@ from config.case_content import epic, features
 class TestSwapNoti_010:
 
     @allure.title('请求K线(传参from,to)')
-    @pytest.mark.flaky(reruns=3, reruns_delay=1)
     def test_execute(self, contract_code):
         with allure.step('操作：执行api-restful请求'):
             toTime = int(time.time())

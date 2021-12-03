@@ -89,20 +89,40 @@ class TestContractNoti_002:
     @allure.title('WS订阅深度(150档不合并，即传参step0)')
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
-        with allure.step('WS订阅深度(150档不合并，即传参step0)，可参考文档：https://docs.huobigroup.com/docs/dm/v1/cn/#websocket-3'):
+        with allure.step('操作：执行请求'):
             self.depthType = 'step0'
             subs = {
                 "sub": "market.{}.depth.{}".format(self.symbol_period, self.depthType),
                 "id": "id5"
             }
             result = contract_service_ws.contract_sub(subs)
-            resultStr = '\nDepth返回结果 = ' + str(result)
-            print('\033[1;32;49m%s\033[0m' % resultStr)
-            if 'tick' in result:
-                if not result['tick']['bids']:
-                    assert False
-                if not result['tick']['asks']:
-                    assert False
+            pass
+        with allure.step('验证：bids不为空'):
+            flag = False
+            for i in range(3):
+                if 'tick' in result and 'bids' in result['tick'] and result['tick']['bids']:
+                    flag = True
+                    break
+                else:
+                    print(f'未返回预期结果，第{i+1}次重试……')
+                    time.sleep(1)
+                    result = contract_service_ws.contract_sub(subs)
+
+            assert flag,'多次重试校验失败'
+            pass
+        with allure.step('验证：asks不为空'):
+            flag = False
+            for i in range(3):
+                if 'tick' in result and 'asks' in result['tick'] and result['tick']['asks']:
+                    flag = True
+                    break
+                else:
+                    print(f'未返回预期结果，第{i+1}次重试……')
+                    time.sleep(1)
+                    result = contract_service_ws.contract_sub(subs)
+
+            assert flag,'多次重试校验失败'
+
 
     @allure.step('恢复环境')
     def teardown(self):

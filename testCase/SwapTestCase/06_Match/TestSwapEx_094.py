@@ -3,12 +3,15 @@
 # @Date    : 20211018
 # @Author : HuiQing
 
-from common.CommonUtils import currentPrice,opponentExist
+import allure
+import pytest
+import time
+
+from common.CommonUtils import currentPrice
+from common.SwapServiceAPI import user01, user02
+from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
-import pytest, allure, random, time
-from common.mysqlComm import mysqlComm
-from common.SwapServiceAPI import user01,user02
-from config.case_content import epic,features
+
 
 @allure.epic(epic[1])
 @allure.feature(features[5]['feature'])
@@ -16,7 +19,6 @@ from config.case_content import epic,features
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.stable
 class TestSwapEx_094:
-    DB_orderSeq = mysqlComm('order_seq')
     ids = ["TestSwapEx_094",
            "TestSwapEx_098",
            "TestSwapEx_110",
@@ -51,11 +53,12 @@ class TestSwapEx_094:
     @classmethod
     def teardown_class(cls):
         with allure.step('*->恢复环境'):
+            user02.swap_cancelall(contract_code=cls.contract_code)
+            user01.swap_cancelall(contract_code=cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params):
+    def test_execute(self, params,DB_orderSeq):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：开空下单'):
             orderIdList = []
@@ -69,12 +72,12 @@ class TestSwapEx_094:
             pass
         with allure.step('验证：订单存在撮合结果表中'):
             for order in orderIdList:
-                sqlStr = "select count(1) from t_exchange_match_result WHERE f_id in " \
+                sqlStr = "select count(1) as count from t_exchange_match_result WHERE f_id in " \
                          "(select f_id from t_order_sequence where f_order_id= '%s')  and role != 'cancel' " % order
                 flag = False
                 # 给撮合时间，5秒内还未撮合完成则为失败
                 for i in range(5):
-                    isMatch = self.DB_orderSeq.execute(sqlStr)[0][0]
+                    isMatch = DB_orderSeq.dictCursor(sqlStr)[0]['count']
                     if 1 == isMatch:
                         flag = True
                         break

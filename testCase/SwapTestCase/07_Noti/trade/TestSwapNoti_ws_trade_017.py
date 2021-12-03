@@ -64,7 +64,6 @@ class TestSwapNoti_ws_trade_017:
             api_user01.swap_cancelall(cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])

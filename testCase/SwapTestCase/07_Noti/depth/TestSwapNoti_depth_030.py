@@ -4,14 +4,15 @@
 # @Author : 张广南
 
 import time
+
 import allure
 import pytest
 
+from common.CommonUtils import currentPrice
 from common.SwapServiceWS import user01 as ws_user01
-from common.SwapServiceAPI import user01 as api_user01
-from common.CommonUtils import currentPrice,opponentExist
-from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
+from tool.atp import ATP
 
 
 @allure.epic(epic[1])
@@ -35,20 +36,27 @@ class TestSwapNoti_depth_030:
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.symbol = DEFAULT_SYMBOL
             cls.currentPrice = currentPrice()  # 最新价
+            ATP.clean_market()
+
             pass
 
 
-    @classmethod
-    def teardown_class(cls):
-        with allure.step('恢复环境，撤销挂单'):
-            api_user01.swap_cancelall(contract_code=cls.contract_code)
-            pass
-
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params):
+    def test_execute(self, params,redis6379):
         allure.dynamic.title(params['case_name'])
+        with allure.step('操作：清盘避免干扰'):
+            for i in range(3):
+                result = str(list(redis6379.hmget('RsT:MarketBusinessPrice:', str('DEPTH.STEP0#HUOBI#' + self.symbol + '#1#')))[0]).split('#')[0]
+                result = eval(result)
+                if result['asks'] or result['bids']:
+                    print(f'盘口未被清理，第{i + 1}次重试……')
+                    ATP.clean_market()
+                    time.sleep(1)
+                else:
+                    break
+            pass
         with allure.step('操作：执行sub订阅'):
+
             subs = {
                 "sub": "market.{}.depth.{}".format(self.contract_code, params['type']),
                 "id": "id5"

@@ -35,18 +35,17 @@ class TestSwapNoti_012:
             pass
 
     @allure.title('请求BBO(单个合约，即传参code)')
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self):
         with allure.step('操作：执行api-restful请求'):
             flag = False
             # 重试3次未返回预期结果则失败
-            for i in range(1, 4):
+            for i in range(3):
                 result = api_user01.swap_bbo(contract_code=self.contract_code)
-                if 'ticks' in result:
+                if 'ticks' in result and 'bid' in result['ticks'][0] and 'ask' in result['ticks'][0]:
                     flag = True
                     break
                 time.sleep(1)
-                print('未返回预期结果，第{}次重试………………………………'.format(i))
+                print(f'未返回预期结果，第{i + 1}次重试………………………………')
             assert flag, '未返回预期结果'
 
             pass

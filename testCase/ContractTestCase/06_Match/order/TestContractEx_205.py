@@ -37,8 +37,8 @@ class TestContractEx_205:
     def setup(self):
         print(''' 制造成交数据 ''')
         ATP.make_market_depth(depth_count=5)
-        sell_price = ATP.get_adjust_price(1.02)
-        buy_price = ATP.get_adjust_price(0.98)
+        sell_price = ATP.get_adjust_price(1.01)
+        buy_price = ATP.get_adjust_price(0.99)
         ATP.common_user_make_order(price=sell_price, direction='sell')
         ATP.common_user_make_order(price=buy_price, direction='buy')
         time.sleep(1)
@@ -49,8 +49,8 @@ class TestContractEx_205:
         with allure.step('详见官方文档'):
             contracttype = 'next_week'
             leverrate = 5
-            sell_price = ATP.get_adjust_price(1.02)
-            buy_price = ATP.get_adjust_price(0.98)
+            sell_price = ATP.get_adjust_price(1.01)
+            buy_price = ATP.get_adjust_price(0.99)
             buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=buy_price,
                                                     volume='1',
                                                     direction="buy", offset='close', lever_rate=leverrate,

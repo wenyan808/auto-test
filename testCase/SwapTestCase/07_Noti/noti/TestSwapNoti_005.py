@@ -38,7 +38,6 @@ class TestSwapNoti_005:
             api_user01.swap_cancelall(contract_code=cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
@@ -54,14 +53,14 @@ class TestSwapNoti_005:
                      }
             flag = False
             # 重试3次未返回预期结果则失败
-            for i in range(1, 4):
+            for i in range(3):
                 result = ws_user01.swap_sub(subs)
                 if result['tick']:
-                    if result['tick']['ask'] and result['tick']['bid']:
+                    if 'ask' in result['tick'] and 'bid' in result['tick']:
                         flag = True
                         break
                 time.sleep(1)
-                print('未返回预期结果，第{}次重试………………………………'.format(i))
+                print(f'未返回预期结果，第{i+1}次重试………………………………')
             assert flag,'未返回预期结果'
             pass
         with allure.step('验证：返回结果tick下各字段不为空'):

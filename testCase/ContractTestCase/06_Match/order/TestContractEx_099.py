@@ -37,8 +37,8 @@ class TestContractEx_099:
     def setup(self):
         print(''' 制造成交数据 ''')
         ATP.make_market_depth(depth_count=5)
-        sell_price = ATP.get_adjust_price(1.02)
-        buy_price = ATP.get_adjust_price(0.98)
+        sell_price = ATP.get_adjust_price(1.01)
+        buy_price = ATP.get_adjust_price(0.99)
         ATP.common_user_make_order(price=sell_price, direction='sell')
         ATP.common_user_make_order(price=buy_price, direction='buy')
         time.sleep(1)

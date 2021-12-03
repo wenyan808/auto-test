@@ -34,20 +34,19 @@ class TestSwapNoti_017:
         with allure.step(''):
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作:执行api-restful请求'):
             flag = False
             # 重试3次未返回预期结果则失败
-            for i in range(1, 4):
+            for i in range(3):
                 result = api_user01.swap_history_trade(contract_code=self.contract_code,size=2)
                 if 'data' in result:
                     flag = True
                     break
                 time.sleep(1)
-                print('未返回预期结果，第{}次重试………………………………'.format(i))
+                print(f'未返回预期结果，第{i+1}次重试………………………………')
             assert flag,'未返回预期结果'
             pass
         with allure.step('验证：返回结果各字段不为空'):

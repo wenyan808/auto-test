@@ -23,7 +23,6 @@ class TestSwapApiSchema_045:
         pass
 
     @allure.title("获取用户的合约当前未成交委托")
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
             self.currentPrice = currentPrice()

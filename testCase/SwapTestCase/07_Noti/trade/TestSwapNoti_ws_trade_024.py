@@ -30,7 +30,6 @@ class TestSwapNoti_ws_trade_024:
         with allure.step(''):
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
@@ -43,5 +42,6 @@ class TestSwapNoti_ws_trade_024:
             trade_info = ws_user01.swap_sub(subs=subs)
             pass
         with allure.step('验证:返回结果提示 invalid topic'):
-            assert 'invalid topic' in trade_info['err-msg'], '未传合代码预期应该提示invalid topic，实际返回：' + str(trade_info)
+            assert 'err-msg' in trade_info,'预期报错,实际未报错校验不通过'
+            assert 'invalid topic' in trade_info['err-msg'], f'未传合代码预期应该提示invalid topic，实际返回：{trade_info}'
             pass

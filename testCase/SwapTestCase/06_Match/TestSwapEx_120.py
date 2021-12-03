@@ -10,7 +10,7 @@ import time
 from common.SwapServiceAPI import user01, user02, user03
 from common.mysqlComm import mysqlComm
 from config.case_content import epic, features
-from tool.atp import ATP
+from common.CommonUtils import currentPrice
 
 
 @allure.epic(epic[1])
@@ -22,13 +22,8 @@ class TestSwapEx_120:
 
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
-    def setup(self,contract_code):
-        print('测试步骤：'
-              '\n*、下限价单；买入平仓（平多）'
-              '\n*、用户1，用户2各下2笔开平多单（价不同，数量为2）'
-              '\n*、用户3下单分别与用户1，用户2不同价位的单成交，成交数量1'
-              '\n*、验证平多订单撮合成功（查询撮合表有数据）')
-        self.currentPrice = ATP.get_current_price()  # 最新价
+    def setup(self, contract_code):
+        self.currentPrice = currentPrice()  # 最新价
         # 先持仓
         user01.swap_order(contract_code=contract_code, price=round(self.currentPrice, 2),
                           direction='buy', volume=4)
@@ -38,9 +33,13 @@ class TestSwapEx_120:
                           direction='sell', volume=8)
 
     @allure.title('撮合 买入平仓 部分成交多人多笔价格不同的订单')
-    def test_execute(self, contract_code):
-        DB_orderSeq = mysqlComm('order_seq')
-        with allure.step('详见官方文档'):
+    def test_execute(self, contract_code, DB_orderSeq):
+        allure.dynamic.description('测试步骤：'
+                                   '\n*、下限价单；买入平仓（平多）'
+                                   '\n*、用户1，用户2各下2笔开平多单（价不同，数量为2）'
+                                   '\n*、用户3下单分别与用户1，用户2不同价位的单成交，成交数量1'
+                                   '\n*、验证平多订单撮合成功（查询撮合表有数据）')
+        with allure.step('操作：多用户下单'):
             orderIdList = []
             # 2个用户分别下2个不同价位的单，并成交一半；
             for user in [user01, user02]:
@@ -53,22 +52,23 @@ class TestSwapEx_120:
                     user03.swap_order(contract_code=contract_code,
                                       price=round(self.currentPrice * (1 - (i + 1) * 0.01), 2),
                                       direction='buy', offset='close')
-
+            pass
+        with allure.step('验证：订单都存在撮合表中'):
             for i in range(4):
-                strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
+                strStr = "select count(1) as count from t_exchange_match_result WHERE f_id = " \
                          "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderIdList[i])
                 # 给撮合时间，5秒内还未撮合完成则为失败
-                n = 0
-                while n < 5:
-                    isMatch = DB_orderSeq.execute(strStr)[0][0]
+                flag = False
+                for j in range(3):
+                    isMatch = DB_orderSeq.dictCursor(strStr)[0]['count']
                     if 1 == isMatch:
+                        flag = True
                         break
                     else:
-                        n = n + 1
                         time.sleep(1)
-                        print('等待处理，第' + str(n) + '次重试………………………………')
-                        if n == 5:
-                            assert False
+                        print(f'等待处理，第{j + 1}次重试………………………………')
+
+            assert flag, '多次重试失败'
             # 测试完后所有用户都撤单
             user01.swap_cancelall(contract_code=contract_code)
             user02.swap_cancelall(contract_code=contract_code)

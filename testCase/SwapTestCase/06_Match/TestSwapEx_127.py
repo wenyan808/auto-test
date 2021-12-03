@@ -50,7 +50,6 @@ class TestSwapEx_127:
             user01.swap_cancelall(contract_code=cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params,DB_orderSeq):
         allure.dynamic.title('撮合 闪电平仓 '+params['case_name'])
@@ -59,19 +58,19 @@ class TestSwapEx_127:
                                                                order_price_type=params['order_price_type'])
             pass
         with allure.step('验证：订单存在撮合结果表'):
-            strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
+            strStr = "select count(1) as count from t_exchange_match_result WHERE f_id = " \
                      "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderInfo['data']['order_id'])
 
             flag = False
             # 给撮合时间，3秒内还未撮合完成则为失败
             for i in range(3):
-                isMatch = DB_orderSeq.execute(strStr)[0][0]
+                isMatch = DB_orderSeq.dictCursor(strStr)[0]['count']
                 if 1 == isMatch:
                     flag = True
                     break
                 time.sleep(1)
                 print('未返回预期结果，第{}次重试………………………………'.format(i))
-            assert flag
+            assert flag,'多次重试失败……'
 
             pass
 

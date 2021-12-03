@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 20211103
-# @Author : YuHuiQing
+# @Author : HuiQing Yu
+
+import time
+
+import allure
+import pytest
 
 from common.SwapServiceAPI import user01
-import pytest
-import allure
-import time
-from tool.atp import ATP
+from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
+from common.CommonUtils import currentPrice
 
-@allure.epic('反向永续')
-@allure.feature('计划委托')
-@allure.story('止盈止损单')
+
+@allure.epic(epic[1])
+@allure.feature(features[2]['feature'])
+@allure.story(features[2]['story'][2])
 @allure.tag('Script owner : 余辉青', 'Case owner : 邱大伟')
 @pytest.mark.stable
 class TestSwapTriggerCloseSell_014:
@@ -136,7 +140,7 @@ class TestSwapTriggerCloseSell_014:
     @classmethod
     def setup_class(cls):
         with allure.step('*->持仓'):
-            cls.currentPrice = ATP.get_current_price()  # 最新价
+            cls.currentPrice = currentPrice()  # 最新价
             user01.swap_order(contract_code=cls.contract_code, price=cls.currentPrice, direction='buy')
             user01.swap_order(contract_code=cls.contract_code, price=cls.currentPrice, direction='sell')
             pass
@@ -148,7 +152,6 @@ class TestSwapTriggerCloseSell_014:
             user01.swap_trigger_cancelall(contract_code=cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, contract_code,params):
         allure.dynamic.title(params['caseName'])

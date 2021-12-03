@@ -27,7 +27,6 @@ class TestCoinswapLever_002:
             pass
 
     @allure.title('当前有挂单切换杠杆倍数测试')
-    @allure.step('测试执行')
     def test_execute(self, contract_code):
         with allure.step('操作: 挂个限价单'):
             latest_price = currentPrice()

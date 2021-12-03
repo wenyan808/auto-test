@@ -16,7 +16,6 @@ from config.case_content import epic,features
 class TestSwapApiSchema_021:
 
     @allure.title("批量设置子账户交易权限")
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
             r = user01.swap_sub_auth(sub_uid='111',sub_auth='1')

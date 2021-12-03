@@ -3,15 +3,15 @@
 # @Date    : 20211018
 # @Author :  HuiQing Yu
 
-import allure
-import pytest
 import time
 
-from common.SwapServiceAPI import user01
-from common.mysqlComm import mysqlComm
-from config.conf import DEFAULT_CONTRACT_CODE
+import allure
+import pytest
+
 from common.CommonUtils import currentPrice
+from common.SwapServiceAPI import user01
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE
 
 
 @allure.epic(epic[1])
@@ -49,22 +49,28 @@ class TestSwapEx_134:
             user01.swap_cancelall(contract_code=cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params, DB_orderSeq):
         allure.dynamic.title('撮合 闪电平仓 ' + params['case_name'])
         with allure.step('操作：执行平仓'):
-            orderInfo = user01.swap_lightning_close_position(contract_code=self.contract_code, volume=1,
-                                                             direction=params['direction'],
-                                                             order_price_type=params['order_price_type'])
+            for i in range(3):
+                orderInfo = user01.swap_lightning_close_position(contract_code=self.contract_code, volume=1,
+                                                                 direction=params['direction'],
+                                                                 order_price_type=params['order_price_type'])
+                if 'ok' in orderInfo['status']:
+                    break
+                else:
+                    print(f'盘口未更新，第{i+1}次重试……')
+                    time.sleep(1)
+
             pass
         with allure.step('验证：订单存在撮合结果表'):
-            strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
+            strStr = "select count(1) as count from t_exchange_match_result WHERE f_id = " \
                      "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderInfo['data']['order_id'])
             flag = False
             # 给撮合时间，5秒内还未撮合完成则为失败
             for i in range(5):
-                isMatch = DB_orderSeq.execute(strStr)[0][0]
+                isMatch = DB_orderSeq.dictCursor(strStr)[0]['count']
                 if 1 == isMatch:
                     flag = True
                     break

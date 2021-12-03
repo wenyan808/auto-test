@@ -4,14 +4,17 @@
 # @Author : 张广南
 
 import time
+
 import allure
 import pytest
 
-from common.SwapServiceWS import user01 as ws_user01
+from common.CommonUtils import currentPrice, opponentExist
 from common.SwapServiceAPI import user01 as api_user01
-from common.CommonUtils import currentPrice,opponentExist
-from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
+from common.SwapServiceWS import user01 as ws_user01
+from common.redisComm import redisConf
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
+from tool.atp import ATP
 
 
 @allure.epic(epic[1])
@@ -35,6 +38,20 @@ class TestSwapNoti_depth_028:
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.symbol = DEFAULT_SYMBOL
             cls.currentPrice = currentPrice()  # 最新价
+            cls.redis6379 = redisConf('redis6379').instance()
+            pass
+        with allure.step('清理盘口'):
+            for i in range(3):
+                result = str(
+                    list(cls.redis6379.hmget('RsT:MarketBusinessPrice:', str('DEPTH.STEP0#HUOBI#' + cls.symbol + '#1#')))[
+                        0]).split('#')[0]
+                result = eval(result)
+                if result['asks'] or result['bids']:
+                    print(f'盘口未被清理，第{i + 1}次重试……')
+                    ATP.clean_market()
+                    time.sleep(1)
+                else:
+                    break
             pass
         with allure.step('挂单更新深度'):
             for i in range (5):
@@ -54,7 +71,6 @@ class TestSwapNoti_depth_028:
             api_user01.swap_cancelall(contract_code=cls.contract_code)
             pass
 
-    @pytest.mark.flaky(reruns=1, reruns_delay=1)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
@@ -75,7 +91,7 @@ class TestSwapNoti_depth_028:
                 print('未返回预期结果，第{}次重试………………………………'.format(i))
             assert flag, '未返回预期结果'
         with allure.step('验证：返回结果有买单'):
-            assert result['tick']['bids'] is not None
+            assert result['tick']['bids']
             pass
         with allure.step('验证：返回结果无卖单'):
             assert 'asks' not in result['tick']

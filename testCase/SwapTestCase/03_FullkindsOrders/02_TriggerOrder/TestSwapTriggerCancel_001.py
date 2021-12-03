@@ -6,14 +6,16 @@
 
 import allure
 import pytest
-import time
-from common.SwapServiceAPI import user01
-from tool.atp import ATP
-from config.conf import DEFAULT_CONTRACT_CODE
 
-@allure.epic('反向永续')  # 这里填业务线
-@allure.feature('计划委托')  # 这里填功能
-@allure.story('撤销委托')  # 这里填子功能，没有的话就把本行注释掉
+from common.SwapServiceAPI import user01
+from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE
+from common.CommonUtils import currentPrice
+
+
+@allure.epic(epic[1])
+@allure.feature(features[2]['feature'])
+@allure.story(features[2]['story'][2])
 @allure.tag('Script owner : 余辉青', 'Case owner : 邱大伟')
 @pytest.mark.stable
 class TestSwapTriggerCancel_001:
@@ -23,7 +25,7 @@ class TestSwapTriggerCancel_001:
     @classmethod
     def setup_class(cls):
         with allure.step('*->计划委托下单'):
-            cls.currentPrice = ATP.get_current_price()  # 最新价
+            cls.currentPrice = currentPrice()  # 最新价
             trigger_price = round(cls.currentPrice, 2)
             # ge大于等于(触发价比最新价大)；le小于(触发价比最新价小)
             if trigger_price >= cls.currentPrice:
