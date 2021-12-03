@@ -3,13 +3,14 @@
 # @Date    : 20211103
 # @Author : HuiQing Yu
 
-from common.SwapServiceAPI import user01
-import pytest
 import allure
-import time
-from tool.atp import ATP
-from config.conf import DEFAULT_CONTRACT_CODE
+import pytest
+
+from common.SwapServiceAPI import user01
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE
+from tool.atp import ATP
+
 
 @allure.epic(epic[1])
 @allure.feature(features[2]['feature'])

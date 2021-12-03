@@ -4,13 +4,16 @@
 # @Author : HuiQing Yu
 
 
+import time
+
 import allure
 import pytest
-import time
+
 from common.SwapServiceAPI import user01
-from tool.atp import ATP
-from config.conf import DEFAULT_CONTRACT_CODE
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE
+from tool.atp import ATP
+
 
 @allure.epic(epic[1])
 @allure.feature(features[2]['feature'])
