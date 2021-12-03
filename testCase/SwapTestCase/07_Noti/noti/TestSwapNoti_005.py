@@ -56,7 +56,7 @@ class TestSwapNoti_005:
             for i in range(3):
                 result = ws_user01.swap_sub(subs)
                 if result['tick']:
-                    if result['tick']['ask'] and result['tick']['bid']:
+                    if 'ask' in result['tick'] and 'bid' in result['tick']:
                         flag = True
                         break
                 time.sleep(1)
