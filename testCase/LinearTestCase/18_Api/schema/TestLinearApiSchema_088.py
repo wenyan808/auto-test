@@ -86,7 +86,6 @@ class TestLinearApiSchema_088:
                         'trade_avg_price': Or(int, float, None),
                         'trade_turnover': Or(float, int),
                         'trade_volume': int,
-                        'update_time': Or(int, None),
                         'volume': int,
                         'business_type': 'swap',
                         'contract_type': 'swap',
