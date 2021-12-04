@@ -41,7 +41,7 @@ class TestLinearApiSchema_095:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_cross_lightning_close_position'):
-            lastprice = ATP.get_adjust_price()
+            lastprice = ATP.get_current_price()
 
             sell_order = linear_api.linear_cross_order(contract_code=contract_code,
                                                        price=lastprice,

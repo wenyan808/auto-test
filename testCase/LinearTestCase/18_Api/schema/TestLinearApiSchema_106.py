@@ -98,6 +98,7 @@ class TestLinearApiSchema_106:
                                 'contract_type': 'swap',
                                 'business_type': 'swap',
                                 'pair': contract_code,
+                                'liquidation_type': str,
                                 'tpsl_order_info': [{'canceled_at': int,
                                                      'created_at': int,
                                                      'direction': str,

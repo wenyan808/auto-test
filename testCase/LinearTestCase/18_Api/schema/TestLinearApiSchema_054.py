@@ -41,10 +41,10 @@ class TestLinearApiSchema_054:
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_matchresults'):
             r = linear_api.linear_matchresults(contract_code=contract_code,
-                                      trade_type='0',
-                                      create_date='7',
-                                      page_index='',
-                                      page_size='')
+                                               trade_type='0',
+                                               create_date='7',
+                                               page_index='',
+                                               page_size='')
             pprint(r)
             schema = {
                 'data': {
