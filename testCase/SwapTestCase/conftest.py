@@ -14,6 +14,10 @@ def redis6379():
     return redisConf('redis6379').instance()
 
 @pytest.fixture()
+def redis6380():
+    return redisConf('redis6380').instance()
+
+@pytest.fixture()
 def DB_orderSeq():
     return  mysqlComm('order_seq')
 
