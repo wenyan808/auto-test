@@ -3,12 +3,15 @@
 # @Date    : 2021/12/6 9:57 上午
 # @Author  : HuiQing Yu
 
-import pytest, allure, random, time
-from common.SwapServiceAPI import user01, user02
+import allure
+import pytest
+import time
+
 from common.CommonUtils import currentPrice
-from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
-from config.case_content import epic, features
 from common.SwapMqComm import mqComm
+from common.SwapServiceAPI import user01, user02
+from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 
 
 @allure.epic(epic[1])
@@ -64,11 +67,11 @@ class TestUserInit_swap_003:
             redis6380.delete(name)
             pass
         with allure.step('操作：发送MQ信息'):
-            mq_result = mqComm.UserProductTriggerInitChannel(userId='11538483',symbol=self.symbol)
+            mq_result = mqComm.UserProductTriggerInitChannel(userId='11538483', symbol=self.symbol)
             if mq_result and mq_result['routed']:
                 print('MQ信息发送成功……')
             else:
-                assert False,'MQ发送失败……'
+                assert False, 'MQ发送失败……'
             pass
         with allure.step(f'验证：Redis Key={name}初始化成功'):
             time.sleep(1)  # 等待初始化完成
@@ -81,10 +84,8 @@ class TestUserInit_swap_003:
                     f'Account:#{self.symbol}',
                     'orderFrozenMargin',
                     'clearUnFrozenMargin',
-            ]
+                    ]
             for key in keys:
                 result = redis6380.hmget(name=name, keys=key)
-                assert result[0] is not None,key+'校验失败'
+                assert result[0] is not None, key + '校验失败'
             pass
-
-

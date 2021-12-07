@@ -3,12 +3,15 @@
 # @Date    : 2021/12/6 3:16 下午
 # @Author  : HuiQing Yu
 
-import pytest, allure, random, time
-from common.SwapServiceAPI import user01,user02
-from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
-from config.case_content import epic, features
-from common.SwapMqComm import mqComm
+import allure
+import pytest
+import time
+
 from common.CommonUtils import currentPrice
+from common.SwapMqComm import mqComm
+from common.SwapServiceAPI import user01, user02
+from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 
 
 @allure.epic(epic[1])

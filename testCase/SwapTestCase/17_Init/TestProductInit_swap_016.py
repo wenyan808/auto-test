@@ -3,12 +3,15 @@
 # @Date    : 2021/12/6 9:57 上午
 # @Author  : HuiQing Yu
 
-import pytest, allure, random, time
-from common.SwapServiceAPI import user01, user02
+import allure
+import pytest
+import time
+
 from common.CommonUtils import currentPrice
-from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
-from config.case_content import epic, features
 from common.SwapMqComm import mqComm
+from common.SwapServiceAPI import user01, user02
+from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 
 
 @allure.epic(epic[1])
@@ -34,7 +37,7 @@ class TestProductInit_swap_016:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params, redis6380,DB_contract_trade):
+    def test_execute(self, params, redis6380, DB_contract_trade):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：查看用户是否有仓位'):
             name = f'RsT:APO:11538483#{self.symbol}'
@@ -70,7 +73,7 @@ class TestProductInit_swap_016:
             if mq_result and mq_result['routed']:
                 print('MQ信息发送成功……')
             else:
-                assert False,'MQ发送失败……'
+                assert False, 'MQ发送失败……'
             pass
         with allure.step(f'验证：Redis Key={name}初始化成功'):
             time.sleep(1)  # 等待初始化完成
@@ -83,10 +86,10 @@ class TestProductInit_swap_016:
                     f'Account:#{self.symbol}',
                     'orderFrozenMargin',
                     'clearUnFrozenMargin',
-            ]
+                    ]
             for key in keys:
                 result = redis6380.hmget(name=name, keys=key)
-                assert result[0] is not None,key+'校验失败'
+                assert result[0] is not None, key + '校验失败'
             pass
         with allure.step(f'验证：t_product 中品种={self.symbol}初始化成功'):
             sqlStr = f'select init_status from t_product where product_id="{self.symbol}"'
@@ -97,7 +100,6 @@ class TestProductInit_swap_016:
                     flag = True
                     break
                 else:
-                    print(f'初始化未完成，第{i+1}重试查询……')
+                    print(f'初始化未完成，第{i + 1}重试查询……')
                     time.sleep(1)
-            assert flag,'多次重试验证DB初始化状态校验失败'
-
+            assert flag, '多次重试验证DB初始化状态校验失败'
