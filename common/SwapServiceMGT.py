@@ -2,17 +2,45 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2020/7/31
 # @Author  : HuiQing Yu
-
+import base64
 import requests
+from Crypto.Cipher import PKCS1_v1_5 as Cipher_pksc1_v1_5
+from Crypto.PublicKey import RSA
 from config.conf import MGT_INFO
 
-class SwapServiceMGT:
+
+class SwapServiceMGT(object):
 
     def __init__(self):
         mgt_info = eval(MGT_INFO)
         self.__url = mgt_info['host']
         self.TIMEOUT = 15
-        self.token =mgt_info['user_info']['token']
+        # 登入获取token
+        keyUrl = 'http://test5-contract-hw.dm.huobiapps.com/swap-manager-web/publicKey'
+        keyRes = requests.get(keyUrl)
+        tempToken = keyRes.headers['token']
+        headers = {
+            "Accept": "text/plain, */*; q=0.01",
+            "Accept-Encoding": "gzip, deflate",
+            "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "Accept-language": "zh-CN",
+            "token": tempToken,
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.55 Safari/537.36',
+        }
+        keyRes = requests.get(url=keyUrl, headers=headers)
+        key = keyRes.text
+        public_key = '-----BEGIN PUBLIC KEY-----\n' + key + '\n-----END PUBLIC KEY-----'
+        rsakey = RSA.importKey(public_key)
+        cipher = Cipher_pksc1_v1_5.new(rsakey)
+        cipher_text = base64.b64encode(cipher.encrypt('HB@230032mgt'.encode()))
+        password = cipher_text.decode()
+        request_path = 'http://test5-contract-hw.dm.huobiapps.com/swap-manager-web/logon'
+        data = {"userName": "yuhuiqing", "password": password,
+                "verification_code": "", "extends": {"smsCode":"","gaCode":""}}
+        res = requests.post(url=request_path, data=data,headers=headers)
+        res.encoding = res.apparent_encoding
+        print(res.headers['token'])
+        self.token = res.headers['token']
 
     # =============================================================#
     #                                                              #
@@ -44,6 +72,7 @@ class SwapServiceMGT:
             print("httpPost failed, detail is:%s" % e)
             return {"status": "fail", "msg": "%s" % e}
 
+    # 获取平台流程表信息
     def findPaltformFlow(self, params=None):
         headers = {
             'token': self.token,
@@ -57,9 +86,9 @@ class SwapServiceMGT:
                      transferInAccount=None):
         headers = {
             'token': self.token,
+            'Connection': 'keep-alive',
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
         }
-
         params = [
             symbol,
             {
