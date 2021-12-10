@@ -77,3 +77,7 @@ class TestContractMGTtransfer_039:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
+
+
+if __name__ == '__main__':
+    pytest.main()

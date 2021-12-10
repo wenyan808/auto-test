@@ -74,3 +74,11 @@ class TestContractMGTtransfer_037:
             if(len(rec_dict_tuples) > 0):
                 record_id = rec_dict_tuples[0]["id"]
                 assert record_id > 0
+
+    @allure.step('恢复环境')
+    def teardown(self):
+        print('\n恢复环境操作')
+
+
+if __name__ == '__main__':
+    pytest.main()

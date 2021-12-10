@@ -22,11 +22,11 @@
     p2
 """
 
-from _pytest.mark import param
 import allure
 import pytest
+from _pytest.mark import param
 from common.ContractMGTServiceAPI import t as contract_mgt_api
-from tool.atp import ATP
+from common.mysqlComm import *
 
 
 @allure.epic('反向交割')  # 这里填业务线
@@ -77,3 +77,7 @@ class TestContractMGTtransfer_038:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
+
+
+if __name__ == '__main__':
+    pytest.main()
