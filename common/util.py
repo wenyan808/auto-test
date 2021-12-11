@@ -4,16 +4,19 @@
 # @Author  : zhangranghan
 
 
-import urllib.parse
-import requests
-import datetime
-import websocket
-import json
-import hmac
 import base64
-import hashlib
+import datetime
 import gzip
+import hashlib
+import hmac
+import json
 import time
+import urllib.parse
+
+import requests
+import websocket
+from Crypto.Cipher import PKCS1_v1_5 as Cipher_pksc1_v1_5
+from Crypto.PublicKey import RSA
 
 # timeout in 5 seconds:
 TIMEOUT = 15
@@ -21,7 +24,6 @@ TIMEOUT = 15
 
 # 各种请求,获取数据方式
 def api_http_get(url, params, add_to_headers=None):
-
     headers = {
         "Content-type": "application/x-www-form-urlencoded",
         "Accept-language": "zh-CN",
@@ -29,12 +31,44 @@ def api_http_get(url, params, add_to_headers=None):
     }
     if add_to_headers:
         headers.update(add_to_headers)
-    postdata = urllib.parse.urlencode(params)
-
     try:
-        response = requests.get(url, postdata, headers=headers, timeout=TIMEOUT)
-        print('\033[1;32;49m%s\033[0m' % '\n请求地址= {}\n请求参数 = {}'.format(url,str(params)))
-        print('\033[1;32;49m%s\033[0m' % '返回结果 = {}'.format(str(response.json())))
+        if params:
+            response = requests.get(
+                url=url, headers=headers, timeout=TIMEOUT)
+        else:
+            response = requests.get(
+                url, urllib.parse.urlencode(params), headers=headers, timeout=TIMEOUT)
+        print('\033[1;32;49m%s\033[0m' %
+              '\n请求地址= {}\n请求参数 = {}'.format(url, str(params)))
+        print('\033[1;32;49m%s\033[0m' %
+              '返回结果 = {}'.format(str(response.json())))
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return response.text
+    except Exception as e:
+        print("httpPost failed, detail is:%s" % e)
+        return {"status": "fail", "msg": "%s" % e}
+
+
+def api_http_from_post(url, params, add_to_headers=None):
+    headers = {
+        "Accept": "text/plain, */*; q=0.01",
+        "Accept-Encoding": "gzip, deflate",
+        "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "Accept-language": "zh-CN",
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0'
+    }
+    if add_to_headers:
+        headers.update(add_to_headers)
+    try:
+        print('\033[1;32;49m%s\033[0m' % "\n请求地址 = {}".format(url),
+              '\033[1;32;49m%s\033[0m' % "\n参数 = {}".format(params),
+              '\033[1;32;49m%s\033[0m' % "\nHeader = {}".format(headers))
+        response = requests.post(
+            url=url, params=params, headers=headers, timeout=TIMEOUT)
+        print('\033[1;32;49m%s\033[0m' %
+              "响应结果 = {}".format(str(response.content, 'utf-8')))
         if response.status_code == 200:
             return response.json()
         else:
@@ -56,7 +90,8 @@ def api_http_post(url, params, add_to_headers=None):
     postdata = json.dumps(params)
     try:
         print('\033[1;32;49m%s\033[0m' % "\n请求地址 = {}".format(url),
-              '\033[1;32;49m%s\033[0m' % "\n参数 = {}".format(postdata))
+              '\033[1;32;49m%s\033[0m' % "\n参数 = {}".format(postdata),
+              '\033[1;32;49m%s\033[0m' % "\nHeader = {}".format(headers))
         response = requests.post(
             url, postdata, headers=headers, timeout=TIMEOUT)
         print('\033[1;32;49m%s\033[0m' %
@@ -214,7 +249,8 @@ def sub(url, subs, keyword=''):
                 if keyword in sub_result:
                     break
                 else:
-                    sub_result = json.loads(gzip.decompress(ws.recv()).decode())
+                    sub_result = json.loads(
+                        gzip.decompress(ws.recv()).decode())
 
         result_info = '请求结果：\n\t'+str(sub_result)
         print('\033[1;32;49m%s\033[0m' % result_info)
@@ -275,3 +311,10 @@ def compare_dictkey(expected, result):
         return True
     else:
         return False
+
+
+def rsa_encrpt(password, public_key):
+    rsakey = RSA.importKey(public_key)
+    cipher = Cipher_pksc1_v1_5.new(rsakey)
+    cipher_text = base64.b64encode(cipher.encrypt(password.encode()))
+    return cipher_text.decode()
