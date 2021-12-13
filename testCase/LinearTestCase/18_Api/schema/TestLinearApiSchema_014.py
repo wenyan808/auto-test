@@ -59,6 +59,8 @@ class TestLinearApiSchema_014:
                             'offset': str,
                             'price': float,
                             'symbol': symbol,
+                            'business_type': 'swap',
+                            'pair': contract_code,
                             'volume': Or(float, int, None)
                         }
                     ],

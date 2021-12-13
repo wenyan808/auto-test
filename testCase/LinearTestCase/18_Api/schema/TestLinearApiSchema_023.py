@@ -55,10 +55,10 @@ class TestLinearApiSchema_023:
                         'margin_balance': Or(float, None),
                         'margin_frozen': Or(float, None, int),
                         'margin_mode': 'isolated',
-                        'margin_position': Or(float, None),
+                        'margin_position': Or(float, None, int),
                         'margin_static': Or(float, None),
                         'profit_real': Or(float, None),
-                        'profit_unreal': Or(float, None),
+                        'profit_unreal': Or(float, None, int),
                         'risk_rate': Or(float, None),
                         'symbol': symbol,
                         'withdraw_available': Or(float, None)

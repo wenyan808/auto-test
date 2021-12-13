@@ -94,6 +94,7 @@ class TestLinearApiSchema_067:
                                'profit': Or(int, float),
                                'status': int,
                                'symbol': str,
+                               'liquidation_type': str,
                                'tpsl_order_info': [{'canceled_at': int,
                                                     'created_at': int,
                                                     'direction': str,

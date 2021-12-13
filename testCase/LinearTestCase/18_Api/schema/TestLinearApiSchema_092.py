@@ -41,15 +41,15 @@ class TestLinearApiSchema_092:
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：linear-swap-api/v1/swap_cross_hisorders_exact'):
             r = linear_api.linear_cross_hisorders_exact(contract_code=contract_code,
-                                               trade_type='0',
-                                               type='1',
-                                               status='0',
-                                               order_price_type='limit',
-                                               start_time='',
-                                               end_time='',
-                                               from_id='',
-                                               size='',
-                                               direct='')
+                                                        trade_type='0',
+                                                        type='1',
+                                                        status='0',
+                                                        order_price_type='limit',
+                                                        start_time='',
+                                                        end_time='',
+                                                        from_id='',
+                                                        size='',
+                                                        direct='')
             pprint(r)
             schema = {'data': {'next_id': Or(int, None),
                                'orders': [{'contract_code': contract_code,
