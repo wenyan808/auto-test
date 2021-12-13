@@ -6,9 +6,9 @@
 所属分组
     合约测试基线用例//01 反向交割//05 MGT//02 转账
 用例标题
-    结算中-给用户赠币-赔偿    
+    结算中-给用户赠币-赔偿
 前置条件
-    
+
 步骤/文本
     1、打开MGT后台管理系统
     2、点击财务-财务工具-转账申请，流水类型选择（给用户赠币-赔偿），平种标识如（XRP），输入金额，备注
@@ -33,7 +33,7 @@ from common.mysqlComm import *
 @allure.story('转账')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : 程卓')
 @pytest.mark.unstable
-class TestContractMGTtransfer_007:
+class TestContractMGTtransfer_017:
 
     @allure.step('前置条件:')
     @pytest.fixture(scope='function', autouse=True)
@@ -43,15 +43,16 @@ class TestContractMGTtransfer_007:
     @allure.title('结算中-给用户赠币-赔偿')
     @allure.step('测试执行')
     def test_execute(self):
+        symbol = 'XRP'
         with allure.step('打开MGT后台管理系统点击财务-财务工具-转账申请，流水类型选择（给用户赠币-赔偿），平种标识如（XRP），输入金额'):
-            params = ["XRP", {
+            params = [symbol, {
                 "userAmountList": [
                     {
                         "uid": "115384476",
                         "amount": "1"
                     }
                 ],
-                "productId": "XRP",
+                "productId": symbol,
                 "type": 26,
                 "quantity": None,
                 "transferOutAccount": 9,
@@ -65,14 +66,17 @@ class TestContractMGTtransfer_007:
                 form_params)
             print(result)
         with allure.step('点击转账记录，查看转账单子是否成功'):
-            assert result["errorCode"] == 0
+            if(result["errorCode"] == 99):
+                assert result["errorMsg"] == "{}品种转账数量超过借贷账户XRP品种的可转数量,请重新确认".format(
+                    symbol)
+            elif result["errorCode"] == 0:
+                assert result["errorMsg"] == None
         record_id = 0
         with allure.step('点击转账记录，查看转账单子是否成功'):
             contract_trade_conn = mysqlComm(biztype='contract')
-            symbol = 'XRP'
             quantity = 1
             sqlStr = f'select id from t_transfer_data where product_id="{symbol}" ' \
-                     f'AND amount= {quantity} AND transfer_status=6 order by id desc limit 1'
+                     f'AND amount= {quantity} AND transfer_status=2 order by id desc limit 1'
             rec_dict_tuples = contract_trade_conn.contract_selectdb_execute(
                 'contract_trade', sqlStr)
             assert rec_dict_tuples != None

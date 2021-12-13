@@ -34,7 +34,7 @@ from common.mysqlComm import *
 @allure.story('平账')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : 程卓')
 @pytest.mark.unstable
-class TestContractMGTtransfer_043:
+class TestContractMGTtransfer_050:
 
     @allure.step('前置条件:')
     @pytest.fixture(scope='function', autouse=True)
@@ -65,7 +65,7 @@ class TestContractMGTtransfer_043:
             contract_btc_conn = mysqlComm(biztype='contract')
             symbol = 'XRP'
             sqlStr = f'select id from t_flat_money_record where product_id="{symbol}" ' \
-                     f'AND flat_status=1 order by id desc limit 1'
+                     f'AND flat_status=2 order by id desc limit 1'
             rec_dict_tuples = contract_btc_conn.contract_selectdb_execute(
                 'XRP', sqlStr)
             assert rec_dict_tuples != None

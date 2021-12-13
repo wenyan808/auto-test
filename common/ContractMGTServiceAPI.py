@@ -44,8 +44,8 @@ class ContractMGTServiceAPI:
     def checkTransferRecord(self, params):
         url = self.__url + '/contract-manager-web/service/transferRecordService/checkTransferRecord'
         return api_http_form_post(url, params, {"token": self.__token})
-# 平账
 
+# 平账
     def accountActionService_save(self, params):
         url = self.__url + '/contract-manager-web/service/accountActionService/save'
         return api_http_form_post(url, params, {"token": self.__token})
