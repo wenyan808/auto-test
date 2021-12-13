@@ -3,7 +3,7 @@
 # @Date    : 2021/12/9
 from pprint import pprint
 from config.conf import USERINFO
-from common.util import api_http_get, api_http_from_post, rsa_encrpt
+from common.util import api_http_form_post, rsa_encrpt
 from config import conf
 from config.conf import URL
 import requests
@@ -39,16 +39,16 @@ class ContractMGTServiceAPI:
 # 转账
     def accountActionService_saveTransfer(self, params):
         url = self.__url + '/contract-manager-web/service/accountActionService/saveTransfer'
-        return api_http_from_post(url, params, {"token": self.__token})
+        return api_http_form_post(url, params, {"token": self.__token})
 
     def checkTransferRecord(self, params):
         url = self.__url + '/contract-manager-web/service/transferRecordService/checkTransferRecord'
-        return api_http_from_post(url, params, {"token": self.__token})
+        return api_http_form_post(url, params, {"token": self.__token})
 # 平账
 
     def accountActionService_save(self, params):
         url = self.__url + '/contract-manager-web/service/accountActionService/save'
-        return api_http_from_post(url, params, {"token": self.__token})
+        return api_http_form_post(url, params, {"token": self.__token})
 
 
 t = ContractMGTServiceAPI(URL)
