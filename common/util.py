@@ -51,7 +51,7 @@ def api_http_get(url, params, add_to_headers=None):
         return {"status": "fail", "msg": "%s" % e}
 
 
-def api_http_from_post(url, params, add_to_headers=None):
+def api_http_form_post(url, params, add_to_headers=None):
     headers = {
         "Accept": "text/plain, */*; q=0.01",
         "Accept-Encoding": "gzip, deflate",

@@ -6,18 +6,16 @@
 所属分组
     合约测试基线用例//01 反向交割//05 MGT//02 转账
 用例标题
-    运营账户转账到借贷账户    
+    平台流水表-每日跑批-起止时间，起止时间为两次结算时间
 前置条件
     
 步骤/文本
-    1、打开MGT后台管理系统
-    2、点击财务-财务工具-转账申请，流水类型选择（运营转借贷），平种标识如（btc），输入金额，备注
-    3、输入用户的UID以及金额
-    4、点击‘提交申请’按钮
-    5、点击转账审核-查看详情，点击“审核通过”按钮
-    6、点击转账记录，查看转账单子是否成功"
+    1、打开MGT-财务-财务报表-平台流水表，查账类型选择每日跑批，保证金账户选择A，日期筛选当日前一天到当日进行查询；
+    2、校验A跑批起止时间；
+    3、校验X数据。
 预期结果
-    转账单成功
+    1、步骤2开始时间为昨日跑批流水结束时间，结束时间为距离今日18:00最近的一次结算时间；
+    2、步骤3数据包含结束时间和结束时间-1 ms的数据，不包含开始时间的数据。
 优先级
     p2
 """
@@ -34,26 +32,26 @@ from common.mysqlComm import *
 @allure.story('转账')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : 程卓')
 @pytest.mark.stable
-class TestContractMGTtransfer_002:
+class TestContractMGTtransfer_001:
 
     @allure.step('前置条件:')
     @pytest.fixture(scope='function', autouse=True)
     def setup(self):
         print("前置条件")
 
-    @allure.title('运营账户转账到借贷账户')
+    @allure.title('平台流水表-每日跑批-起止时间，起止时间为两次结算时间')
     @allure.step('测试执行')
     def test_execute(self):
-        with allure.step('打开MGT后台管理系统点击财务-财务工具-转账申请，流水类型选择（运营转借贷），平种标识如（btc），输入金额'):
-            params = ["BTC", {
-                "userAmountList": [],
-                "productId":"BTC",
-                "type":22,
-                "quantity":"1",
-                "transferOutAccount":9,
-                "transferInAccount":3,
-                "remark":"类型"}
-            ]
+        with allure.step('打开MGT后台管理系统点击财务-财务工具-转账申请，流水类型选择（借贷转运营），平种标识如（btc），输入金额'):
+            params = ["BTC", {"userAmountList": [],
+                              "productId":"BTC",
+                              "type":21,
+                              "quantity":"1",
+                              "transferOutAccount":3,
+                              "transferInAccount":9,
+                              "remark":"00"
+                              }
+                      ]
             form_params = "params={}".format(str(params))
             result = contract_mgt_api.accountActionService_saveTransfer(
                 form_params)

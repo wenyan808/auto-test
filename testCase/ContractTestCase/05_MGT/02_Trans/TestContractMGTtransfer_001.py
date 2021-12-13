@@ -59,7 +59,7 @@ class TestContractMGTtransfer_001:
                 form_params)
             print(result)
         with allure.step('点击转账记录，查看转账单子是否成功'):
-            assert result["errorCode"] == 0
+            assert result["errorCode"] == 0 and result["errorMsg"] == None
         record_id = 0
         with allure.step('点击转账记录，查看转账单子是否成功'):
             contract_trade_conn = mysqlComm(biztype='contract')
