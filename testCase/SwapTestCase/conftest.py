@@ -26,6 +26,10 @@ def DB_contract_trade():
     return  mysqlComm('contract_trade')
 
 @pytest.fixture()
+def DB_btc():
+    return  mysqlComm('btc')
+
+@pytest.fixture()
 def contract_code():
     contract_code = conf.DEFAULT_CONTRACT_CODE
     return contract_code
