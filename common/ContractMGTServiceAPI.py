@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2021/12/9
 from pprint import pprint
-from config.conf import USERINFO
 from common.util import api_http_form_post, rsa_encrpt
 from config import conf
 from config.conf import URL
@@ -41,6 +40,7 @@ class ContractMGTServiceAPI:
         url = self.__url + '/contract-manager-web/service/accountActionService/saveTransfer'
         return api_http_form_post(url, params, {"token": self.__token})
 
+# 转账审核
     def checkTransferRecord(self, params):
         url = self.__url + '/contract-manager-web/service/transferRecordService/checkTransferRecord'
         return api_http_form_post(url, params, {"token": self.__token})
@@ -48,6 +48,11 @@ class ContractMGTServiceAPI:
 # 平账
     def accountActionService_save(self, params):
         url = self.__url + '/contract-manager-web/service/accountActionService/save'
+        return api_http_form_post(url, params, {"token": self.__token})
+
+# 资产流水
+    def accountCapitalDailyService_findPaltformFlow(self, params):
+        url = self.__url + '/contract-manager-web/service/accountCapitalDailyService/findPaltformFlow'
         return api_http_form_post(url, params, {"token": self.__token})
 
 
