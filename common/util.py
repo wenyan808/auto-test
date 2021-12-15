@@ -34,10 +34,10 @@ def api_http_get(url, params, add_to_headers=None):
     try:
         if params:
             response = requests.get(
-                url=url, headers=headers, timeout=TIMEOUT)
+                url=url, params=urllib.parse.urlencode(params), headers=headers, timeout=TIMEOUT)
         else:
             response = requests.get(
-                url, urllib.parse.urlencode(params), headers=headers, timeout=TIMEOUT)
+                url,  headers=headers, timeout=TIMEOUT)
         print('\033[1;32;49m%s\033[0m' %
               '\n请求地址= {}\n请求参数 = {}'.format(url, str(params)))
         print('\033[1;32;49m%s\033[0m' %
