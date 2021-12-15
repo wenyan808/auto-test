@@ -39,7 +39,7 @@ class TestLinearEx_095:
 
         ATP.make_market_depth()
 
-    @allure.title('撮合 卖出开仓 部分成交单人多笔价格相同的订单 ')
+    @allure.title('撮合 买入平仓 部分成交单人多笔价格相同的订单 ')
     @allure.step('测试执行')
     def test_execute(self, contract_code):
         with allure.step('1、撮合 买入平仓 部分成交单人多笔价格相同的订单'):
@@ -76,7 +76,7 @@ class TestLinearEx_095:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        
+
         # 撤销当前用户 某个品种所有限价挂单
         print(ATP.cancel_all_types_order())
 
