@@ -21,9 +21,9 @@ from config.case_content import epic, features
 @allure.story(features[4]['story'][2])
 @allure.tag('Script owner : 余辉青', 'Case owner : 程卓')
 @pytest.mark.stable
-class TestSwapAccountCapticalBatch_004:
-    ids = ['TestSwapAccountCapticalBatch_004']
-    params = [{'title':'TestSwapAccountCapticalBatch_004','case_name': '平台流水表-每日跑批-交易手续费', 'userType': 4, 'type':1,'userId': '1389607'}]
+class TestSwapAccountCapticalBatch_204:
+    ids = ['TestSwapAccountCapticalBatch_204']
+    params = [{'title':'TestSwapAccountCapticalBatch_204','case_name': '平台流水表-单日0-24流水-交易手续费', 'userType': 4, 'type':3,'userId': '1389607'}]
     DB_contract_trade = mysqlComm('contract_trade')
     @classmethod
     def setup_class(cls):
@@ -56,15 +56,6 @@ class TestSwapAccountCapticalBatch_004:
             }
             cls.endDateTime = (date.today() + timedelta(days=-1)).strftime("%Y/%m/%d")
             cls.beginDateTime = (date.today() + timedelta(days=-8)).strftime("%Y/%m/%d")
-            cls.s_batch_date = (date.today() + timedelta(days=-1)).strftime("%Y%m%d")
-            cls.e_batch_date = (date.today() + timedelta(days=-8)).strftime("%Y%m%d")
-            sqlStr = 'select flow_end_time from t_daily_log t ' \
-                     f'where product_id="{cls.symbol}" ' \
-                     f'AND batch_date in ("{cls.s_batch_date}","{cls.e_batch_date}") ' \
-                     'order by flow_end_time desc'
-            db_info = cls.DB_contract_trade.dictCursor(sqlStr=sqlStr)
-            cls.s_batch_date = db_info[1]['flow_end_time']
-            cls.e_batch_date = db_info[0]['flow_end_time']
             pass
 
 
@@ -109,8 +100,8 @@ class TestSwapAccountCapticalBatch_004:
         # 交易手术续中的 手术费是应付用户中的手术费取反
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["openFeeMaker"]}-数据'):
             sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
-                     f'WHERE create_time > "{self.s_batch_date}" ' \
-                     f'and create_time<= "{self.e_batch_date}" ' \
+                     f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
+                     f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
                      f'AND money_type =  6 ' \
                      f'AND product_id = "{self.symbol}" ' \
                      f'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
@@ -127,8 +118,8 @@ class TestSwapAccountCapticalBatch_004:
             # 交易手术续中的 手术费是应付用户中的手术费取反
             with allure.step(f'操作:从DB获取-{self.fund_flow_type["openFeeMaker"]}-数据'):
                 sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
-                         f'WHERE create_time > "{self.s_batch_date}" ' \
-                         f'and create_time<= "{self.e_batch_date}" ' \
+                         f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
+                         f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
                          f'AND money_type =  5 ' \
                          f'AND product_id = "{self.symbol}" ' \
                          f'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
@@ -145,8 +136,8 @@ class TestSwapAccountCapticalBatch_004:
             # 交易手术续中的 手术费是应付用户中的手术费取反
             with allure.step(f'操作:从DB获取-{self.fund_flow_type["openFeeMaker"]}-数据'):
                 sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
-                         f'WHERE create_time > "{self.s_batch_date}" ' \
-                         f'and create_time<= "{self.e_batch_date}" ' \
+                         f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
+                         f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
                          f'AND money_type =  8 ' \
                          f'AND product_id = "{self.symbol}" ' \
                          f'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
@@ -163,8 +154,8 @@ class TestSwapAccountCapticalBatch_004:
             # 交易手术续中的 手术费是应付用户中的手术费取反
             with allure.step(f'操作:从DB获取-{self.fund_flow_type["openFeeMaker"]}-数据'):
                 sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
-                         f'WHERE create_time > "{self.s_batch_date}" ' \
-                         f'and create_time<= "{self.e_batch_date}" ' \
+                         f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
+                         f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
                          f'AND money_type =  7 ' \
                          f'AND product_id = "{self.symbol}" ' \
                          f'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
@@ -185,15 +176,15 @@ class TestSwapAccountCapticalBatch_004:
         with allure.step(f'验证:流水类型-{self.fund_flow_type["currInterest"]}'):
             sqlStr = 'select sum(money) as money from ( ' \
                      'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
-                     f'WHERE create_time > {self.s_batch_date} ' \
-                     f'and create_time<= {self.e_batch_date} ' \
+                     f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
+                     f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
                      f'AND money_type in (20,23) ' \
                      f'AND product_id = "{self.symbol}" ' \
                      f'AND user_id = {param["userId"]} ' \
                      f'union ' \
                      'SELECT TRUNCATE(-sum(money),8) as money FROM t_account_action ' \
-                     f'WHERE create_time > {self.s_batch_date} ' \
-                     f'and create_time<= {self.e_batch_date} ' \
+                     f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
+                     f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
                      f'AND money_type in (5,6,7,8) ' \
                      f'AND product_id = "{self.symbol}" ' \
                      f'AND user_id  not in (11186266, 1389607, 1389608, 1389609, 1389766) ) a '
@@ -208,8 +199,8 @@ class TestSwapAccountCapticalBatch_004:
 
     def __dbResult(self,money_type,userId,dbName):
         sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
-                 f'WHERE create_time > "{self.s_batch_date}" ' \
-                 f'and create_time<= "{self.e_batch_date}" ' \
+                 f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
+                 f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
                  f'AND money_type =  {money_type} ' \
                  f'AND product_id = "{self.symbol}" ' \
                  f'AND user_id = "{userId}" '

@@ -21,10 +21,9 @@ from config.case_content import epic, features
 @allure.story(features[4]['story'][2])
 @allure.tag('Script owner : 余辉青', 'Case owner : 程卓')
 @pytest.mark.stable
-class TestSwapAccountCapticalBatch_006:
-    ids = ['TestSwapAccountCapticalBatch_006']
-    params = [{'title': 'TestSwapAccountCapticalBatch_006', 'case_name': '平台流水表-每日跑批-运营账户', 'userType': 9,
-               'userId': '1389609', 'type': 1}]
+class TestSwapAccountCapticalBatch_206:
+    ids = ['TestSwapAccountCapticalBatch_206']
+    params = [{'title':'TestSwapAccountCapticalBatch_206','case_name': '平台流水表-单日0-24流水-运营账户', 'userType': 9, 'userId': '1389609', 'type': 3}]
     DB_contract_trade = mysqlComm('contract_trade')
 
     @classmethod
@@ -81,15 +80,6 @@ class TestSwapAccountCapticalBatch_006:
             }
             cls.endDateTime = (date.today() + timedelta(days=-1)).strftime("%Y/%m/%d")
             cls.beginDateTime = (date.today() + timedelta(days=-8)).strftime("%Y/%m/%d")
-            cls.s_batch_date = (date.today() + timedelta(days=-1)).strftime("%Y%m%d")
-            cls.e_batch_date = (date.today() + timedelta(days=-8)).strftime("%Y%m%d")
-            sqlStr = 'select flow_end_time from t_daily_log t ' \
-                     f'where product_id="{cls.symbol}" ' \
-                     f'AND batch_date in ("{cls.s_batch_date}","{cls.e_batch_date}") ' \
-                     'order by flow_end_time desc'
-            db_info = cls.DB_contract_trade.dictCursor(sqlStr=sqlStr)
-            cls.s_batch_date = db_info[1]['flow_end_time']
-            cls.e_batch_date = db_info[0]['flow_end_time']
             pass
 
     @classmethod
@@ -99,8 +89,8 @@ class TestSwapAccountCapticalBatch_006:
 
     def __dbResult(self, money_type, userId, dbName):
         sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
-                 f'WHERE create_time > "{self.s_batch_date}" ' \
-                 f'and create_time<= "{self.e_batch_date}" ' \
+                 f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
+                 f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
                  f'AND money_type =  {money_type} ' \
                  f'AND product_id = "{self.symbol}" ' \
                  f'AND user_id = "{userId}" '
@@ -139,12 +129,12 @@ class TestSwapAccountCapticalBatch_006:
             assert pay_money, '返回数据中未找到-运营账户-数据，校验失败'
         #################################################  【运营账户】借贷转运营	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["borrowToOperate"]}-数据'):
-            borrowToOperate = self.__dbResult(money_type=self.money_type["borrowToOperate"], userId=param['userId'], dbName=DB_btc)
+            borrowToOperate = self.__dbResult(money_type=self.money_type["borrowToOperate"], userId=param['userId'],dbName=DB_btc)
         with allure.step(f'验证:流水类型-{self.fund_flow_type["borrowToOperate"]}'):
             assert Decimal(pay_money['borrowToOperate']) == borrowToOperate, f'{self.fund_flow_type["borrowToOperate"]}-校验失败'
         #################################################  【运营账户】运营转借贷	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["operateToBorrow"]}-数据'):
-            operateToBorrow = self.__dbResult(money_type=self.money_type["operateToBorrow"], userId=param['userId'], dbName=DB_btc)
+            operateToBorrow = self.__dbResult(money_type=self.money_type["operateToBorrow"], userId=param['userId'],dbName=DB_btc)
         with allure.step(f'验证:流水类型-{self.fund_flow_type["operateToBorrow"]}'):
             assert Decimal(pay_money['operateToBorrow']) == operateToBorrow, f'{self.fund_flow_type["operateToBorrow"]}-校验失败'
         #################################################  【运营账户】注入到爆仓	################################################
@@ -159,12 +149,12 @@ class TestSwapAccountCapticalBatch_006:
             assert Decimal(pay_money['fromBurst']) == fromBurst, f'{self.fund_flow_type["fromBurst"]}-校验失败'
         #################################################  【运营账户】给用户赠币赔偿	############################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["compensate"]}-数据'):
-            compensate = self.__dbResult(money_type=self.money_type["compensate"], userId=param['userId'],  dbName=DB_btc)
+            compensate = self.__dbResult(money_type=self.money_type["compensate"], userId=param['userId'],dbName=DB_btc)
         with allure.step(f'验证:流水类型-{self.fund_flow_type["compensate"]}'):
             assert Decimal(pay_money['compensate']) == compensate, f'{self.fund_flow_type["compensate"]}-校验失败'
         #################################################  【运营账户】扣减用户资产惩戒	############################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["discipline"]}-数据'):
-            discipline = self.__dbResult(money_type=self.money_type["discipline"], userId=param['userId'], dbName=DB_btc)
+            discipline = self.__dbResult(money_type=self.money_type["discipline"], userId=param['userId'],dbName=DB_btc)
         with allure.step(f'验证:流水类型-{self.fund_flow_type["discipline"]}'):
             assert Decimal(pay_money['discipline']) == discipline, f'{self.fund_flow_type["discipline"]}-校验失败'
         #################################################  【运营账户】手续费转运营	################################################
@@ -174,7 +164,7 @@ class TestSwapAccountCapticalBatch_006:
             assert Decimal(pay_money['feeToOperate']) == feeToOperate, f'{self.fund_flow_type["feeToOperate"]}-校验失败'
         #################################################  【运营账户】活动奖励	####################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["actionReward"]}-数据'):
-            actionReward = self.__dbResult(money_type=self.money_type["actionReward"], userId=param['userId'],dbName=DB_btc)
+            actionReward = self.__dbResult(money_type=self.money_type["actionReward"], userId=param['userId'], dbName=DB_btc)
         with allure.step(f'验证:流水类型-{self.fund_flow_type["actionReward"]}'):
             assert Decimal(pay_money['actionReward']) == actionReward, f'{self.fund_flow_type["actionReward"]}-校验失败'
         #################################################  【运营账户】返利	####################################################
@@ -189,7 +179,7 @@ class TestSwapAccountCapticalBatch_006:
             assert Decimal(pay_money['capitalFeeToOperate']) == capitalFeeToOperate, f'{self.fund_flow_type["capitalFeeToOperate"]}-校验失败'
         #################################################  【运营账户】运营转资金费	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["operateToCapitalFee"]}-数据'):
-            operateToCapitalFee = self.__dbResult(money_type=self.money_type["operateToCapitalFee"],userId=param['userId'], dbName=DB_btc)
+            operateToCapitalFee = self.__dbResult(money_type=self.money_type["operateToCapitalFee"], userId=param['userId'], dbName=DB_btc)
         with allure.step(f'验证:流水类型-{self.fund_flow_type["operateToCapitalFee"]}'):
             assert Decimal(pay_money['operateToCapitalFee']) == operateToCapitalFee, f'{self.fund_flow_type["operateToCapitalFee"]}-校验失败'
         #################################################  【运营账户】平账	####################################################
@@ -200,8 +190,8 @@ class TestSwapAccountCapticalBatch_006:
         #################################################  【运营账户】当期流水	####################################################
         with allure.step(f'验证:流水类型-{self.fund_flow_type["currInterest"]}'):
             sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
-                     f'WHERE create_time > "{self.s_batch_date}" ' \
-                     f'and create_time<= "{self.e_batch_date}" ' \
+                     f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
+                     f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
                      f'AND money_type in (20,21,22,23,24,25,26,27,28,29,32,33) ' \
                      f'AND product_id = "{self.symbol}" ' \
                      f'AND user_id = {param["userId"]} '

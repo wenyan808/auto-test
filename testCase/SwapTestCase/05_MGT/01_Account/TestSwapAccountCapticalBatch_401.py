@@ -4,15 +4,15 @@
 # @Author  : HuiQing Yu
 
 import json
-from datetime import date, timedelta
+import time
 from decimal import Decimal
-import random
+
 import allure
 import pytest
 
 from common.SwapServiceMGT import SwapServiceMGT
-from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 
 
 @allure.epic(epic[1])
@@ -23,7 +23,21 @@ from config.case_content import epic, features
 class TestSwapAccountCapticalBatch_401:
 
     ids = ['TestSwapAccountCapticalBatch_401']
-    params = [{'case_name':'平台流水表-结算对账-平台资产','userType': 11,'type': 1}]
+    params = [{'case_name':'平台流水表-结算对账-平台资产','userType': 11}]
+
+    def __dbResult(self,money_type,dbName):
+        sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
+                 f'WHERE create_time > {self.beginDateTime} ' \
+                 f'and create_time<= {self.endDateTime} ' \
+                 f'AND money_type =  {money_type} ' \
+                 f'AND product_id = "{self.symbol}" ' \
+                 'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
+        money = dbName.dictCursor(sqlStr)
+        if len(money) == 0 or money[0]['money'] is None:
+            money = 0
+        else:
+            money = money[0]['money']
+        return money
 
     @classmethod
     def setup_class(cls):
@@ -52,7 +66,10 @@ class TestSwapAccountCapticalBatch_401:
                 "capitalFeeToOperate": "资金费转运营",
                 "operateToCapitalFee": "运营转资金费",
                 "flatMoney": "平账",
-                "currInterest": "当期流水"
+                "currInterest": "当期流水",
+                "originalInterest": "实际 期初静态权益",
+                "finalInterest": "流水 期未静态权益",
+                "staticInterest": "实际 期未静态权益"
             }
             pass
 
@@ -80,16 +97,16 @@ class TestSwapAccountCapticalBatch_401:
                 {
                     "productId": self.symbol,
                     "type": 2,
-                    "endDateTime": db_info[0]['end_time'],
-                    "beginDateTime": db_info[1]['end_time'],
+                    "endDateTime": self.endDateTime,
+                    "beginDateTime": self.beginDateTime,
                     # "endDailyDateTime": "2021/12/13",
                     # "beginDailyDateTime": "2021/12/12",
                     # "date": 19,
                     "originSettleId": db_info[1]['id'],
                     "finalSettleId": db_info[0]['id'],
                     "reOpen": False,
-                    "originTime": db_info[1]['end_time'],
-                    "finalTime": db_info[0]['end_time']
+                    "originTime": self.beginDateTime,
+                    "finalTime": self.endDateTime
                 }
             ]
             result = SwapServiceMGT.findPaltformFlow(params=request_params)
@@ -105,19 +122,19 @@ class TestSwapAccountCapticalBatch_401:
             assert platform_money,'返回数据中未找到-平台资产，校验失败'
 #########################################  【平台资产】从币币转入	########################################################
             with allure.step(f'操作:从DB获取-{self.fund_flow_type["moneyIn"]}-数据'):
-                moneyIn = self.dbResult(money_type=14,dbName=DB_btc)
+                moneyIn = self.__dbResult(money_type=14,dbName=DB_btc)
             with allure.step(f'验证:流水类型-{self.fund_flow_type["moneyIn"]}'):
                 assert Decimal(platform_money['moneyIn']) == moneyIn, f'{self.fund_flow_type["moneyIn"]}-校验失败'
 #################################################  【平台资产】转出至币币	################################################
             with allure.step(f'操作:从DB获取-{self.fund_flow_type["moneyOut"]}-数据'):
-                moneyOut = self.dbResult(money_type=15,dbName=DB_btc)
+                moneyOut = self.__dbResult(money_type=15,dbName=DB_btc)
             with allure.step(f'验证:流水类型-{self.fund_flow_type["moneyOut"]}'):
                 assert Decimal(platform_money['moneyOut']) == moneyOut, f'{self.fund_flow_type["moneyOut"]}-校验失败'
 #################################################  【平台资产】平账	####################################################
             with allure.step(f'操作:从DB获取-{self.fund_flow_type["flatMoney"]}-数据'):
                 sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_flat_money_record ' \
-                         f'WHERE flat_time > UNIX_TIMESTAMP("{self.daily["beginDateTime"]}")*1000 ' \
-                         f'and flat_time <= UNIX_TIMESTAMP("{self.daily["endDateTime"]}")*1000 ' \
+                         f'WHERE flat_time > {self.beginDateTime} ' \
+                         f'and flat_time <= {self.endDateTime} ' \
                          'and flat_account=11 ' \
                          f'and product_id = "{self.symbol}"'
                 flatMoney = DB_btc.dictCursor(sqlStr)
@@ -129,19 +146,103 @@ class TestSwapAccountCapticalBatch_401:
                 assert Decimal(platform_money['flatMoney']) == flatMoney, f'{self.fund_flow_type["flatMoney"]}-校验失败'
 #################################################    【平台资产】当期流水    ###############################################
             with allure.step(f'验证:流水类型-{self.fund_flow_type["currInterest"]}'):
-                assert Decimal(platform_money['currInterest']) == moneyIn + moneyOut + flatMoney, \
+                # 只有平台资产的平账资金是从t_flat_money_record中获取；其他账户还是在t_account_action中取值
+                sqlStr = 'select sum(money) as money from ( ' \
+                         'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
+                         f'WHERE create_time > {self.beginDateTime} ' \
+                         f'and create_time<= {self.endDateTime} ' \
+                         f'AND money_type in (14,15) ' \
+                         f'AND product_id = "{self.symbol}" ' \
+                         'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) ' \
+                         'union ' \
+                         'SELECT TRUNCATE(sum(money), 8) as money ' \
+                         'FROM t_flat_money_record ' \
+                         f'WHERE flat_time > {self.beginDateTime} ' \
+                         f'and flat_time<= {self.endDateTime}   ' \
+                         f'and product_id = "{self.symbol}" and flat_account = 11 ) a'
+                currInterest = DB_btc.dictCursor(sqlStr)
+                if len(currInterest) == 0 or currInterest[0]['money'] is None:
+                    currInterest = 0
+                else:
+                    currInterest = currInterest[0]['money']
+            with allure.step(f'验证:流水类型-{self.fund_flow_type["currInterest"]}'):
+                assert Decimal(platform_money['currInterest']) == currInterest, \
                     f'{self.fund_flow_type["currInterest"]}-校验失败'
+#################################################    【平台资产】实际 期初静态权益    ###############################################
+        with allure.step(f'验证:流水类型-{self.fund_flow_type["originalInterest"]}'):
+            timeArray = time.localtime(int(self.beginDateTime)/1000)
+            settle_date = time.strftime("%Y%m%d", timeArray)
+            sqlStr = 'SELECT TRUNCATE(sum(static_interest), 8) as money ' \
+                     'FROM t_account_capital_virtual_his ' \
+                     f'WHERE settle_date= "{settle_date}" ' \
+                     'AND settle_id=1 ' \
+                     f'AND product_id ="{self.symbol}" ' \
+                     f'AND user_type={params["userType"]}'
+            originalInterest = DB_btc.dictCursor(sqlStr)
+            if len(originalInterest) == 0 or originalInterest[0]['money'] is None:
+                originalInterest = 0
+            else:
+                originalInterest = originalInterest[0]['money']
 
-    def dbResult(self,money_type,dbName):
-        sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
-                 f'WHERE create_time > UNIX_TIMESTAMP("{self.daily["beginDateTime"]}")*1000 ' \
-                 f'and create_time<=UNIX_TIMESTAMP("{self.daily["endDateTime"]}")*1000 ' \
-                 f'AND money_type =  {money_type} ' \
-                 f'AND product_id = "{self.symbol}" ' \
-                 'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
-        money = dbName.dictCursor(sqlStr)
-        if len(money) == 0 or money[0]['money'] is None:
-            money = 0
-        else:
-            money = money[0]['money']
-        return money
+            assert Decimal(platform_money['originalInterest']) == originalInterest, \
+                f'{self.fund_flow_type["originalInterest"]}-校验失败'
+#################################################    【平台资产】流水 期未静态权益    ###############################################
+        with allure.step(f'验证:流水类型-{self.fund_flow_type["finalInterest"]}'):
+            sqlStr = 'select TRUNCATE(sum(money), 8) as money from (' \
+                     'SELECT sum(money) as money FROM t_account_action ' \
+                     f'WHERE create_time > "{self.beginDateTime}" ' \
+                     f'and create_time<= "{self.endDateTime}" ' \
+                     f'AND money_type in (14,15) ' \
+                     f'AND product_id = "{self.symbol}" ' \
+                     'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) ' \
+                     'union all ' \
+                     'SELECT TRUNCATE(sum(money), 8) as money ' \
+                     'FROM t_flat_money_record ' \
+                     f'WHERE flat_time > {self.beginDateTime} ' \
+                     f'and flat_time<= {self.endDateTime}   ' \
+                     f'and product_id = "{self.symbol}" and flat_account = 11 '\
+                     'union all ' \
+                     'SELECT sum(static_interest) as money ' \
+                     'FROM t_account_capital_virtual_his ' \
+                     f'WHERE settle_date= "{settle_date}" ' \
+                     'AND settle_id=1 ' \
+                     f'AND product_id ="{self.symbol}" ' \
+                     f'AND user_type={params["userType"]} ) a'
+            finalInterest = DB_btc.dictCursor(sqlStr)
+            if len(finalInterest) == 0 or finalInterest[0]['money'] is None:
+                finalInterest = 0
+            else:
+                finalInterest = finalInterest[0]['money']
+            assert Decimal(platform_money['finalInterest']) == finalInterest, \
+                f'{self.fund_flow_type["finalInterest"]}-校验失败'
+#################################################    【平台资产】实际 期未静态权益    ###############################################
+        with allure.step(f'验证:流水类型-{self.fund_flow_type["finalInterest"]}'):
+            staticInterest_money = None
+            for data in self.daily['originalcapital']:
+                if data['userType'] == params['userType']:
+                    staticInterest_money = data
+                    break
+            assert staticInterest_money, '返回数据中未找到-应付用户-数据，校验失败'
+            sqlStr = 'SELECT sum(static_interest) as money ' \
+                     'FROM t_account_capital_virtual_his ' \
+                     f'WHERE settle_date= "{staticInterest_money["settleDate"]}" ' \
+                     'AND settle_id=1 ' \
+                     f'AND product_id ="{self.symbol}" ' \
+                     f'AND user_type={params["userType"]}'
+            staticInterest = DB_btc.dictCursor(sqlStr)
+            if len(staticInterest) == 0 or staticInterest[0]['money'] is None:
+                staticInterest = 0
+            else:
+                staticInterest = staticInterest[0]['money']
+            assert Decimal(staticInterest_money['staticInterest']) == staticInterest, \
+                f'{self.fund_flow_type["staticInterest"]}-校验失败'
+#################################################    【平台资产】核对结果    ###############################################
+        with allure.step(f'验证:核对结果 == 0'):
+            accountCapitalCheck = None
+            for data in self.daily['accountCapitalCheck']:
+                if data['userType'] == params['userType']:
+                    accountCapitalCheck = data
+                    break
+            assert accountCapitalCheck, '返回数据中未找到-应付用户-数据，校验失败'
+            assert Decimal(accountCapitalCheck['checkResult']) == 0,'核对结果不为0'
+    

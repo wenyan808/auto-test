@@ -75,6 +75,6 @@ features = [
     },
     {
         "feature": "18 API",
-        "story": ["00 P0级用例","01 Schema"]
+        "story": ["00 P0级用例","01 Schema","02 NotiSchema"]
     }
 ]

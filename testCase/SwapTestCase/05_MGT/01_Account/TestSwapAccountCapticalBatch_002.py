@@ -11,6 +11,7 @@ import allure
 import pytest
 
 from common.SwapServiceMGT import SwapServiceMGT
+from common.mysqlComm import mysqlComm
 from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 from config.case_content import epic, features
 
@@ -22,9 +23,9 @@ from config.case_content import epic, features
 @pytest.mark.stable
 class TestSwapAccountCapticalBatch_002:
 
-    ids = ['TestSwapAccountCapticalBatch_002','TestSwapAccountCapticalBatch_202']
-    params = [{'case_name':'平台流水表-每日跑批-应付用户','userType': 12,'type':1},
-              {'case_name':'平台流水表-单日0-24流水-应付用户','userType': 12,'type':3}]
+    ids = ['TestSwapAccountCapticalBatch_002']
+    params = [{'title':'TestSwapAccountCapticalBatch_002','case_name':'平台流水表-每日跑批-应付用户','userType': 12,'type':1}]
+    DB_contract_trade = mysqlComm('contract_trade')
     @classmethod
     def setup_class(cls):
         with allure.step('变量初始化'):
@@ -54,6 +55,17 @@ class TestSwapAccountCapticalBatch_002:
                 "flatMoney": "平账",
                 "currInterest": "当期流水"
             }
+            cls.endDateTime = (date.today() + timedelta(days=-1)).strftime("%Y/%m/%d")
+            cls.beginDateTime = (date.today() + timedelta(days=-8)).strftime("%Y/%m/%d")
+            cls.s_batch_date = (date.today() + timedelta(days=-1)).strftime("%Y%m%d")
+            cls.e_batch_date = (date.today() + timedelta(days=-8)).strftime("%Y%m%d")
+            sqlStr = 'select flow_end_time from t_daily_log t ' \
+                     f'where product_id="{cls.symbol}" ' \
+                     f'AND batch_date in ("{cls.s_batch_date}","{cls.e_batch_date}") ' \
+                     'order by flow_end_time desc'
+            db_info = cls.DB_contract_trade.dictCursor(sqlStr=sqlStr)
+            cls.s_batch_date = db_info[1]['flow_end_time']
+            cls.e_batch_date = db_info[0]['flow_end_time']
             pass
 
 
@@ -64,20 +76,18 @@ class TestSwapAccountCapticalBatch_002:
 
     @pytest.mark.parametrize('param', params, ids=ids)
     def test_execute(self,param,DB_btc):
-        allure.dynamic.title(param['case_name'])
+        allure.dynamic.title(param['title'])
         with allure.step('操作：执行查询'):
-            endDateTime = (date.today() + timedelta(days=-1)).strftime("%Y/%m/%d")
-            beginDateTime = (date.today() + timedelta(days=-random.randint(2,7))).strftime("%Y/%m/%d")
             request_params = [
                 self.symbol,
                 param['type'],
                 {
                     "productId": self.symbol,
                     "type": param['type'],
-                    "endDateTime": endDateTime,
-                    "beginDateTime": beginDateTime,
-                    "endDailyDateTime": endDateTime,
-                    "beginDailyDateTime": beginDateTime
+                    "endDateTime": self.endDateTime,
+                    "beginDateTime": self.beginDateTime,
+                    "endDailyDateTime": self.endDateTime,
+                    "beginDailyDateTime": self.beginDateTime
                 }
             ]
             result = SwapServiceMGT.findPaltformFlow(params=request_params)
@@ -173,29 +183,25 @@ class TestSwapAccountCapticalBatch_002:
             assert Decimal(pay_money['flatMoney']) == flatMoney, f'{self.fund_flow_type["flatMoney"]}-校验失败'
 #################################################    【应付用户】当期流水    ###############################################
         with allure.step(f'验证:流水类型-{self.fund_flow_type["currInterest"]}'):
-            assert Decimal(pay_money['currInterest']) == \
-                   Decimal(pay_money['moneyIn'])+\
-                   Decimal(pay_money['moneyOut'])+\
-                   Decimal(pay_money['toBurst'])+\
-                   Decimal(pay_money['fromBurst'])+\
-                   Decimal(pay_money['compensate'])+\
-                   Decimal(pay_money['discipline'])+\
-                   Decimal(pay_money['actionReward'])+\
-                   Decimal(pay_money['dividend'])+\
-                   Decimal(pay_money['openFeeMaker'])+\
-                   Decimal(pay_money['openFeeTaker'])+\
-                   Decimal(pay_money['closeFeeMaker'])+\
-                   Decimal(pay_money['closeFeeTaker'])+\
-                   Decimal(pay_money['deliveFee'])+\
-                   Decimal(pay_money['capitalFeeIn'])+\
-                   Decimal(pay_money['capitalFeeOut'])+\
-                   Decimal(pay_money['flatMoney']),\
+            sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
+                     f'WHERE create_time > "{self.s_batch_date}" ' \
+                     f'and create_time<= "{self.e_batch_date}" ' \
+                     f'AND money_type in (5,6,7,8,11,14,15,20,24,25,26,27,28,29,30,31) ' \
+                     f'AND product_id = "{self.symbol}" ' \
+                     'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
+            currInterest = DB_btc.dictCursor(sqlStr)
+            if len(currInterest) == 0 or currInterest[0]['money'] is None:
+                currInterest = 0
+            else:
+                currInterest = currInterest[0]['money']
+        with allure.step(f'验证:流水类型-{self.fund_flow_type["currInterest"]}'):
+            assert Decimal(pay_money['currInterest']) == currInterest, \
                 f'{self.fund_flow_type["currInterest"]}-校验失败'
 
     def dbResult(self,money_type,dbName):
         sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
-                 f'WHERE create_time > UNIX_TIMESTAMP("{self.daily["beginDateTime"]}")*1000 ' \
-                 f'and create_time<=UNIX_TIMESTAMP("{self.daily["endDateTime"]}")*1000 ' \
+                 f'WHERE create_time > "{self.s_batch_date}" ' \
+                 f'and create_time<= "{self.e_batch_date}" ' \
                  f'AND money_type =  {money_type} ' \
                  f'AND product_id = "{self.symbol}" ' \
                  'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '

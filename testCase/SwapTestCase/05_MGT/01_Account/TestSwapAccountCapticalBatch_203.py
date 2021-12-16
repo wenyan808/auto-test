@@ -21,9 +21,9 @@ from config.case_content import epic, features
 @allure.story(features[4]['story'][2])
 @allure.tag('Script owner : 余辉青', 'Case owner : 程卓')
 @pytest.mark.stable
-class TestSwapAccountCapticalBatch_003:
-    ids = ['TestSwapAccountCapticalBatch_003']
-    params = [{'title':'TestSwapAccountCapticalBatch_003','case_name': '平台流水表-每日跑批-应付外债', 'userType': 3, 'userId': '11186266','type':1}]
+class TestSwapAccountCapticalBatch_203:
+    ids = ['TestSwapAccountCapticalBatch_203']
+    params = [{'title':'TestSwapAccountCapticalBatch_203','case_name': '平台流水表-单日0-24流水-应付外债', 'userType': 3, 'userId': '11186266','type':3}]
     DB_contract_trade = mysqlComm('contract_trade')
     @classmethod
     def setup_class(cls):
@@ -56,15 +56,6 @@ class TestSwapAccountCapticalBatch_003:
             }
             cls.endDateTime = (date.today() + timedelta(days=-1)).strftime("%Y/%m/%d")
             cls.beginDateTime = (date.today() + timedelta(days=-8)).strftime("%Y/%m/%d")
-            cls.s_batch_date = (date.today() + timedelta(days=-1)).strftime("%Y%m%d")
-            cls.e_batch_date = (date.today() + timedelta(days=-8)).strftime("%Y%m%d")
-            sqlStr = 'select flow_end_time from t_daily_log t ' \
-                     f'where product_id="{cls.symbol}" ' \
-                     f'AND batch_date in ("{cls.s_batch_date}","{cls.e_batch_date}") ' \
-                     'order by flow_end_time desc'
-            db_info = cls.DB_contract_trade.dictCursor(sqlStr=sqlStr)
-            cls.s_batch_date = db_info[1]['flow_end_time']
-            cls.e_batch_date = db_info[0]['flow_end_time']
             pass
 
 
@@ -128,8 +119,8 @@ class TestSwapAccountCapticalBatch_003:
 #################################################### 【应付外债】当期流水    ###############################################
         with allure.step(f'验证:流水类型-{self.fund_flow_type["currInterest"]}'):
             sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
-                     f'WHERE create_time > {self.s_batch_date} ' \
-                     f'and create_time<={self.e_batch_date} ' \
+                     f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
+                     f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
                      f'AND money_type in (14,15,20,21,22) ' \
                      f'AND product_id = "{self.symbol}" ' \
                      f'AND user_id = {param["userId"]} '
@@ -144,8 +135,8 @@ class TestSwapAccountCapticalBatch_003:
 
     def dbResult(self,money_type,userId,dbName):
         sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
-                 f'WHERE create_time > {self.s_batch_date} ' \
-                 f'AND create_time< {self.e_batch_date} ' \
+                 f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
+                 f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
                  f'AND money_type =  {money_type} ' \
                  f'AND product_id = "{self.symbol}" ' \
                  f'AND user_id = "{userId}" '

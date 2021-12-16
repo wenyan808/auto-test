@@ -21,7 +21,6 @@ from config.case_content import epic, features
 @allure.tag('Script owner : 余辉青', 'Case owner : 程卓')
 @pytest.mark.stable
 class TestSwapAccountCapticalBatch_008:
-    startDate = -8
     ids = [
         'TestSwapAccountCapticalBatch_008',
         'TestSwapAccountCapticalBatch_009',
@@ -47,28 +46,28 @@ class TestSwapAccountCapticalBatch_008:
         'TestSwapAccountCapticalBatch_031',
     ]
     params = [
-                {'case_name': '平台流水表-每日跑批-【从币币转入】横向对账','colName':'moneyIn'},
-                {'case_name': '平台流水表-每日跑批-【转出至币币】横向对账','colName':'moneyOut'},
-                {'case_name': '平台流水表-每日跑批-【借贷转运营】横向对账','colName':'borrowToOperate'},
-                {'case_name': '平台流水表-每日跑批-【运营转借贷】横向对账','colName':'operateToBorrow'},
-                {'case_name': '平台流水表-每日跑批-【注入到爆仓】横向对账','colName':'toBurst'},
-                {'case_name': '平台流水表-每日跑批-【从爆仓提取】横向对账','colName':'fromBurst'},
-                {'case_name': '平台流水表-每日跑批-【给用户赠币赔偿】横向对账','colName':'compensate'},
-                {'case_name': '平台流水表-每日跑批-【扣减用户资产惩戒】横向对账','colName':'discipline'},
-                {'case_name': '平台流水表-每日跑批-【手续费转运营】横向对账','colName':'feeToOperate'},
-                {'case_name': '平台流水表-每日跑批-【活动奖励】横向对账','colName':'actionReward'},
-                {'case_name': '平台流水表-每日跑批-【返利】横向对账','colName':'dividend'},
-                {'case_name': '平台流水表-每日跑批-【开仓手续费挂单】横向对账','colName':'openFeeMaker'},
-                {'case_name': '平台流水表-每日跑批-【开仓手续费吃单】横向对账','colName':'openFeeTaker'},
-                {'case_name': '平台流水表-每日跑批-【平仓手续费挂单】横向对账','colName':'closeFeeMaker'},
-                {'case_name': '平台流水表-每日跑批-【平仓手续费吃单】横向对账','colName':'closeFeeTaker'},
-                {'case_name': '平台流水表-每日跑批-【交割手续费】横向对账','colName':'deliveFee'},
-                {'case_name': '平台流水表-每日跑批-【资金费-收入】横向对账','colName':'capitalFeeIn'},
-                {'case_name': '平台流水表-每日跑批-【资金费-支出】横向对账','colName':'capitalFeeOut'},
-                {'case_name': '平台流水表-每日跑批-【资金费转运营】横向对账','colName':'capitalFeeToOperate'},
-                {'case_name': '平台流水表-每日跑批-【运营转资金费】横向对账','colName':'operateToCapitalFee'},
-                {'case_name': '平台流水表-每日跑批-【平账】横向对账','colName':'flatMoney'},
-                {'case_name': '平台流水表-每日跑批-【当期流水】横向对账','colName':'currInterest'},
+                {'title':'TestSwapAccountCapticalBatch_008','case_name': '平台流水表-每日跑批-【从币币转入】横向对账','colName':'moneyIn'},
+                {'title':'TestSwapAccountCapticalBatch_009','case_name': '平台流水表-每日跑批-【转出至币币】横向对账','colName':'moneyOut'},
+                {'title':'TestSwapAccountCapticalBatch_010','case_name': '平台流水表-每日跑批-【借贷转运营】横向对账','colName':'borrowToOperate'},
+                {'title':'TestSwapAccountCapticalBatch_011','case_name': '平台流水表-每日跑批-【运营转借贷】横向对账','colName':'operateToBorrow'},
+                {'title':'TestSwapAccountCapticalBatch_012','case_name': '平台流水表-每日跑批-【注入到爆仓】横向对账','colName':'toBurst'},
+                {'title':'TestSwapAccountCapticalBatch_013','case_name': '平台流水表-每日跑批-【从爆仓提取】横向对账','colName':'fromBurst'},
+                {'title':'TestSwapAccountCapticalBatch_014','case_name': '平台流水表-每日跑批-【给用户赠币赔偿】横向对账','colName':'compensate'},
+                {'title':'TestSwapAccountCapticalBatch_017','case_name': '平台流水表-每日跑批-【扣减用户资产惩戒】横向对账','colName':'discipline'},
+                {'title':'TestSwapAccountCapticalBatch_018','case_name': '平台流水表-每日跑批-【手续费转运营】横向对账','colName':'feeToOperate'},
+                {'title':'TestSwapAccountCapticalBatch_019','case_name': '平台流水表-每日跑批-【活动奖励】横向对账','colName':'actionReward'},
+                {'title':'TestSwapAccountCapticalBatch_020','case_name': '平台流水表-每日跑批-【返利】横向对账','colName':'dividend'},
+                {'title':'TestSwapAccountCapticalBatch_021','case_name': '平台流水表-每日跑批-【开仓手续费挂单】横向对账','colName':'openFeeMaker'},
+                {'title':'TestSwapAccountCapticalBatch_022','case_name': '平台流水表-每日跑批-【开仓手续费吃单】横向对账','colName':'openFeeTaker'},
+                {'title':'TestSwapAccountCapticalBatch_023','case_name': '平台流水表-每日跑批-【平仓手续费挂单】横向对账','colName':'closeFeeMaker'},
+                {'title':'TestSwapAccountCapticalBatch_024','case_name': '平台流水表-每日跑批-【平仓手续费吃单】横向对账','colName':'closeFeeTaker'},
+                {'title':'TestSwapAccountCapticalBatch_025','case_name': '平台流水表-每日跑批-【交割手续费】横向对账','colName':'deliveFee'},
+                {'title':'TestSwapAccountCapticalBatch_026','case_name': '平台流水表-每日跑批-【资金费-收入】横向对账','colName':'capitalFeeIn'},
+                {'title':'TestSwapAccountCapticalBatch_027','case_name': '平台流水表-每日跑批-【资金费-支出】横向对账','colName':'capitalFeeOut'},
+                {'title':'TestSwapAccountCapticalBatch_028','case_name': '平台流水表-每日跑批-【资金费转运营】横向对账','colName':'capitalFeeToOperate'},
+                {'title':'TestSwapAccountCapticalBatch_029','case_name': '平台流水表-每日跑批-【运营转资金费】横向对账','colName':'operateToCapitalFee'},
+                {'title':'TestSwapAccountCapticalBatch_030','case_name': '平台流水表-每日跑批-【平账】横向对账','colName':'flatMoney'},
+                {'title':'TestSwapAccountCapticalBatch_031','case_name': '平台流水表-每日跑批-【当期流水】横向对账','colName':'currInterest'},
               ]
 
 
@@ -124,19 +123,20 @@ class TestSwapAccountCapticalBatch_008:
                 'capitalFeeToOperate': 32,
                 'operateToCapitalFee': 33,
             }
+            cls.endDateTime = (date.today() + timedelta(days=-1)).strftime("%Y/%m/%d")
+            cls.beginDateTime = (date.today() + timedelta(days=-8)).strftime("%Y/%m/%d")
+            pass
         with allure.step('操作：执行查询'):
-            endDateTime = (date.today() + timedelta(days=-1)).strftime("%Y/%m/%d")
-            beginDateTime = (date.today() + timedelta(days=cls.startDate)).strftime("%Y/%m/%d")
             request_params = [
                 cls.symbol,
                 1,
                 {
                     "productId": cls.symbol,
                     "type": 1,
-                    "endDateTime": endDateTime,
-                    "beginDateTime": beginDateTime,
-                    "endDailyDateTime": endDateTime,
-                    "beginDailyDateTime": beginDateTime
+                    "endDateTime": cls.endDateTime,
+                    "beginDateTime": cls.beginDateTime,
+                    "endDailyDateTime": cls.endDateTime,
+                    "beginDailyDateTime": cls.beginDateTime
                 }
             ]
             result = SwapServiceMGT.findPaltformFlow(params=request_params)
@@ -150,7 +150,7 @@ class TestSwapAccountCapticalBatch_008:
 
     @pytest.mark.parametrize('param', params, ids=ids)
     def test_execute(self, param, DB_btc):
-        allure.dynamic.title(param['case_name'])
+        allure.dynamic.title(param['title'])
         with allure.step('操作:从接口返回中取出-各用户类型-数据'):
             for data in self.daily['daily']:
                 if data['userType'] == 11: #平台资产
@@ -175,12 +175,15 @@ class TestSwapAccountCapticalBatch_008:
                 expectResult = Decimal(flat_user[col_name])
             else:
                 expectResult = Decimal(hxdz[col_name])
-            print(f'{self.fund_flow_type[col_name]}:平台资产({plat_form[col_name]})-('
+                assert expectResult == 0, f'{self.fund_flow_type[col_name]}-横向对账值不为0'
+
+            print(f'\n{self.fund_flow_type[col_name]}:平台资产({plat_form[col_name]})-('
                   f'应付用户({pay_user[col_name]})+'
                   f'应付外债({pay_debt[col_name]})+'
                   f'交易手续费({deal_fee[col_name]})+'
                   f'互换账户({hh_user[col_name]})+'
                   f'运营账户({operate_user[col_name]}))) == 横向对账({expectResult})')
+
             assert Decimal(plat_form[col_name]) -\
                    ( Decimal(pay_user[col_name]) +
                      Decimal(pay_debt[col_name]) +
