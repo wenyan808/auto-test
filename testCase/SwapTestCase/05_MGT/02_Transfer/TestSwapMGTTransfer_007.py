@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2021/12/8 10:29 上午
 # @Author  : HuiQing Yu
-from decimal import Decimal
 
-import pytest, allure, random, time
+import allure
+import pytest
+
 from common.SwapServiceMGT import SwapServiceMGT
-from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 
 
 @allure.epic(epic[1])

@@ -6,7 +6,7 @@
 import json
 from datetime import date, timedelta
 from decimal import Decimal
-import random
+import time
 import allure
 import pytest
 
@@ -21,11 +21,26 @@ from config.case_content import epic, features
 @allure.story(features[4]['story'][2])
 @allure.tag('Script owner : 余辉青', 'Case owner : 程卓')
 @pytest.mark.stable
-class TestSwapAccountCapticalBatch_001:
+class TestSwapAccountCapticalBatch_201:
 
-    ids = ['TestSwapAccountCapticalBatch_001']
-    params = [{'title':'TestSwapAccountCapticalBatch_001','case_name':'平台流水表-每日跑批-平台资产','userType': 11,'type': 1}]
+    ids = ['TestSwapAccountCapticalBatch_201']
+    params = [{'title':'TestSwapAccountCapticalBatch_201','case_name':'平台流水表-单日0-24流水-平台资产','userType': 11,'type': 3}]
     DB_contract_trade = mysqlComm('contract_trade')
+
+    def __dbResult(self, money_type, dbName):
+        sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
+                 f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
+                 f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
+                 f'AND money_type = {money_type} ' \
+                 f'AND product_id = "{self.symbol}" ' \
+                 'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
+        money = dbName.dictCursor(sqlStr)
+        if len(money) == 0 or money[0]['money'] is None:
+            money = 0
+        else:
+            money = money[0]['money']
+        return money
+
     @classmethod
     def setup_class(cls):
         with allure.step('变量初始化'):
@@ -57,15 +72,6 @@ class TestSwapAccountCapticalBatch_001:
             }
             cls.endDateTime = (date.today() + timedelta(days=-1)).strftime("%Y/%m/%d")
             cls.beginDateTime = (date.today() + timedelta(days=-8)).strftime("%Y/%m/%d")
-            cls.s_batch_date = (date.today() + timedelta(days=-1)).strftime("%Y%m%d")
-            cls.e_batch_date = (date.today() + timedelta(days=-8)).strftime("%Y%m%d")
-            sqlStr = 'select flow_end_time from t_daily_log t ' \
-                     f'where product_id="{cls.symbol}" ' \
-                     f'AND batch_date in ("{cls.s_batch_date}","{cls.e_batch_date}") ' \
-                     'order by flow_end_time desc'
-            db_info = cls.DB_contract_trade.dictCursor(sqlStr=sqlStr)
-            cls.s_batch_date = db_info[1]['flow_end_time']
-            cls.e_batch_date = db_info[0]['flow_end_time']
             pass
 
 
@@ -103,19 +109,19 @@ class TestSwapAccountCapticalBatch_001:
             assert platform_money,'返回数据中未找到-平台资产，校验失败'
 #########################################  【平台资产】从币币转入	########################################################
             with allure.step(f'操作:从DB获取-{self.fund_flow_type["moneyIn"]}-数据'):
-                moneyIn = self.dbResult(money_type=14,dbName=DB_btc)
+                moneyIn = self.__dbResult(money_type=14,dbName=DB_btc)
             with allure.step(f'验证:流水类型-{self.fund_flow_type["moneyIn"]}'):
                 assert Decimal(platform_money['moneyIn']) == moneyIn, f'{self.fund_flow_type["moneyIn"]}-校验失败'
 #################################################  【平台资产】转出至币币	################################################
             with allure.step(f'操作:从DB获取-{self.fund_flow_type["moneyOut"]}-数据'):
-                moneyOut = self.dbResult(money_type=15,dbName=DB_btc)
+                moneyOut = self.__dbResult(money_type=15,dbName=DB_btc)
             with allure.step(f'验证:流水类型-{self.fund_flow_type["moneyOut"]}'):
                 assert Decimal(platform_money['moneyOut']) == moneyOut, f'{self.fund_flow_type["moneyOut"]}-校验失败'
 #################################################  【平台资产】平账	####################################################
             with allure.step(f'操作:从DB获取-{self.fund_flow_type["flatMoney"]}-数据'):
                 sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_flat_money_record ' \
-                         f'WHERE flat_time > "{self.s_batch_date}" ' \
-                         f'and flat_time <= "{self.e_batch_date}" ' \
+                         f'WHERE flat_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
+                         f'and flat_time< UNIX_TIMESTAMP("{self.endDateTime}")*1000   ' \
                          'and flat_account=11 ' \
                          f'and product_id = "{self.symbol}"'
                 flatMoney = DB_btc.dictCursor(sqlStr)
@@ -130,16 +136,16 @@ class TestSwapAccountCapticalBatch_001:
                 # 只有平台资产的平账资金是从t_flat_money_record中获取；其他账户还是在t_account_action中取值
                 sqlStr = 'select sum(money) as money from ( ' \
                          'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
-                         f'WHERE create_time > "{self.s_batch_date}" ' \
-                         f'and create_time<=" {self.e_batch_date}" ' \
+                         f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
+                         f'and create_time < UNIX_TIMESTAMP("{self.endDateTime}")*1000 ' \
                          f'AND money_type in (14,15) ' \
                          f'AND product_id = "{self.symbol}" ' \
                          'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) ' \
                          'union ' \
                          'SELECT TRUNCATE(sum(money), 8) as money ' \
                          'FROM t_flat_money_record ' \
-                         f'WHERE flat_time > "{self.s_batch_date}" ' \
-                         f'and flat_time<=" {self.e_batch_date}"   ' \
+                         f'WHERE flat_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
+                         f'and flat_time< UNIX_TIMESTAMP("{self.endDateTime}")*1000   ' \
                          f'and product_id = "{self.symbol}" and flat_account = 11 ) a'
                 currInterest = DB_btc.dictCursor(sqlStr)
                 if len(currInterest) == 0 or currInterest[0]['money'] is None:
@@ -150,16 +156,3 @@ class TestSwapAccountCapticalBatch_001:
                 assert Decimal(platform_money['currInterest']) == currInterest, \
                     f'{self.fund_flow_type["currInterest"]}-校验失败'
 
-    def dbResult(self,money_type,dbName):
-        sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
-                 f'WHERE create_time > UNIX_TIMESTAMP("{self.s_batch_date}") ' \
-                 f'and create_time<=UNIX_TIMESTAMP("{self.e_batch_date}") ' \
-                 f'AND money_type = {money_type} ' \
-                 f'AND product_id = "{self.symbol}" ' \
-                 'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
-        money = dbName.dictCursor(sqlStr)
-        if len(money) == 0 or money[0]['money'] is None:
-            money = 0
-        else:
-            money = money[0]['money']
-        return money

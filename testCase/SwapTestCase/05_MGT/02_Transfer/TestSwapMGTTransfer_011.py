@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2021/12/8 10:29 上午
 # @Author  : HuiQing Yu
-from decimal import Decimal
 
-import pytest, allure, random, time
+import allure
+import pytest
+import random
+
 from common.SwapServiceMGT import SwapServiceMGT
-from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 
 
 @allure.epic(epic[1])
@@ -17,85 +19,85 @@ from config.case_content import epic, features
 @pytest.mark.stable
 class TestSwapMGTTransfer_011:
     ids = [
-           'TestSwapMGTTransfer_011',
-           'TestSwapMGTTransfer_010',
-           'TestSwapMGTTransfer_009',
-           'TestSwapMGTTransfer_008',
-           'TestSwapMGTTransfer_001',
-           'TestSwapMGTTransfer_002',
-           'TestSwapMGTTransfer_003',
-           ]
+        'TestSwapMGTTransfer_011',
+        'TestSwapMGTTransfer_010',
+        'TestSwapMGTTransfer_009',
+        'TestSwapMGTTransfer_008',
+        'TestSwapMGTTransfer_001',
+        'TestSwapMGTTransfer_002',
+        'TestSwapMGTTransfer_003',
+    ]
     params = [
-        {
-            "case_name": "运营账户-转账到-互转账户",
-            "request_params": {
-                "userAmountList": [],
-                "transType": 33,
-                "transferInAccount": 5,
-                "transferOutAccount": 9,
-                "quantity": random.randint(100, 1000)
-            }
-        },
-        {
-            "case_name": "互转账户-转账到-运营账户",
-            "request_params": {
-                "userAmountList": [],
-                "transType": 32,
-                "transferInAccount": 9,
-                "transferOutAccount": 5,
-                "quantity": random.randint(100, 1000)
-            }
-        },
-        {
-            "case_name": "运营账户-转账到-借贷账户",
-            "request_params": {
-                "userAmountList": [],
-                "transType": 22,
-                "transferInAccount": 3,
-                "transferOutAccount": 9,
-                "quantity": random.randint(100, 1000)
-            }
-        },
-        {
-            "case_name": "借贷账户-转账到-运营账户",
-            "request_params": {
-                "userAmountList":[],
-                "transType": 21,
-                "transferInAccount": 9,
-                "transferOutAccount": 3,
-                "quantity": random.randint(100, 1000)
-            }
-        },
-        {
-            "case_name": "交易手续费-转账到-运营账户",
-            "request_params": {
-                "userAmountList":[],
-                "transType": 23,
-                "transferInAccount": 9,
-                "transferOutAccount": 4,
-                "quantity": random.randint(100, 1000)
-            }
-        },
-        {
-            "case_name": "运营账户-转账到-爆仓账户：注入到爆仓",
-            "request_params": {
-                "userAmountList":[],
-                "transType": 24,
-                "transferInAccount": 2,
-                "transferOutAccount": 9 ,
-                "quantity": random.randint(100, 1000)
-            }
-        },
-        {
-            "case_name": "爆仓账户-转账到-运营账户：从爆仓提取",
-            "request_params": {
-                "userAmountList":[],
-                "transType": 25,
-                "transferInAccount": 9,
-                "transferOutAccount": 2 ,
-                "quantity": random.randint(100, 1000)
-            }
-        }
+        {"title": "TestSwapMGTTransfer_011",
+         "case_name": "运营账户-转账到-互转账户",
+         "request_params": {
+             "userAmountList": [],
+             "transType": 33,
+             "transferInAccount": 5,
+             "transferOutAccount": 9,
+             "quantity": random.randint(100, 1000)
+         }
+         },
+        {"title": "TestSwapMGTTransfer_010",
+         "case_name": "互转账户-转账到-运营账户",
+         "request_params": {
+             "userAmountList": [],
+             "transType": 32,
+             "transferInAccount": 9,
+             "transferOutAccount": 5,
+             "quantity": random.randint(100, 1000)
+         }
+         },
+        {"title": "TestSwapMGTTransfer_009",
+         "case_name": "运营账户-转账到-借贷账户",
+         "request_params": {
+             "userAmountList": [],
+             "transType": 22,
+             "transferInAccount": 3,
+             "transferOutAccount": 9,
+             "quantity": random.randint(100, 1000)
+         }
+         },
+        {"title": "TestSwapMGTTransfer_008",
+         "case_name": "借贷账户-转账到-运营账户",
+         "request_params": {
+             "userAmountList": [],
+             "transType": 21,
+             "transferInAccount": 9,
+             "transferOutAccount": 3,
+             "quantity": random.randint(100, 1000)
+         }
+         },
+        {"title": "TestSwapMGTTransfer_001",
+         "case_name": "交易手续费-转账到-运营账户",
+         "request_params": {
+             "userAmountList": [],
+             "transType": 23,
+             "transferInAccount": 9,
+             "transferOutAccount": 4,
+             "quantity": random.randint(100, 1000)
+         }
+         },
+        {"title": "TestSwapMGTTransfer_002",
+         "case_name": "运营账户-转账到-爆仓账户：注入到爆仓",
+         "request_params": {
+             "userAmountList": [],
+             "transType": 24,
+             "transferInAccount": 2,
+             "transferOutAccount": 9,
+             "quantity": random.randint(100, 1000)
+         }
+         },
+        {"title": "TestSwapMGTTransfer_003",
+         "case_name": "爆仓账户-转账到-运营账户：从爆仓提取",
+         "request_params": {
+             "userAmountList": [],
+             "transType": 25,
+             "transferInAccount": 9,
+             "transferOutAccount": 2,
+             "quantity": random.randint(100, 1000)
+         }
+         }
     ]
 
     @classmethod
@@ -114,7 +116,8 @@ class TestSwapMGTTransfer_011:
     def test_execute(self, params, DB_contract_trade):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：执行转账'):
-            transfer = SwapServiceMGT.saveTransfer(symbol=self.symbol,userAmountList=params['request_params']['userAmountList'],
+            transfer = SwapServiceMGT.saveTransfer(symbol=self.symbol,
+                                                   userAmountList=params['request_params']['userAmountList'],
                                                    transType=params['request_params']['transType'],
                                                    transferInAccount=params['request_params']['transferInAccount'],
                                                    transferOutAccount=params['request_params']['transferOutAccount'],
@@ -135,12 +138,12 @@ class TestSwapMGTTransfer_011:
             pass
         with allure.step('验证: 存在转账记录且状态为转账成功'):
             sqlStr = 'select  product_id,' \
-                             'transfer_status,' \
-                             'transfer_in_account,' \
-                             'transfer_out_account,' \
-                             'actual_transfer_amount,' \
-                             'pending_transfer_amount,' \
-                             'remark ' \
+                     'transfer_status,' \
+                     'transfer_in_account,' \
+                     'transfer_out_account,' \
+                     'actual_transfer_amount,' \
+                     'pending_transfer_amount,' \
+                     'remark ' \
                      'from t_transfer_record ' \
                      f'where id = {transfer_id}'
             db_info = DB_contract_trade.dictCursor(sqlStr=sqlStr)

@@ -143,6 +143,12 @@ class SwapService:
         url = self.__url + '/swap-ex/market/detail/merged'
         return api_http_get(url, params)
 
+    # 获取聚合行情   ##tag
+    def swap_detail(self, contract_code=None):
+        params = {'contract_code': contract_code}
+        url = self.__url + '/swap-ex/market/detail'
+        return api_http_get(url, params)
+
     # 获取市场最近成交记录  ##tag
     def swap_trade(self, contract_code=None):
         """

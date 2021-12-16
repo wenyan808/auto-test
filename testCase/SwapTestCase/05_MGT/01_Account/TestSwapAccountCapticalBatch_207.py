@@ -22,8 +22,8 @@ from config.case_content import epic, features
 @allure.tag('Script owner : 余辉青', 'Case owner : 程卓')
 @pytest.mark.stable
 class TestSwapAccountCapticalBatch_007:
-    ids = ['TestSwapAccountCapticalBatch_007']
-    params = [{'title':'TestSwapAccountCapticalBatch_007','case_name': '平台流水表-每日跑批-平账', 'userType': 13,'type':1}]
+    ids = ['TestSwapAccountCapticalBatch_207']
+    params = [{'title':'TestSwapAccountCapticalBatch_207','case_name': '平台流水表-单日0-24流水-平账', 'userType': 13,'type':3}]
     DB_contract_trade = mysqlComm('contract_trade')
     @classmethod
     def setup_class(cls):
@@ -79,15 +79,6 @@ class TestSwapAccountCapticalBatch_007:
             }
             cls.endDateTime = (date.today() + timedelta(days=-1)).strftime("%Y/%m/%d")
             cls.beginDateTime = (date.today() + timedelta(days=-8)).strftime("%Y/%m/%d")
-            cls.s_batch_date = (date.today() + timedelta(days=-1)).strftime("%Y%m%d")
-            cls.e_batch_date = (date.today() + timedelta(days=-8)).strftime("%Y%m%d")
-            sqlStr = 'select flow_end_time from t_daily_log t ' \
-                     f'where product_id="{cls.symbol}" ' \
-                     f'AND batch_date in ("{cls.s_batch_date}","{cls.e_batch_date}") ' \
-                     'order by flow_end_time desc'
-            db_info = cls.DB_contract_trade.dictCursor(sqlStr=sqlStr)
-            cls.s_batch_date = db_info[1]['flow_end_time']
-            cls.e_batch_date = db_info[0]['flow_end_time']
             pass
 
     @classmethod
@@ -124,8 +115,8 @@ class TestSwapAccountCapticalBatch_007:
 #################################################  【平账账户】当期流水	##################################################
         with allure.step(f'操作:从DB获取-平台资产(平账)-数据'):
             sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_flat_money_record ' \
-                     f'WHERE flat_time > "{self.s_batch_date}" ' \
-                     f'and flat_time<= "{self.e_batch_date}" ' \
+                     f'WHERE flat_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
+                     f'and flat_time < unix_timestamp("{self.endDateTime}")*1000 ' \
                      'and flat_account=11 ' \
                      f'and product_id = "{self.symbol}"'
             flatMoney = DB_btc.dictCursor(sqlStr)
@@ -135,8 +126,8 @@ class TestSwapAccountCapticalBatch_007:
                 flatMoney = flatMoney[0]['money']
         with allure.step(f'操作:从DB获取-应付用户(平账)-数据'):
             sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
-                     f'WHERE create_time > "{self.s_batch_date}" ' \
-                     f'and create_time<= "{self.e_batch_date}" ' \
+                     f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
+                     f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
                      f'AND money_type =  20 ' \
                      f'AND product_id = "{self.symbol}" ' \
                      'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
@@ -162,8 +153,8 @@ class TestSwapAccountCapticalBatch_007:
 
     def __dbResult(self,userId,dbName):
         sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
-                 f'WHERE create_time > "{self.s_batch_date}" ' \
-                 f'and create_time<= "{self.e_batch_date}" ' \
+                 f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
+                 f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
                  f'AND money_type =  20 ' \
                  f'AND product_id = "{self.symbol}" ' \
                  f'AND user_id = "{userId}" '
