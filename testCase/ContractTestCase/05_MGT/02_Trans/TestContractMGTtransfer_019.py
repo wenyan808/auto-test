@@ -71,11 +71,11 @@ class TestContractMGTtransfer_019:
                 assert result["errorMsg"] == None
         record_id = 0
         with allure.step('点击转账记录，查看转账单子是否成功'):
-            contract_trade_conn = mysqlComm(biztype='contract')
+            contract_trade_conn = mysqlComm()
             quantity = 1
             sqlStr = f'select id from t_transfer_data where product_id="{symbol}" ' \
                      f'AND amount= {quantity} AND transfer_status=2 order by id desc limit 1'
-            rec_dict_tuples = contract_trade_conn.contract_selectdb_execute(
+            rec_dict_tuples = contract_trade_conn.selectdb_execute(
                 'contract_trade', sqlStr)
             assert rec_dict_tuples != None
             if(len(rec_dict_tuples) > 0):

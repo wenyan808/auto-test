@@ -49,10 +49,10 @@ class TestContractAccountCapticalBatch_028:
         # userType 用户类型 1普通用户，2爆仓用户，3应付外债，4交易手续费，5交割手续费，9运营活动，11是平台资产 12是应付用户 13是平账账户
         userType = 3
         # 构造请求参数
-        contract_conn = mysqlComm(biztype='contract')
+        contract_conn = mysqlComm()
         sqlStr = 'SELECT id,settle_date,end_time FROM t_settle_log where progress_code=13 and product_id= "{}" order by id desc limit 2 '.format(
             symbol)
-        rec_dict_tuples = contract_conn.contract_selectdb_execute(
+        rec_dict_tuples = contract_conn.selectdb_execute(
             db='btc', sqlStr=sqlStr)
         if(len(rec_dict_tuples) != 2):
             pytest.skip(msg="无结算对账记录")
@@ -110,7 +110,7 @@ class TestContractAccountCapticalBatch_028:
                 sqlStr = 'SELECT SUM(money) as money FROM t_account_action WHERE create_time > {} AND create_time <= {} AND money_type = {} AND product_id = "{}" AND user_id=4890429'.format(
                     beginDateTime, endDateTime, value, symbol)
                 print(sqlStr)
-                rec_dict_tuples = contract_conn.contract_selectdb_execute(
+                rec_dict_tuples = contract_conn.selectdb_execute(
                     db='btc', sqlStr=sqlStr)
                 money = 0.0
                 if rec_dict_tuples[0]["money"]:
@@ -123,7 +123,7 @@ class TestContractAccountCapticalBatch_028:
                 beginDate, symbol, userType
             )
             print(sqlStr)
-            rec_dict_tuples = contract_conn.contract_selectdb_execute(
+            rec_dict_tuples = contract_conn.selectdb_execute(
                 db='btc', sqlStr=sqlStr)
             # 前一个期未当本期的期初
             begin_static_interest = rec_dict_tuples[0]["static_interest"]
@@ -143,7 +143,7 @@ class TestContractAccountCapticalBatch_028:
             sqlStr = 'SELECT original_interest,static_interest FROM t_account_capital_his WHERE settle_date="{}" AND product_id="{}" AND user_type={}'.format(
                 endDate, symbol, userType
             )
-            rec_dict_tuples = contract_conn.contract_selectdb_execute(
+            rec_dict_tuples = contract_conn.selectdb_execute(
                 db='btc', sqlStr=sqlStr)
             end_original_interest = rec_dict_tuples[0]["original_interest"]
             end_static_interest = rec_dict_tuples[0]["static_interest"]

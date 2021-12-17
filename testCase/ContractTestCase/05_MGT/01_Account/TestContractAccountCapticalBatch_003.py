@@ -73,7 +73,7 @@ class TestContractAccountCapticalBatch_003:
         with allure.step('接口正常返回,各流水类型数据不为0'):
             assert len(self.__data['daily']) > 0
         with allure.step('查询各流水类型的DB数据,接口数据与DB数据进行对比'):
-            contract_conn = mysqlComm(biztype='contract')
+            contract_conn = mysqlComm()
             symbol = 'btc'
             # money_type 5:开仓手续费-taker,6:开仓手续费-maker,7:平仓手续费-taker,8:平仓手续费-maker,11:交割手续费,14:币币转入,15:币币转出,20:平账,21:借贷转运营,22:运营转借贷,23:手续费转运营,24:注入到爆仓,25:从爆仓提取,26:给用户赠币-赔偿,27:扣减用户资产-惩戒,28:活动奖励,29:返利
             # userType 用户类型 1普通用户，2爆仓用户，3应付外债，4交易手续费，5交割手续费，9运营活动，11是平台资产 12是应付用户 13是平账账户
@@ -94,12 +94,12 @@ class TestContractAccountCapticalBatch_003:
             # 获取时间戳
             beginSqlStr = 'SELECT MAX(flow_end_time) as unixtime FROM t_daily_log t  where product_id="{}" AND batch_date ={} ORDER BY flow_end_time desc'.format(
                 symbol, beginDate)
-            rec_begin_dict = contract_conn.contract_selectdb_execute(
+            rec_begin_dict = contract_conn.selectdb_execute(
                 "contract_trade", beginSqlStr)
             beginDateUnixTime = rec_begin_dict[0]["unixtime"]
             endSqlStr = 'SELECT MAX(flow_end_time) as unixtime FROM t_daily_log t  where product_id="{}" AND batch_date ={} ORDER BY flow_end_time desc'.format(
                 symbol, endDate)
-            rec_end_dict = contract_conn.contract_selectdb_execute(
+            rec_end_dict = contract_conn.selectdb_execute(
                 "contract_trade", endSqlStr)
             endDateUnixTime = rec_end_dict[0]["unixtime"]
 
@@ -107,7 +107,7 @@ class TestContractAccountCapticalBatch_003:
                 sqlStr = 'SELECT SUM(money) as money FROM t_account_action WHERE create_time > {} AND create_time <= {} AND money_type = {} AND product_id = "{}" AND user_id=4890429'.format(
                     beginDateUnixTime, endDateUnixTime, value, symbol)
                 print(sqlStr)
-                rec_dict_tuples = contract_conn.contract_selectdb_execute(
+                rec_dict_tuples = contract_conn.selectdb_execute(
                     db='btc', sqlStr=sqlStr)
                 money = 0.000000000000000000
                 if rec_dict_tuples[0]["money"]:

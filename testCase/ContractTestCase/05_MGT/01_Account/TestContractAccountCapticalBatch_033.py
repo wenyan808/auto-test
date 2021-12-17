@@ -87,10 +87,10 @@ class TestContractAccountCapticalBatch_033:
         allure.dynamic.title(param['case_name'])
         symbol = "BTC"
         # 构造请求参数
-        contract_conn = mysqlComm(biztype='contract')
+        contract_conn = mysqlComm()
         sqlStr = 'SELECT id,settle_date,end_time FROM t_settle_log where progress_code=13 and product_id= "{}" order by id desc limit 2 '.format(
             symbol)
-        rec_dict_tuples = contract_conn.contract_selectdb_execute(
+        rec_dict_tuples = contract_conn.selectdb_execute(
             db='btc', sqlStr=sqlStr)
         if(len(rec_dict_tuples) != 2):
             pytest.skip(msg="无结算对账记录")
