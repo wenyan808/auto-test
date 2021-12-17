@@ -24,7 +24,6 @@
 
 import allure
 import pytest
-from _pytest.mark import param
 from common.ContractMGTServiceAPI import t as contract_mgt_api
 from common.mysqlComm import *
 
