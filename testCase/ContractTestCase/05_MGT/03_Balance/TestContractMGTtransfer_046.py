@@ -63,11 +63,11 @@ class TestContractMGTtransfer_046:
             assert result["errorCode"] == 0 and result["data"]["errorMsg"] == "添加平账流水失败，原因：此合约在非交易状态中, 无法进行系统划转"
         record_id = 0
         with allure.step('点击转账记录，查看转账单子是否成功'):
-            contract_btc_conn = mysqlComm(biztype='contract')
+            contract_btc_conn = mysqlComm()
             symbol = 'XRP'
             sqlStr = f'select id from t_flat_money_record where product_id="{symbol}" ' \
                      f'AND flat_status=2 order by id desc limit 1'
-            rec_dict_tuples = contract_btc_conn.contract_selectdb_execute(
+            rec_dict_tuples = contract_btc_conn.selectdb_execute(
                 'XRP', sqlStr)
             assert rec_dict_tuples != None
             if(len(rec_dict_tuples) > 0):
