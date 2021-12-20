@@ -45,7 +45,8 @@ class TestLinearApiSchema_002:
                     {
                         'contract_code': contract_code,
                         'index_price': float,
-                        'index_ts': int
+                        'index_ts': int,
+                        'trade_partition': 'USDT'
                     }
                 ],
                 'status': 'ok',

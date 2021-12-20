@@ -81,7 +81,8 @@ class TestLinearApiSchema_024:#文档没更新，待确认
                         'margin_account': str,
                         'margin_mode': 'isolated',
                         'direction': str,
-                        'last_price': Or(float, int)
+                        'last_price': Or(float, int),
+                        'trade_partition': 'USDT'
                     }
                 ],
                 'status': 'ok',

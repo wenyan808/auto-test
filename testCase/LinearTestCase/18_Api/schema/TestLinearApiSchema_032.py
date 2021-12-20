@@ -69,6 +69,7 @@ class TestLinearApiSchema_032:#文档没有更新，待确认，pair值为None
                                                                       'volume': float}, ],
                                                        'settlement_profit_real': float,
                                                        'settlement_time': int,
+                                                       'trade_partition': 'USDT',
                                                        'symbol': symbol}, ],
                                'total_page': int,
                                'total_size': int},

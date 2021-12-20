@@ -58,11 +58,13 @@ class TestLinearApiSchema_017:
                                 'sub_transfer_master_inner_in': Or(0, 1),
                                 'sub_transfer_master_inner_out': Or(0, 1),
                                 'transfer_inner_in': Or(0, 1),
-                                'transfer_inner_out': Or(0, 1)}],
+                                'transfer_inner_out': Or(0, 1),
+                                'trade_partition': 'USDT'}],
                       'status': 'ok',
                       'ts': int}
-
+            assert r['data']
             Schema(schema).validate(r)
+
 
     @allure.step('恢复环境')
     def teardown(self):

@@ -49,7 +49,8 @@ class TestLinearApiSchema_003:
                         'pair': contract_code,
                         'contract_type': 'swap',
                         'high_limit': Or(float, None),
-                        'low_limit': Or(int, float, None)
+                        'low_limit': Or(int, float, None),
+                        'trade_partition': 'USDT'
                     }
                 ],
                 'status': 'ok',

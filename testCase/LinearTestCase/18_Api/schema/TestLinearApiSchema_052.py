@@ -80,7 +80,8 @@ class TestLinearApiSchema_052:
                             'trade_turnover': float,
                             'trade_volume': float,
                             'update_time': int,
-                            'volume': float
+                            'volume': float,
+                            'trade_partition': 'USDT'
                         }, None)
                     ],
                     'total_page': int,

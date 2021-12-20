@@ -41,8 +41,8 @@ class TestLinearApiSchema_022:
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_historical_funding_rate'):
             r = linear_api.linear_historical_funding_rate(contract_code=contract_code,
-                                                 page_index='',
-                                                 page_size='')
+                                                          page_index='',
+                                                          page_size='')
             pprint(r)
             schema = {
                 'data': {
@@ -55,7 +55,8 @@ class TestLinearApiSchema_022:
                             'funding_rate': str,
                             'funding_time': str,
                             'realized_rate': str,
-                            'symbol': symbol
+                            'symbol': symbol,
+                            'trade_partition': 'USDT'
                         }
                     ],
                     'total_page': int,

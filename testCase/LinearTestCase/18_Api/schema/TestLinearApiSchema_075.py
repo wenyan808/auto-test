@@ -47,13 +47,14 @@ class TestLinearApiSchema_075:
                                                                     'margin_asset': 'USDT',
                                                                     'margin_balance': Or(float, int),
                                                                     'margin_mode': 'cross',
-                                                                    'risk_rate': Or(float, None)}],
+                                                                    'risk_rate': Or(float, None),
+                                                                    'trade_partition': 'USDT'}],
                                              'sub_uid': int}],
                                'total_page': int,
                                'total_size': int},
                       'status': 'ok',
                       'ts': int}
-
+            assert r['data']['sub_list'][0]['account_info_list']
             Schema(schema).validate(r)
 
     @allure.step('恢复环境')

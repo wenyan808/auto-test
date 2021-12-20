@@ -96,12 +96,14 @@ class TestLinearApiSchema_065:
                                            'tpsl_order_type': str,
                                            'trigger_price': float,
                                            'trigger_type': str,
-                                           'volume': float}, ],
+                                           'volume': float,
+                                           'trade_partition': 'USDT'}, ],
                                'total_page': int,
                                'total_size': int},
                       'status': 'ok',
                       'ts': int}
 
+            assert r['data']['orders']
             Schema(schema).validate(r)
 
     @allure.step('恢复环境')

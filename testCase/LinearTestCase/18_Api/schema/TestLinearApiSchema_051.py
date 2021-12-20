@@ -88,7 +88,8 @@ class TestLinearApiSchema_051:
                             'trade_turnover': Or(int, float, None),
                             'trade_volume': int,
                             'update_time': int,
-                            'volume': int
+                            'volume': int,
+                            'trade_partition': 'USDT'
                         }
                     ],
                     'total_page': int,
@@ -98,6 +99,7 @@ class TestLinearApiSchema_051:
                 'ts': int
             }
 
+            assert r['data']['orders']
             Schema(schema).validate(r)
 
     @allure.step('恢复环境')

@@ -55,7 +55,8 @@ class TestLinearApiSchema_030:
                             'margin_account': contract_code,
                             'face_margin_account': Or(str, None),
                             'type': int,
-                            'amount': float
+                            'amount': float,
+                            'trade_partition': 'USDT'
                         }
                     ],
                     'total_page': int,

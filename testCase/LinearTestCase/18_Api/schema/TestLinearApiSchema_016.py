@@ -47,7 +47,8 @@ class TestLinearApiSchema_016:
                                 'pair': contract_code,
                                 'business_type': 'swap',
                                 'estimated_settlement_price': Or(float, int, None),
-                                'settlement_type': 'settlement'}],
+                                'settlement_type': 'settlement',
+                                'trade_partition': 'USDT'}],
                       'status': 'ok',
                       'ts': int}
 

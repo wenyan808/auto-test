@@ -51,6 +51,7 @@ class TestLinearApiSchema_009:
                         'business_type': 'swap',
                         'contract_type': 'swap',
                         'pair': contract_code,
+                        'trade_partition': 'USDT',
                         'tick': [
                             {'volume': float,
                              'amount_type': int,

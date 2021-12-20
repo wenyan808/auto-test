@@ -54,7 +54,8 @@ class TestLinearApiSchema_027:
                                 'margin_balance': Or(int, float, None),
                                 'margin_mode': 'isolated',
                                 'risk_rate': Or(int, float, None),
-                                'symbol': symbol
+                                'symbol': symbol,
+                                'trade_partition': 'USDT'
                             }
                         ],
                         'sub_uid': int
@@ -63,7 +64,7 @@ class TestLinearApiSchema_027:
                 'status': 'ok',
                 'ts': int
             }
-
+            assert r['data'][0]['list']
             Schema(schema).validate(r)
 
     @allure.step('恢复环境')

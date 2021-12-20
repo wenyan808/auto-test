@@ -52,7 +52,8 @@ class TestLinearApiSchema_034:
                             'pair': contract_code,
                             'business_type': 'swap',
                             'open_limit': Or(float, None),
-                            'close_limit': Or(float, None)
+                            'close_limit': Or(float, None),
+                            'trade_partition': 'USDT'
                         }
                     ],
                     'order_price_type': str

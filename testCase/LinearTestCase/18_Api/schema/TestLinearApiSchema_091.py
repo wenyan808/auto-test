@@ -41,12 +41,12 @@ class TestLinearApiSchema_091:
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_cross_hisorders'):
             r = linear_api.linear_cross_hisorders(contract_code=contract_code,
-                                         trade_type='0',
-                                         type='1',
-                                         status='0',
-                                         create_date='7',
-                                         page_index='',
-                                         page_size='')
+                                                  trade_type='0',
+                                                  type='1',
+                                                  status='0',
+                                                  create_date='7',
+                                                  page_index='',
+                                                  page_size='')
             pprint(r)
             schema = {
                 'data': {
@@ -83,7 +83,8 @@ class TestLinearApiSchema_091:
                             'volume': float,
                             'contract_type': 'swap',
                             'business_type': 'swap',
-                            'pair': str
+                            'pair': str,
+                            'trade_partition': 'USDT'
                         }
                     ],
                     'total_page': int,

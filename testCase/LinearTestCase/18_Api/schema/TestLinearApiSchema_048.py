@@ -44,7 +44,8 @@ class TestLinearApiSchema_048:
             pprint(r)
             schema = {'data': {'contract_code': contract_code,
                                'lever_rate': int,
-                               'margin_mode': 'isolated'},
+                               'margin_mode': 'isolated',
+                               'trade_partition': 'USDT'},
                       'status': 'ok',
                       'ts': int}
 

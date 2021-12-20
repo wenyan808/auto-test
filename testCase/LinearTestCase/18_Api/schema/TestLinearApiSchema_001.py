@@ -57,8 +57,8 @@ class TestLinearApiSchema_001:
                         'contract_status': int,
                         'support_margin_mode': Or('cross', 'isolated', 'all'),
                         'delivery_time': str,
-                        'delivery_date': str
-
+                        'delivery_date': str,
+                        'trade_partition': 'USDT'
                     }
                 ],
                 'status': 'ok',

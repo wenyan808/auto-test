@@ -41,13 +41,13 @@ class TestLinearApiSchema_031:
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_financial_record_exact'):
             r = linear_api.linear_financial_record_exact(margin_account=contract_code,
-                                                contract_code=contract_code,
-                                                type='',
-                                                start_time='',
-                                                end_time='',
-                                                from_id='',
-                                                size='',
-                                                direct='')
+                                                         contract_code=contract_code,
+                                                         type='',
+                                                         start_time='',
+                                                         end_time='',
+                                                         from_id='',
+                                                         size='',
+                                                         direct='')
             pprint(r)
             schema = {'data': {'financial_record': [{'amount': Or(float, int),
                                                      'asset': 'USDT',
@@ -56,7 +56,8 @@ class TestLinearApiSchema_031:
                                                      'id': int,
                                                      'margin_account': contract_code,
                                                      'ts': int,
-                                                     'type': int}, ],
+                                                     'type': int,
+                                                     'trade_partition': 'USDT'}, ],
                                'next_id': int,
                                'remain_size': int},
                       'status': 'ok',

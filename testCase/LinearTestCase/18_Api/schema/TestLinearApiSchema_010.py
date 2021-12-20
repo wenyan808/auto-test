@@ -46,6 +46,7 @@ class TestLinearApiSchema_010:
                                 'contract_code': contract_code,
                                 'margin_mode': 'isolated',
                                 'margin_account': contract_code,
+                                'trade_partition': 'USDT',
                                 'list': [{'ladders': [{'max_margin_available': Or(int, float, None),
                                                        'max_margin_balance': Or(int, float, None),
                                                        'min_margin_available': Or(int, float, None),
