@@ -77,7 +77,8 @@ class TestLinearApiSchema_060:
                             'symbol': symbol,
                             'trigger_price': float,
                             'trigger_type': str,
-                            'volume': float
+                            'volume': float,
+                            'trade_partition': 'USDT'
                         }
                     ],
                     'total_page': int,

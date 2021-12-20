@@ -46,6 +46,7 @@ class TestLinearApiSchema_006:
                     'contract_code': contract_code,
                     'business_type': 'swap',
                     'pair': contract_code,
+                    'trade_partition': 'USDT',
                     'tick': [
                         {
                             'insurance_fund': Or(float, 0),

@@ -46,6 +46,7 @@ class TestLinearApiSchema_011:
                                 'business_type': 'swap',
                                 'pair': str,
                                 'contract_type': 'swap',
+                                'trade_partition': 'USDT',
                                 'list': [{'ladders': [{'max_margin_available': Or(int, float, None),
                                                        'max_margin_balance': Or(int, float, None),
                                                        'min_margin_available': Or(int, float, None),

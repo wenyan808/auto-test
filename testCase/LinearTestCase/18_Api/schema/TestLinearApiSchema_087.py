@@ -47,7 +47,8 @@ class TestLinearApiSchema_087:
                                'pair': str,
                                'business_type': 'swap',
                                'margin_mode': 'cross',
-                               'lever_rate': int},
+                               'lever_rate': int,
+                               'trade_partition': 'USDT'},
                       'status': 'ok',
                       'ts': int}
 

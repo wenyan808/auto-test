@@ -61,7 +61,8 @@ class TestLinearApiSchema_014:
                             'symbol': symbol,
                             'business_type': 'swap',
                             'pair': contract_code,
-                            'volume': Or(float, int, None)
+                            'volume': Or(float, int, None),
+                            'trade_partition': 'USDT'
                         }
                     ],
                     'total_page': int,

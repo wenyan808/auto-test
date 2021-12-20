@@ -77,6 +77,7 @@ class TestLinearApiSchema_038:
                         'margin_mode': 'isolated',
                         'margin_position': Or(float, None),
                         'margin_static': Or(float, None),
+                        'trade_partition': 'USDT',
                         'positions': Or([
                             {
                                 'available': Or(float, None),
@@ -96,6 +97,7 @@ class TestLinearApiSchema_038:
                                 'profit_unreal': Or(float, None),
                                 'symbol': symbol,
                                 'volume': Or(float, None),
+                                'trade_partition': 'USDT'
                             }
                         ], None),
                         'profit_real': Or(float, None),
@@ -108,7 +110,7 @@ class TestLinearApiSchema_038:
                 'status': 'ok',
                 'ts': int
             }
-
+            assert r['data']
             Schema(schema).validate(r)
 
     @allure.step('恢复环境')

@@ -85,7 +85,8 @@ class TestLinearApiSchema_049:
                         'trade_avg_price': Or(int, float, None),
                         'trade_turnover': Or(float, int),
                         'trade_volume': int,
-                        'volume': int
+                        'volume': int,
+                        'trade_partition': 'USDT'
                     }
                 ],
                 'status': 'ok',

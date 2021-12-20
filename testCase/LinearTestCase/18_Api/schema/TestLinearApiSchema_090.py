@@ -92,7 +92,8 @@ class TestLinearApiSchema_090:
                             'volume': int,
                             'business_type': 'swap',
                             'contract_type': 'swap',
-                            'pair': str
+                            'pair': str,
+                            'trade_partition': 'USDT'
                         }
                     ],
                     'total_page': int,
@@ -102,6 +103,7 @@ class TestLinearApiSchema_090:
                 'ts': int
             }
 
+            assert r['data']['orders']
             Schema(schema).validate(r)
 
     @allure.step('恢复环境')

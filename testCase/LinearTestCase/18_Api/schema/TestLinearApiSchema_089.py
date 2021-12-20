@@ -69,7 +69,7 @@ class TestLinearApiSchema_089:
                                                      page_index='1',
                                                      page_size='20')
             pprint(r)
-            schema1 = {
+            schema = {
                 'data': {
                     'adjust_value': Or(int, float),
                     'canceled_at': int,
@@ -108,6 +108,7 @@ class TestLinearApiSchema_089:
                     'contract_type': 'swap',
                     'business_type': 'swap',
                     'pair': str,
+                    'trade_partition': 'USDT',
                     'trades': [
                         {'created_at': int,
                          'fee_asset': 'USDT',
@@ -127,20 +128,8 @@ class TestLinearApiSchema_089:
                 'ts': int
             }
 
-            schema2 = {'created_at': int,
-                       'fee_asset': 'USDT',
-                       'id': str,
-                       'profit': float,
-                       'real_profit': float,
-                       'role': str,
-                       'trade_fee': float,
-                       'trade_id': int,
-                       'trade_price': float,
-                       'trade_turnover': float,
-                       'trade_volume': float}
-
-            Schema(schema1).validate(r)
-            Schema(schema2).validate(r['data']['trades'][0])
+            assert r['data']['trades'][0]
+            Schema(schema).validate(r)
 
     @allure.step('恢复环境')
     def teardown(self):

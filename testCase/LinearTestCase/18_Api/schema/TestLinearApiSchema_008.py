@@ -51,6 +51,7 @@ class TestLinearApiSchema_008:
                         'contract_type': 'swap',
                         'pair': str,
                         'margin_mode': str,
+                        'trade_partition': 'USDT',
                         'list': [
                             {
                                 'ladders': [

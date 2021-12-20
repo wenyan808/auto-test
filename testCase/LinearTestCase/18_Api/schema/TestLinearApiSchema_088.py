@@ -89,7 +89,8 @@ class TestLinearApiSchema_088:
                         'volume': int,
                         'business_type': 'swap',
                         'contract_type': 'swap',
-                        'pair': 'ETH-USDT'
+                        'pair': 'ETH-USDT',
+                        'trade_partition': 'USDT'
                     }
                 ],
                 'status': 'ok',

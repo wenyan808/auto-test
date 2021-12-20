@@ -55,7 +55,8 @@ class TestLinearApiSchema_035:
                         'open_taker_fee': str,
                         'close_maker_fee': str,
                         'close_taker_fee': str,
-                        'fee_asset': 'USDT'
+                        'fee_asset': 'USDT',
+                        'trade_partition': 'USDT'
                     }
                 ],
                 'status': 'ok',
