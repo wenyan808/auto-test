@@ -16,6 +16,12 @@ class redisConf:
         except Exception as e:
             print(f'Redis执行异常={str(e)}')
 
+    def instance(self):
+        if self.redisClient is None:
+            self.redisClient = redis.Redis(host=self.host, port=self.port, password=self.password, max_connections=10,
+                                           decode_responses=True, db=0)
+        return self.redisClient
+
     def __del__(self):
         try:
             print("REDIS CONN DESTRUCTOR")
