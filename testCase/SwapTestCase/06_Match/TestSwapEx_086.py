@@ -3,14 +3,16 @@
 # @Date    : 20211018
 # @Author : HuiQing Yu
 
-import allure
-import pytest
 import time
 
-from tool.SwapTools import SwapTool
+import allure
+import pytest
+
 from common.SwapServiceAPI import user01
+from common.mysqlComm import mysqlComm
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
@@ -24,6 +26,7 @@ class TestSwapEx_086:
     @classmethod
     def setup_class(cls):
         with allure.step('*->挂盘'):
+            cls.mysqlClient = mysqlComm()
             cls.currentPrice = SwapTool.currentPrice()  # 最新价
             user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='buy')
             pass
@@ -35,7 +38,7 @@ class TestSwapEx_086:
             pass
 
     @allure.title('撮合-卖出开仓-部分成交')
-    def test_execute(self, contract_code, mysqlClient):
+    def test_execute(self, contract_code):
         with allure.step('操作：开空下单'):
             self.currentPrice = SwapTool.currentPrice()  # 最新价
 
@@ -49,7 +52,7 @@ class TestSwapEx_086:
             flag = False
             # 给撮合时间，5秒内还未撮合完成则为失败
             for i in range(3):
-                isMatch = mysqlClient.selectdb_execute(dbSchema='order_seq',sqlStr=sqlStr)[0]['count']
+                isMatch = self.mysqlClient.selectdb_execute(dbSchema='order_seq',sqlStr=sqlStr)[0]['count']
                 if 1 == isMatch:
                     flag = True
                     break

@@ -65,14 +65,14 @@ class SwapTools(object):
             time.sleep(1)
         return False
 
-    # 获取结算中的合约
-    def getSettlementContract(self):
-        sqlStr = 'select product_id from t_product where  trade_status!=5 and init_status=0 limit 1'
+    # 获取合约状态
+    def getContractStatus(self,init_status):
+        # 0:结算中 1:交易中 2:待上市 3:停牌 4:结算完成 5:已生成,10 初始化中
+        sqlStr = f'select product_id from t_product where  trade_status!={init_status} and init_status=0 limit 1'
         db_info = self.mysqlClient.selectdb_execute('contract_trade', sqlStr=sqlStr)
         if len(db_info) ==0:
             return None
-        else:
-            return db_info[0]['product_id']
+        return db_info[0]['product_id']
 
 # 调试区
 SwapTool = SwapTools()

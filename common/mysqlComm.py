@@ -46,5 +46,3 @@ class mysqlComm(object):
             self.__contract_conn.close()
         except Exception as e:
             print(e)
-
-mysqlComm=mysqlComm()
