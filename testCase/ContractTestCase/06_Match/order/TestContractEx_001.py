@@ -4,7 +4,10 @@
 # @Author : zhangguangnan
 
 from tool.atp import ATP
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from common.ContractServiceAPI import user01
 from common.redisComm import redisConf
 from config.conf import DEFAULT_SYMBOL, DEFAULT_CONTRACT_CODE
@@ -50,36 +53,66 @@ class TestContractEx_001:
            'TestContractEx_195']
 
     datas = [{'titleName': '当周 限价单', 'contest_type': 'this_week', 'order_price_type': 'limit'},
-             {'titleName': '当周 对手价', 'contest_type': 'this_week', 'order_price_type': 'opponent'},
-             {'titleName': '当周 最优5档', 'contest_type': 'this_week', 'order_price_type': 'optimal_5'},
-             {'titleName': '当周 最优10档', 'contest_type': 'this_week', 'order_price_type': 'optimal_10'},
-             {'titleName': '当周 最优20档', 'contest_type': 'this_week', 'order_price_type': 'optimal_20'},
-             {'titleName': '当周 only maker单', 'contest_type': 'this_week', 'order_price_type': 'post_only'},
-             {'titleName': '当周 only ioc单', 'contest_type': 'this_week', 'order_price_type': 'ioc'},
-             {'titleName': '当周 only fok单', 'contest_type': 'this_week', 'order_price_type': 'fok'},
-             {'titleName': '当周 对手价IOC', 'contest_type': 'this_week', 'order_price_type': 'opponent_ioc'},
-             {'titleName': '当周 最优5档IOC', 'contest_type': 'this_week', 'order_price_type': 'optimal_5_ioc'},
-             {'titleName': '当周 最优10档IOC', 'contest_type': 'this_week', 'order_price_type': 'optimal_10_ioc'},
-             {'titleName': '当周 最优20档IOC', 'contest_type': 'this_week', 'order_price_type': 'optimal_20_ioc'},
-             {'titleName': '当周 对手价FOK', 'contest_type': 'this_week', 'order_price_type': 'opponent_fok'},
-             {'titleName': '当周 最优5档FOK', 'contest_type': 'this_week', 'order_price_type': 'optimal_5_fok'},
-             {'titleName': '当周 最优10档FOK', 'contest_type': 'this_week', 'order_price_type': 'optimal_10_fok'},
-             {'titleName': '当周 最优20档FOK', 'contest_type': 'this_week', 'order_price_type': 'optimal_20_fok'},
-             {'titleName': '次周 限价单', 'contest_type': 'next_week', 'order_price_type': 'limit'},
-             {'titleName': '次周 对手价', 'contest_type': 'next_week', 'order_price_type': 'opponent'},
-             {'titleName': '次周 最优5档', 'contest_type': 'next_week', 'order_price_type': 'optimal_5'},
-             {'titleName': '次周 最优10档', 'contest_type': 'next_week', 'order_price_type': 'optimal_10'},
-             {'titleName': '次周 最优20档', 'contest_type': 'next_week', 'order_price_type': 'optimal_20'},
-             {'titleName': '次周 only maker单', 'contest_type': 'next_week', 'order_price_type': 'post_only'},
-             {'titleName': '次周 only fok单', 'contest_type': 'next_week', 'order_price_type': 'fok'},
-             {'titleName': '次周 only ioc单', 'contest_type': 'next_week', 'order_price_type': 'ioc'},
-             {'titleName': '次周 对手价IOC', 'contest_type': 'next_week', 'order_price_type': 'opponent_ioc'},
-             {'titleName': '次周 最优5档IOC', 'contest_type': 'next_week', 'order_price_type': 'optimal_5_ioc'},
-             {'titleName': '次周 最优10档IOC', 'contest_type': 'next_week', 'order_price_type': 'optimal_10_ioc'},
-             {'titleName': '次周 最优20档IOC', 'contest_type': 'next_week', 'order_price_type': 'optimal_20_ioc'},
-             {'titleName': '次周 对手价FOK', 'contest_type': 'next_week', 'order_price_type': 'opponent_fok'},
-             {'titleName': '次周 最优5档FOK', 'contest_type': 'next_week', 'order_price_type': 'optimal_5_fok'},
-             {'titleName': '次周 最优10档FOK', 'contest_type': 'next_week', 'order_price_type': 'optimal_10_fok'},
+             {'titleName': '当周 对手价', 'contest_type': 'this_week',
+                 'order_price_type': 'opponent'},
+             {'titleName': '当周 最优5档', 'contest_type': 'this_week',
+                 'order_price_type': 'optimal_5'},
+             {'titleName': '当周 最优10档', 'contest_type': 'this_week',
+                 'order_price_type': 'optimal_10'},
+             {'titleName': '当周 最优20档', 'contest_type': 'this_week',
+                 'order_price_type': 'optimal_20'},
+             {'titleName': '当周 only maker单', 'contest_type': 'this_week',
+                 'order_price_type': 'post_only'},
+             {'titleName': '当周 only ioc单', 'contest_type': 'this_week',
+                 'order_price_type': 'ioc'},
+             {'titleName': '当周 only fok单', 'contest_type': 'this_week',
+                 'order_price_type': 'fok'},
+             {'titleName': '当周 对手价IOC', 'contest_type': 'this_week',
+                 'order_price_type': 'opponent_ioc'},
+             {'titleName': '当周 最优5档IOC', 'contest_type': 'this_week',
+                 'order_price_type': 'optimal_5_ioc'},
+             {'titleName': '当周 最优10档IOC', 'contest_type': 'this_week',
+                 'order_price_type': 'optimal_10_ioc'},
+             {'titleName': '当周 最优20档IOC', 'contest_type': 'this_week',
+                 'order_price_type': 'optimal_20_ioc'},
+             {'titleName': '当周 对手价FOK', 'contest_type': 'this_week',
+                 'order_price_type': 'opponent_fok'},
+             {'titleName': '当周 最优5档FOK', 'contest_type': 'this_week',
+                 'order_price_type': 'optimal_5_fok'},
+             {'titleName': '当周 最优10档FOK', 'contest_type': 'this_week',
+                 'order_price_type': 'optimal_10_fok'},
+             {'titleName': '当周 最优20档FOK', 'contest_type': 'this_week',
+                 'order_price_type': 'optimal_20_fok'},
+             {'titleName': '次周 限价单', 'contest_type': 'next_week',
+                 'order_price_type': 'limit'},
+             {'titleName': '次周 对手价', 'contest_type': 'next_week',
+                 'order_price_type': 'opponent'},
+             {'titleName': '次周 最优5档', 'contest_type': 'next_week',
+                 'order_price_type': 'optimal_5'},
+             {'titleName': '次周 最优10档', 'contest_type': 'next_week',
+                 'order_price_type': 'optimal_10'},
+             {'titleName': '次周 最优20档', 'contest_type': 'next_week',
+                 'order_price_type': 'optimal_20'},
+             {'titleName': '次周 only maker单', 'contest_type': 'next_week',
+                 'order_price_type': 'post_only'},
+             {'titleName': '次周 only fok单', 'contest_type': 'next_week',
+                 'order_price_type': 'fok'},
+             {'titleName': '次周 only ioc单', 'contest_type': 'next_week',
+                 'order_price_type': 'ioc'},
+             {'titleName': '次周 对手价IOC', 'contest_type': 'next_week',
+                 'order_price_type': 'opponent_ioc'},
+             {'titleName': '次周 最优5档IOC', 'contest_type': 'next_week',
+                 'order_price_type': 'optimal_5_ioc'},
+             {'titleName': '次周 最优10档IOC', 'contest_type': 'next_week',
+                 'order_price_type': 'optimal_10_ioc'},
+             {'titleName': '次周 最优20档IOC', 'contest_type': 'next_week',
+                 'order_price_type': 'optimal_20_ioc'},
+             {'titleName': '次周 对手价FOK', 'contest_type': 'next_week',
+                 'order_price_type': 'opponent_fok'},
+             {'titleName': '次周 最优5档FOK', 'contest_type': 'next_week',
+                 'order_price_type': 'optimal_5_fok'},
+             {'titleName': '次周 最优10档FOK', 'contest_type': 'next_week',
+                 'order_price_type': 'optimal_10_fok'},
              {'titleName': '次周 最优20档FOK', 'contest_type': 'next_week', 'order_price_type': 'optimal_20_fok'}]
     symbol = DEFAULT_SYMBOL
     contract_code = DEFAULT_CONTRACT_CODE
@@ -91,8 +124,10 @@ class TestContractEx_001:
         with allure.step('*->挂盘'):
             cls.currentPrice = ATP.get_current_price()  # 最新价
             # 获取交割合约信息
-            currContractInfo = user01.contract_contract_info(symbol=cls.symbol, contract_type='this_week')
-            nextContractInfo = user01.contract_contract_info(symbol=cls.symbol, contract_type='next_week')
+            currContractInfo = user01.contract_contract_info(
+                symbol=cls.symbol, contract_type='this_week')
+            nextContractInfo = user01.contract_contract_info(
+                symbol=cls.symbol, contract_type='next_week')
             cls.curr_contract_code = currContractInfo['data'][0]['contract_code']
             cls.next_contract_code = nextContractInfo['data'][0]['contract_code']
             user01.contract_order(symbol=cls.symbol, contract_code=cls.curr_contract_code, price=cls.currentPrice,
@@ -129,16 +164,19 @@ class TestContractEx_001:
             elif self.contract_type == 'next_week':
                 self.contract_code = self.next_contract_code
             orderInfo = user01.contract_order(symbol=symbol, contract_code=self.contract_code,
-                                              price=round(self.currentPrice, 2),
+                                              price=round(
+                                                  self.currentPrice, 2),
                                               contract_type=self.contract_type, direction='buy',
                                               order_price_type=params['order_price_type'])
             orderId = orderInfo['data']['order_id']
-            strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderId)
+            strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
+                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (
+                         orderId)
             # 给撮合时间，5秒内还未撮合完成则为失败
             n = 0
             while n < 5:
-                isMatch = DB_orderSeq.execute(strStr)[0][0]
+                isMatch = DB_orderSeq.selectdb_execute(
+                    'order_seq', strStr)[0]['c']
                 if 1 == isMatch:
                     break
                 else:

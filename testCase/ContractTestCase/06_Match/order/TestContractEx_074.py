@@ -24,9 +24,13 @@ from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from tool.atp import ATP
 from common.mysqlComm import mysqlComm
+
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
@@ -34,7 +38,8 @@ from common.mysqlComm import mysqlComm
 @pytest.mark.stable
 @allure.tag('Script owner : chenwei', 'Case owner : 邱大伟')
 class TestContractEx_074:
-    DB_orderSeq = mysqlComm('order_seq')
+    DB_orderSeq = mysqlComm()
+
     @allure.step('前置条件')
     def setup(self):
         print(''' 制造成交数据 ''')
@@ -66,13 +71,15 @@ class TestContractEx_074:
             # 撤单
             contract_api.contract_cancel(order_id=orderId)
             time.sleep(2)
-            strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderId)
+            strStr = "select count(1) as c as c from t_exchange_match_result WHERE f_id = " \
+                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (
+                         orderId)
 
             # 给撮合时间，5秒内还未撮合完成则为失败
             n = 0
             while n < 5:
-                isMatch = self.DB_orderSeq.execute(strStr)[0][0]
+                isMatch = self.DB_orderSeq.selectdb_execute(
+                    'order_seq', strStr)[0]['c']
                 if 1 == isMatch:
                     break
                 else:
