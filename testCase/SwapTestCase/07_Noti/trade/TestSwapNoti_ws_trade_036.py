@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2021/11/10 4:03 下午
 # @Author  : HuiQing Yu
+
+from common.mysqlComm import mysqlComm as mysqlClient
 import allure
 import pytest
 

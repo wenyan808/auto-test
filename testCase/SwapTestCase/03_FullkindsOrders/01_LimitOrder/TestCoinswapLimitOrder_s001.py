@@ -10,7 +10,7 @@ import time
 
 from common.SwapServiceAPI import user01
 from config.case_content import epic, features
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 from config.conf import DEFAULT_CONTRACT_CODE
 
 @allure.epic(epic[1])
@@ -18,7 +18,7 @@ from config.conf import DEFAULT_CONTRACT_CODE
 @allure.story(features[2]['story'][1])
 @pytest.mark.stable
 @allure.tag('Script owner : 陈维', 'Case owner : 吉龙')
-class TestCoinswapLimitOrder_001:
+class TestCoinswapLimitOrder_s001:
     ids = ["TestCoinswapLimitOrder_001","TestCoinswapLimitOrder_002"]
     params = [
         {
@@ -38,7 +38,7 @@ class TestCoinswapLimitOrder_001:
     def setup_class(cls):
         with allure.step("变量初始化"):
             cls.contract_code = DEFAULT_CONTRACT_CODE
-            cls.latest_price = currentPrice()
+            cls.latest_price = SwapTool.currentPrice()
             pass
 
 

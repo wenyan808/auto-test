@@ -3,6 +3,8 @@
 # @Date    : 2021/12/7 2:35 下午
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import json
 from datetime import date, timedelta
 from decimal import Decimal
@@ -25,7 +27,7 @@ class TestSwapAccountCapticalBatch_202:
 
     ids = ['TestSwapAccountCapticalBatch_202']
     params = [{'tittle':'TestSwapAccountCapticalBatch_202','case_name':'平台流水表-单日0-24流水-应付用户','userType': 12,'type':3}]
-    DB_contract_trade = mysqlComm('contract_trade')
+
     @classmethod
     def setup_class(cls):
         with allure.step('变量初始化'):
@@ -66,7 +68,7 @@ class TestSwapAccountCapticalBatch_202:
             pass
 
     @pytest.mark.parametrize('param', params, ids=ids)
-    def test_execute(self,param,DB_btc):
+    def test_execute(self,params):
         allure.dynamic.title(param['tittle'])
         with allure.step('操作：执行查询'):
             request_params = [
@@ -94,82 +96,82 @@ class TestSwapAccountCapticalBatch_202:
             assert pay_money,'返回数据中未找到-应付用户-数据，校验失败'
 #################################################  【应付用户】从币币转入	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["moneyIn"]}-数据'):
-            moneyIn = self.dbResult(money_type=14,dbName=DB_btc)
+            moneyIn = self.dbResult(money_type=14,dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["moneyIn"]}'):
             assert Decimal(pay_money['moneyIn']) == moneyIn, f'{self.fund_flow_type["moneyIn"]}-校验失败'
 #################################################  【应付用户】转出至币币	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["moneyOut"]}-数据'):
-            moneyOut = self.dbResult(money_type=15,dbName=DB_btc)
+            moneyOut = self.dbResult(money_type=15,dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["moneyOut"]}'):
             assert Decimal(pay_money['moneyOut']) == moneyOut, f'{self.fund_flow_type["moneyOut"]}-校验失败'
 #################################################  【应付用户】注入到爆仓	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["toBurst"]}-数据'):
-            toBurst = self.dbResult(money_type=24,dbName=DB_btc)
+            toBurst = self.dbResult(money_type=24,dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["toBurst"]}'):
             assert Decimal(pay_money['toBurst']) == toBurst, f'{self.fund_flow_type["toBurst"]}-校验失败'
 #################################################  【应付用户】从爆仓提取	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["fromBurst"]}-数据'):
-            fromBurst = self.dbResult(money_type=25,dbName=DB_btc)
+            fromBurst = self.dbResult(money_type=25,dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["fromBurst"]}'):
             assert Decimal(pay_money['fromBurst']) == fromBurst, f'{self.fund_flow_type["fromBurst"]}-校验失败'
 #################################################  【应付用户】给用户赠币赔偿	############################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["compensate"]}-数据'):
-            compensate = self.dbResult(money_type=26,dbName=DB_btc)
+            compensate = self.dbResult(money_type=26,dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["compensate"]}'):
             assert Decimal(pay_money['compensate']) == compensate, f'{self.fund_flow_type["compensate"]}-校验失败'
 #################################################  【应付用户】扣减用户资产惩戒	############################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["discipline"]}-数据'):
-            discipline = self.dbResult(money_type=27,dbName=DB_btc)
+            discipline = self.dbResult(money_type=27,dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["discipline"]}'):
             assert Decimal(pay_money['discipline']) == discipline, f'{self.fund_flow_type["discipline"]}-校验失败'
 #################################################  【应付用户】活动奖励	####################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["actionReward"]}-数据'):
-            actionReward = self.dbResult(money_type=28,dbName=DB_btc)
+            actionReward = self.dbResult(money_type=28,dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["actionReward"]}'):
             assert Decimal(pay_money['actionReward']) == actionReward, f'{self.fund_flow_type["actionReward"]}-校验失败'
 #################################################  【应付用户】返利	####################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["dividend"]}-数据'):
-            dividend = self.dbResult(money_type=29,dbName=DB_btc)
+            dividend = self.dbResult(money_type=29,dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["dividend"]}'):
             assert Decimal(pay_money['dividend']) == dividend, f'{self.fund_flow_type["dividend"]}-校验失败'
 #################################################  【应付用户】开仓手续费挂单	############################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["openFeeMaker"]}-数据'):
-            openFeeMaker = self.dbResult(money_type=6,dbName=DB_btc)
+            openFeeMaker = self.dbResult(money_type=6,dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["openFeeMaker"]}'):
             assert Decimal(pay_money['openFeeMaker']) == openFeeMaker, f'{self.fund_flow_type["openFeeMaker"]}-校验失败'
 #################################################  【应付用户】开仓手续费吃单	############################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["openFeeTaker"]}-数据'):
-            openFeeTaker = self.dbResult(money_type=5,dbName=DB_btc)
+            openFeeTaker = self.dbResult(money_type=5,dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["openFeeTaker"]}'):
             assert Decimal(pay_money['openFeeTaker']) == openFeeTaker, f'{self.fund_flow_type["openFeeTaker"]}-校验失败'
 #################################################  【应付用户】平仓手续费挂单	############################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["closeFeeMaker"]}-数据'):
-            closeFeeMaker = self.dbResult(money_type=8,dbName=DB_btc)
+            closeFeeMaker = self.dbResult(money_type=8,dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["closeFeeMaker"]}'):
             assert Decimal(pay_money['closeFeeMaker']) == closeFeeMaker, f'{self.fund_flow_type["closeFeeMaker"]}-校验失败'
 #################################################  【应付用户】平仓手续费吃单	############################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["closeFeeTaker"]}-数据'):
-            closeFeeTaker = self.dbResult(money_type=7,dbName=DB_btc)
+            closeFeeTaker = self.dbResult(money_type=7,dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["closeFeeTaker"]}'):
             assert Decimal(pay_money['closeFeeTaker']) == closeFeeTaker, f'{self.fund_flow_type["closeFeeTaker"]}-校验失败'
 #################################################  【应付用户】交割手续费	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["deliveFee"]}-数据'):
-            deliveFee = self.dbResult(money_type=11,dbName=DB_btc)
+            deliveFee = self.dbResult(money_type=11,dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["deliveFee"]}'):
             assert Decimal(pay_money['deliveFee']) == deliveFee, f'{self.fund_flow_type["deliveFee"]}-校验失败'
 #################################################  【应付用户】资金费-收入	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["capitalFeeIn"]}-数据'):
-            capitalFeeIn = self.dbResult(money_type=30,dbName=DB_btc)
+            capitalFeeIn = self.dbResult(money_type=30,dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["capitalFeeIn"]}'):
             assert Decimal(pay_money['capitalFeeIn']) == capitalFeeIn, f'{self.fund_flow_type["capitalFeeIn"]}-校验失败'
 #################################################  【应付用户】资金费-支出	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["capitalFeeOut"]}-数据'):
-            capitalFeeOut = self.dbResult(money_type=31,dbName=DB_btc)
+            capitalFeeOut = self.dbResult(money_type=31,dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["capitalFeeOut"]}'):
             assert Decimal(pay_money['capitalFeeOut']) == capitalFeeOut, f'{self.fund_flow_type["capitalFeeOut"]}-校验失败'
 #################################################  【应付用户】平账	####################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["flatMoney"]}-数据'):
-            flatMoney = self.dbResult(money_type=20,dbName=DB_btc)
+            flatMoney = self.dbResult(money_type=20,dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["flatMoney"]}'):
             assert Decimal(pay_money['flatMoney']) == flatMoney, f'{self.fund_flow_type["flatMoney"]}-校验失败'
 #################################################    【应付用户】当期流水    ###############################################
@@ -180,7 +182,7 @@ class TestSwapAccountCapticalBatch_202:
                      f'AND money_type in (5,6,7,8,11,14,15,20,24,25,26,27,28,29,30,31) ' \
                      f'AND product_id = "{self.symbol}" ' \
                      'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
-            currInterest = DB_btc.dictCursor(sqlStr)
+            currInterest = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             if len(currInterest) == 0 or currInterest[0]['money'] is None:
                 currInterest = 0
             else:
@@ -196,7 +198,7 @@ class TestSwapAccountCapticalBatch_202:
                  f'AND money_type =  {money_type} ' \
                  f'AND product_id = "{self.symbol}" ' \
                  'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
-        money = dbName.dictCursor(sqlStr)
+        money = mysqlClient.selectdb_execute(dbSchema=dbName,sqlStr=sqlStr)
         if len(money) == 0 or money[0]['money'] is None:
             money = 0
         else:

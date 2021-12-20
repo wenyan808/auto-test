@@ -10,7 +10,7 @@ import time
 
 from common.SwapServiceAPI import user01
 from config.case_content import epic, features
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 from config.conf import DEFAULT_CONTRACT_CODE
 
 
@@ -57,7 +57,7 @@ class TestCoinswapTrackOrder_001:
     def setup_class(cls):
         with allure.step("变量初始化"):
             cls.contract_code = DEFAULT_CONTRACT_CODE
-            cls.latest_price = currentPrice()
+            cls.latest_price = SwapTool.currentPrice()
             pass
 
     @classmethod

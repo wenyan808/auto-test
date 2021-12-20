@@ -3,6 +3,8 @@
 # @Date    : 2021/12/7 2:35 下午
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import json
 from datetime import date, timedelta
 from decimal import Decimal
@@ -70,7 +72,6 @@ class TestSwapAccountCapticalBatch_408:
                 {'title':'TestSwapAccountCapticalBatch_430','case_name': '平台流水表-结算对账-【平账】横向对账','colName':'flatMoney'},
                 {'title':'TestSwapAccountCapticalBatch_431','case_name': '平台流水表-结算对账-【当期流水】横向对账','colName':'currInterest'},
               ]
-    DB_btc = mysqlComm('btc')
 
     @classmethod
     def setup_class(cls):
@@ -131,7 +132,7 @@ class TestSwapAccountCapticalBatch_408:
                      'where progress_code=13 ' \
                      f'and product_id= "{cls.symbol}" ' \
                      'order by end_time desc limit 2 '
-            db_info = cls.DB_btc.dictCursor(sqlStr=sqlStr)
+            db_info = cls.mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             cls.endDateTime = db_info[0]['end_time']
             cls.beginDateTime = db_info[1]['end_time']
             request_params = [
@@ -163,7 +164,7 @@ class TestSwapAccountCapticalBatch_408:
             pass
 
     @pytest.mark.parametrize('param', params, ids=ids)
-    def test_execute(self, param, DB_btc):
+    def test_execute(self, param):
         allure.dynamic.title(param['title'])
         with allure.step('操作:从接口返回中取出-各用户类型-数据'):
             for data in self.daily['daily']:

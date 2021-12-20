@@ -4,15 +4,17 @@
 # @Author  : HuiQing Yu
 
 
+import random
+import time
+
 import allure
 import pytest
-import time
-import random
 
-from config.case_content import epic,features
 from common.SwapServiceAPI import user01
-from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
 from common.redisComm import redisConf
+from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
+
 
 @allure.epic(epic[1])
 @allure.feature(features[1]['feature'])

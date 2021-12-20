@@ -6,7 +6,7 @@ import base64
 import requests
 from Crypto.Cipher import PKCS1_v1_5 as Cipher_pksc1_v1_5
 from Crypto.PublicKey import RSA
-from config.conf import MGT_INFO
+from config.conf import MGT_INFO, DEFAULT_SYMBOL
 
 
 class SwapServiceMGT(object):
@@ -115,6 +115,30 @@ class SwapServiceMGT(object):
         params = [ transferId,1,'']
         request_path = '/swap-manager-web/service/transferRecordService/checkTransferRecord'
         data = f'params={str(params)}'
+        return self.http_request(self.__url + request_path, method='POST', data=data, add_to_headers=headers)
+
+    # MGT 平账
+    def flat(self,symbol=None,flatAccount=None,uid=None,money=None):
+        headers = {
+            'token': self.token,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        }
+        if symbol is None:
+            symbol = DEFAULT_SYMBOL
+
+        params = [
+            symbol,
+            {
+                "productId": symbol,
+                "flatAccount": flatAccount,
+                "uid": uid,
+                "money": money,
+                "remark": "Automation Test"
+            }
+        ]
+        request_path = '/swap-manager-web/service/accountActionService/save'
+        data = str(params).replace('None', 'null')
+        data = f'params={str(data)}'
         return self.http_request(self.__url + request_path, method='POST', data=data, add_to_headers=headers)
 
 SwapServiceMGT = SwapServiceMGT()

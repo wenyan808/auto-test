@@ -3,13 +3,15 @@
 # @Date    : 2020/7/1
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import time
 from decimal import Decimal
 import random
 import allure
 import pytest
 
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 from common.SwapServiceAPI import user01,user02
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
@@ -41,7 +43,7 @@ class TestCoinswapTriggerOrder_020:
     def setup_class(cls):
         with allure.step("变量初始化"):
             cls.contract_code = DEFAULT_CONTRACT_CODE
-            cls.latest_price = currentPrice()
+            cls.latest_price = SwapTool.currentPrice()
             pass
 
 
@@ -53,7 +55,7 @@ class TestCoinswapTriggerOrder_020:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params, DB_contract_trade):
+    def test_execute(self, params, mysqlClient):
         allure.dynamic.title(params['case_name'])
         with allure.step("操作：挂卖盘"):
             user02.swap_order(contract_code=self.contract_code, price=self.latest_price, direction='sell')
@@ -69,7 +71,7 @@ class TestCoinswapTriggerOrder_020:
             time.sleep(1)#等待生效数据更新
             limit_order_id = limit_order['data']['order_id']
             sqlStr = f'select count(1) as tpIsExesit,user_order_id from t_tpsl_trigger_order where client_order_id= {limit_order_id}'
-            tpsl_order_info = DB_contract_trade.dictCursor(sqlStr)
+            tpsl_order_info = mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
             assert len(tpsl_order_info),'查无数据,校验失败'
             assert 1 <= tpsl_order_info[0]['tpIsExesit'], '校验生成止盈单失败'
             pass
@@ -89,7 +91,7 @@ class TestCoinswapTriggerOrder_020:
         with allure.step('验证：撤销后订单存在历史订单中'):
             for i in range(3):
                 sqlStr = f'select state from t_tpsl_trigger_order where client_order_id= {limit_order_id} and order_type = 2'
-                tpsl_order_info = DB_contract_trade.dictCursor(sqlStr)
+                tpsl_order_info = mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
                 if tpsl_order_info==() or tpsl_order_info[0]['state']==2:
                     print(f'校验失败，第{i+1}次重试……')
                     time.sleep(1)

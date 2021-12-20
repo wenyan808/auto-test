@@ -8,7 +8,7 @@ import time
 import allure
 import pytest
 
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 from common.SwapServiceAPI import user01
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
@@ -31,7 +31,7 @@ class TestSwapEx_134:
     def setup_class(cls):
         with allure.step('变量初始化'):
             cls.contract_code = DEFAULT_CONTRACT_CODE
-            cls.latest_price = currentPrice()
+            cls.latest_price = SwapTool.currentPrice()
             pass
         with allure.step('*->持仓'):
             user01.swap_order(contract_code=cls.contract_code, price=round(cls.latest_price, 2), direction='sell',
@@ -50,7 +50,7 @@ class TestSwapEx_134:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params, DB_orderSeq):
+    def test_execute(self, params, mysqlClient):
         allure.dynamic.title('撮合 闪电平仓 ' + params['case_name'])
         with allure.step('操作：执行平仓'):
             for i in range(3):
@@ -65,12 +65,12 @@ class TestSwapEx_134:
 
             pass
         with allure.step('验证：订单存在撮合结果表'):
-            strStr = "select count(1) as count from t_exchange_match_result WHERE f_id = " \
+            sqlStr = "select count(1) as count from t_exchange_match_result WHERE f_id = " \
                      "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderInfo['data']['order_id'])
             flag = False
             # 给撮合时间，5秒内还未撮合完成则为失败
             for i in range(5):
-                isMatch = DB_orderSeq.dictCursor(strStr)[0]['count']
+                isMatch = mysqlClient.selectdb_execute(dbSchema='order_seq',sqlStr=sqlStr)[0]['count']
                 if 1 == isMatch:
                     flag = True
                     break

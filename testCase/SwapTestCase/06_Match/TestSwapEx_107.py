@@ -8,7 +8,7 @@ import time
 import allure
 import pytest
 
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 from common.SwapServiceAPI import user01, user02, user03
 from common.mysqlComm import mysqlComm
 from config.case_content import epic, features
@@ -23,7 +23,7 @@ class TestSwapEx_107:
 
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, contract_code):
-        self.currentPrice = currentPrice()  # 最新价
+        self.currentPrice = SwapTool.currentPrice()  # 最新价
         # 先持仓
         user01.swap_order(contract_code=contract_code, price=round(self.currentPrice, 2),
                           direction='buy', volume=2)
@@ -35,7 +35,7 @@ class TestSwapEx_107:
                           direction='sell', volume=2)
 
     @allure.title('撮合 买入平仓 全部成交多人多笔价格相同的订单')
-    def test_execute(self, contract_code,DB_orderSeq):
+    def test_execute(self, contract_code):
         allure.dynamic.description('测试步骤：'
                                    '\n*、下限价单；买入平仓（平空）'
                                    '\n*、3用户下单，用户1，用户2各下2笔平空单，用户3下4笔开空单'
@@ -56,12 +56,12 @@ class TestSwapEx_107:
             pass
         with allure.step('验证：所有订单都在撮合表中'):
             for i in range(4):
-                strStr = "select count(1) as count from t_exchange_match_result WHERE f_id = " \
+                sqlStr = "select count(1) as count from t_exchange_match_result WHERE f_id = " \
                          "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderIdList[i])
                 # 给撮合时间，5秒内还未撮合完成则为失败
                 n = 0
                 while n < 5:
-                    isMatch = DB_orderSeq.dictCursor(strStr)[0]['count']
+                    isMatch = mysqlClient.selectdb_execute(dbSchema='order_seq',sqlStr=sqlStr)[0]['count']
                     if 1 == isMatch:
                         break
                     else:

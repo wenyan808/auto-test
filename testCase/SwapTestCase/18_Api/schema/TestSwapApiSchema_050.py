@@ -3,10 +3,12 @@
 # @Date    : 2021/11/22 10:55 上午
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import pytest, allure, random, time
 from schema import Schema, Or
 from common.SwapServiceAPI import user01
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 from config.conf import DEFAULT_CONTRACT_CODE
 from config.case_content import epic,features
 
@@ -21,7 +23,7 @@ class TestSwapApiSchema_050:
     def setup_class(cls):
         with allure.step("变量初始化"):
             cls.contract_code = DEFAULT_CONTRACT_CODE
-            cls.latest_price = currentPrice()
+            cls.latest_price = SwapTool.currentPrice()
             pass
         with allure.step("挂单"):
             user01.swap_order(contract_code=cls.contract_code,price=cls.latest_price,direction='buy')

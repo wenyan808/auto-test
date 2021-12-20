@@ -3,6 +3,8 @@
 # @Date    : 2021/12/8 10:29 上午
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import allure
 import pytest
 import random
@@ -113,7 +115,7 @@ class TestSwapMGTTransfer_011:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params, DB_contract_trade):
+    def test_execute(self, params, mysqlClient):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：执行转账'):
             transfer = SwapServiceMGT.saveTransfer(symbol=self.symbol,
@@ -130,7 +132,7 @@ class TestSwapMGTTransfer_011:
             quantity = params['request_params']['quantity']
             sqlStr = f'select transfer_id from t_transfer_data where product_id="{self.symbol}" ' \
                      f'AND amount= {quantity} AND transfer_status=6 order by id desc limit 1'
-            db_info = DB_contract_trade.dictCursor(sqlStr=sqlStr)
+            db_info = mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
             assert 'transfer_id' in db_info[0]
         with allure.step('操作: 执行转账审核'):
             transfer_id = db_info[0]['transfer_id']
@@ -146,7 +148,7 @@ class TestSwapMGTTransfer_011:
                      'remark ' \
                      'from t_transfer_record ' \
                      f'where id = {transfer_id}'
-            db_info = DB_contract_trade.dictCursor(sqlStr=sqlStr)
+            db_info = mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
             assert db_info, '未获取到数据校验失败'
 
             assert db_info[0]['product_id'] == self.symbol, '币种数据库校验失败'

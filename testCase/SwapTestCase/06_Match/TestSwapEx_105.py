@@ -10,7 +10,7 @@ import time
 from common.SwapServiceAPI import user01, user02, user03
 from common.mysqlComm import mysqlComm
 from config.case_content import epic, features
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
@@ -21,14 +21,14 @@ from common.CommonUtils import currentPrice
 class TestSwapEx_105:
 
     @allure.title('撮合 买入开仓 全部成交多人多笔价格相同的订单')
-    def test_execute(self, contract_code, DB_orderSeq):
+    def test_execute(self, contract_code, mysqlClient):
         allure.dynamic.description('测试步骤：'
                                    '\n*、下限价单；买入开仓（开多）'
                                    '\n*、3用户下单，用户1，用户2各下2笔开多单，用户3下4笔开空单'
                                    '\n*、用户1与用户2的开多单与用户3的开空单成交'
                                    '\n*、验证开多订单撮合成功（查询撮合表有数据）')
         with allure.step('操作：多用户下单'):
-            self.currentPrice = currentPrice()  # 最新价
+            self.currentPrice = SwapTool.currentPrice()  # 最新价
             orderIdList = []
             for user in [user01, user02]:
                 orderInfo = user.swap_order(contract_code=contract_code, price=round(self.currentPrice, 2),
@@ -43,12 +43,12 @@ class TestSwapEx_105:
             pass
         with allure.step('验证：所有订单都在撮合表中'):
             for i in range(4):
-                strStr = "select count(1) as count from t_exchange_match_result WHERE f_id = " \
+                sqlStr = "select count(1) as count from t_exchange_match_result WHERE f_id = " \
                          "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderIdList[i])
                 # 给撮合时间，5秒内还未撮合完成则为失败
                 n = 0
                 while n < 5:
-                    isMatch = DB_orderSeq.dictCursor(strStr)[0]['count']
+                    isMatch = mysqlClient.selectdb_execute(dbSchema='order_seq',sqlStr=sqlStr)[0]['count']
                     if 1 == isMatch:
                         break
                     else:

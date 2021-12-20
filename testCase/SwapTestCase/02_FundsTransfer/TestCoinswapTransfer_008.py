@@ -3,6 +3,8 @@
 # @Date    : 2020/7/1
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 
 import allure
 import pytest

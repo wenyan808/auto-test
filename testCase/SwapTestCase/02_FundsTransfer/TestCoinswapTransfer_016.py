@@ -3,12 +3,16 @@
 # @Date    : 2020/7/1
 # @Author  : HuiQing Yu
 
+import time
+
 import allure
 import pytest
-import time
-from common.SwapServiceAPI import user01Child01,user01
+
+from common.SwapServiceAPI import user01Child01, user01
+from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
-from config.case_content import epic,features
+
+
 @allure.epic(epic[1])
 @allure.feature(features[1]['feature'])
 @allure.story(features[1]['story'][2])

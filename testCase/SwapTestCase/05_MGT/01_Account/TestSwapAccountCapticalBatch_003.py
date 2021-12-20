@@ -3,6 +3,8 @@
 # @Date    : 2021/12/7 2:35 下午
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import json
 from datetime import date, timedelta
 from decimal import Decimal
@@ -24,7 +26,7 @@ from config.case_content import epic, features
 class TestSwapAccountCapticalBatch_003:
     ids = ['TestSwapAccountCapticalBatch_003']
     params = [{'title':'TestSwapAccountCapticalBatch_003','case_name': '平台流水表-每日跑批-应付外债', 'userType': 3, 'userId': '11186266','type':1}]
-    DB_contract_trade = mysqlComm('contract_trade')
+
     @classmethod
     def setup_class(cls):
         with allure.step('变量初始化'):
@@ -62,7 +64,7 @@ class TestSwapAccountCapticalBatch_003:
                      f'where product_id="{cls.symbol}" ' \
                      f'AND batch_date in ("{cls.s_batch_date}","{cls.e_batch_date}") ' \
                      'order by flow_end_time desc'
-            db_info = cls.DB_contract_trade.dictCursor(sqlStr=sqlStr)
+            db_info = cls.mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
             cls.s_batch_date = db_info[1]['flow_end_time']
             cls.e_batch_date = db_info[0]['flow_end_time']
             pass
@@ -74,7 +76,7 @@ class TestSwapAccountCapticalBatch_003:
             pass
 
     @pytest.mark.parametrize('param', params, ids=ids)
-    def test_execute(self, param, DB_btc):
+    def test_execute(self, param):
         allure.dynamic.title(param['title'])
         with allure.step('操作：执行查询'):
             request_params = [
@@ -102,27 +104,27 @@ class TestSwapAccountCapticalBatch_003:
             assert pay_money, '返回数据中未找到-应付用户-数据，校验失败'
 #################################################  【应付外债】从币币转入	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["moneyIn"]}-数据'):
-            moneyIn = self.dbResult(money_type=14,userId=param['userId'],dbName=DB_btc)
+            moneyIn = self.dbResult(money_type=14,userId=param['userId'],dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["moneyIn"]}'):
             assert Decimal(pay_money['moneyIn']) == moneyIn, f'{self.fund_flow_type["moneyIn"]}-校验失败'
 #################################################  【应付外债】转出至币币	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["moneyOut"]}-数据'):
-            moneyOut = self.dbResult(money_type=15,userId=param['userId'],dbName=DB_btc)
+            moneyOut = self.dbResult(money_type=15,userId=param['userId'],dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["moneyOut"]}'):
             assert Decimal(pay_money['moneyOut']) == moneyOut, f'{self.fund_flow_type["moneyOut"]}-校验失败'
 #################################################  【应付外债】借贷转运营	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["borrowToOperate"]}-数据'):
-            borrowToOperate = self.dbResult(money_type=21,userId=param['userId'],dbName=DB_btc)
+            borrowToOperate = self.dbResult(money_type=21,userId=param['userId'],dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["borrowToOperate"]}'):
             assert Decimal(pay_money['borrowToOperate']) == borrowToOperate, f'{self.fund_flow_type["borrowToOperate"]}-校验失败'
 #################################################  【应付外债】运营转借贷	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["operateToBorrow"]}-数据'):
-            operateToBorrow = self.dbResult(money_type=22,userId=param['userId'],dbName=DB_btc)
+            operateToBorrow = self.dbResult(money_type=22,userId=param['userId'],dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["operateToBorrow"]}'):
             assert Decimal(pay_money['operateToBorrow']) == operateToBorrow, f'{self.fund_flow_type["operateToBorrow"]}-校验失败'
 #################################################  【应付外债】平账	####################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["flatMoney"]}-数据'):
-            flatMoney = self.dbResult(money_type=20,userId=param['userId'],dbName=DB_btc)
+            flatMoney = self.dbResult(money_type=20,userId=param['userId'],dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["flatMoney"]}'):
             assert Decimal(pay_money['flatMoney']) == flatMoney, f'{self.fund_flow_type["flatMoney"]}-校验失败'
 #################################################### 【应付外债】当期流水    ###############################################
@@ -133,7 +135,7 @@ class TestSwapAccountCapticalBatch_003:
                      f'AND money_type in (14,15,20,21,22) ' \
                      f'AND product_id = "{self.symbol}" ' \
                      f'AND user_id = {param["userId"]} '
-            currInterest = DB_btc.dictCursor(sqlStr)
+            currInterest = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             if len(currInterest) == 0 or currInterest[0]['money'] is None:
                 currInterest = 0
             else:
@@ -149,7 +151,7 @@ class TestSwapAccountCapticalBatch_003:
                  f'AND money_type =  {money_type} ' \
                  f'AND product_id = "{self.symbol}" ' \
                  f'AND user_id = "{userId}" '
-        money = dbName.dictCursor(sqlStr)
+        money = mysqlClient.selectdb_execute(dbSchema=dbName,sqlStr=sqlStr)
         if len(money) == 0 or money[0]['money'] is None:
             money = 0
         else:

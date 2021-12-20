@@ -8,7 +8,7 @@ import time
 import allure
 import pytest
 
-from common.CommonUtils import currentPrice, opponentExist
+from tool.SwapTools import SwapTool, opponentExist
 from common.SwapServiceAPI import user01 as api_user01
 from common.SwapServiceWS import user01 as ws_user01
 from common.redisComm import redisConf
