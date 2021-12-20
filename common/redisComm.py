@@ -6,11 +6,22 @@ class redisConf:
     redisClient = None
 
     def __init__(self,redisName):
-        redisConfig = eval(REDIS_CONF)
-        self.host = str(redisConfig[redisName]['host'])
-        self.port = int(redisConfig[redisName]['port'])
-        self.password = str(redisConfig[redisName]['pwd'])
-        self.redisClient = redis.Redis(host=self.host, port=self.port, password=self.password, decode_responses=True, db=0)
+        try:
+            redisConfig = eval(REDIS_CONF)
+            self.host = str(redisConfig[redisName]['host'])
+            self.port = int(redisConfig[redisName]['port'])
+            self.password = str(redisConfig[redisName]['pwd'])
+            self.redisClient = redis.Redis(host=self.host, port=self.port, password=self.password, max_connections=10,
+                                           decode_responses=True, db=0)
+        except Exception as e:
+            print(f'Redis执行异常={str(e)}')
+
+    def __del__(self):
+        try:
+            print("REDIS CONN DESTRUCTOR")
+            self.redisClient.close()
+        except Exception as e:
+            print(e)
 
 
 

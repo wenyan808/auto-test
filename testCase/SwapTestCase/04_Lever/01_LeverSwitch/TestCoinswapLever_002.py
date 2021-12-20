@@ -3,14 +3,16 @@
 # @Date    : 20210916
 # @Author : HuiQing Yu
 
-import allure
-import pytest
 import random
 import time
-from tool.SwapTools import SwapTool
+
+import allure
+import pytest
+
 from common.SwapServiceAPI import user01
-from config.conf import DEFAULT_CONTRACT_CODE
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
@@ -29,7 +31,7 @@ class TestCoinswapLever_002:
     @allure.title('当前有挂单切换杠杆倍数测试')
     def test_execute(self, contract_code):
         with allure.step('操作: 挂个限价单'):
-            latest_price = currentPrice()
+            latest_price = SwapTool.wcurrentPrice()
             user01.swap_order(contract_code=DEFAULT_CONTRACT_CODE,price=round(latest_price*0.5,2),direction='buy')
             time.sleep(1)
             pass

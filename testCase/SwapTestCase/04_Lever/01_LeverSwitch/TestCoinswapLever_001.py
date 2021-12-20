@@ -3,13 +3,15 @@
 # @Date    : 20210916
 # @Author : HuiQing Yu
 
-import allure
-import pytest
 import random
 import time
+
+import allure
+import pytest
+
 from common.SwapServiceAPI import user01
-from config.conf import DEFAULT_CONTRACT_CODE
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE
 
 
 @allure.epic(epic[1])

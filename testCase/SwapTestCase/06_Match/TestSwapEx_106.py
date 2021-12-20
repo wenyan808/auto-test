@@ -7,6 +7,8 @@ import time
 import allure
 import pytest
 
+from common.mysqlComm import mysqlComm
+from config.conf import DEFAULT_CONTRACT_CODE
 from tool.SwapTools import SwapTool
 from common.SwapServiceAPI import user01, user02, user03
 from config.case_content import epic, features
@@ -19,8 +21,25 @@ from config.case_content import epic, features
 @pytest.mark.stable
 class TestSwapEx_106:
 
+    @classmethod
+    def setup_class(cls):
+        with allure.step('实始化变量'):
+            cls.mysqlClient = mysqlComm()
+            cls.currentPrice = SwapTool.currentPrice()  # 最新价
+            cls.contract_code = DEFAULT_CONTRACT_CODE
+            pass
+
+    @classmethod
+    def teardown_class(cls):
+        with allure.step('*->恢复环境'):
+            # 测试完后所有用户都撤单
+            user01.swap_cancelall(contract_code=cls.contract_code)
+            user02.swap_cancelall(contract_code=cls.contract_code)
+            user03.swap_cancelall(contract_code=cls.contract_code)
+            pass
+
     @allure.title('撮合 卖出开仓 全部成交多人多笔价格相同的订单')
-    def test_execute(self, contract_code):
+    def test_execute(self):
         allure.dynamic.description('测试步骤：'
                                    '\n*、下限价单；买入开仓（开空）'
                                    '\n*、3用户下单，用户1，用户2各下2笔开空单，用户3下4笔开多单'
@@ -30,14 +49,14 @@ class TestSwapEx_106:
             self.currentPrice = SwapTool.currentPrice()  # 最新价
             orderIdList = []
             for user in [user01, user02]:
-                orderInfo = user.swap_order(contract_code=contract_code, price=round(self.currentPrice, 2),
+                orderInfo = user.swap_order(contract_code=self.contract_code, price=round(self.currentPrice, 2),
                                             direction='sell')
                 orderIdList.append(orderInfo['data']['order_id'])
-                orderInfo = user.swap_order(contract_code=contract_code, price=round(self.currentPrice, 2),
+                orderInfo = user.swap_order(contract_code=self.contract_code, price=round(self.currentPrice, 2),
                                             direction='sell')
                 orderIdList.append(orderInfo['data']['order_id'])
-            # 用于成交
-            user03.swap_order(contract_code=contract_code, price=round(self.currentPrice, 2),
+        with allure.step('操作：用户3下单，与用户1，2成交'):
+            user03.swap_order(contract_code=self.contract_code, price=round(self.currentPrice, 2),
                               direction='buy', volume=4)
             pass
         with allure.step('验证：开空订单多笔是否已存在撮合结果表中'):
@@ -47,7 +66,7 @@ class TestSwapEx_106:
                 # 给撮合时间，5秒内还未撮合完成则为失败
                 n = 0
                 while n < 5:
-                    isMatch = mysqlClient.selectdb_execute(dbSchema='order_seq',sqlStr=sqlStr)[0]['count']
+                    isMatch = self.mysqlClient.selectdb_execute(dbSchema='order_seq', sqlStr=sqlStr)[0]['count']
                     if 1 == isMatch:
                         break
                     else:

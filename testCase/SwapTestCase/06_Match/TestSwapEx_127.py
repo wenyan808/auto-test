@@ -8,6 +8,7 @@ import pytest
 import time
 
 from common.SwapServiceAPI import user01
+from common.mysqlComm import mysqlComm
 from config.conf import DEFAULT_CONTRACT_CODE
 from tool.SwapTools import SwapTool
 from config.case_content import epic, features
@@ -30,6 +31,7 @@ class TestSwapEx_127:
     @classmethod
     def setup_class(cls):
         with allure.step('变量初始化'):
+            cls.mysqlClient = mysqlComm()
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.latest_price = SwapTool.currentPrice()
             pass
@@ -64,7 +66,7 @@ class TestSwapEx_127:
             flag = False
             # 给撮合时间，3秒内还未撮合完成则为失败
             for i in range(3):
-                isMatch = mysqlClient.selectdb_execute(dbSchema='order_seq',sqlStr=sqlStr)[0]['count']
+                isMatch = self.mysqlClient.selectdb_execute(dbSchema='order_seq',sqlStr=sqlStr)[0]['count']
                 if 1 == isMatch:
                     flag = True
                     break

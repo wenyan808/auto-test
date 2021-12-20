@@ -3,12 +3,13 @@
 # @Date    : 2021/10/01
 # @Author  : HuiQing Yu
 
-from common.mysqlComm import mysqlComm as mysqlClient
 
 import pytest
+
 from common.redisComm import redisConf
 from config import conf
 from tool.SwapTools import SwapTools
+
 
 @pytest.fixture()
 def redisClient(redisName):

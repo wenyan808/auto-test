@@ -4,12 +4,16 @@
 # @Author : HuiQing Yu
 
 import time
+
 import allure
 import pytest
-from tool.SwapTools import SwapTool
+
 from common.SwapServiceAPI import user01
-from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
-from config.case_content import epic,features
+from common.mysqlComm import mysqlComm
+from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
+from tool.SwapTools import SwapTool
+
 
 @allure.epic(epic[1])
 @allure.feature(features[5]['feature'])
@@ -107,6 +111,7 @@ class TestSwapEx_001:
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.latest_price = SwapTool.currentPrice()
             cls.symbol = DEFAULT_SYMBOL
+            cls.mysqlClient = mysqlComm()
             pass
         with allure.step('挂盘'):
             cls.currentPrice = SwapTool.currentPrice()  # 最新价
@@ -114,7 +119,7 @@ class TestSwapEx_001:
             pass
         with allure.step('检查盘口更新'):
             # 判断对手价是否更新，如果更新（True）则给反值，表示不跳过该用例
-            cls.isExecute = ~opponentExist(symbol=cls.symbol, asks='asks')
+            cls.isExecute = ~SwapTool.opponentExist(symbol=cls.symbol, asks='asks')
             pass
 
     @classmethod
@@ -138,7 +143,7 @@ class TestSwapEx_001:
             flag = False
             # 给撮合时间，5秒内还未撮合完成则为失败
             for i in range(3):
-                isMatch = mysqlClient.selectdb_execute(dbSchema='order_seq',sqlStr=sqlStr)[0]['count']
+                isMatch = self.mysqlClient.selectdb_execute(dbSchema='order_seq',sqlStr=sqlStr)[0]['count']
                 if 1 == isMatch:
                     flag = True
                     break

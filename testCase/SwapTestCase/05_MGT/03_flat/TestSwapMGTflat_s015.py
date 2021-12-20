@@ -56,7 +56,7 @@ class TestSwapMGTflat_s015:
         {'title': 'TestSwapMGTflat_028', 'case_name': '平台虚拟资产-减钱失败', 'flatAccount': 11,
          'money': random.randint(10, 100)},
     ]
-    symbol = SwapTool.getSettlementContract()
+    symbol = SwapTool.getContractStatus(init_status=0)
 
     @classmethod
     def setup_class(cls):

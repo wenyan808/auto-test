@@ -3,12 +3,16 @@
 # @Date    : 20211018
 # @Author : HuiQing Yu
 
-import pytest, allure, random, time
-from tool.SwapTools import SwapTool
-from common.mysqlComm import mysqlComm
+import allure
+import pytest
+import time
+
 from common.SwapServiceAPI import user01
+from common.mysqlComm import mysqlComm
+from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
-from config.case_content import epic,features
+from tool.SwapTools import SwapTool
+
 
 @allure.epic(epic[1])
 @allure.feature(features[5]['feature'])
@@ -41,6 +45,7 @@ class TestSwapEx_070:
         with allure.step('变量初始化'):
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.latest_price = SwapTool.currentPrice()
+            cls.mysqlClient = mysqlComm()
             pass
         with allure.step('挂盘'):
             user01.swap_order(contract_code=cls.contract_code, price=round(cls.latest_price, 2), direction='buy',
@@ -73,7 +78,7 @@ class TestSwapEx_070:
             flag = False
             # 给撮合时间，5秒内还未撮合完成则为失败
             for i in range(3):
-                isMatch = mysqlClient.selectdb_execute(dbSchema='order_seq',sqlStr=sqlStr)[0]['count']
+                isMatch = self.mysqlClient.selectdb_execute(dbSchema='order_seq',sqlStr=sqlStr)[0]['count']
                 if 1 == isMatch:
                     flag = True
                     break
