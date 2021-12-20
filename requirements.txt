@@ -49,3 +49,5 @@ redis~=3.5.3
 pymysql==1.0.2
 jsonpath==0.82
 Crypto==1.4.1
+report~=0.0.1
+natsort~=8.0.1
