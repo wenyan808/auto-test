@@ -3,6 +3,8 @@
 # @Date    : 2021/11/22 10:55 上午
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import pytest, allure, random, time
 from schema import Schema, Or
 from common.SwapServiceAPI import t

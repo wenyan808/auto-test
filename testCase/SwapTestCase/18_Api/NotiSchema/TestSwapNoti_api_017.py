@@ -3,6 +3,8 @@
 # @Date    : 2021/12/16 2:09 下午
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import pytest, allure, time
 from schema import Or, Schema
 
@@ -36,31 +38,30 @@ class TestSwapNoti_api_017:
     def test_execute(self, params):
         allure.dynamic.title(params['title'])
         with allure.step('操作:执行请求'):
-            assert False,'待定'
-        #     subs = {
-        #         "sub": "market.{}.trade.detail".format(self.contract_code),
-        #         "id": "id1",
-        #     }
-        #     r = user01.swap_sub(subs=subs)
-        #     pass
-        # with allure.step('验证:schema响应字段校验'):
-        #     schema = {
-        #         "ch": f"market.{self.contract_code}.trade.detail",
-        #         "ts": int,
-        #         "tick": {
-        #             "id": int,
-        #             "ts": int,
-        #             "data": [
-        #                 {
-        #                     "amount": Or(float,int),
-        #                     "quantity": Or(float,int),
-        #                     "ts": int,
-        #                     "id": int,
-        #                     "price": Or(float,int),
-        #                     "direction": Or("buy","sell")
-        #                 }
-        #             ]
-        #         }
-        #     }
-        #     Schema(schema).validate(r)
-        #     pass
+            subs = {
+                "req": f"market.{self.contract_code}.trade.detail",
+                "id": "test_depth_id",
+                "size": 1
+            }
+            r = user01.swap_sub(subs=subs)
+            pass
+        with allure.step('验证:schema响应字段校验'):
+            schema = {
+                "data": [
+                    {
+                        "amount": str,
+                        "quantity": str,
+                        "ts": int,
+                        "id": int,
+                        "price": str,
+                        "direction": Or("buy","sell"),
+                        "contract_code": self.contract_code
+                    }
+                ],
+                "id": "test_depth_id",
+                "rep": f"market.{self.contract_code}.trade.detail",
+                "status": "ok",
+                "ts": int
+            }
+            Schema(schema).validate(r)
+            pass

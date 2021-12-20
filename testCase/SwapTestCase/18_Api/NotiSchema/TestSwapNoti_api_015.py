@@ -3,6 +3,8 @@
 # @Date    : 2021/12/16 2:09 下午
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import pytest, allure, time
 from schema import Or, Schema
 

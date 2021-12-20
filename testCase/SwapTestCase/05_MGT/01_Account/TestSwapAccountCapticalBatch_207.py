@@ -3,6 +3,8 @@
 # @Date    : 2021/12/7 2:35 下午
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import json
 from datetime import date, timedelta
 from decimal import Decimal
@@ -24,7 +26,7 @@ from config.case_content import epic, features
 class TestSwapAccountCapticalBatch_007:
     ids = ['TestSwapAccountCapticalBatch_207']
     params = [{'title':'TestSwapAccountCapticalBatch_207','case_name': '平台流水表-单日0-24流水-平账', 'userType': 13,'type':3}]
-    DB_contract_trade = mysqlComm('contract_trade')
+
     @classmethod
     def setup_class(cls):
         with allure.step('变量初始化'):
@@ -87,7 +89,7 @@ class TestSwapAccountCapticalBatch_007:
             pass
 
     @pytest.mark.parametrize('param', params, ids=ids)
-    def test_execute(self, param, DB_btc):
+    def test_execute(self, param):
         allure.dynamic.title(param['title'])
         with allure.step('操作：执行查询'):
             request_params = [
@@ -119,7 +121,7 @@ class TestSwapAccountCapticalBatch_007:
                      f'and flat_time < unix_timestamp("{self.endDateTime}")*1000 ' \
                      'and flat_account=11 ' \
                      f'and product_id = "{self.symbol}"'
-            flatMoney = DB_btc.dictCursor(sqlStr)
+            flatMoney = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             if len(flatMoney) == 0 or flatMoney[0]['money'] is None:
                 flatMoney = 0
             else:
@@ -131,19 +133,19 @@ class TestSwapAccountCapticalBatch_007:
                      f'AND money_type =  20 ' \
                      f'AND product_id = "{self.symbol}" ' \
                      'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
-            payUserMoney = DB_btc.dictCursor(sqlStr)
+            payUserMoney = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             if len(payUserMoney) == 0 or payUserMoney[0]['money'] is None:
                 payUserMoney = 0
             else:
                 payUserMoney = payUserMoney[0]['money']
         with allure.step(f'操作:从DB获取-应付外债(平账)-数据'):
-            payDebt = self.__dbResult(userId='11186266',dbName=DB_btc)
+            payDebt = self.__dbResult(userId='11186266',dbName='btc')
         with allure.step(f'操作:从DB获取-交易手续费(平账)-数据'):
-            dealFee = self.__dbResult(userId='1389607', dbName=DB_btc)
+            dealFee = self.__dbResult(userId='1389607', dbName='btc')
         with allure.step(f'操作:从DB获取-互换账户(平账)-数据'):
-            hhAccount = self.__dbResult(userId='1389608', dbName=DB_btc)
+            hhAccount = self.__dbResult(userId='1389608', dbName='btc')
         with allure.step(f'操作:从DB获取-运营账户(平账)-数据'):
-            operateAccount = self.__dbResult(userId='1389609', dbName=DB_btc)
+            operateAccount = self.__dbResult(userId='1389609', dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["flatMoney"]}'):
             assert Decimal(pay_money['flatMoney']) == flatMoney - ( payUserMoney+\
                    payDebt +\
@@ -158,7 +160,7 @@ class TestSwapAccountCapticalBatch_007:
                  f'AND money_type =  20 ' \
                  f'AND product_id = "{self.symbol}" ' \
                  f'AND user_id = "{userId}" '
-        money = dbName.dictCursor(sqlStr)
+        money = mysqlClient.selectdb_execute(dbSchema=dbName,sqlStr=sqlStr)
         if len(money) == 0 or money[0]['money'] is None:
             money = 0
         else:

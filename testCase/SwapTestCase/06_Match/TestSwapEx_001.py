@@ -6,7 +6,7 @@
 import time
 import allure
 import pytest
-from common.CommonUtils import currentPrice, opponentExist
+from tool.SwapTools import SwapTool
 from common.SwapServiceAPI import user01
 from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
 from config.case_content import epic,features
@@ -105,11 +105,11 @@ class TestSwapEx_001:
     def setup_class(cls):
         with allure.step("变量初始化"):
             cls.contract_code = DEFAULT_CONTRACT_CODE
-            cls.latest_price = currentPrice()
+            cls.latest_price = SwapTool.currentPrice()
             cls.symbol = DEFAULT_SYMBOL
             pass
         with allure.step('挂盘'):
-            cls.currentPrice = currentPrice()  # 最新价
+            cls.currentPrice = SwapTool.currentPrice()  # 最新价
             user01.swap_order(contract_code=cls.contract_code, price=round(cls.latest_price, 2), direction='sell',volume=20)
             pass
         with allure.step('检查盘口更新'):
@@ -125,7 +125,7 @@ class TestSwapEx_001:
 
     @pytest.mark.parametrize('params', params, ids=ids)
     @pytest.mark.skipif(condition=isExecute,reason='对手价未刷新跳过用例')
-    def test_execute(self, params,DB_orderSeq):
+    def test_execute(self, params):
         allure.dynamic.title('撮合 买入 开仓 ' + params['case_name'])
         with allure.step('操作：开多下单'):
             orderInfo = user01.swap_order(contract_code=self.contract_code,price=round(self.latest_price,2), direction='buy',
@@ -138,7 +138,7 @@ class TestSwapEx_001:
             flag = False
             # 给撮合时间，5秒内还未撮合完成则为失败
             for i in range(3):
-                isMatch = DB_orderSeq.dictCursor(sqlStr)[0]['count']
+                isMatch = mysqlClient.selectdb_execute(dbSchema='order_seq',sqlStr=sqlStr)[0]['count']
                 if 1 == isMatch:
                     flag = True
                     break

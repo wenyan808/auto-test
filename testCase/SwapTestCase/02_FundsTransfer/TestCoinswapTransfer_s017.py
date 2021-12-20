@@ -3,20 +3,24 @@
 # @Date    : 2020/7/1
 # @Author  : HuiQing Yu
 
-import allure
-import pytest
 import random
 import time
-from common.SwapServiceAPI import user01,user01Child01
+
+import allure
+import pytest
+
+from common.SwapServiceAPI import user01, user01Child01
+from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
-from common.CommonUtils import currentPrice
-from config.case_content import epic,features
+from tool.SwapTools import SwapTool
+
+
 @allure.epic(epic[1])
 @allure.feature(features[1]['feature'])
 @allure.story(features[1]['story'][2])
 @allure.tag('Script owner : Alex Li', 'Case owner : 叶永刚')
 @pytest.mark.stable
-class TestCoinSwapTransfer_017:
+class TestCoinSwapTransfer_s017:
 
     ids = ["TestCoinSwapTransfer_017","TestCoinSwapTransfer_018"]
     params = [
@@ -36,7 +40,7 @@ class TestCoinSwapTransfer_017:
         with allure.step("变量初始化"):
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.symbol = DEFAULT_SYMBOL
-            cls.latest_price = currentPrice()
+            cls.latest_price = SwapTool.currentPrice()
             pass
 
     @classmethod

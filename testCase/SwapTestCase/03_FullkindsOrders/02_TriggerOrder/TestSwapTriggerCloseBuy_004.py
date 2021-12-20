@@ -11,7 +11,7 @@ import allure
 import pytest
 
 from config.case_content import epic, features
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 from common.SwapServiceAPI import user01 as api_user01
 from config.conf import DEFAULT_CONTRACT_CODE
 
@@ -126,7 +126,7 @@ class TestSwapTriggerCloseBuy_004:
     @classmethod
     def setup_class(cls):
         with allure.step('变量初始化'):
-            cls.latest_price = currentPrice()  # 最新价
+            cls.latest_price = SwapTool.currentPrice()  # 最新价
             cls.contract_code = DEFAULT_CONTRACT_CODE
             pass
 
@@ -137,7 +137,7 @@ class TestSwapTriggerCloseBuy_004:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self,params, contract_code,DB_contract_trade):
+    def test_execute(self,params, contract_code):
         with allure.step('操作：执行下单'):
             trigger_order = api_user01.swap_trigger_order(contract_code=self.contract_code,trigger_type=params['trigger_type'],
                                           volume=1,offset=params['offset'],direction=params['direction'],
@@ -156,7 +156,7 @@ class TestSwapTriggerCloseBuy_004:
                      f'from t_trigger_order t ' \
                      f'where user_order_id = {orderId}'
             for i in range(3):
-                db_info_list = DB_contract_trade.dictCursor(sqlStr)
+                db_info_list = mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
                 if len(db_info_list)==0:
                     print(f'查询为空，第{i}一次重试……')
                     time.sleep(1)

@@ -7,7 +7,7 @@ import allure
 import pytest
 import time
 
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 from common.SwapServiceAPI import user01, user02
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
@@ -47,7 +47,7 @@ class TestSwapEx_094:
     @classmethod
     def setup_class(cls):
         with allure.step('*->挂盘'):
-            cls.currentPrice = currentPrice()  # 最新价
+            cls.currentPrice = SwapTool.currentPrice()  # 最新价
             pass
 
     @classmethod
@@ -58,7 +58,7 @@ class TestSwapEx_094:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params,DB_orderSeq):
+    def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：开空下单'):
             orderIdList = []
@@ -77,7 +77,7 @@ class TestSwapEx_094:
                 flag = False
                 # 给撮合时间，5秒内还未撮合完成则为失败
                 for i in range(5):
-                    isMatch = DB_orderSeq.dictCursor(sqlStr)[0]['count']
+                    isMatch = mysqlClient.selectdb_execute(dbSchema='order_seq',sqlStr=sqlStr)[0]['count']
                     if 1 == isMatch:
                         flag = True
                         break

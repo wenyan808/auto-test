@@ -3,11 +3,13 @@
 # @Date    : 2021/12/6 9:57 上午
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import allure
 import pytest
 import time
 
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 from common.SwapMqComm import mqComm
 from common.SwapServiceAPI import user01, user02
 from config.case_content import epic, features
@@ -28,7 +30,7 @@ class TestProductInit_swap_017:
         with allure.step('变量初始化'):
             cls.symbol = DEFAULT_SYMBOL
             cls.contract_code = DEFAULT_CONTRACT_CODE
-            cls.latest_price = currentPrice()
+            cls.latest_price = SwapTool.currentPrice()
             pass
 
     @classmethod
@@ -37,7 +39,7 @@ class TestProductInit_swap_017:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params, redis6380, DB_contract_trade):
+    def test_execute(self, params, redis6380, mysqlClient):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：查看用户是否有仓位'):
             name = f'RsT:APO:11538483#{self.symbol}'
@@ -94,7 +96,7 @@ class TestProductInit_swap_017:
             sqlStr = f'select init_status from t_product where product_id="{self.symbol}"'
             flag = False
             for i in range(3):
-                db_info = DB_contract_trade.dictCursor(sqlStr)
+                db_info = mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
                 if len(db_info) and db_info[0]['init_status'] == 1:
                     flag = True
                     break

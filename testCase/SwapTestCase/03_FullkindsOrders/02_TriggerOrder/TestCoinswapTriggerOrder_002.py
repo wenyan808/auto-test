@@ -3,6 +3,8 @@
 # @Date    : 2020/7/1
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 
 import allure
 import pytest
@@ -12,7 +14,7 @@ import random
 from config.case_content import epic, features
 from common.SwapServiceAPI import user01
 from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
@@ -80,7 +82,7 @@ class TestCoinswapTriggerOrder_002:
     def setup_class(cls):
         with allure.step("变量初始化"):
             cls.contract_code = DEFAULT_CONTRACT_CODE
-            cls.latest_price = currentPrice()
+            cls.latest_price = SwapTool.currentPrice()
             pass
         with allure.step("持仓"):
             user01.swap_order(contract_code=cls.contract_code,price=cls.latest_price,direction='buy',volume=3)

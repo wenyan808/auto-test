@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2020/7/1
 # @Author  : HuiQing Yu
+
+from common.mysqlComm import mysqlComm as mysqlClient
 from decimal import Decimal
 
 import allure
@@ -12,7 +14,7 @@ import random
 from config.case_content import epic, features
 from common.SwapServiceAPI import user01
 from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
@@ -40,7 +42,7 @@ class TestCoinswapTriggerOrder_001:
     def setup_class(cls):
         with allure.step("变量初始化"):
             cls.contract_code = DEFAULT_CONTRACT_CODE
-            cls.latest_price = currentPrice()
+            cls.latest_price = SwapTool.currentPrice()
             pass
 
     @classmethod
@@ -50,7 +52,7 @@ class TestCoinswapTriggerOrder_001:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params,DB_contract_trade,redis6379):
+    def test_execute(self, params,redis6379):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：下单'):
             order_reps = user01.swap_trigger_order(contract_code=self.contract_code, trigger_type='ge',
@@ -87,7 +89,7 @@ class TestCoinswapTriggerOrder_001:
                      f't.order_price, '\
                      f't.state '\
                      f'from t_trigger_order t where t.user_order_id={orderId}'
-            db_info_list = DB_contract_trade.dictCursor(sqlStr=sqlStr)
+            db_info_list = mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
             for db_info in db_info_list:
                 assert 'open' == db_info['offset']
                 assert 'buy' == db_info['direction']

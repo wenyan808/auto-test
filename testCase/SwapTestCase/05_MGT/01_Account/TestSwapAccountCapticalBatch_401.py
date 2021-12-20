@@ -3,6 +3,8 @@
 # @Date    : 2021/12/7 2:35 下午
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import json
 import time
 from decimal import Decimal
@@ -32,7 +34,7 @@ class TestSwapAccountCapticalBatch_401:
                  f'AND money_type =  {money_type} ' \
                  f'AND product_id = "{self.symbol}" ' \
                  'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
-        money = dbName.dictCursor(sqlStr)
+        money = mysqlClient.selectdb_execute(dbSchema=dbName,sqlStr=sqlStr)
         if len(money) == 0 or money[0]['money'] is None:
             money = 0
         else:
@@ -80,7 +82,7 @@ class TestSwapAccountCapticalBatch_401:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self,params,DB_btc):
+    def test_execute(self,params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：执行查询'):
             sqlStr = 'SELECT end_time,id ' \
@@ -88,7 +90,7 @@ class TestSwapAccountCapticalBatch_401:
                      'where progress_code=13 ' \
                      f'and product_id= "{self.symbol}" ' \
                      'order by end_time desc limit 2 '
-            db_info = DB_btc.dictCursor(sqlStr=sqlStr)
+            db_info = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             self.endDateTime = db_info[0]['end_time']
             self.beginDateTime = db_info[1]['end_time']
             request_params = [
@@ -122,12 +124,12 @@ class TestSwapAccountCapticalBatch_401:
             assert platform_money,'返回数据中未找到-平台资产，校验失败'
 #########################################  【平台资产】从币币转入	########################################################
             with allure.step(f'操作:从DB获取-{self.fund_flow_type["moneyIn"]}-数据'):
-                moneyIn = self.__dbResult(money_type=14,dbName=DB_btc)
+                moneyIn = self.__dbResult(money_type=14,dbName='btc')
             with allure.step(f'验证:流水类型-{self.fund_flow_type["moneyIn"]}'):
                 assert Decimal(platform_money['moneyIn']) == moneyIn, f'{self.fund_flow_type["moneyIn"]}-校验失败'
 #################################################  【平台资产】转出至币币	################################################
             with allure.step(f'操作:从DB获取-{self.fund_flow_type["moneyOut"]}-数据'):
-                moneyOut = self.__dbResult(money_type=15,dbName=DB_btc)
+                moneyOut = self.__dbResult(money_type=15,dbName='btc')
             with allure.step(f'验证:流水类型-{self.fund_flow_type["moneyOut"]}'):
                 assert Decimal(platform_money['moneyOut']) == moneyOut, f'{self.fund_flow_type["moneyOut"]}-校验失败'
 #################################################  【平台资产】平账	####################################################
@@ -137,7 +139,7 @@ class TestSwapAccountCapticalBatch_401:
                          f'and flat_time <= {self.endDateTime} ' \
                          'and flat_account=11 ' \
                          f'and product_id = "{self.symbol}"'
-                flatMoney = DB_btc.dictCursor(sqlStr)
+                flatMoney = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
                 if len(flatMoney) == 0 or flatMoney[0]['money'] is None:
                     flatMoney = 0
                 else:
@@ -160,7 +162,7 @@ class TestSwapAccountCapticalBatch_401:
                          f'WHERE flat_time > {self.beginDateTime} ' \
                          f'and flat_time<= {self.endDateTime}   ' \
                          f'and product_id = "{self.symbol}" and flat_account = 11 ) a'
-                currInterest = DB_btc.dictCursor(sqlStr)
+                currInterest = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
                 if len(currInterest) == 0 or currInterest[0]['money'] is None:
                     currInterest = 0
                 else:
@@ -178,7 +180,7 @@ class TestSwapAccountCapticalBatch_401:
                      'AND settle_id=1 ' \
                      f'AND product_id ="{self.symbol}" ' \
                      f'AND user_type={params["userType"]}'
-            originalInterest = DB_btc.dictCursor(sqlStr)
+            originalInterest = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             if len(originalInterest) == 0 or originalInterest[0]['money'] is None:
                 originalInterest = 0
             else:
@@ -208,7 +210,7 @@ class TestSwapAccountCapticalBatch_401:
                      'AND settle_id=1 ' \
                      f'AND product_id ="{self.symbol}" ' \
                      f'AND user_type={params["userType"]} ) a'
-            finalInterest = DB_btc.dictCursor(sqlStr)
+            finalInterest = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             if len(finalInterest) == 0 or finalInterest[0]['money'] is None:
                 finalInterest = 0
             else:
@@ -229,7 +231,7 @@ class TestSwapAccountCapticalBatch_401:
                      'AND settle_id=1 ' \
                      f'AND product_id ="{self.symbol}" ' \
                      f'AND user_type={params["userType"]}'
-            staticInterest = DB_btc.dictCursor(sqlStr)
+            staticInterest = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             if len(staticInterest) == 0 or staticInterest[0]['money'] is None:
                 staticInterest = 0
             else:

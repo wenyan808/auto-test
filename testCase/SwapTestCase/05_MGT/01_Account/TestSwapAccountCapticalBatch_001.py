@@ -6,14 +6,14 @@
 import json
 from datetime import date, timedelta
 from decimal import Decimal
-import random
+
 import allure
 import pytest
 
 from common.SwapServiceMGT import SwapServiceMGT
-from common.mysqlComm import mysqlComm
-from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
+from common.mysqlComm import mysqlComm as mysqlClient
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 
 
 @allure.epic(epic[1])
@@ -25,7 +25,7 @@ class TestSwapAccountCapticalBatch_001:
 
     ids = ['TestSwapAccountCapticalBatch_001']
     params = [{'title':'TestSwapAccountCapticalBatch_001','case_name':'平台流水表-每日跑批-平台资产','userType': 11,'type': 1}]
-    DB_contract_trade = mysqlComm('contract_trade')
+
     @classmethod
     def setup_class(cls):
         with allure.step('变量初始化'):
@@ -63,7 +63,7 @@ class TestSwapAccountCapticalBatch_001:
                      f'where product_id="{cls.symbol}" ' \
                      f'AND batch_date in ("{cls.s_batch_date}","{cls.e_batch_date}") ' \
                      'order by flow_end_time desc'
-            db_info = cls.DB_contract_trade.dictCursor(sqlStr=sqlStr)
+            db_info = cls.mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
             cls.s_batch_date = db_info[1]['flow_end_time']
             cls.e_batch_date = db_info[0]['flow_end_time']
             pass
@@ -75,7 +75,7 @@ class TestSwapAccountCapticalBatch_001:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self,params,DB_btc):
+    def test_execute(self,params):
         allure.dynamic.title(params['title'])
         with allure.step('操作：执行查询'):
             request_params = [
@@ -103,12 +103,12 @@ class TestSwapAccountCapticalBatch_001:
             assert platform_money,'返回数据中未找到-平台资产，校验失败'
 #########################################  【平台资产】从币币转入	########################################################
             with allure.step(f'操作:从DB获取-{self.fund_flow_type["moneyIn"]}-数据'):
-                moneyIn = self.dbResult(money_type=14,dbName=DB_btc)
+                moneyIn = self.dbResult(money_type=14,dbName='btc')
             with allure.step(f'验证:流水类型-{self.fund_flow_type["moneyIn"]}'):
                 assert Decimal(platform_money['moneyIn']) == moneyIn, f'{self.fund_flow_type["moneyIn"]}-校验失败'
 #################################################  【平台资产】转出至币币	################################################
             with allure.step(f'操作:从DB获取-{self.fund_flow_type["moneyOut"]}-数据'):
-                moneyOut = self.dbResult(money_type=15,dbName=DB_btc)
+                moneyOut = self.dbResult(money_type=15,dbName='btc')
             with allure.step(f'验证:流水类型-{self.fund_flow_type["moneyOut"]}'):
                 assert Decimal(platform_money['moneyOut']) == moneyOut, f'{self.fund_flow_type["moneyOut"]}-校验失败'
 #################################################  【平台资产】平账	####################################################
@@ -118,7 +118,7 @@ class TestSwapAccountCapticalBatch_001:
                          f'and flat_time <= "{self.e_batch_date}" ' \
                          'and flat_account=11 ' \
                          f'and product_id = "{self.symbol}"'
-                flatMoney = DB_btc.dictCursor(sqlStr)
+                flatMoney = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
                 if len(flatMoney) == 0 or flatMoney[0]['money'] is None:
                     flatMoney = 0
                 else:
@@ -141,7 +141,7 @@ class TestSwapAccountCapticalBatch_001:
                          f'WHERE flat_time > "{self.s_batch_date}" ' \
                          f'and flat_time<=" {self.e_batch_date}"   ' \
                          f'and product_id = "{self.symbol}" and flat_account = 11 ) a'
-                currInterest = DB_btc.dictCursor(sqlStr)
+                currInterest = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
                 if len(currInterest) == 0 or currInterest[0]['money'] is None:
                     currInterest = 0
                 else:
@@ -157,7 +157,7 @@ class TestSwapAccountCapticalBatch_001:
                  f'AND money_type = {money_type} ' \
                  f'AND product_id = "{self.symbol}" ' \
                  'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
-        money = dbName.dictCursor(sqlStr)
+        money = mysqlClient.selectdb_execute(dbSchema=dbName,sqlStr=sqlStr)
         if len(money) == 0 or money[0]['money'] is None:
             money = 0
         else:

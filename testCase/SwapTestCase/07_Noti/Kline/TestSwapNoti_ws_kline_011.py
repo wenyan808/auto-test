@@ -7,7 +7,7 @@ import allure
 import pytest
 import time
 
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 from common.SwapServiceAPI import user01 as api_user01
 from common.SwapServiceWS import user01 as ws_user01
 from config.case_content import epic, features

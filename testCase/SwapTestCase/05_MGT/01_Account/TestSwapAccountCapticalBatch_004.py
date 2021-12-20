@@ -3,6 +3,8 @@
 # @Date    : 2021/12/7 2:35 下午
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import json
 from datetime import date, timedelta
 from decimal import Decimal
@@ -24,7 +26,7 @@ from config.case_content import epic, features
 class TestSwapAccountCapticalBatch_004:
     ids = ['TestSwapAccountCapticalBatch_004']
     params = [{'title':'TestSwapAccountCapticalBatch_004','case_name': '平台流水表-每日跑批-交易手续费', 'userType': 4, 'type':1,'userId': '1389607'}]
-    DB_contract_trade = mysqlComm('contract_trade')
+
     @classmethod
     def setup_class(cls):
         with allure.step('变量初始化'):
@@ -62,7 +64,7 @@ class TestSwapAccountCapticalBatch_004:
                      f'where product_id="{cls.symbol}" ' \
                      f'AND batch_date in ("{cls.s_batch_date}","{cls.e_batch_date}") ' \
                      'order by flow_end_time desc'
-            db_info = cls.DB_contract_trade.dictCursor(sqlStr=sqlStr)
+            db_info = cls.mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
             cls.s_batch_date = db_info[1]['flow_end_time']
             cls.e_batch_date = db_info[0]['flow_end_time']
             pass
@@ -74,7 +76,7 @@ class TestSwapAccountCapticalBatch_004:
             pass
 
     @pytest.mark.parametrize('param', params, ids=ids)
-    def test_execute(self, param, DB_btc):
+    def test_execute(self, param):
         allure.dynamic.title(param['title'])
         with allure.step('操作：执行查询'):
             request_params = [
@@ -102,7 +104,7 @@ class TestSwapAccountCapticalBatch_004:
             assert pay_money, '返回数据中未找到-交易手续费-数据，校验失败'
 #################################################  【交易手续费】手续费转运营	############################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["feeToOperate"]}-数据'):
-            feeToOperate = self.__dbResult(money_type=23,userId=param['userId'],dbName=DB_btc)
+            feeToOperate = self.__dbResult(money_type=23,userId=param['userId'],dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["feeToOperate"]}'):
             assert Decimal(pay_money['feeToOperate']) == feeToOperate, f'{self.fund_flow_type["feeToOperate"]}-校验失败'
 #################################################  【交易手续费】开仓手续费挂单	############################################
@@ -114,7 +116,7 @@ class TestSwapAccountCapticalBatch_004:
                      f'AND money_type =  6 ' \
                      f'AND product_id = "{self.symbol}" ' \
                      f'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
-            money = DB_btc.dictCursor(sqlStr)
+            money = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             if len(money) == 0 or money[0]['money'] is None:
                 money = 0
             else:
@@ -132,7 +134,7 @@ class TestSwapAccountCapticalBatch_004:
                          f'AND money_type =  5 ' \
                          f'AND product_id = "{self.symbol}" ' \
                          f'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
-                money = DB_btc.dictCursor(sqlStr)
+                money = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
                 if len(money) == 0 or money[0]['money'] is None:
                     money = 0
                 else:
@@ -150,7 +152,7 @@ class TestSwapAccountCapticalBatch_004:
                          f'AND money_type =  8 ' \
                          f'AND product_id = "{self.symbol}" ' \
                          f'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
-                money = DB_btc.dictCursor(sqlStr)
+                money = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
                 if len(money) == 0 or money[0]['money'] is None:
                     money = 0
                 else:
@@ -168,7 +170,7 @@ class TestSwapAccountCapticalBatch_004:
                          f'AND money_type =  7 ' \
                          f'AND product_id = "{self.symbol}" ' \
                          f'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
-                money = DB_btc.dictCursor(sqlStr)
+                money = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
                 if len(money) == 0 or money[0]['money'] is None:
                     money = 0
                 else:
@@ -178,7 +180,7 @@ class TestSwapAccountCapticalBatch_004:
             assert Decimal(pay_money['closeFeeTaker']) == closeFeeTaker, f'{self.fund_flow_type["closeFeeTaker"]}-校验失败'
 #################################################  【交易手续费】平账	####################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["flatMoney"]}-数据'):
-            flatMoney = self.__dbResult(money_type=20,userId=param['userId'],dbName=DB_btc)
+            flatMoney = self.__dbResult(money_type=20,userId=param['userId'],dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["flatMoney"]}'):
             assert Decimal(pay_money['flatMoney']) == flatMoney, f'{self.fund_flow_type["flatMoney"]}-校验失败'
 #################################################  【交易手续费】当期流水	################################################
@@ -197,7 +199,7 @@ class TestSwapAccountCapticalBatch_004:
                      f'AND money_type in (5,6,7,8) ' \
                      f'AND product_id = "{self.symbol}" ' \
                      f'AND user_id  not in (11186266, 1389607, 1389608, 1389609, 1389766) ) a '
-            currInterest = DB_btc.dictCursor(sqlStr)
+            currInterest = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             if len(currInterest) == 0 or currInterest[0]['money'] is None:
                 currInterest = 0
             else:
@@ -213,7 +215,7 @@ class TestSwapAccountCapticalBatch_004:
                  f'AND money_type =  {money_type} ' \
                  f'AND product_id = "{self.symbol}" ' \
                  f'AND user_id = "{userId}" '
-        money = dbName.dictCursor(sqlStr)
+        money = mysqlClient.selectdb_execute(dbSchema=dbName,sqlStr=sqlStr)
         if len(money) == 0 or money[0]['money'] is None:
             money = 0
         else:

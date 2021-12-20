@@ -3,6 +3,8 @@
 # @Date    : 2021/12/7 2:35 下午
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import json
 from datetime import date, timedelta
 from decimal import Decimal
@@ -149,7 +151,7 @@ class TestSwapAccountCapticalBatch_208:
             pass
 
     @pytest.mark.parametrize('param', params, ids=ids)
-    def test_execute(self, param, DB_btc):
+    def test_execute(self, param):
         allure.dynamic.title(param['title'])
         with allure.step('操作:从接口返回中取出-各用户类型-数据'):
             for data in self.daily['daily']:

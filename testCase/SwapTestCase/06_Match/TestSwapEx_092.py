@@ -3,12 +3,15 @@
 # @Date    : 20211018
 # @Author : HuiQing Yu
 
+import allure
+import pytest
+import time
+
 from common.SwapServiceAPI import user01
-import pytest, allure, random, time
-from common.CommonUtils import currentPrice
-from common.mysqlComm import mysqlComm
+from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
-from config.case_content import epic,features
+from tool.SwapTools import SwapTool
+
 
 @allure.epic(epic[1])
 @allure.feature(features[5]['feature'])
@@ -16,13 +19,12 @@ from config.case_content import epic,features
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 @pytest.mark.stable
 class TestSwapEx_088:
-    DB_orderSeq = mysqlComm('order_seq')
     contract_code = DEFAULT_CONTRACT_CODE
 
     @classmethod
     def setup_class(cls):
         with allure.step('*->挂盘'):
-            cls.currentPrice = currentPrice()  # 最新价
+            cls.currentPrice = SwapTool.currentPrice()  # 最新价
             user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='sell')
             user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='buy',
                               volume=2)
@@ -35,7 +37,7 @@ class TestSwapEx_088:
             pass
 
     @allure.title('撮合-卖出平仓-全部成交单笔订单')
-    def test_execute(self, contract_code,DB_orderSeq):
+    def test_execute(self, contract_code):
         with allure.step('操作：平多下单'):
             orderInfo = user01.swap_order(contract_code=contract_code, price=round(self.currentPrice, 2),offset='close',
                                           direction='sell')
@@ -47,7 +49,7 @@ class TestSwapEx_088:
             flag = False
             # 给撮合时间，5秒内还未撮合完成则为失败
             for i in range(3):
-                isMatch = DB_orderSeq.dictCursor(sqlStr)[0]['count']
+                isMatch = mysqlClient.selectdb_execute(dbSchema='order_seq',sqlStr=sqlStr)[0]['count']
                 if 1 == isMatch:
                     flag = True
                     break

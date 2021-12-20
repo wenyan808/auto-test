@@ -3,42 +3,29 @@
 # @Date    : 2021/10/01
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import pytest
-from common.mysqlComm import mysqlComm
 from common.redisComm import redisConf
 from config import conf
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTools
 
 @pytest.fixture()
-def redis6379():
-    return redisConf('redis6379').instance()
-
-@pytest.fixture()
-def redis6380():
-    return redisConf('redis6380').instance()
-
-@pytest.fixture()
-def DB_orderSeq():
-    return  mysqlComm('order_seq')
-
-@pytest.fixture()
-def DB_contract_trade():
-    return  mysqlComm('contract_trade')
-
-@pytest.fixture()
-def DB_btc():
-    return  mysqlComm('btc')
+def redisClient(redisName):
+    return redisConf(redisName).redisClient
 
 @pytest.fixture()
 def contract_code():
-    contract_code = conf.DEFAULT_CONTRACT_CODE
-    return contract_code
+    return  conf.DEFAULT_CONTRACT_CODE
 
 @pytest.fixture()
 def latest_price():
-    return currentPrice()
+    return SwapTools.currentPrice()
 
 @pytest.fixture()
 def symbol():
-    symbol = conf.DEFAULT_SYMBOL
-    return symbol
+    return conf.DEFAULT_SYMBOL
+
+@pytest.fixture()
+def SwapTool():
+    return SwapTools()

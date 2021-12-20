@@ -3,11 +3,13 @@
 # @Date    : 2021/12/6 9:57 上午
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import allure
 import pytest
 import time
 
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 from common.SwapMqComm import mqComm
 from common.SwapServiceAPI import user01, user02
 from config.case_content import epic, features
@@ -28,7 +30,7 @@ class TestUserInit_swap_006:
         with allure.step('变量初始化'):
             cls.symbol = DEFAULT_SYMBOL
             cls.contract_code = DEFAULT_CONTRACT_CODE
-            cls.latest_price = currentPrice()
+            cls.latest_price = SwapTool.currentPrice()
             pass
 
     @classmethod

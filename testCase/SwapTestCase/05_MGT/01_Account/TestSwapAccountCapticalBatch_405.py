@@ -3,6 +3,8 @@
 # @Date    : 2021/12/7 2:35 下午
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import json
 import time
 from datetime import date, timedelta
@@ -25,7 +27,7 @@ from config.case_content import epic, features
 class TestSwapAccountCapticalBatch_405:
     ids = ['TestSwapAccountCapticalBatch_405']
     params = [{'title':'TestSwapAccountCapticalBatch_405','case_name': '平台流水表-结算对账-互换账户', 'userType': 5, 'userId': '1389608'}]
-    DB_contract_trade = mysqlComm('contract_trade')
+
     @classmethod
     def setup_class(cls):
         with allure.step('变量初始化'):
@@ -73,7 +75,7 @@ class TestSwapAccountCapticalBatch_405:
                  f'AND money_type =  {money_type} ' \
                  f'AND product_id = "{self.symbol}" ' \
                  f'AND user_id = "{userId}" '
-        money = dbName.dictCursor(sqlStr)
+        money = mysqlClient.selectdb_execute(dbSchema=dbName,sqlStr=sqlStr)
         if len(money) == 0 or money[0]['money'] is None:
             money = 0
         else:
@@ -81,7 +83,7 @@ class TestSwapAccountCapticalBatch_405:
         return money
 
     @pytest.mark.parametrize('param', params, ids=ids)
-    def test_execute(self, param, DB_btc):
+    def test_execute(self, param):
         allure.dynamic.title(param['title'])
         with allure.step('操作：执行查询'):
             sqlStr = 'SELECT end_time,id ' \
@@ -89,7 +91,7 @@ class TestSwapAccountCapticalBatch_405:
                      'where progress_code=13 ' \
                      f'and product_id= "{self.symbol}" ' \
                      'order by end_time desc limit 2 '
-            db_info = DB_btc.dictCursor(sqlStr=sqlStr)
+            db_info = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             self.endDateTime = db_info[0]['end_time']
             self.beginDateTime = db_info[1]['end_time']
             request_params = [
@@ -123,33 +125,33 @@ class TestSwapAccountCapticalBatch_405:
             assert pay_money, '返回数据中未找到-互换账户-数据，校验失败'
 #################################################  【互换账户】交割手续费	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["deliveFee"]}-数据'):
-            deliveFee = self.__dbResult(money_type=11,userId=param['userId'],dbName=DB_btc)
+            deliveFee = self.__dbResult(money_type=11,userId=param['userId'],dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["deliveFee"]}'):
             assert Decimal(pay_money['deliveFee']) == deliveFee, f'{self.fund_flow_type["deliveFee"]}-校验失败'
 #################################################  【互换账户】资金费-收入	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["capitalFeeIn"]}-数据'):
-            capitalFeeIn = - self.__dbResult(money_type=30,userId=param['userId'],dbName=DB_btc)
+            capitalFeeIn = - self.__dbResult(money_type=30,userId=param['userId'],dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["capitalFeeIn"]}'):
             assert Decimal(pay_money['capitalFeeIn']) == capitalFeeIn, f'{self.fund_flow_type["capitalFeeIn"]}-校验失败'
 #################################################  【互换账户】资金费-支出	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["capitalFeeOut"]}-数据'):
-            capitalFeeOut = - self.__dbResult(money_type=31,userId=param['userId'],dbName=DB_btc)
+            capitalFeeOut = - self.__dbResult(money_type=31,userId=param['userId'],dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["capitalFeeOut"]}'):
             assert Decimal(pay_money['capitalFeeOut']) == capitalFeeOut, f'{self.fund_flow_type["capitalFeeOut"]}-校验失败'
 #################################################  【互换账户】资金费转运营	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["capitalFeeToOperate"]}-数据'):
-            capitalFeeToOperate = self.__dbResult(money_type=32,userId=param['userId'],dbName=DB_btc)
+            capitalFeeToOperate = self.__dbResult(money_type=32,userId=param['userId'],dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["capitalFeeToOperate"]}'):
             assert Decimal(pay_money['capitalFeeToOperate']) == capitalFeeToOperate, f'{self.fund_flow_type["capitalFeeToOperate"]}-校验失败'
 #################################################  【互换账户】运营转资金费	################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["operateToCapitalFee"]}-数据'):
-            operateToCapitalFee = self.__dbResult(money_type=33,userId=param['userId'],dbName=DB_btc)
+            operateToCapitalFee = self.__dbResult(money_type=33,userId=param['userId'],dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["operateToCapitalFee"]}'):
             assert Decimal(pay_money['operateToCapitalFee']) == operateToCapitalFee, \
                 f'{self.fund_flow_type["operateToCapitalFee"]}-校验失败'
 #################################################  【互换账户】平账	####################################################
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["flatMoney"]}-数据'):
-            flatMoney = self.__dbResult(money_type=20,userId=param['userId'],dbName=DB_btc)
+            flatMoney = self.__dbResult(money_type=20,userId=param['userId'],dbName='btc')
         with allure.step(f'验证:流水类型-{self.fund_flow_type["flatMoney"]}'):
             assert Decimal(pay_money['flatMoney']) == flatMoney, f'{self.fund_flow_type["flatMoney"]}-校验失败'
 #################################################  【互换账户】当期流水	####################################################
@@ -160,7 +162,7 @@ class TestSwapAccountCapticalBatch_405:
                      f'AND money_type in (11,20,30,31,32,33) ' \
                      f'AND product_id = "{self.symbol}" ' \
                      f'AND user_id = {param["userId"]} '
-            currInterest = DB_btc.dictCursor(sqlStr)
+            currInterest = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             if len(currInterest) == 0 or currInterest[0]['money'] is None:
                 currInterest = 0
             else:
@@ -168,7 +170,7 @@ class TestSwapAccountCapticalBatch_405:
         with allure.step(f'验证:流水类型-{self.fund_flow_type["currInterest"]}'):
             assert Decimal(pay_money['currInterest']) == currInterest, \
                 f'{self.fund_flow_type["currInterest"]}-校验失败'
-#################################################    【互换账户】实际 期初静态权益    ###############################################
+#################################################    【互换账户】实际 期初静态权益    #######################################
         with allure.step(f'验证:流水类型-{self.fund_flow_type["originalInterest"]}'):
             timeArray = time.localtime(int(self.beginDateTime) / 1000)
             settle_date = time.strftime("%Y%m%d", timeArray)
@@ -178,7 +180,7 @@ class TestSwapAccountCapticalBatch_405:
                      'AND settle_id=1 ' \
                      f'AND product_id ="{self.symbol}" ' \
                      f'AND user_id={param["userId"]} '
-            originalInterest = DB_btc.dictCursor(sqlStr)
+            originalInterest = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             if len(originalInterest) == 0 or originalInterest[0]['money'] is None:
                 originalInterest = 0
             else:
@@ -186,7 +188,7 @@ class TestSwapAccountCapticalBatch_405:
 
             assert Decimal(pay_money['originalInterest']) == originalInterest, \
                 f'{self.fund_flow_type["originalInterest"]}-校验失败'
-#################################################    【互换账户】流水 期未静态权益    ###############################################
+#################################################    【互换账户】流水 期未静态权益    #######################################
         with allure.step(f'验证:流水类型-{self.fund_flow_type["finalInterest"]}'):
             sqlStr = 'select TRUNCATE(sum(money),8) as money from ( ' \
                      'SELECT sum(money) as money FROM t_account_action ' \
@@ -202,14 +204,14 @@ class TestSwapAccountCapticalBatch_405:
                      'AND settle_id=1 ' \
                      f'AND product_id ="{self.symbol}" ' \
                      f'AND user_id={param["userId"]} ) a'
-            finalInterest = DB_btc.dictCursor(sqlStr)
+            finalInterest = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             if len(finalInterest) == 0 or finalInterest[0]['money'] is None:
                 finalInterest = 0
             else:
                 finalInterest = finalInterest[0]['money']
             assert Decimal(pay_money['finalInterest']) == finalInterest, \
                 f'{self.fund_flow_type["finalInterest"]}-校验失败'
-#################################################    【互换账户】实际 期未静态权益    ###############################################
+#################################################    【互换账户】实际 期未静态权益    #######################################
         with allure.step(f'验证:流水类型-{self.fund_flow_type["finalInterest"]}'):
             staticInterest_money = None
             for data in self.daily['originalcapital']:
@@ -223,7 +225,7 @@ class TestSwapAccountCapticalBatch_405:
                      'AND settle_id=1 ' \
                      f'AND product_id ="{self.symbol}" ' \
                      f'AND user_id={param["userId"]}'
-            staticInterest = DB_btc.dictCursor(sqlStr)
+            staticInterest = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             if len(staticInterest) == 0 or staticInterest[0]['money'] is None:
                 staticInterest = 0
             else:

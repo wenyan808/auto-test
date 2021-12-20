@@ -6,12 +6,11 @@
 
 import allure
 import pytest
-import time
 
-from common.SwapServiceAPI import user01, user02
+from common.SwapServiceAPI import user01
 from config.case_content import epic, features
-from common.CommonUtils import currentPrice
 from config.conf import DEFAULT_CONTRACT_CODE
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
@@ -42,7 +41,7 @@ class TestCoinswapLimitOrder_009:
     def setup_class(cls):
         with allure.step("变量初始化"):
             cls.contract_code = DEFAULT_CONTRACT_CODE
-            cls.latest_price = currentPrice()
+            cls.latest_price = SwapTool.currentPrice()
             pass
 
     @classmethod

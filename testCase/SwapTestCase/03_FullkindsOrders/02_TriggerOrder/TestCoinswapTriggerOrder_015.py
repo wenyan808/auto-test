@@ -3,13 +3,15 @@
 # @Date    : 2020/7/1
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import time
 from decimal import Decimal
 import random
 import allure
 import pytest
 
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 from common.SwapServiceAPI import user01, user02
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
@@ -40,7 +42,7 @@ class TestCoinswapTriggerOrder_015:
     def setup_class(cls):
         with allure.step("变量初始化"):
             cls.contract_code = DEFAULT_CONTRACT_CODE
-            cls.latest_price = currentPrice()
+            cls.latest_price = SwapTool.currentPrice()
             pass
 
     @classmethod
@@ -50,7 +52,7 @@ class TestCoinswapTriggerOrder_015:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params, DB_contract_trade):
+    def test_execute(self, params, mysqlClient):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：下限价单并设置止盈'):
             limit_order = user01.swap_order(contract_code=self.contract_code, price=round(self.latest_price * 1.01, 2),

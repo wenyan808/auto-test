@@ -3,6 +3,8 @@
 # @Date    : 20211013
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 from common.SwapServiceWS import user01 as ws_user01
 import pytest, allure, random, time
 from config.case_content import epic, features

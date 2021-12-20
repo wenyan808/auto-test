@@ -7,7 +7,7 @@ from common.SwapServiceWS import user01 as ws_user01
 from common.SwapServiceAPI import user01 as api_user01
 import pytest, allure, random, time
 from config.conf import DEFAULT_CONTRACT_CODE
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 from config.case_content import epic, features
 
 

@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2020/7/1
 # @Author  : HuiQing Yu
+
+from common.mysqlComm import mysqlComm as mysqlClient
 from decimal import Decimal
 
 import allure
@@ -12,7 +14,7 @@ import random
 from config.case_content import epic, features
 from common.SwapServiceAPI import user01
 from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
@@ -46,7 +48,7 @@ class TestCoinswapTriggerOrder_010:
     def setup_class(cls):
         with allure.step("变量初始化"):
             cls.contract_code = DEFAULT_CONTRACT_CODE
-            cls.latest_price = currentPrice()
+            cls.latest_price = SwapTool.currentPrice()
             pass
         with allure.step("持仓"):
             user01.swap_order(contract_code=cls.contract_code,price=cls.latest_price,direction='buy',volume=3)
@@ -61,7 +63,7 @@ class TestCoinswapTriggerOrder_010:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params,DB_contract_trade):
+    def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：下单'):
             order_reps = user01.swap_trigger_order(contract_code=self.contract_code, trigger_type=params['trigger_type'],
@@ -81,7 +83,7 @@ class TestCoinswapTriggerOrder_010:
                      f'from t_trigger_order t ' \
                      f'where user_order_id = {orderId}'
             for i in range(3):
-                db_info_list = DB_contract_trade.dictCursor(sqlStr)
+                db_info_list = mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
                 if len(db_info_list) == 0:
                     print(f'查询为空，第{i}一次重试……')
                     time.sleep(1)
@@ -107,7 +109,7 @@ class TestCoinswapTriggerOrder_010:
                 sqlStr = f'select t.state,t.order_id,t.triggered_at ' \
                          f'from t_trigger_order t ' \
                          f'where user_order_id = {orderId}'
-                is_trigger = DB_contract_trade.dictCursor(sqlStr)[0]
+                is_trigger = mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)[0]
                 if is_trigger['state'] == 2:
                     print(f'校验失败，第{i+1}次重试……')
                     time.sleep(1)

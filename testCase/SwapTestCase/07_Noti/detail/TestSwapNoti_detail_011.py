@@ -3,6 +3,8 @@
 # @Date    : 2021/11/15 2:31 下午
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import pytest, allure, random, time
 from common.SwapServiceWS import user01 as ws_user01
 from config.conf import DEFAULT_CONTRACT_CODE

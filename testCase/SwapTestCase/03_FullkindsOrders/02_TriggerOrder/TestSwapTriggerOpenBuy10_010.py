@@ -11,7 +11,7 @@ import pytest
 from common.SwapServiceAPI import user01
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 
 @allure.epic(epic[1])
 @allure.feature(features[2]['feature'])

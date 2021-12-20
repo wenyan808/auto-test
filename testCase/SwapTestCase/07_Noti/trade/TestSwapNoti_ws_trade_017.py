@@ -3,6 +3,8 @@
 # @Date    : 2021/11/10 4:03 下午
 # @Author  : HuiQing Yu
 
+from common.mysqlComm import mysqlComm as mysqlClient
+
 import allure
 import pytest
 import time
@@ -11,7 +13,7 @@ from common.SwapServiceWS import user01 as ws_user01
 from common.SwapServiceAPI import user01 as api_user01
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
-from common.CommonUtils import currentPrice
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
