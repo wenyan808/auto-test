@@ -107,7 +107,7 @@ class TestContractAccountCapticalBatch_005:
                     beginDateUnixTime, endDateUnixTime, value, symbol)
                 print(sqlStr)
                 rec_dict_tuples = contract_conn.selectdb_execute(
-                    db='btc', sqlStr=sqlStr)
+                    dbSchema='btc', sqlStr=sqlStr)
                 money = 0.000000000000000000
                 if rec_dict_tuples[0]["money"]:
                     currInterest += rec_dict_tuples[0]["money"]
