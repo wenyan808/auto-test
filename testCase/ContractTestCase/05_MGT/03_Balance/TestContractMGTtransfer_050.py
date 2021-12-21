@@ -64,7 +64,7 @@ class TestContractMGTtransfer_050:
         record_id = 0
         with allure.step('点击转账记录，查看转账单子是否成功'):
             contract_btc_conn = mysqlComm()
-            sqlStr = f'SELECT id FROM t_flat_money_record where product_id="{symbol}" ' \
+            sqlStr = f'SELECT id FROM t_flat_money_record WHERE product_id="{symbol}" ' \
                      f'AND flat_status=2 ORDER BY id DESC LIMIT 1'
             rec_dict_tuples = contract_btc_conn.selectdb_execute(
                 'btc', sqlStr)
