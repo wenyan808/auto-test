@@ -59,12 +59,12 @@ class TestSwapMGTflat_s029:
          'money': -random.randint(10, 100)},
         {'title': 'TestSwapMGTflat_042', 'case_name': '虚拟平台资产-加钱成功', 'flatAccount': 11, 'money': -random.randint(10, 100)},
     ]
-    symbol = SwapTool.getContractStatus(init_status=3)
+    contract_info = SwapTool.getContractStatus(init_status=3)
 
     @classmethod
     def setup_class(cls):
         with allure.step('变量初始化'):
-            cls.symbol = cls.symbol
+            cls.symbol = cls.contract_info['data']['product_id']
             cls.mysqlClient = mysqlComm()
             pass
 

@@ -67,12 +67,16 @@ class SwapTools(object):
 
     # 获取合约状态
     def getContractStatus(self,init_status):
+        result = {'isSkip': False,'data':None}
         # 0:结算中 1:交易中 2:待上市 3:停牌 4:结算完成 5:已生成,10 初始化中
-        sqlStr = f'select product_id from t_product where  trade_status!={init_status} and init_status=0 limit 1'
+        sqlStr = f'select product_id,instrument_index_code from t_product where  trade_status!=5 and init_status={init_status} limit 1'
         db_info = self.mysqlClient.selectdb_execute('contract_trade', sqlStr=sqlStr)
-        if len(db_info) ==0:
-            return None
-        return db_info[0]['product_id']
+        # 如果无数据则返回False通知
+        if len(db_info) == 0:
+            result['isSkip'] = True
+        else:
+            result['data']=db_info[0]
+        return result
 
 # 调试区
 SwapTool = SwapTools()

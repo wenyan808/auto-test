@@ -28,7 +28,7 @@ class TestSwapNoti_ws_kline_010:
     @classmethod
     def setup_class(cls):
         with allure.step('成交更新k线'):
-            cls.currentPrice = currentPrice()  # 最新价
+            cls.currentPrice = SwapTool.currentPrice()  # 最新价
             api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='buy')
             api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='sell')
             pass
