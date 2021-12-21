@@ -44,13 +44,12 @@ class TestContractAccountCapticalBatch_030:
 
     @allure.title('平台流水表-结算对账:校验交割手续费')
     @allure.step('测试执行')
-    def test_execute(self):
-        symbol = "BTC"
+    def test_execute(self, symbol):
         # userType 用户类型 1普通用户，2爆仓用户，3应付外债，4交易手续费，5交割手续费，9运营活动，11是平台资产 12是应付用户 13是平账账户
         userType = 5
         # 构造请求参数
         contract_conn = mysqlComm()
-        sqlStr = 'SELECT id,settle_date,end_time FROM t_settle_log where progress_code=13 and product_id= "{}" order by id desc limit 2 '.format(
+        sqlStr = 'SELECT id,settle_date,end_time FROM t_settle_log WHERE progress_code=13 ADN product_id= "{}" ORDER BY id DESC LIMIT 2 '.format(
             symbol)
         rec_dict_tuples = contract_conn.selectdb_execute(
             dbSchema='btc', sqlStr=sqlStr)
@@ -118,7 +117,7 @@ class TestContractAccountCapticalBatch_030:
                 assert money == Decimal(
                     platform_capital_dic[key]), "{} 流水比对异常".format(key)
             # 实际期初静态权益,original_interest(期初),static_interest(期未)
-            sqlStr = 'SELECT original_interest,static_interest FROM t_account_capital_his WHERE settle_date="{}" AND product_id="{}" AND user_type={}'.format(
+            sqlStr = 'SELECT original_interest,static_interest FROM t_account_capital_his WHERE settle_date="{}" ADN product_id="{}" AND user_type={}'.format(
                 beginDate, symbol, userType
             )
             print(sqlStr)
@@ -139,7 +138,7 @@ class TestContractAccountCapticalBatch_030:
             curr_static_interest = begin_static_interest+currInterest
 
             # 实际期末静态权益
-            sqlStr = 'SELECT original_interest,static_interest FROM t_account_capital_his WHERE settle_date="{}" AND product_id="{}" AND user_type={}'.format(
+            sqlStr = 'SELECT original_interest,static_interest FROM t_account_capital_his WHERE settle_date="{}" ADN product_id="{}" AND user_type={}'.format(
                 endDate, symbol, userType
             )
             rec_dict_tuples = contract_conn.selectdb_execute(
