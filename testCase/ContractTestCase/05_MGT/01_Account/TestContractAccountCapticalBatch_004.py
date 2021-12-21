@@ -47,8 +47,7 @@ class TestContractAccountCapticalBatch_004:
 
     @allure.title('平台流水表-每日跑批:校验交易手续费')
     @allure.step('测试执行')
-    def test_execute(self):
-        symbol = "BTC"
+    def test_execute(self, symbol):
         endDate = (date.today() + timedelta(days=-1)).strftime("%Y%m%d")
         beginDate = (date.today(
         ) + datetime.timedelta(days=random.randint(2, 7)*-1)).strftime("%Y%m%d")
@@ -93,12 +92,12 @@ class TestContractAccountCapticalBatch_004:
                                  }
             currInterest = 0  # 流水当期发生
             # 获取时间戳
-            beginSqlStr = 'SELECT MAX(flow_end_time) as unixtime FROM t_daily_log t  where product_id="{}" AND batch_date ={} ORDER BY flow_end_time desc'.format(
+            beginSqlStr = 'SELECT MAX(flow_end_time) as unixtime FROM t_daily_log t  WHERE product_id="{}" AND batch_date ={} ORDER BY flow_end_time desc'.format(
                 symbol, beginDate)
             rec_begin_dict = contract_conn.selectdb_execute(
                 "contract_trade", beginSqlStr)
             beginDateUnixTime = rec_begin_dict[0]["unixtime"]
-            endSqlStr = 'SELECT MAX(flow_end_time) as unixtime FROM t_daily_log t  where product_id="{}" AND batch_date ={} ORDER BY flow_end_time desc'.format(
+            endSqlStr = 'SELECT MAX(flow_end_time) as unixtime FROM t_daily_log t  WHERE product_id="{}" AND batch_date ={} ORDER BY flow_end_time desc'.format(
                 symbol, endDate)
             rec_end_dict = contract_conn.selectdb_execute(
                 "contract_trade", endSqlStr)

@@ -43,10 +43,10 @@ class TestContractMGTtransfer_043:
 
     @allure.title('虚拟平台资产')
     @allure.step('测试执行')
-    def test_execute(self):
+    def test_execute(self, symbol):
         with allure.step('打开MGT后台管理系统点击财务-财务工具-平账，流水类型选择（虚拟平台资产），平种标识如（btc），输入金额'):
-            params = ["BTC",
-                      {"productId": "BTC",
+            params = [symbol,
+                      {"productId": symbol,
                        "flatAccount": 5,
                        "uid": None,
                        "money": "1",
@@ -63,9 +63,8 @@ class TestContractMGTtransfer_043:
         record_id = 0
         with allure.step('点击转账记录，查看转账单子是否成功'):
             contract_btc_conn = mysqlComm()
-            symbol = 'btc'
-            sqlStr = f'select id from t_flat_money_record where product_id="{symbol}" ' \
-                     f'AND flat_status=1 order by id desc limit 1'
+            sqlStr = f'SELECT id FROM t_flat_money_record WHERE product_id="{symbol}" ' \
+                     f'AND flat_status=1 ORDER BY id DESC LIMIT 1'
             rec_dict_tuples = contract_btc_conn.selectdb_execute(
                 'btc', sqlStr)
             assert rec_dict_tuples != None

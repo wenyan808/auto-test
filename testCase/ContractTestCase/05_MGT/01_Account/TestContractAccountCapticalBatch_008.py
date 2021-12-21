@@ -86,9 +86,8 @@ class TestContractAccountCapticalBatch_008:
 
     @allure.step('测试执行')
     @pytest.mark.parametrize('param', params, ids=[x['id'] for x in params])
-    def test_execute(self, param):
+    def test_execute(self, symbol, param):
         allure.dynamic.title(param['case_title'])
-        symbol = "BTC"
         endDate = (date.today() + timedelta(days=-1)).strftime("%Y%m%d")
         beginDate = (date.today(
         ) + datetime.timedelta(days=random.randint(2, 7)*-1)).strftime("%Y%m%d")
