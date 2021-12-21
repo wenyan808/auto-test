@@ -91,7 +91,7 @@ class TestContractAccountCapticalBatch_033:
         sqlStr = 'SELECT id,settle_date,end_time FROM t_settle_log where progress_code=13 and product_id= "{}" order by id desc limit 2 '.format(
             symbol)
         rec_dict_tuples = contract_conn.selectdb_execute(
-            db='btc', sqlStr=sqlStr)
+            dbSchema='btc', sqlStr=sqlStr)
         if(len(rec_dict_tuples) != 2):
             pytest.skip(msg="无结算对账记录")
         beginDate = rec_dict_tuples[1]["settle_date"]

@@ -53,7 +53,7 @@ class TestContractAccountCapticalBatch_030:
         sqlStr = 'SELECT id,settle_date,end_time FROM t_settle_log where progress_code=13 and product_id= "{}" order by id desc limit 2 '.format(
             symbol)
         rec_dict_tuples = contract_conn.selectdb_execute(
-            db='btc', sqlStr=sqlStr)
+            dbSchema='btc', sqlStr=sqlStr)
         if(len(rec_dict_tuples) != 2):
             pytest.skip(msg="无结算对账记录")
         beginDate = rec_dict_tuples[1]["settle_date"]
@@ -110,7 +110,7 @@ class TestContractAccountCapticalBatch_030:
                     beginDateTime, endDateTime, value, symbol)
                 print(sqlStr)
                 rec_dict_tuples = contract_conn.selectdb_execute(
-                    db='btc', sqlStr=sqlStr)
+                    dbSchema='btc', sqlStr=sqlStr)
                 money = 0.0
                 if rec_dict_tuples[0]["money"]:
                     currInterest += rec_dict_tuples[0]["money"]
@@ -123,7 +123,7 @@ class TestContractAccountCapticalBatch_030:
             )
             print(sqlStr)
             rec_dict_tuples = contract_conn.selectdb_execute(
-                db='btc', sqlStr=sqlStr)
+                dbSchema='btc', sqlStr=sqlStr)
             # 前一个期未当本期的期初
             begin_static_interest = rec_dict_tuples[0]["static_interest"]
 
@@ -143,7 +143,7 @@ class TestContractAccountCapticalBatch_030:
                 endDate, symbol, userType
             )
             rec_dict_tuples = contract_conn.selectdb_execute(
-                db='btc', sqlStr=sqlStr)
+                dbSchema='btc', sqlStr=sqlStr)
             end_original_interest = rec_dict_tuples[0]["original_interest"]
             end_static_interest = rec_dict_tuples[0]["static_interest"]
             assert end_original_interest == begin_static_interest
