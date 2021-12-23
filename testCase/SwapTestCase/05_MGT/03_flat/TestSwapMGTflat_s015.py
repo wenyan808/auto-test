@@ -56,7 +56,7 @@ class TestSwapMGTflat_s015:
         {'title': 'TestSwapMGTflat_028', 'case_name': '平台虚拟资产-减钱失败', 'flatAccount': 11,
          'money': random.randint(10, 100)},
     ]
-    symbol = SwapTool.getContractStatus(init_status=0)['product_id']
+    contract_info = SwapTool.getContractStatus(trade_status=0)
 
     @classmethod
     def setup_class(cls):
@@ -70,6 +70,7 @@ class TestSwapMGTflat_s015:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
+    @pytest.mark.skipif(condition=contract_info['isSkip'],reason='没找到结算中合约跳过用例')
     def test_execute(self, params):
         allure.dynamic.title(params['title'])
         with allure.step('操作:执行-给用户保证金平账'):

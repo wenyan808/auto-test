@@ -3,20 +3,17 @@
 # @Date    : 2021/12/7 2:35 下午
 # @Author  : HuiQing Yu
 
-from common.mysqlComm import mysqlComm as mysqlClient
-
 import json
 import time
-from datetime import date, timedelta
 from decimal import Decimal
-import random
+
 import allure
 import pytest
 
 from common.SwapServiceMGT import SwapServiceMGT
 from common.mysqlComm import mysqlComm
-from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 
 
 @allure.epic(epic[1])
@@ -33,6 +30,7 @@ class TestSwapAccountCapticalBatch_405:
         with allure.step('变量初始化'):
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.symbol = DEFAULT_SYMBOL
+            cls.mysqlClient = mysqlComm()
             cls.fund_flow_type = {
                 "moneyIn": "从币币转入",
                 "moneyOut": "转出至币币",
@@ -75,7 +73,7 @@ class TestSwapAccountCapticalBatch_405:
                  f'AND money_type =  {money_type} ' \
                  f'AND product_id = "{self.symbol}" ' \
                  f'AND user_id = "{userId}" '
-        money = mysqlClient.selectdb_execute(dbSchema=dbName,sqlStr=sqlStr)
+        money = self.mysqlClient.selectdb_execute(dbSchema=dbName,sqlStr=sqlStr)
         if len(money) == 0 or money[0]['money'] is None:
             money = 0
         else:
@@ -91,7 +89,7 @@ class TestSwapAccountCapticalBatch_405:
                      'where progress_code=13 ' \
                      f'and product_id= "{self.symbol}" ' \
                      'order by end_time desc limit 2 '
-            db_info = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
+            db_info = self.mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             self.endDateTime = db_info[0]['end_time']
             self.beginDateTime = db_info[1]['end_time']
             request_params = [
@@ -162,7 +160,7 @@ class TestSwapAccountCapticalBatch_405:
                      f'AND money_type in (11,20,30,31,32,33) ' \
                      f'AND product_id = "{self.symbol}" ' \
                      f'AND user_id = {param["userId"]} '
-            currInterest = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
+            currInterest = self.mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             if len(currInterest) == 0 or currInterest[0]['money'] is None:
                 currInterest = 0
             else:
@@ -180,7 +178,7 @@ class TestSwapAccountCapticalBatch_405:
                      'AND settle_id=1 ' \
                      f'AND product_id ="{self.symbol}" ' \
                      f'AND user_id={param["userId"]} '
-            originalInterest = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
+            originalInterest = self.mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             if len(originalInterest) == 0 or originalInterest[0]['money'] is None:
                 originalInterest = 0
             else:
@@ -204,7 +202,7 @@ class TestSwapAccountCapticalBatch_405:
                      'AND settle_id=1 ' \
                      f'AND product_id ="{self.symbol}" ' \
                      f'AND user_id={param["userId"]} ) a'
-            finalInterest = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
+            finalInterest = self.mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             if len(finalInterest) == 0 or finalInterest[0]['money'] is None:
                 finalInterest = 0
             else:
@@ -225,7 +223,7 @@ class TestSwapAccountCapticalBatch_405:
                      'AND settle_id=1 ' \
                      f'AND product_id ="{self.symbol}" ' \
                      f'AND user_id={param["userId"]}'
-            staticInterest = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
+            staticInterest = self.mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
             if len(staticInterest) == 0 or staticInterest[0]['money'] is None:
                 staticInterest = 0
             else:
