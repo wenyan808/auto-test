@@ -21,7 +21,7 @@ class TestSwapApiSchema_040:
     @allure.title("撤销合约订单")
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
-            self.currentPrice = currentPrice()
+            self.currentPrice = SwapTool.currentPrice()
             orderId = user01.swap_order(contract_code=contract_code,price=round(self.currentPrice*0.5,2),direction='buy')['data']['order_id_str']
             time.sleep(1)
             r = user01.swap_cancel(order_id=orderId,contract_code=contract_code)

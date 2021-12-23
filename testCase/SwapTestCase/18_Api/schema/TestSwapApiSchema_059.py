@@ -21,7 +21,7 @@ class TestSwapApiSchema_059:
 
     @classmethod
     def setup_class(cls):
-        cls.currentPrice = currentPrice()
+        cls.currentPrice = SwapTool.currentPrice()
 
     @classmethod
     def teardown_class(cls):

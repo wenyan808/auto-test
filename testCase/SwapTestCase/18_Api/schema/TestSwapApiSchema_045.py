@@ -27,7 +27,7 @@ class TestSwapApiSchema_045:
     @allure.title("获取用户的合约当前未成交委托")
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
-            self.currentPrice = currentPrice()
+            self.currentPrice = SwapTool.currentPrice()
             user01.swap_order(contract_code=contract_code, price=round(self.currentPrice * 0.5, 2), direction='buy')
             flag = False
             # 重试3次未返回预期结果则失败

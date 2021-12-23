@@ -6,14 +6,9 @@
 
 import pytest
 
-from common.redisComm import redisConf
 from config import conf
 from tool.SwapTools import SwapTools
 
-
-@pytest.fixture()
-def redisClient(redisName):
-    return redisConf(redisName).redisClient
 
 @pytest.fixture()
 def contract_code():
