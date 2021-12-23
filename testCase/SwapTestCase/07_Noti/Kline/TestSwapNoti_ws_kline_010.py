@@ -28,7 +28,7 @@ class TestSwapNoti_ws_kline_010:
     @classmethod
     def setup_class(cls):
         with allure.step('成交更新k线'):
-            cls.currentPrice = currentPrice()  # 最新价
+            cls.currentPrice = SwapTool.currentPrice()  # 最新价
             api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='buy')
             api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice, 2), direction='sell')
             pass
@@ -53,12 +53,12 @@ class TestSwapNoti_ws_kline_010:
             flag = False
             # 重试3次未返回预期结果则失败
             for i in range(1, 4):
-                result = ws_user01.swap_sub(subs)
+                result = ws_user01.swap_sub(subs=subs)
                 if 'data' in result:
                     flag = True
                     break
                 time.sleep(1)
-                print('未返回预期结果，第{}次重试………………………………'.format(i))
+                print(f'未返回预期结果，第{i+1}次重试………………………………')
             assert flag,'重试3次未返回预期结果'
             pass
         with  allure.step('操作:查询redis'):
@@ -72,20 +72,13 @@ class TestSwapNoti_ws_kline_010:
         with allure.step('验证：返回字段非空'):
             # 请求topic校验
             for data in result['data']:
-                # 开仓价校验，不为空
-                assert data['open']
-                # 收仓价校验
-                assert data['close']
-                # 最低价校验,不为空
-                assert data['low']
-                # 最高价校验,不为空
-                assert data['high']
-                # 币的成交量
-                assert data['amount']>=0
-                # 成交量张数。 值是买卖双边之和
-                assert data['vol']>=0
-                # 成交笔数。 值是买卖双边之和
-                assert data['count']>=0
+                assert data['open'],'开仓价校验失败'
+                assert data['close'],'收仓价校验失败'
+                assert data['low'],'最低价校验失败'
+                assert data['high'],'最高价校验失败'
+                assert data['amount']>=0,'币的成交量校验失败'
+                assert data['vol']>=0,'成交量张数校验失败'
+                assert data['count']>=0,'成交笔数校验失败'
             pass
         with allure.step('验证：最后一个1min的数据与redis结果对比校验'):
             # 请求topic校验

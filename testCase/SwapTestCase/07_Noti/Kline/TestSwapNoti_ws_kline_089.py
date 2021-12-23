@@ -66,11 +66,10 @@ class TestSwapNoti_ws_kline_089:
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：发送req请求'):
-            self.contract_code = 'BTC-BTC'
             self.toTime = int(time.time())
             self.fromTime = self.toTime - 60 * 60 * 24
             subs = {
-                "req": "market.{}.kline.{}".format(self.contract_code, params['period']),
+                "req": f"market.BTC-BTC.kline.{params['period']}",
                 "id": "id4",
                 "from": self.fromTime,
                 "to": self.toTime

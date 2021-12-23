@@ -21,7 +21,7 @@ class TestSwapNoti_ws_kline_077:
     def test_execute(self, contract_code):
         with allure.step('操作：执行sub订阅'):
             subs = {
-                "sub": "market.{}.kline.".format(contract_code),
+                "sub": f"market.{contract_code}.kline.",
                 "id": "id4"
             }
             result = ws_user01.swap_sub(subs)

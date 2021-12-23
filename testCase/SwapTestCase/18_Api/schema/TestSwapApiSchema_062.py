@@ -21,7 +21,7 @@ class TestSwapApiSchema_062:
 
     @classmethod
     def setup_class(cls):
-        cls.currentPrice = currentPrice()
+        cls.currentPrice = SwapTool.currentPrice()
         cls.contract_code = DEFAULT_CONTRACT_CODE
         pass
 

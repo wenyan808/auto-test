@@ -8,6 +8,7 @@ import time
 import allure
 import pytest
 
+from common.redisComm import redisConf
 from tool.SwapTools import SwapTool
 from common.SwapServiceWS import user01 as ws_user01
 from config.case_content import epic, features
@@ -35,28 +36,15 @@ class TestSwapNoti_depth_030:
         with allure.step('实始化变量'):
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.symbol = DEFAULT_SYMBOL
-            cls.currentPrice = currentPrice()  # 最新价
-            ATP.clean_market()
-
+            cls.currentPrice = SwapTool.currentPrice()  # 最新价
+            cls.redisClient = redisConf('redis6379').instance()
             pass
 
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params,redis6379):
+    def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
-        with allure.step('操作：清盘避免干扰'):
-            for i in range(3):
-                result = str(list(redis6379.hmget('RsT:MarketBusinessPrice:', str('DEPTH.STEP0#HUOBI#' + self.symbol + '#1#')))[0]).split('#')[0]
-                result = eval(result)
-                if result['asks'] or result['bids']:
-                    print(f'盘口未被清理，第{i + 1}次重试……')
-                    ATP.clean_market()
-                    time.sleep(1)
-                else:
-                    break
-            pass
         with allure.step('操作：执行sub订阅'):
-
             subs = {
                 "sub": "market.{}.depth.{}".format(self.contract_code, params['type']),
                 "id": "id5"

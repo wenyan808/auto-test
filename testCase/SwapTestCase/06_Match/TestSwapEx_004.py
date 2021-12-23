@@ -121,7 +121,7 @@ class TestSwapEx_004:
             pass
         with allure.step('查看对手价更新'):
             # 判断对手价是否更新，如果更新（True）则给反值，表示不跳过该用例
-            cls.isExecute = ~SwapTool.opponentExist(symbol=cls.symbol, asks='bids')
+            cls.isExecute = ~SwapTool.opponentExist(symbol=cls.symbol, bids='bids')
             pass
 
     @classmethod

@@ -3,10 +3,13 @@
 # @Date    : 20211013
 # @Author : HuiQing  Yu
 
+import allure
+import pytest
+import time
+
 from common.SwapServiceWS import user01 as ws_user01
-import pytest, allure, random, time
-from config.conf import DEFAULT_CONTRACT_CODE
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE
 
 
 @allure.epic(epic[1])
@@ -40,10 +43,6 @@ class TestSwapNoti_ws_kline_159:
         with allure.step('验证：返回结果正常'):
             assert dict(result).get('err-code') is None  #如果有error即失败
             pass
-
-    @allure.step('恢复环境')
-    def teardown(self):
-        print('\n恢复环境操作')
 
 
 if __name__ == '__main__':

@@ -200,7 +200,7 @@ class TestSwapAccountCapticalBatch_006:
         with allure.step(f'验证:流水类型-{self.fund_flow_type["flatMoney"]}'):
             assert Decimal(pay_money['flatMoney']) == flatMoney, f'{self.fund_flow_type["flatMoney"]}-校验失败'
         #################################################  【运营账户】当期流水	####################################################
-        with allure.step(f'验证:流水类型-{self.fund_flow_type["currInterest"]}'):
+        with allure.step(f'操作:从DB获取-{self.fund_flow_type["currInterest"]}-数据'):
             sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
                      f'WHERE create_time > "{self.s_batch_date}" ' \
                      f'and create_time<= "{self.e_batch_date}" ' \

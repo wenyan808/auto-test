@@ -45,21 +45,22 @@ class TestSwapTriggerCloseSell_018:
                 "trigger_type":"ge"
               }
             ]
-    contract_code = DEFAULT_CONTRACT_CODE
+
 
     @classmethod
     def setup_class(cls):
         with allure.step('*->持仓'):
+            cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.currentPrice = ATP.get_current_price()  # 最新价
             user01.swap_order(contract_code=cls.contract_code, price=cls.currentPrice, direction='buy')
             user01.swap_order(contract_code=cls.contract_code, price=cls.currentPrice, direction='sell')
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, contract_code,params):
+    def test_execute(self, params):
         allure.dynamic.title(params['caseName'])
         with allure.step('*->'+params['caseName']):
-            self.orderInfo = user01.swap_trigger_order(contract_code=contract_code,trigger_price=None,trigger_type=params['trigger_type'],
+            self.orderInfo = user01.swap_trigger_order(contract_code=self.contract_code,trigger_price=None,trigger_type=params['trigger_type'],
                                         order_price=self.currentPrice,direction=params['direction'],offset='close',volume=1)
             pass
         with allure.step('*->验证'+params['caseName']+'返回，参数有校验：triggerPrice字段不能为空'):

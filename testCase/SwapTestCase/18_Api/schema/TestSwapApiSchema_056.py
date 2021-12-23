@@ -21,7 +21,7 @@ class TestSwapApiSchema_056:
 
     @classmethod
     def setup_class(cls):
-        cls.currentPrice = currentPrice()
+        cls.currentPrice = SwapTool.currentPrice()
         user01.swap_order(contract_code=DEFAULT_CONTRACT_CODE, price=cls.currentPrice, direction='buy')
         user01.swap_order(contract_code=DEFAULT_CONTRACT_CODE, price=cls.currentPrice,direction='sell')
 

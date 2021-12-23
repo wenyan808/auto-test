@@ -34,7 +34,7 @@ class TestSwapNoti_ws_kline_144:
             self.toTime = int(time.time())
             self.fromTime = self.toTime - 60 * 3
             subs = {
-                "req": "market.{}.kline.1min".format(params['contract_code']),
+                "req": f"market.{params['contract_code']}.kline.1min",
                 "id": "id4",
                 "from": self.fromTime,
                 "to": self.toTime

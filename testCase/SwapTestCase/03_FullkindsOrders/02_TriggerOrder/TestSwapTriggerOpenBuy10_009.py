@@ -52,31 +52,32 @@ class TestSwapTriggerOpenBuy10_008:
                 "direction":"sell",
               }
             ]
-    contract_code = DEFAULT_CONTRACT_CODE
+    
 
     @classmethod
     def setup_class(cls):
-        with allure.step('*->获取最新价'):
-            cls.currentPrice = currentPrice()  # 最新价
+        with allure.step('获取最新价'):
+            cls.contract_code = DEFAULT_CONTRACT_CODE
+            cls.currentPrice = SwapTool.currentPrice()  # 最新价
             cls.volume_limit = 4000
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, contract_code,params):
+    def test_execute(self, params):
         allure.dynamic.title(params['caseName'])
-        with allure.step('*->'+params['caseName']):
+        with allure.step(''+params['caseName']):
             trigger_price = round(self.currentPrice , 2)
             # ge大于等于(触发价比最新价大)；le小于(触发价比最新价小)
             if trigger_price >= self.currentPrice:
                 trigger_type = 'ge'
             else:
                 trigger_type = 'le'
-            self.orderInfo = user01.swap_trigger_order(contract_code=contract_code, trigger_price=trigger_price,
+            self.orderInfo = user01.swap_trigger_order(contract_code=self.contract_code, trigger_price=trigger_price,
                                                        trigger_type=trigger_type,
                                                        order_price=self.currentPrice, direction=params['direction'],
                                                        volume=int(self.volume_limit+1), order_price_type=params['order_price_type'])
             pass
-        with allure.step('*->验证'+params['caseName']+'返回:报错:volume字段不能为空,请重新输入'):
+        with allure.step('验证'+params['caseName']+'返回:报错:volume字段不能为空,请重新输入'):
             assert 'error' in self.orderInfo['status']
             assert '下单数量超出限制' in self.orderInfo['err_msg']
             pass

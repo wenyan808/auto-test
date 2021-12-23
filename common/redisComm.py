@@ -24,7 +24,6 @@ class redisConf:
 
     def __del__(self):
         try:
-            print("REDIS CONN DESTRUCTOR")
             self.redisClient.close()
         except Exception as e:
             print(e)

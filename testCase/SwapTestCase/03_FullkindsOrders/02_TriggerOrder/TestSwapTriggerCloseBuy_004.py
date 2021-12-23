@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Date    : 20211008
-# @Author : DongLin Han
+# @Author : HuiQing Yu
 
 
 import time
@@ -10,10 +10,12 @@ from decimal import Decimal
 import allure
 import pytest
 
-from config.case_content import epic, features
-from tool.SwapTools import SwapTool
 from common.SwapServiceAPI import user01 as api_user01
+from common.mysqlComm import mysqlComm
+from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
+from tool.SwapTools import SwapTool
+
 
 @allure.epic(epic[1])
 @allure.feature(features[2]['feature'])
@@ -128,6 +130,7 @@ class TestSwapTriggerCloseBuy_004:
         with allure.step('变量初始化'):
             cls.latest_price = SwapTool.currentPrice()  # 最新价
             cls.contract_code = DEFAULT_CONTRACT_CODE
+            cls.mysqlClient = mysqlComm()
             pass
 
     @classmethod
@@ -141,8 +144,8 @@ class TestSwapTriggerCloseBuy_004:
         with allure.step('操作：执行下单'):
             trigger_order = api_user01.swap_trigger_order(contract_code=self.contract_code,trigger_type=params['trigger_type'],
                                           volume=1,offset=params['offset'],direction=params['direction'],
-                                          order_price_type=params['order_price_type'],trigger_price=round(currentPrice()*params['ratio'],2),
-                                          order_price=round(currentPrice()*params['ratio'],2))
+                                          order_price_type=params['order_price_type'],trigger_price=round(self.latest_price*params['ratio'],2),
+                                          order_price=round(self.latest_price*params['ratio'],2))
             pass
         with allure.step('验证：下单成功'):
             orderId = trigger_order['data']['order_id']
@@ -156,7 +159,7 @@ class TestSwapTriggerCloseBuy_004:
                      f'from t_trigger_order t ' \
                      f'where user_order_id = {orderId}'
             for i in range(3):
-                db_info_list = mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
+                db_info_list = self.mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
                 if len(db_info_list)==0:
                     print(f'查询为空，第{i}一次重试……')
                     time.sleep(1)
@@ -165,8 +168,8 @@ class TestSwapTriggerCloseBuy_004:
             for db_info in db_info_list:
                 assert params['direction'] in db_info['direction'],'订单方向 买|卖 校验失败'
                 assert params['trigger_type'] in db_info['trigger_type'],'触发类型校验失败'
-                assert round(Decimal(currentPrice()*params['ratio']),2) == round(db_info['trigger_price'],2),'触发价校验失败'
-                assert round(Decimal(currentPrice()*params['ratio']),2) == round(db_info['order_price'],2),'订单价校验失败'
+                assert round(Decimal(self.latest_price*params['ratio']),2) == round(db_info['trigger_price'],2),'触发价校验失败'
+                assert round(Decimal(self.latest_price*params['ratio']),2) == round(db_info['order_price'],2),'订单价校验失败'
                 assert 5 == db_info['lever_rate'],'杠杆位数校验失败'
                 assert params['offset'] in db_info['offset'],'订单仓位 开|平 校验失败'
             pass

@@ -31,11 +31,9 @@ class TestCoinswapLever_001:
     @allure.title('当前无挂单切换杠杆倍数测试')
     def test_execute(self, contract_code):
         with allure.step('操作: 获取可用的杠杆总数'):
-            availableLeverList = user01.swap_available_level_rate(contract_code=contract_code)['data'][0][
-                'available_level_rate'].split(',')
+            availableLeverList = [1,2,3,10,20,30,50,75]
             pass
         with allure.step('操作: 杠杆倍数切换为任意值'):
-            availableLeverList.remove('5')
             i = random.choice(availableLeverList)
             r = user01.swap_switch_lever_rate(contract_code=contract_code, lever_rate=i)
             pass
