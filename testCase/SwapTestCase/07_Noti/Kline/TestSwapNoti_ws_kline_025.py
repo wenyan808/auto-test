@@ -63,10 +63,10 @@ class TestSwapNoti_ws_kline_025:
                 "period": "1mon"
               }
             ]
-    contract_info = SwapTool.getContractStatus(init_status=0)
+    contract_info = SwapTool.getContractStatus(trade_status=0)
 
+    @pytest.mark.skipif(condition=True,reason='无结算中合约暂时跳过用例')
     @pytest.mark.parametrize('params', params, ids=ids)
-    @pytest.mark.skipif(condition=contract_info['isSkip'], reason='无结算中合约暂时跳过用例')
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：执行sub请求'):
@@ -95,6 +95,7 @@ class TestSwapNoti_ws_kline_025:
             # 成交笔数。 值是买卖双边之和
             assert result['tick']['count'] >= 0
             pass
+
 
 
 

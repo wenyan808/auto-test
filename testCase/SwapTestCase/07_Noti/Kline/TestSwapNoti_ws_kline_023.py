@@ -63,14 +63,24 @@ class TestSwapNoti_ws_kline_023:
                 "period": "1mon"
               }
             ]
-    contract_info = SwapTool.getContractStatus(init_status=3)
+    contract_info = SwapTool.getContractStatus(trade_status=3)
+
+    @classmethod
+    def setup_class(cls):
+        with allure.step(''):
+            pass
+
+    @classmethod
+    def teardown_class(cls):
+        with allure.step(''):
+            pass
 
     @pytest.mark.parametrize('param', params, ids=ids)
     @pytest.mark.skipif(condition=contract_info['isSkip'], reason='无停牌合约暂时跳过用例')
     def test_execute(self, param):
         allure.dynamic.title(param['case_name'])
         with allure.step('操作：执行sub请求'):
-            self.contract_code = self.contract_info['instrument_index_code']
+            self.contract_code = self.contract_info['data']['instrument_index_code']
             subs = {
                 "sub": "market.{}.kline.{}".format(self.contract_code, param['period']),
                 "id": "id1"
@@ -78,22 +88,8 @@ class TestSwapNoti_ws_kline_023:
             result = ws_user01.swap_sub(subs=subs)
             pass
         with allure.step('校验返回结果'):
-            # 请求topic校验
-            assert result['ch'] == "market." + self.contract_code + ".kline." + param['period']
-            # 开仓价校验，不为空
-            assert result['tick']['open']
-            # 收仓价校验
-            assert result['tick']['close']
-            # 最低价校验,不为空
-            assert result['tick']['low']
-            # 最高价校验,不为空
-            assert result['tick']['high']
-            # 币的成交量
-            assert result['tick']['amount'] >= 0
-            # 成交量张数。 值是买卖双边之和
-            assert result['tick']['vol'] >= 0
-            # 成交笔数。 值是买卖双边之和
-            assert result['tick']['count'] >= 0
+            assert result['subbed'] == "market." + self.contract_code + ".kline." + param['period'],'请求topic校验失败'
+            assert 'tick' not in result,'tick-校验失败'
             pass
 
 

@@ -18,9 +18,8 @@ class TestSwapNoti_ws_kline_076:
     @allure.title('WS订阅K线(sub) period不存在 合约正确')
     def test_execute(self,contract_code):
         with allure.step('操作：执行sub请求'):
-            self.period = '1year'  # 不存在的period
             subs = {
-                "sub": "market.{}.kline.{}".format(contract_code, self.period),
+                "sub": f"market.{contract_code}.kline.1year",
                 "id": "id4"
             }
             result = ws_user01.swap_sub(subs)

@@ -22,11 +22,12 @@ class TestSwapNoti_ws_kline_001:
            ]
     params = [{'case_name': 'WS订阅K线(sub)-1min','period':'1min'}
               ]
-    contract_code = DEFAULT_CONTRACT_CODE
-    redisClient = redisConf('redis7001').instance()
+
 
     @classmethod
     def setup_class(cls):
+        cls.contract_code = DEFAULT_CONTRACT_CODE
+        cls.redisClient = redisConf('redis7001').instance()
         cls.currentPrice = SwapTool.currentPrice()
         api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice*1.01, 2), direction='buy')
         api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice*1.01, 2), direction='sell')
@@ -59,28 +60,20 @@ class TestSwapNoti_ws_kline_001:
             # 1609430400 = 2021-01-01 00:00:00
             currentSecond = int(time.time()) - 1609430400
             currentSecond = int(currentSecond/60)
-            key = 'market.{}.kline.1min.1609430400'.format(self.contract_code)
+            key = f'market.{self.contract_code}.kline.1min.1609430400'
             redis_kline = self.redisClient.lrange(key,currentSecond,currentSecond)
             print('redis结果：',redis_kline)
             kline01 = str(redis_kline[0]).split(',')
             pass
         with allure.step('验证:返回结果与redis一致'):
-            # 请求topic校验
-            assert result['ch'] == "market."+self.contract_code+".kline."+params['period']
-            # 开仓价校验，不为空
-            assert str(result['tick']['open']) == kline01[1]
-            # 收仓价校验
-            assert str(result['tick']['close']) == kline01[2]
-            # 最低价校验,不为空
-            assert str(result['tick']['low']) == kline01[3]
-            # 最高价校验,不为空
-            assert str(result['tick']['high']) == kline01[4]
-            # 币的成交量
-            assert result['tick']['amount'] - float(kline01[5]) < 0.0000000001 #取9位小数精度
-            # 成交量张数。 值是买卖双边之和
-            assert str(result['tick']['vol']) == kline01[6]
-            # 成交笔数。 值是买卖双边之和
-            assert str(result['tick']['count']) == kline01[7]
+            assert result['ch'] == "market."+self.contract_code+".kline."+params['period'],'topic校验失败'
+            assert str(result['tick']['open']) == kline01[1],'开仓价校验与redis不一致'
+            assert str(result['tick']['close']) == kline01[2],'收仓价校验与redis不一致'
+            assert str(result['tick']['low']) == kline01[3],'最低价校验与redis不一致'
+            assert str(result['tick']['high']) == kline01[4],'最高价校验与redis不一致'
+            assert result['tick']['amount'] - float(kline01[5]) < 0.0000000001 ,'币成交量校验与redis不一致'
+            assert str(result['tick']['vol']) == kline01[6],'成交张数校验与redis不一致'
+            assert str(result['tick']['count']) == kline01[7],'在成笔数校验与redis不一致'
             pass
 
 

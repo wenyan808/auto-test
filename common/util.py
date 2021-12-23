@@ -236,12 +236,11 @@ def api_key_sub(url, access_key, secret_key, subs, path='/notification'):
 
 
 # 普通订阅
-def sub(url, subs, keyword=''):
+def sub(url, subs, keyword=None):
     try:
         ws = websocket.create_connection(url)
         sub_str = json.dumps(subs)
-        request_info = '\nWS请求信息：\n\turl=' + url + ',\n\t参数=' + str(subs)
-        print('\033[1;32;49m%s\033[0m' % request_info)
+        print('\033[1;32;49m%s\033[0m' % f'\nWS请求信息：\n\turl={url},\n\t参数={str(subs)}' )
         ws.send(sub_str)
         sub_result = json.loads(gzip.decompress(ws.recv()).decode())
         if keyword:
@@ -249,8 +248,8 @@ def sub(url, subs, keyword=''):
                 if keyword in sub_result:
                     break
                 else:
-                    sub_result = json.loads(
-                        gzip.decompress(ws.recv()).decode())
+                    print(f'返回数据中无关键key={keyword},实际结果={sub_result},第{i+1}次重试……')
+                    sub_result = json.loads(gzip.decompress(ws.recv()).decode())
 
         result_info = '请求结果：\n\t'+str(sub_result)
         print('\033[1;32;49m%s\033[0m' % result_info)

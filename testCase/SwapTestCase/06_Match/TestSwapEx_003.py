@@ -119,7 +119,7 @@ class TestSwapEx_003:
             pass
         with allure.step('检查盘口更新'):
             # 判断对手价是否更新，如果更新（True）则给反值，表示不跳过该用例
-            cls.isExecute = ~SwapTool.opponentExist('BTC', asks='asks')
+            cls.isExecute = ~SwapTool.opponentExist(symbol='BTC', asks='asks')
             pass
 
     @classmethod

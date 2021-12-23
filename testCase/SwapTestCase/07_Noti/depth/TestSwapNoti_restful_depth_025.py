@@ -3,15 +3,13 @@
 # @Date    : 20211012
 # @Author : HuiQing Yu
 
-import time
 import allure
 import pytest
 
-from common.SwapServiceWS import user01 as ws_user01
 from common.SwapServiceAPI import user01 as api_user01
-from tool.SwapTools import SwapTool,opponentExist
-from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
@@ -20,7 +18,7 @@ from config.case_content import epic, features
 @pytest.mark.stable
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 class TestSwapNoti_restful_depth_025:
-    contract_code = DEFAULT_CONTRACT_CODE
+
     ids = [
         'TestSwapNoti_restful_depth_025'
     ]
@@ -31,8 +29,9 @@ class TestSwapNoti_restful_depth_025:
     @classmethod
     def setup_class(cls):
         with allure.step('实始化变量'):
+            cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.symbol = DEFAULT_SYMBOL
-            cls.currentPrice = currentPrice()  # 最新价
+            cls.currentPrice = SwapTool.currentPrice()  # 最新价
             pass
 
 

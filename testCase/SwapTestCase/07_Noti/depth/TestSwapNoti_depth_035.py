@@ -9,7 +9,7 @@ import pytest
 
 from common.SwapServiceWS import user01 as ws_user01
 from common.SwapServiceAPI import user01 as api_user01
-from tool.SwapTools import SwapTool,opponentExist
+from tool.SwapTools import SwapTool
 from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
 from config.case_content import epic, features
 
@@ -34,7 +34,7 @@ class TestSwapNoti_depth_035:
     @classmethod
     def setup_class(cls):
         with allure.step('实始化变量'):
-            cls.currentPrice = currentPrice()  # 最新价
+            cls.currentPrice = SwapTool.currentPrice()  # 最新价
             pass
         with allure.step('挂单更新深度'):
             for i in range (151):
@@ -42,7 +42,7 @@ class TestSwapNoti_depth_035:
             pass
         with allure.step('查询redis深度更新'):
             for i in range (5):
-                if opponentExist(symbol=cls.symbol,bids='bids'):
+                if SwapTool.opponentExist(symbol=cls.symbol, bids='bids'):
                     break
                 else:
                     print('深度未更新,第{}次重试……'.format(i+1))

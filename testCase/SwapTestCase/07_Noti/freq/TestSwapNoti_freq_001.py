@@ -26,8 +26,8 @@ class TestSwapNoti_freq_001:
     @classmethod
     def setup_class(cls):
         with allure.step('挂盘21档更新深度'):
-            cls.currentPrice = currentPrice()
-            for i in range(21):
+            cls.currentPrice = SwapTool.currentPrice()
+            for i in range(22):
                 api_user01.swap_order(contract_code=cls.contract_code,direction='buy',price=round(cls.currentPrice*(1-i*0.01),2))
                 api_user01.swap_order(contract_code=cls.contract_code,direction='sell',price=round(cls.currentPrice*(1+i*0.01),2))
             pass
@@ -52,14 +52,14 @@ class TestSwapNoti_freq_001:
                     }
             flag = False
             # 重试3次未返回预期结果则失败
-            for i in range(1, 4):
+            for i in range(3):
                 result = ws_user01.swap_sub(subs)
                 if 'tick' in result:
                     if result['tick']['asks'] and result['tick']['bids']:
                         flag = True
                         break
                 time.sleep(1)
-                print('未返回预期结果，第{}次重试………………………………'.format(i))
+                print(f'未返回预期结果，第{i+1}次重试………………………………')
             assert flag, '未返回预期结果'
             pass
         with allure.step('验证：深度asks,bids只有20档'):

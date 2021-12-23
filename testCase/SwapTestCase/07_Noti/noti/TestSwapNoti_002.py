@@ -3,12 +3,15 @@
 # @Date    : 20211009
 # @Author : HuiQing Yu
 
-from common.SwapServiceWS import user01 as ws_user01
+import allure
+import pytest
+import time
+
 from common.SwapServiceAPI import user01 as api_user01
-import pytest, allure, random, time
-from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
-from tool.SwapTools import SwapTool,opponentExist
+from common.SwapServiceWS import user01 as ws_user01
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
@@ -24,14 +27,14 @@ class TestSwapNoti_002:
     @classmethod
     def setup_class(cls):
         with allure.step('挂盘'):
-            cls.current_price = currentPrice()
+            cls.current_price = SwapTool.currentPrice()
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.symbol = DEFAULT_SYMBOL
             api_user01.swap_order(contract_code=cls.contract_code,price=round(cls.current_price*0.5,2),direction='buy')
             api_user01.swap_order(contract_code=cls.contract_code,price=round(cls.current_price*1.5,2),direction='sell')
             pass
         with allure.step(''):
-            cls.flag = ~opponentExist(symbol=cls.symbol,asks='asks',bids='bids')
+            cls.flag = ~SwapTool.opponentExist(symbol=cls.symbol,asks='asks',bids='bids')
             pass
 
     @classmethod

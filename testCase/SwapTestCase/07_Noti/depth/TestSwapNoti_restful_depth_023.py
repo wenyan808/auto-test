@@ -4,13 +4,14 @@
 # @Author : HuiQing Yu
 
 import time
+
 import allure
 import pytest
 
-from tool.SwapTools import SwapTool, opponentExist
 from common.SwapServiceAPI import user01 as api_user01
-from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
@@ -33,20 +34,20 @@ class TestSwapNoti_restful_depth_001:
     def setup_class(cls):
         with allure.step('实始化变量'):
             cls.symbol = DEFAULT_SYMBOL
-            cls.currentPrice = currentPrice()  # 最新价
+            cls.currentPrice = SwapTool.currentPrice()  # 最新价
             cls.bestBuyPrice = round(cls.currentPrice * (1 - 0.01 * 1), 2)
             cls.bestSellPrice = round(cls.currentPrice * (1 + 0.01 * 1), 2)
             pass
         with allure.step('挂单更新深度'):
             for i in range(5):
                 api_user01.swap_order(contract_code=cls.contract_code,
-                                      price=round(cls.currentPrice * (1 - 0.01 * i), 2), direction='buy')
+                                      price=cls.bestBuyPrice, direction='buy')
                 api_user01.swap_order(contract_code=cls.contract_code,
-                                      price=round(cls.currentPrice * (1 + 0.01 * i), 2), direction='sell')
+                                      price=cls.bestSellPrice, direction='sell')
             pass
         with allure.step('查询redis深度更新'):
             for i in range(5):
-                if opponentExist(symbol=cls.symbol, asks='asks', bids='bids'):
+                if SwapTool.opponentExist(symbol=cls.symbol, asks='asks', bids='bids'):
                     break
                 else:
                     print('深度未更新,第{}次重试……'.format(i + 1))

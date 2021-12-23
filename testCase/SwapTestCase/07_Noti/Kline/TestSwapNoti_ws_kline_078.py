@@ -15,14 +15,12 @@ from config.case_content import epic, features
 class TestSwapNoti_ws_kline_078:
 
     @allure.title('WS订阅K线(sub) 不传period')
-    @allure.step('测试执行')
     def test_execute(self, contract_code):
         with allure.step('操作：执行sub订阅'):
-            self.contract_code = contract_code  # 不存在的合约
             self.toTime = int(time.time())
             self.fromTime = self.toTime - 60 * 3
             subs = {
-                "sub": "market.{}.kline".format(self.contract_code),
+                "sub": f"market.{contract_code}.kline",
                 "id": "id4"
             }
             result = swap_service_ws.swap_sub(subs)

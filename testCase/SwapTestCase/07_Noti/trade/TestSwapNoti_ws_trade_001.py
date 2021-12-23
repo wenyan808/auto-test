@@ -40,7 +40,7 @@ class TestSwapNoti_ws_trade_001:
                 "sub": "market.{}.trade.detail".format(self.contract_code),
                 "id": "id1",
             }
-            trade_info = user01.swap_sub(subs=subs)
+            trade_info = user01.swap_sub(subs=subs,keyword='tick')
             pass
         with allure.step('验证：返回结果各字段不为空'):
             for d in trade_info['tick']['data']:

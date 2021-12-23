@@ -63,13 +63,13 @@ class TestSwapNoti_ws_kline_026:
               }
             ]
 
-    @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params):
-        allure.dynamic.title(params['case_name'])
+    @pytest.mark.parametrize('param', params, ids=ids)
+    def test_execute(self, param):
+        allure.dynamic.title(param['case_name'])
         with allure.step('操作：执行sub请求'):
             self.contract_code = 'BTC-BTC'
             subs = {
-                "sub": "market.{}.kline.{}".format(self.contract_code, params['period']),
+                "sub": "market.{}.kline.{}".format(self.contract_code, param['period']),
                 "id": "id1"
             }
             result = ws_user01.swap_sub(subs=subs)

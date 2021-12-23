@@ -45,6 +45,7 @@ class SwapTools(object):
         return round(float(last_price), 2)
 
     # 判断对手价是否存在
+    @staticmethod
     def opponentExist(symbol=None, asks=None, bids=None):
         # 创建redis客户端
         redisClient = redisConf('redis6379').instance()
@@ -66,10 +67,10 @@ class SwapTools(object):
         return False
 
     # 获取合约状态
-    def getContractStatus(self,init_status):
+    def getContractStatus(self,trade_status):
         result = {'isSkip': False,'data':None}
         # 0:结算中 1:交易中 2:待上市 3:停牌 4:结算完成 5:已生成,10 初始化中
-        sqlStr = f'select product_id,instrument_index_code from t_product where  trade_status!=5 and init_status={init_status} limit 1'
+        sqlStr = f'select product_id,instrument_index_code from t_product where  trade_status!=5 and trade_status={trade_status} limit 1'
         db_info = self.mysqlClient.selectdb_execute('contract_trade', sqlStr=sqlStr)
         # 如果无数据则返回False通知
         if len(db_info) == 0:
@@ -80,4 +81,4 @@ class SwapTools(object):
 
 # 调试区
 SwapTool = SwapTools()
-print(SwapTool.user_account(uid='11538483').split(',')[5])
+# print(SwapTool.user_account(uid='11538483').split(',')[5])
