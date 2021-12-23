@@ -3,7 +3,7 @@
 """# @Date    : 20211028
 # @Author : 
     用例标题
-        撮合当周 卖出平仓 全部成交多人多笔价格不同的订单       
+        撮合次周 卖出平仓 全部成交单人多笔价格不同的订单       
     前置条件
         
     步骤/文本
@@ -13,7 +13,7 @@
     优先级
         2
     用例别名
-        TestContractEx_124
+        TestContractEx_250
 """
 
 import time
@@ -21,7 +21,7 @@ import time
 import allure
 import pytest
 from common.ContractServiceAPI import \
-    common_user_contract_service_api as common_contract_api, user01
+    common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
 from tool.atp import ATP
 
@@ -30,36 +30,33 @@ from tool.atp import ATP
 @allure.feature('撮合')  # 这里填功能
 @allure.story('委托单')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : 邱大伟')
-class TestContractEx_124:
+class TestContractEx_250:
 
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, symbol, symbol_period):
         print(''' 制造成交数据 ''')
-        contract_type = 'this_week'
+        contract_type = 'next_week'
         current = ATP.get_current_price(contract_code=symbol_period)
 
         res1 = common_contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=current,
                                                   volume=5, direction="sell", offset="open", order_price_type='limit', lever_rate=5)
         print(res1)
-        res2 = user01.contract_order(symbol=symbol, contract_type=contract_type, price=current,
-                                     volume=5, direction="sell", offset="open", order_price_type='limit', lever_rate=5)
+        res2 = contract_api.contract_order(
+            contract_code=symbol_period, contract_type=contract_type, price=current, volume=5, direction="buy", offset="open", order_price_type='limit', lever_rate=5)
         print(res2)
-        res3 = contract_api.contract_order(
-            symbol=symbol, contract_type=contract_type, price=current, volume=10, direction="buy", offset="open", order_price_type='limit', lever_rate=5)
-        print(res3)
 
-    @allure.title('撮合当周 卖出平仓 全部成交多人多笔价格不同的订单')
+    @allure.title('撮合次周 卖出平仓 全部成交单人多笔价格不同的订单')
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period, DB_orderSeq):
         with allure.step('详见官方文档'):
-            contract_type = 'this_week'
+            contract_type = 'next_week'
             current = ATP.get_current_price(contract_code=symbol_period)
 
             res1 = common_contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=round(current *
-                                                      1.01, 2), volume=2, direction="buy", offset="close", order_price_type='limit', lever_rate=5)
+                                                      1.01), volume=2, direction="buy", offset="close", order_price_type='limit', lever_rate=5)
             print(res1)
-            res2 = user01.contract_order(
+            res2 = common_contract_api.contract_order(
                 symbol=symbol, contract_type=contract_type, price=round(current*1.02, 2), volume=2, direction="buy", offset="close", order_price_type='limit', lever_rate=5)
             print(res2)
 

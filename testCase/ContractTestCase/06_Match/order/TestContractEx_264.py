@@ -3,7 +3,7 @@
 """# @Date    : 20211028
 # @Author : 
     用例标题
-        撮合当周 卖出平仓 全部成交多人多笔价格不同的订单       
+        撮合次周 闪电平仓最优30档 买入       
     前置条件
         
     步骤/文本
@@ -13,15 +13,14 @@
     优先级
         2
     用例别名
-        TestContractEx_124
+        TestContractEx_264
 """
 
 import time
 
 import allure
 import pytest
-from common.ContractServiceAPI import \
-    common_user_contract_service_api as common_contract_api, user01
+from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from common.ContractServiceAPI import t as contract_api
 from tool.atp import ATP
 
@@ -29,42 +28,39 @@ from tool.atp import ATP
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
 @allure.story('委托单')  # 这里填子功能，没有的话就把本行注释掉
-@allure.tag('Script owner : Alex Li', 'Case owner : 邱大伟')
-class TestContractEx_124:
+@allure.tag('Script owner : Alex Li', 'Case owner : 吉龙')
+class TestContractEx_264:
 
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, symbol, symbol_period):
         print(''' 制造成交数据 ''')
-        contract_type = 'this_week'
+        contract_type = 'next_week'
         current = ATP.get_current_price(contract_code=symbol_period)
 
         res1 = common_contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=current,
-                                                  volume=5, direction="sell", offset="open", order_price_type='limit', lever_rate=5)
+                                                  volume=10, direction="buy", offset="open", order_price_type='limit', lever_rate=5)
         print(res1)
-        res2 = user01.contract_order(symbol=symbol, contract_type=contract_type, price=current,
-                                     volume=5, direction="sell", offset="open", order_price_type='limit', lever_rate=5)
-        print(res2)
-        res3 = contract_api.contract_order(
-            symbol=symbol, contract_type=contract_type, price=current, volume=10, direction="buy", offset="open", order_price_type='limit', lever_rate=5)
-        print(res3)
 
-    @allure.title('撮合当周 卖出平仓 全部成交多人多笔价格不同的订单')
+        res2 = contract_api.contract_order(
+            symbol=symbol, contract_type=contract_type, price=current, volume=10, direction="sell", offset="open", order_price_type='limit', lever_rate=5)
+        print(res2)
+        ATP.make_market_depth(depth_count=5)
+
+    @allure.title('撮合次周 闪电平仓最优30档 买入')
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period, DB_orderSeq):
         with allure.step('详见官方文档'):
-            contract_type = 'this_week'
+            contract_type = 'next_week'
             current = ATP.get_current_price(contract_code=symbol_period)
 
             res1 = common_contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=round(current *
-                                                      1.01, 2), volume=2, direction="buy", offset="close", order_price_type='limit', lever_rate=5)
+                                                      1.01, 2), volume=5, direction="sell", offset="close", order_price_type='limit', lever_rate=5)
             print(res1)
-            res2 = user01.contract_order(
-                symbol=symbol, contract_type=contract_type, price=round(current*1.02, 2), volume=2, direction="buy", offset="close", order_price_type='limit', lever_rate=5)
-            print(res2)
 
-            order = contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=round(current*0.99, 2),
-                                                volume=4, direction="sell", offset='close', order_price_type='limit', lever_rate=5)
+            order = contract_api.lightning_close_position(
+                symbol=symbol, contract_type=contract_type, volume=2, direction="buy", order_price_type='lightning')
+            print(order)
 
             order_id = order['data']['order_id']
 
@@ -88,7 +84,6 @@ class TestContractEx_124:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        ATP.clean_market()
         ATP.cancel_all_types_order()
 
 
