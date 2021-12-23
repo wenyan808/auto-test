@@ -3,18 +3,17 @@
 # @Date    : 2020/7/1
 # @Author  : HuiQing Yu
 
-from common.mysqlComm import mysqlComm as mysqlClient
-
-import time
-from decimal import Decimal
 import random
+import time
+
 import allure
 import pytest
 
-from tool.SwapTools import SwapTool
-from common.SwapServiceAPI import user01,user02
+from common.SwapServiceAPI import user01
+from common.mysqlComm import mysqlComm
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
@@ -43,6 +42,7 @@ class TestCoinswapTriggerOrder_019:
         with allure.step("变量初始化"):
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.latest_price = SwapTool.currentPrice()
+            cls.mysqlClient = mysqlComm()
             pass
 
     @classmethod
@@ -52,7 +52,7 @@ class TestCoinswapTriggerOrder_019:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params, mysqlClient):
+    def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step("操作：持仓区域下止盈止损单"):
             tpsl_order = user01.swap_tpsl_order(contract_code=self.contract_code,volume=1,direction='sell',tp_order_price=round(self.latest_price*1.5,2),
@@ -66,7 +66,7 @@ class TestCoinswapTriggerOrder_019:
         with allure.step("验证：状态为待委托"):
             time.sleep(1)#等待数据更新
             sqlStr = f'select state from t_tpsl_trigger_order where user_order_id={tp_order_id}'
-            db_info = mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)[0]
+            db_info = self.mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)[0]
             assert 2 == db_info['state'],'状态为待委托校验失败'
 
 if __name__ == '__main__':

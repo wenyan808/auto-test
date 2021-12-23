@@ -3,18 +3,16 @@
 # @Date    : 2020/7/1
 # @Author  : HuiQing Yu
 
-from common.mysqlComm import mysqlComm as mysqlClient
-
 import time
-from decimal import Decimal
 
 import allure
 import pytest
 
-from tool.SwapTools import SwapTool
 from common.SwapServiceAPI import user01
+from common.mysqlComm import mysqlComm
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
@@ -45,6 +43,7 @@ class TestCoinswapTriggerOrder_012:
         with allure.step("变量初始化"):
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.latest_price = SwapTool.currentPrice()
+            cls.mysqlClient = mysqlComm()
             pass
 
     @classmethod
@@ -54,7 +53,7 @@ class TestCoinswapTriggerOrder_012:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params, mysqlClient):
+    def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step("操作：挂单"):
             trigger_order = user01.swap_trigger_order(contract_code=self.contract_code,
@@ -74,7 +73,7 @@ class TestCoinswapTriggerOrder_012:
             sqlStr = f'select t.state ' \
                      f'from t_trigger_order t ' \
                      f'where user_order_id = {orderId} and order_type = 2 '
-            db_result = mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)[0]
+            db_result = self.mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)[0]
             assert 'ok' in order_reps['status'], '撤单执行失败'
             assert 6 == db_result['state'],'订单状态校验失败'
             pass

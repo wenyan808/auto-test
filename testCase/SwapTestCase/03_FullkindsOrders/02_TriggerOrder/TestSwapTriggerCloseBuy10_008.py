@@ -52,16 +52,17 @@ class TestSwapTriggerCloseBuy10_008:
                 "direction":"sell",
               }
             ]
-    contract_code = DEFAULT_CONTRACT_CODE
+
 
     @classmethod
     def setup_class(cls):
         with allure.step('*->获取最新价'):
-            cls.currentPrice = currentPrice()  # 最新价
+            cls.contract_code = DEFAULT_CONTRACT_CODE
+            cls.currentPrice = SwapTool.currentPrice()  # 最新价
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, contract_code,params):
+    def test_execute(self, params):
         allure.dynamic.title(params['caseName'])
         with allure.step('*->'+params['caseName']):
             trigger_price = round(self.currentPrice , 2)
@@ -70,7 +71,7 @@ class TestSwapTriggerCloseBuy10_008:
                 trigger_type = 'ge'
             else:
                 trigger_type = 'le'
-            self.orderInfo = user01.swap_trigger_order(contract_code=contract_code, trigger_price=trigger_price,
+            self.orderInfo = user01.swap_trigger_order(contract_code=self.contract_code, trigger_price=trigger_price,
                                                        trigger_type=trigger_type,
                                                        order_price=self.currentPrice, direction=params['direction'],
                                                        volume=None, order_price_type=params['order_price_type'])
