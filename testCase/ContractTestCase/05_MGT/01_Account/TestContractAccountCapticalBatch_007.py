@@ -106,7 +106,7 @@ class TestContractAccountCapticalBatch_007:
                     dbSchema='btc', sqlStr=sqlStr)
                 money = 0.000000000000000000
                 if rec_dict_tuples[0]["money"]:
-                    currInterest += rec_dict_tuples[0]["money"]
+                    currInterest += rec_dict_tuples[0]["money"]*(-1)
                     money = rec_dict_tuples[0]["money"]
                 assert money == Decimal(platform_capital_dic[key]), "{} 流水比对异常".format(
                     key)
