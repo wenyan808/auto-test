@@ -87,7 +87,7 @@ class TestContractAccountCapticalBatch_033:
         allure.dynamic.title(param['case_name'])
         # 构造请求参数
         contract_conn = mysqlComm()
-        sqlStr = 'SELECT id,settle_date,end_time FROM t_settle_log WHERE progress_code=13 ADN product_id= "{}" ORDER BY id DESC LIMIT 2 '.format(
+        sqlStr = 'SELECT id,settle_date,end_time FROM t_settle_log WHERE progress_code=13 AND product_id= "{}" ORDER BY id DESC LIMIT 2 '.format(
             symbol)
         rec_dict_tuples = contract_conn.selectdb_execute(
             dbSchema='btc', sqlStr=sqlStr)
