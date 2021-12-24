@@ -70,9 +70,11 @@ class TestSwapMGTflat_s015:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    @pytest.mark.skipif(condition=contract_info['isSkip'],reason='没找到结算中合约跳过用例')
     def test_execute(self, params):
         allure.dynamic.title(params['title'])
+        with allure.step('操作:查询是否有结算中合约（如果没有直接跳过）'):
+
+            pass
         with allure.step('操作:执行-给用户保证金平账'):
             if params['flatAccount'] == 1:
                 api_result = SwapServiceMGT.flat(flatAccount=params['flatAccount'], uid=params['uuid'], money=params['money'])

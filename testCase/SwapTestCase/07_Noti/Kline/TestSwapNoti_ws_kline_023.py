@@ -63,7 +63,7 @@ class TestSwapNoti_ws_kline_023:
                 "period": "1mon"
               }
             ]
-    contract_info = SwapTool.getContractStatus(trade_status=3)
+
 
     @classmethod
     def setup_class(cls):
@@ -76,9 +76,12 @@ class TestSwapNoti_ws_kline_023:
             pass
 
     @pytest.mark.parametrize('param', params, ids=ids)
-    @pytest.mark.skipif(condition=contract_info['isSkip'], reason='无停牌合约暂时跳过用例')
     def test_execute(self, param):
         allure.dynamic.title(param['case_name'])
+        with allure.step('操作：执行sub请求'):
+            contract_info = SwapTool.getContractStatus(trade_status=3)
+            if contract_info['isSkip']:
+                assert False,'未找到停牌合约'
         with allure.step('操作：执行sub请求'):
             self.contract_code = self.contract_info['data']['instrument_index_code']
             subs = {

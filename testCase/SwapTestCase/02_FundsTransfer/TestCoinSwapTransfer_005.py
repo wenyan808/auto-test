@@ -70,7 +70,7 @@ class TestCoinSwapTransfer_005:
                     flag = True
                     break
                 else:
-                    print("验证失败,第{}次重试……".format(i+1))
+                    print(f"验证失败,第{i+1}次重试……")
                     time.sleep(1)
             assert flag, '多次重试，记录金额与实操金额不一致'
             pass
