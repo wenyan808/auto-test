@@ -43,6 +43,8 @@ class TestLinearNoti_api_018:
             pprint(r)
             schema = {'ch': f'market.{contract_code}.depth.{percent}',
                       'tick': {'ch': f'market.{contract_code}.depth.{percent}',
+                               'asks': list,
+                               'bids': list,
                                'id': int,
                                'mrid': int,
                                'ts': int,
