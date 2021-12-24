@@ -16,14 +16,14 @@
         TestContractEx_223
 """
 
-from common.ContractServiceAPI import t as contract_api
-from pprint import pprint
-import pytest
-import allure
-import random
 import time
-from tool.atp import ATP
+from pprint import pprint
+
+import allure
+import pytest
+from common.ContractServiceAPI import t as contract_api
 from common.mysqlComm import mysqlComm
+from tool.atp import ATP
 
 
 @allure.epic('反向交割')  # 这里填业务线
@@ -66,7 +66,7 @@ class TestContractEx_223:
             strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
                      "(select f_id from t_order_sequence where f_order_id= '%s')" % (
                          orderId)
-
+            DB_orderSeq = mysqlComm()
             # 给撮合时间，5秒内还未撮合完成则为失败
             n = 0
             while n < 5:

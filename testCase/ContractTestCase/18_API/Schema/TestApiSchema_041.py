@@ -87,13 +87,11 @@ class TestApiSchema_041:
                             "status": int,
                             "order_source": str,
                             "order_id_str": str,
+                            "real_profit": int,
                             "fee_asset": str,
                             "liquidation_type": str,
                             "canceled_at": int,
-                            "is_tpsl": int,
-                            "real_profit": int,
-                            'update_time': Or(float, int, None)
-                        }
+                            "is_tpsl": int}
                     ],
                     "ts": int
                 }

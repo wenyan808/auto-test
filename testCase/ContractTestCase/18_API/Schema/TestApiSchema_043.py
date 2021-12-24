@@ -67,7 +67,7 @@ class TestApiSchema_043:
                                 "symbol": str,
                                 "contract_code": str,
                                 "contract_type": str,
-                                "volume": int,
+                                "volume": Or(float, int),
                                 "price": Or(float, int),
                                 "order_price_type": str,
                                 "order_type": int,
