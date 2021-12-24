@@ -119,10 +119,7 @@ class TestSwapEx_004:
             user01.swap_order(contract_code=cls.contract_code, price=round(cls.latest_price, 2), direction='sell',
                               volume=20)
             pass
-        with allure.step('查看对手价更新'):
-            # 判断对手价是否更新，如果更新（True）则给反值，表示不跳过该用例
-            cls.isExecute = ~SwapTool.opponentExist(symbol=cls.symbol, bids='bids')
-            pass
+
 
     @classmethod
     def teardown_class(cls):
@@ -131,7 +128,6 @@ class TestSwapEx_004:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    @pytest.mark.skipif(condition=isExecute, reason='对手价未刷新跳过用例')
     def test_execute(self,params):
         with allure.step('操作：卖出平仓'):
             orderInfo = user01.swap_order(contract_code=self.contract_code, price=round(self.latest_price, 2),

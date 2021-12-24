@@ -102,7 +102,7 @@ class TestSwapEx_003:
                 "order_price_type": "optimal_20_fok"
               }
             ]
-    isExecute = False
+
     @classmethod
     def setup_class(cls):
         with allure.step("变量初始化"):
@@ -117,10 +117,6 @@ class TestSwapEx_003:
             user01.swap_order(contract_code=cls.contract_code, price=round(cls.latest_price, 2), direction='sell',
                               volume=40)
             pass
-        with allure.step('检查盘口更新'):
-            # 判断对手价是否更新，如果更新（True）则给反值，表示不跳过该用例
-            cls.isExecute = ~SwapTool.opponentExist(symbol='BTC', asks='asks')
-            pass
 
     @classmethod
     def teardown_class(cls):
@@ -129,7 +125,6 @@ class TestSwapEx_003:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    @pytest.mark.skipif(condition=isExecute, reason='对手价未刷新跳过用例')
     def test_execute(self, params):
         allure.dynamic.title('撮合 买入 平仓 ' + params['case_name'])
         with allure.step('操作：下单（平空）'):

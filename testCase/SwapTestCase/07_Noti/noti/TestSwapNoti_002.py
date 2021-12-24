@@ -33,9 +33,7 @@ class TestSwapNoti_002:
             api_user01.swap_order(contract_code=cls.contract_code,price=round(cls.current_price*0.5,2),direction='buy')
             api_user01.swap_order(contract_code=cls.contract_code,price=round(cls.current_price*1.5,2),direction='sell')
             pass
-        with allure.step(''):
-            cls.flag = ~SwapTool.opponentExist(symbol=cls.symbol,asks='asks',bids='bids')
-            pass
+
 
     @classmethod
     def teardown_class(cls):
@@ -45,7 +43,6 @@ class TestSwapNoti_002:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    @pytest.mark.skipif(condition=flag,reason='环境问题盘口未更新，跳过用例')
     def test_execute(self,params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：执行sub请求'):
