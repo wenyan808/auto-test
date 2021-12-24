@@ -3,14 +3,14 @@
 # @Date    : 20211027
 # @Author : zhangguangnan
 
-from tool.atp import ATP
-import pytest
-import allure
-import random
 import time
+
+import allure
+import pytest
 from common.ContractServiceAPI import user01
 from common.redisComm import redisConf
-from config.conf import DEFAULT_SYMBOL, DEFAULT_CONTRACT_CODE
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
+from tool.atp import ATP
 
 
 @allure.epic('反向交割')  # 这里填业务线
@@ -118,6 +118,12 @@ class TestContractEx_001:
     contract_code = DEFAULT_CONTRACT_CODE
     redisComm = redisConf('redis6379').instance()
     flag = False
+
+    @classmethod
+    @allure.step('前置条件')
+    def setup(cls):
+        print(''' 制造成交数据 ''')
+        ATP.make_market_depth(depth_count=5)
 
     @classmethod
     def setup_class(cls):

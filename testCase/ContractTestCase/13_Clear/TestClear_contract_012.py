@@ -20,10 +20,10 @@
 """
 
 from decimal import Decimal
-
+import time
 import allure
 import pytest
-from common.ContractServiceAPI import t as contract_api
+from common.ContractServiceAPI import t as contract_api, common_user_contract_service_api as common_contract_api
 from common.redisComm import *
 from tool.atp import ATP
 
@@ -39,7 +39,6 @@ class TestClear_contract_012:
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, symbol_period):
         print("前置条件 {}".format(symbol_period))
-        ATP.make_market_depth()
 
     @allure.title('获取合约信息')
     @allure.step('测试执行')
@@ -49,10 +48,13 @@ class TestClear_contract_012:
             pass
         with allure.step('2、核对APO中持仓数据Position:  # BCH#BCH211231#1（1为多仓 2为空仓）,value值中第6位和第7位，分别是持仓量和可平量'):
             current_price = ATP.get_current_price(contract_code=symbol_period)
+
+            common_contract_api.contract_order(
+                symbol=symbol, contract_type=contract_type, price=current_price, volume=1, direction='sell', offset='open')
             res = contract_api.contract_order(
                 symbol=symbol, contract_type=contract_type, price=current_price, volume=1, direction='buy', offset='open')
             print(res)
-
+            time.sleep(1)
             # 获取合约信息
             contract_info = contract_api.contract_contract_info(
                 symbol=symbol, contract_type=contract_type)
@@ -81,6 +83,7 @@ class TestClear_contract_012:
     def teardown(self):
         print('\n恢复环境操作')
         ATP.cancel_all_order()
+        ATP.clean_market()
 
 
 if __name__ == '__main__':

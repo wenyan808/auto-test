@@ -16,18 +16,13 @@
         TestContractEx_089
 """
 
-from common.ContractServiceAPI import t as contract_api
-from common.ContractServiceOrder import t as contract_order
-from common.LinearServiceAPI import t as linear_api
-from common.LinearServiceOrder import t as linear_order
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceOrder import t as swap_order
-
-from pprint import pprint
-import pytest
-import allure
-import random
 import time
+from pprint import pprint
+
+import allure
+import pytest
+from common.ContractServiceAPI import t as contract_api
+from common.mysqlComm import mysqlComm
 from tool.atp import ATP
 
 
@@ -71,6 +66,7 @@ class TestContractEx_089:
             strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
                      "(select f_id from t_order_sequence where f_order_id= '%s')" % (
                          orderId)
+            DB_orderSeq = mysqlComm()
 
             # 给撮合时间，5秒内还未撮合完成则为失败
             n = 0
