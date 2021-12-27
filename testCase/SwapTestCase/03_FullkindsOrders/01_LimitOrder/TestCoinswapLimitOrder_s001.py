@@ -21,14 +21,14 @@ from config.conf import DEFAULT_CONTRACT_CODE
 class TestCoinswapLimitOrder_s001:
     ids = ["TestCoinswapLimitOrder_001","TestCoinswapLimitOrder_002"]
     params = [
-        {
+        {   "title":"TestCoinswapLimitOrder_001",
             "case_name": "限价委托输入价格下单买入开多后撤单测试",
-            "ratio": 0.5,
+            "ratio": 0.9,
             "direction": "buy",
             "trade_type":1
-        },{
+        },{"title":"TestCoinswapLimitOrder_002",
             "case_name": "限价委托输入价格下单卖出开空后撤单测试",
-            "ratio": 1.5,
+            "ratio": 1.1,
             "direction": "sell",
             "trade_type":2
         }
@@ -51,7 +51,7 @@ class TestCoinswapLimitOrder_s001:
 
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
-        allure.dynamic.title('case_name')
+        allure.dynamic.title(params['title'])
         with allure.step('操作：下限价单，格为当前价一半，使订单挂盘'):
             limit_order = user01.swap_order(contract_code=self.contract_code,price=round(self.latest_price*params['ratio'],2),
                                             direction=params['direction'])

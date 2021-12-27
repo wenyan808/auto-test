@@ -32,7 +32,7 @@ class TestCoinswapLever_002:
     def test_execute(self, contract_code):
         with allure.step('操作: 挂个限价单'):
             latest_price = SwapTool.currentPrice()
-            user01.swap_order(contract_code=DEFAULT_CONTRACT_CODE,price=round(latest_price*0.5,2),direction='buy')
+            user01.swap_order(contract_code=DEFAULT_CONTRACT_CODE,price=round(latest_price*0.8,2),direction='buy')
             time.sleep(1)
             pass
         with allure.step('操作: 获取可用的杠杆总数'):

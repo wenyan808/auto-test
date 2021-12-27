@@ -26,7 +26,7 @@ class TestSwapEx_070:
     params = [
         {
             "case_name": "卖出平仓 挂单 撤销",
-            "ratio": 1.5,
+            "ratio": 1.1,
             "volume":2
         },{
             "case_name": "卖出平仓 全部成交 撤销",

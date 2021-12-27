@@ -26,11 +26,11 @@ class TestCoinSwapTransfer_s009:
     params = [
         {
             "case_name": "母账户划转到子账号-有挂(多)单-可转数量<划转金额<账户权益",
-            "ratio": 0.5,
+            "ratio": 0.9,
             "direction":"buy"
         },{
             "case_name": "母账户划转到子账号-有挂(空)单-可转数量<划转金额<账户权益",
-            "ratio": 1.5,
+            "ratio": 1.1,
             "direction":"sell"
         }
     ]

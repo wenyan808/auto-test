@@ -30,8 +30,8 @@ class TestSwapNoti_002:
             cls.current_price = SwapTool.currentPrice()
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.symbol = DEFAULT_SYMBOL
-            api_user01.swap_order(contract_code=cls.contract_code,price=round(cls.current_price*0.5,2),direction='buy')
-            api_user01.swap_order(contract_code=cls.contract_code,price=round(cls.current_price*1.5,2),direction='sell')
+            api_user01.swap_order(contract_code=cls.contract_code,price=round(cls.current_price*0.8,2),direction='buy')
+            api_user01.swap_order(contract_code=cls.contract_code,price=round(cls.current_price*1.2,2),direction='sell')
             pass
 
 

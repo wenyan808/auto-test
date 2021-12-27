@@ -21,7 +21,6 @@ from tool.SwapTools import SwapTool
 @allure.feature(features[16]['feature'])
 @allure.story(features[16]['story'][0])
 @allure.tag('Script owner : 余辉青', 'Case owner : 曾超群')
-@pytest.mark.stable
 class TestProductInit_swap_017:
     ids = ['TestProductInit_swap_017']
     params = [{'case_name': '检查用户已开户，有资金有空方向持仓，品种初始化'}]
