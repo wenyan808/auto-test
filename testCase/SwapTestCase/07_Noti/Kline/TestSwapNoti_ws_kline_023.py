@@ -83,7 +83,7 @@ class TestSwapNoti_ws_kline_023:
             if contract_info['isSkip']:
                 assert False,'未找到停牌合约'
         with allure.step('操作：执行sub请求'):
-            self.contract_code = self.contract_info['data']['instrument_index_code']
+            self.contract_code = contract_info['data']['instrument_index_code']
             subs = {
                 "sub": "market.{}.kline.{}".format(self.contract_code, param['period']),
                 "id": "id1"

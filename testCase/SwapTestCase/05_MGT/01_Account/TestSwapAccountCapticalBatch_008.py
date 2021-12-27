@@ -126,7 +126,7 @@ class TestSwapAccountCapticalBatch_008:
                 'operateToCapitalFee': 33,
             }
             cls.endDateTime = (date.today() + timedelta(days=-1)).strftime("%Y/%m/%d")
-            cls.beginDateTime = (date.today() + timedelta(days=-8)).strftime("%Y/%m/%d")
+            cls.beginDateTime = (date.today() + timedelta(days=-3)).strftime("%Y/%m/%d")
             pass
         with allure.step('操作：执行查询'):
             request_params = [

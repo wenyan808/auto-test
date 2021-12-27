@@ -7,7 +7,7 @@ import allure
 import pytest
 import time
 
-from common.SwapServiceAPI import user01
+from common.SwapServiceAPI import user01,user02
 from common.mysqlComm import mysqlComm
 from config.conf import DEFAULT_CONTRACT_CODE
 from tool.SwapTools import SwapTool
@@ -21,7 +21,10 @@ from config.case_content import epic, features
 @pytest.mark.stable
 class TestSwapEx_127:
 
-    ids = ['TestSwapEx_129', 'TestSwapEx_128', 'TestSwapEx_127']
+    ids = [
+        'TestSwapEx_129',
+        'TestSwapEx_128',
+        'TestSwapEx_127']
     params = [
                 {'case_name':'平多 闪电平仓','order_price_type':'lightning','direction':'sell'},
                 {'case_name':'平多 闪电平仓-IOC','order_price_type':'lightning_ioc','direction':'sell'},
@@ -35,12 +38,8 @@ class TestSwapEx_127:
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.latest_price = SwapTool.currentPrice()
             pass
-        with allure.step('*->持仓'):
-            user01.swap_order(contract_code=cls.contract_code, price=round(cls.latest_price, 2), direction='sell',
-                              volume=10)
-            user01.swap_order(contract_code=cls.contract_code, price=round(cls.latest_price, 2), direction='buy',
-                              volume=10)
-            user01.swap_order(contract_code=cls.contract_code, volume=10, offset='close',
+        with allure.step('*->挂盘'):
+            user02.swap_order(contract_code=cls.contract_code, volume=10, offset='close',
                               price=round(cls.latest_price, 2),
                               direction='buy')
             pass
@@ -49,15 +48,21 @@ class TestSwapEx_127:
     def teardown_class(cls):
         with allure.step('*->恢复环境:取消挂单'):
             time.sleep(1)
-            user01.swap_cancelall(contract_code=cls.contract_code)
+            user02.swap_cancelall(contract_code=cls.contract_code)
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title('撮合 闪电平仓 '+params['case_name'])
         with allure.step('操作：执行平仓'):
-            orderInfo = user01.swap_lightning_close_position(contract_code=self.contract_code, volume=1, direction=params['direction'],
+            for i in range(3):
+                orderInfo = user01.swap_lightning_close_position(contract_code=self.contract_code, volume=1, direction=params['direction'],
                                                                order_price_type=params['order_price_type'])
+                if 'data' in orderInfo:
+                    break
+                else:
+                    print(f"盘口未更新，等待1秒，第{i+1}次重试……")
+                    time.sleep(1)
             pass
         with allure.step('验证：订单存在撮合结果表'):
             sqlStr = "select count(1) as count from t_exchange_match_result WHERE f_id = " \

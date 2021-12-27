@@ -27,13 +27,13 @@ class TestCoinswapLimitOrder_003:
     params = [
         {
             "case_name": "只做maker 买入开多下单后自动撤单测试",
-            "ratio":1.01,
+            "ratio":1.02,
             "order_price_type":"post_only",
             "direction": "buy"
         },
         {
             "case_name": "只做maker 卖出开空下单后自动撤单测试",
-            "ratio": 0.99,
+            "ratio": 0.98,
             "order_price_type": "post_only",
             "direction": "sell"
         }
@@ -64,7 +64,7 @@ class TestCoinswapLimitOrder_003:
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
-        with allure.step('业务：maker单，下单后如果不能马上成交，因为是maker所以订单会自动撤销'):
+        with allure.step('业务：maker单，下单后如果可以马上成交，则会自动撤销；是保证订单为maker'):
             pass
         with allure.step('操作：下单'):
             orderId = \
@@ -78,14 +78,14 @@ class TestCoinswapLimitOrder_003:
                 key = f'Order:#{orderId}#1'
                 redisInfo = self.redisClient.hmget(name=name, keys=key)
                 redisInfo = str(redisInfo).split(',')
-                if redisInfo[22] ==7:
+                if redisInfo[23] =='7':
                     break
                 else:
-                    print(redisInfo)
+                    print(f"数据未更新,等待1秒，第{i+1}次重试……")
                     time.sleep(1)
             pass
         with  allure.step('验证：maker订单被取消'):
-            assert redisInfo[22] == 7
+            assert redisInfo[23] == '7'
             pass
         with  allure.step('验证：无资产冻结'):
             account_info = user01.swap_account_info(contract_code=self.contract_code)

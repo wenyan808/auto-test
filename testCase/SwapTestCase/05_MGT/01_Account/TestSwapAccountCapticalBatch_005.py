@@ -56,9 +56,9 @@ class TestSwapAccountCapticalBatch_005:
                 "currInterest": "当期流水"
             }
             cls.endDateTime = (date.today() + timedelta(days=-1)).strftime("%Y/%m/%d")
-            cls.beginDateTime = (date.today() + timedelta(days=-8)).strftime("%Y/%m/%d")
+            cls.beginDateTime = (date.today() + timedelta(days=-3)).strftime("%Y/%m/%d")
             cls.s_batch_date = (date.today() + timedelta(days=-1)).strftime("%Y%m%d")
-            cls.e_batch_date = (date.today() + timedelta(days=-8)).strftime("%Y%m%d")
+            cls.e_batch_date = (date.today() + timedelta(days=-3)).strftime("%Y%m%d")
             sqlStr = 'select flow_end_time from t_daily_log t ' \
                      f'where product_id="{cls.symbol}" ' \
                      f'AND batch_date in ("{cls.s_batch_date}","{cls.e_batch_date}") ' \

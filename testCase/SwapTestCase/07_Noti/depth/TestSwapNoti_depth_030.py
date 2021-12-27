@@ -13,7 +13,7 @@ from tool.SwapTools import SwapTool
 from common.SwapServiceWS import user01 as ws_user01
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
-from tool.atp import ATP
+from common.SwapServiceAPI import user01 as api_user01
 
 
 @allure.epic(epic[1])
@@ -39,6 +39,13 @@ class TestSwapNoti_depth_030:
             cls.currentPrice = SwapTool.currentPrice()  # 最新价
             cls.redisClient = redisConf('redis6379').instance()
             pass
+        with allure.step('等待清盘'):
+            for i in range(5):
+                if ~SwapTool.opponentExist(symbol=cls.symbol, bids='asks'):
+                    break
+                else:
+                    print(f'深度未更新,第{i + 1}次重试……')
+                    time.sleep(1)
 
 
     @pytest.mark.parametrize('params', params, ids=ids)
@@ -49,7 +56,7 @@ class TestSwapNoti_depth_030:
                 "sub": "market.{}.depth.{}".format(self.contract_code, params['type']),
                 "id": "id5"
             }
-            result = ws_user01.swap_sub(subs)
+            result = ws_user01.swap_sub(subs=subs,keyword='tick')
         with allure.step('验证：返回结果无卖单'):
             assert 'asks' not in result['tick']
             pass

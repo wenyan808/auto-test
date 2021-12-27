@@ -22,8 +22,8 @@ class TestSwapNoti_depth_001:
         'TestSwapNoti_depth_020',
     ]
     params = [
-        {'case_name': 'WS订阅深度 20档0.0000001不合并)', 'type': 'step18'},
-        {'case_name': 'WS订阅深度 20档0.000001不合并)', 'type': 'step19'},
+        {'case_name': 'WS订阅深度 非SHIB 20档)', 'type': 'step18'},
+        {'case_name': 'WS订阅深度 非SHIB 20档)', 'type': 'step19'},
     ]
 
     @classmethod

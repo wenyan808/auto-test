@@ -45,7 +45,7 @@ class TestProductInit_swap_016:
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：查看用户是否有仓位'):
-            name = f'RsT:APO:11538483#{self.symbol}'
+            name = f'RsT:APO:11538485#{self.symbol}'
             key = f'Position:#{self.symbol}#{self.contract_code}#'
             position_info_1 = int(float(str(self.redisClient.hmget(name=name, keys=key + '1')).split(',')[5]))
             position_info_2 = int(float(str(self.redisClient.hmget(name=name, keys=key + '2')).split(',')[5]))

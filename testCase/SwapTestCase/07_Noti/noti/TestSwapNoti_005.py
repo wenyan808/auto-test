@@ -6,7 +6,7 @@
 from common.SwapServiceWS import user01 as ws_user01
 from common.SwapServiceAPI import user01 as api_user01
 import pytest, allure, random, time
-from config.conf import DEFAULT_CONTRACT_CODE
+from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
 from tool.SwapTools import SwapTool
 from config.case_content import epic, features
 
@@ -26,11 +26,19 @@ class TestSwapNoti_005:
     def setup_class(cls):
         with allure.step('挂盘'):
             cls.current_price = SwapTool.currentPrice()
-            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.current_price * 0.5, 2),
+            cls.symbol = DEFAULT_SYMBOL
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.current_price * 0.8, 2),
                                   direction='buy')
-            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.current_price * 1.5, 2),
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.current_price * 1.2, 2),
                                   direction='sell')
             pass
+        with allure.step('查看盘口是否更新'):
+            for i in range(5):
+                if ~SwapTool.opponentExist(symbol=cls.symbol, bids='asks'):
+                    break
+                else:
+                    print(f'深度未更新,第{i + 1}次重试……')
+                    time.sleep(1)
 
     @classmethod
     def teardown_class(cls):
@@ -42,11 +50,6 @@ class TestSwapNoti_005:
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：发送sub订阅'):
-            api_user01.swap_order(contract_code=self.contract_code, price=round(self.current_price, 2),
-                                  direction='buy')
-            api_user01.swap_order(contract_code=self.contract_code, price=round(self.current_price, 2),
-                                  direction='sell')
-            time.sleep(2)
             subs = {
                       "sub": "market.{}.detail".format(self.contract_code),
                       "id": "id6"
@@ -54,7 +57,7 @@ class TestSwapNoti_005:
             flag = False
             # 重试3次未返回预期结果则失败
             for i in range(3):
-                result = ws_user01.swap_sub(subs)
+                result = ws_user01.swap_sub(subs=subs,keyword='tick')
                 if result['tick']:
                     if 'ask' in result['tick'] and 'bid' in result['tick']:
                         flag = True

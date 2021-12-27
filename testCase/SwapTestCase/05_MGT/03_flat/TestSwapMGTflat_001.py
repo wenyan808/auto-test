@@ -92,19 +92,20 @@ class TestSwapMGTflat_001:
                 api_result = SwapServiceMGT.flat(flatAccount=params['flatAccount'], uid=None, money=params['money'])
             pass
         with allure.step('验证:平账执行成功'):
-            assert '数据发送给交易系统成功' in api_result['data'],'接口执行失败'
+            assert '数据发送给交易系统成功' or '操作成功' in api_result['data'],'接口执行失败'
             time.sleep(0.5)
             pass
         with allure.step('验证:用户保证金账户加钱数量与平账数量一致'):
             if 11==params['flatAccount']:
-                sqlStr = ' select flat_account, flat_status ' \
+                sqlStr = ' select money, flat_status ' \
                          'from t_flat_money_record ' \
                          f'where flat_time > {flatTime} ' \
+                         f'and flat_account=11 ' \
                          f'and product_id = "{self.symbol}" ' \
                          'and operator = "yuhuiqing" limit 1'
                 db_info = self.mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
                 assert 1 == db_info[0]['flat_status'],'虚拟平台资产平账失败'
-                assert params['money'] == db_info[0]['flat_account'],'虚拟平台资产平账金额失败'
+                assert params['money'] == db_info[0]['money'],'虚拟平台资产平账金额失败'
                 pass
             else:
                 after_flat_static_interest = SwapTool.user_account(uid=params['uuid'][:-1]).split(',')[5]

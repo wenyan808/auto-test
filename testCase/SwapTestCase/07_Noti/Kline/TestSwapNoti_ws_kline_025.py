@@ -12,7 +12,6 @@ from tool.SwapTools import SwapTool
 @allure.epic(epic[1])
 @allure.feature(features[6]['feature'])
 @allure.story(features[6]['story'][6])
-@pytest.mark.stable
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 class TestSwapNoti_ws_kline_025:
 
@@ -71,14 +70,14 @@ class TestSwapNoti_ws_kline_025:
         with allure.step('操作：获取结算中合约'):
             contract_info = SwapTool.getContractStatus(trade_status=0)
             if contract_info['isSkip']:
-                assert False,'未找到停牌合约'
+                assert False,'未找到结算中合约'
         with allure.step('操作：执行sub请求'):
             self.contract_code = self.contract_info['data']['instrument_index_code']
             subs = {
                 "sub": "market.{}.kline.{}".format(self.contract_code, params['period']),
                 "id": "id1"
             }
-            result = ws_user01.swap_sub(subs=subs)
+            result = ws_user01.swap_sub(subs=subs,keyword='tick')
             pass
         with allure.step('校验返回结果'):
             # 请求topic校验
