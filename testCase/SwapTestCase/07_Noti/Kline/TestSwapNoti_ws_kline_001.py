@@ -45,16 +45,8 @@ class TestSwapNoti_ws_kline_001:
                 "sub": "market.{}.kline.{}".format(self.contract_code, params['period']),
                 "id": "id1"
             }
-            flag = False
-            # 重试3次未返回预期结果则失败
-            for i in range(1,4):
-                result = ws_user01.swap_sub(subs)
-                if 'tick' in result:
-                    flag = True
-                    break
-                time.sleep(1)
-                print('未返回预期结果，第{}次重试………………………………'.format(i))
-            assert flag
+            result = ws_user01.swap_sub(subs=subs, keyword='tick')
+            assert 'tick' in result,'未返回预期结果'
             pass
         with  allure.step('操作:查询redis'):
             # 1609430400 = 2021-01-01 00:00:00

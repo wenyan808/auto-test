@@ -45,19 +45,19 @@ class Test_WS_swap_Index_001:
         allure.dynamic.title('指数基差(sub) ' + params['case_name'])
         with allure.step('操作：执行sub请求'):
             subs =  {
-                        "sub": "market.{}.{}.{}".format(self.contract_code,params['type'],params['period']),
+                        "sub": f"market.{self.contract_code}.{params['type']}.{params['period']}",
                         "id": "id1"
                      }
             flag = False
             # 重试3次未返回预期结果则失败
             for i in range(1, 4):
-                result = ws_user01.swap_sub_index(subs)
+                result = ws_user01.swap_sub_index(subs=subs,keyword='tick')
                 if 'tick' in result:
                     flag = True
                     break
                 time.sleep(1)
                 print('未返回预期结果，第{}次重试………………………………'.format(i))
-            assert flag
+            assert flag,'未返回预期结果'
             pass
         with allure.step('验证：返回结果各字段不为空'):
             assert result['tick'], 'data空值'

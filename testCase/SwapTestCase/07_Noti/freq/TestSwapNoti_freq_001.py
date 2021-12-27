@@ -53,7 +53,7 @@ class TestSwapNoti_freq_001:
             flag = False
             # 重试3次未返回预期结果则失败
             for i in range(3):
-                result = ws_user01.swap_sub(subs)
+                result = ws_user01.swap_sub(subs=subs,keyword='asks')
                 if 'tick' in result:
                     if result['tick']['asks'] and result['tick']['bids']:
                         flag = True

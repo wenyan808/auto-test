@@ -35,16 +35,8 @@ class TestSwapNoti_001:
                 "sub": "market.{}.{}.1min".format(self.contract_code, params['type']),
                 "id": "id1"
             }
-            flag = False
-            # 重试3次未返回预期结果则失败
-            for i in range(3):
-                result = ws_user01.swap_sub(subs)
-                if 'tick' in result:
-                    flag = True
-                    break
-                time.sleep(1)
-                print(f'未返回预期结果，第{i+1}次重试………………………………')
-            assert flag
+            result = ws_user01.swap_sub(subs=subs, keyword='tick')
+            assert 'tick' in result,'未返回预期结果'
             pass
         with allure.step('验证：返回结果字段ch为请求topic'):
             assert "market.{}.{}.1min".format(self.contract_code, params['type']) == result['ch'], '校验不通过'
