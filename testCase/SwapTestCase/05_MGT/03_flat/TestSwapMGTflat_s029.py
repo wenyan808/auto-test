@@ -19,7 +19,7 @@ from tool.SwapTools import SwapTool
 @allure.epic(epic[1])
 @allure.feature(features[4]['feature'])
 @allure.story(features[4]['story'][3])
-@allure.tag('Script owner : 余辉青', 'Case owner : ')
+@allure.tag('Script owner : 余辉青', 'Case owner : 程卓')
 @pytest.mark.stable
 class TestSwapMGTflat_s029:
     ids = ['TestSwapMGTflat_029',
@@ -63,7 +63,6 @@ class TestSwapMGTflat_s029:
     @classmethod
     def setup_class(cls):
         with allure.step('变量初始化'):
-            cls.symbol = cls.contract_info['data']['product_id']
             cls.mysqlClient = mysqlComm()
             pass
 
@@ -79,6 +78,7 @@ class TestSwapMGTflat_s029:
             contract_info = SwapTool.getContractStatus(trade_status=3)
             if contract_info['isSkip']:
                 assert False,'未找到停牌合约'
+            self.symbol = contract_info['data']['product_id']
         with allure.step('操作:查询用户当前保证金数量'):
             if 11==params['flatAccount']:
                 pass
