@@ -21,9 +21,9 @@ class TestSwapNoti_012:
     def setup_class(cls):
         with allure.step('挂盘'):
             cls.currentPrice = SwapTool.currentPrice()
-            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice * 0.5, 2),
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice * 0.8, 2),
                                   direction='buy')
-            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice * 1.5, 2),
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice * 1.2, 2),
                                   direction='sell')
             pass
 
