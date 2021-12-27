@@ -64,7 +64,8 @@ class TestLinearApiSchema_078:
                         'profit_rate': float,
                         'profit_unreal': float,
                         'symbol': symbol,
-                        'volume': float
+                        'volume': float,
+                        'trade_partition': 'USDT'
                     }
                 ],
                 'status': 'ok',

@@ -335,6 +335,18 @@ class LinearServiceAPI:
         url = self.__url + '/linear-swap-ex/market/detail/batch_merged'
         return api_http_get(url, params)
 
+    # 获取聚合行情   ##tag
+    def linear_detail(self, contract_code=None):
+        """
+        参数名称         参数类型            必填      描述
+        contract_code   string            true     BTC-USDT.....
+        """
+
+        params = {'contract_code': contract_code} if contract_code else {}
+
+        url = self.__url + '/linear-swap-ex/market/detail'
+        return api_http_get(url, params)
+
     # 获取基差数据
     def linear_basis(self, contract_code=None, period=None, basis_price_type=None, size=None):
 

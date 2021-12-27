@@ -79,7 +79,8 @@ class TestLinearApiSchema_099:
                             'volume': float,
                             'contract_type': 'swap',
                             'business_type': 'swap',
-                            'pair': str
+                            'pair': str,
+                            'trade_partition': 'USDT'
 
                         }
                     ],

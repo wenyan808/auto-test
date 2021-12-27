@@ -72,7 +72,8 @@ class TestLinearApiSchema_054:
                             'trade_fee': float,
                             'trade_price': float,
                             'trade_turnover': float,
-                            'trade_volume': float
+                            'trade_volume': float,
+                            'trade_partition': 'USDT'
                         }
                     ]
                 },

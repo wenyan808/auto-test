@@ -64,7 +64,8 @@ class TestLinearApiSchema_028:
                         'profit_unreal': Or(int, float),
                         'risk_rate': Or(float, None),
                         'symbol': symbol,
-                        'withdraw_available': Or(int, float)
+                        'withdraw_available': Or(int, float),
+                        'trade_partition': 'USDT'
                     }
                 ],
                 'status': 'ok',

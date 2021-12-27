@@ -74,7 +74,8 @@ class TestLinearApiSchema_055:
                             'trade_price': float,
                             'trade_turnover': float,
                             'trade_volume': float,
-                            'query_id': int
+                            'query_id': int,
+                            'trade_partition': 'USDT'
                         }
                     ]
                 },

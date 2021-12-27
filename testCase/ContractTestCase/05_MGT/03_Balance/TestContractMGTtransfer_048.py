@@ -24,7 +24,7 @@
 
 import allure
 import pytest
-from _pytest.mark import param
+
 from common.ContractMGTServiceAPI import t as contract_mgt_api
 from common.mysqlComm import *
 
@@ -44,9 +44,10 @@ class TestContractMGTtransfer_048:
     @allure.title('结算中-系统交易手续费账户')
     @allure.step('测试执行')
     def test_execute(self):
+        symbol = "XRP"
         with allure.step('打开MGT后台管理系统点击财务-财务工具-平账，流水类型选择（系统交易手续费账户），平种标识如（XRP），输入金额'):
-            params = ["XRP", {
-                "productId": "XRP",
+            params = [symbol, {
+                "productId": symbol,
                 "flatAccount": 4,
                 "uid": None,
                 "money": "1",
@@ -63,11 +64,10 @@ class TestContractMGTtransfer_048:
         record_id = 0
         with allure.step('点击转账记录，查看转账单子是否成功'):
             contract_btc_conn = mysqlComm()
-            symbol = 'XRP'
-            sqlStr = f'select id from t_flat_money_record where product_id="{symbol}" ' \
-                     f'AND flat_status=2 order by id desc limit 1'
+            sqlStr = f'SELECT id FROM t_flat_money_record WHERE product_id="{symbol}" ' \
+                     f'AND flat_status=2 ORDER BY id DESC LIMIT 1'
             rec_dict_tuples = contract_btc_conn.selectdb_execute(
-                'XRP', sqlStr)
+                'btc', sqlStr)
             assert rec_dict_tuples != None
             if(len(rec_dict_tuples) > 0):
                 record_id = rec_dict_tuples[0]["id"]

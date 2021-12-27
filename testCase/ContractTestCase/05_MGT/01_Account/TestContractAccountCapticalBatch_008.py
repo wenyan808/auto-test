@@ -41,41 +41,41 @@ from common.mysqlComm import *
 class TestContractAccountCapticalBatch_008:
 
     params = [
-        {"money_type": "moneyIn",  "case_name": "TestContractAccountCapticalBatch_008",
+        {"money_type": "moneyIn",  "id": "TestContractAccountCapticalBatch_008",
             "case_title": "平台流水表-结算对账-横向对账:从币币转入"},
-        {"money_type": "moneyOut", "case_name": "TestContractAccountCapticalBatch_009",
+        {"money_type": "moneyOut", "id": "TestContractAccountCapticalBatch_009",
             "case_title": "平台流水表-结算对账-横向对账:转出至币币"},
-        {"money_type": "borrowToOperate", "case_name": "TestContractAccountCapticalBatch_010:",
+        {"money_type": "borrowToOperate", "id": "TestContractAccountCapticalBatch_010:",
             "case_title": "平台流水表-结算对账-横向对账:借贷转运营"},
-        {"money_type": "operateToBorrow", "case_name": "TestContractAccountCapticalBatch_011",
+        {"money_type": "operateToBorrow", "id": "TestContractAccountCapticalBatch_011",
             "case_title": "平台流水表-结算对账-横向对账:运营转借贷"},
-        {"money_type": "toBurst", "case_name": "TestContractAccountCapticalBatch_012",
+        {"money_type": "toBurst", "id": "TestContractAccountCapticalBatch_012",
             "case_title": "平台流水表-结算对账-横向对账:注入到爆仓"},
-        {"money_type": "fromBurst", "case_name": "TestContractAccountCapticalBatch_013",
+        {"money_type": "fromBurst", "id": "TestContractAccountCapticalBatch_013",
             "case_title": "平台流水表-结算对账-横向对账:从爆仓提取"},
-        {"money_type": "compensate", "case_name": "TestContractAccountCapticalBatch_014",
+        {"money_type": "compensate", "id": "TestContractAccountCapticalBatch_014",
             "case_title": "平台流水表-结算对账-横向对账:给用户赠币赔偿"},
-        {"money_type": "discipline", "case_name": "TestContractAccountCapticalBatch_015",
+        {"money_type": "discipline", "id": "TestContractAccountCapticalBatch_015",
             "case_title": "平台流水表-结算对账-横向对账:扣减用户资产惩戒"},
-        {"money_type": "feeToOperate", "case_name": "TestContractAccountCapticalBatch_016",
+        {"money_type": "feeToOperate", "id": "TestContractAccountCapticalBatch_016",
             "case_title": "平台流水表-结算对账-横向对账:手续费转运营"},
-        {"money_type": "actionReward", "case_name": "TestContractAccountCapticalBatch_017",
+        {"money_type": "actionReward", "id": "TestContractAccountCapticalBatch_017",
             "case_title": "平台流水表-结算对账-横向对账:活动奖励"},
-        {"money_type": "dividend", "case_name": "TestContractAccountCapticalBatch_018",
+        {"money_type": "dividend", "id": "TestContractAccountCapticalBatch_018",
             "case_title": "平台流水表-结算对账-横向对账:返利"},
-        {"money_type": "openFeeMaker", "case_name": "TestContractAccountCapticalBatch_019",
+        {"money_type": "openFeeMaker", "id": "TestContractAccountCapticalBatch_019",
             "case_title": "平台流水表-结算对账-横向对账:开仓手续费挂单"},
-        {"money_type": "openFeeTaker", "case_name": "TestContractAccountCapticalBatch_020",
+        {"money_type": "openFeeTaker", "id": "TestContractAccountCapticalBatch_020",
             "case_title": "平台流水表-结算对账-横向对账:开仓手续费吃单"},
-        {"money_type": "closeFeeMaker", "case_name": "TestContractAccountCapticalBatch_021",
+        {"money_type": "closeFeeMaker", "id": "TestContractAccountCapticalBatch_021",
             "case_title": "平台流水表-结算对账-横向对账:平仓手续费挂单"},
-        {"money_type": "closeFeeTaker", "case_name": "TestContractAccountCapticalBatch_022",
+        {"money_type": "closeFeeTaker", "id": "TestContractAccountCapticalBatch_022",
             "case_title": "平台流水表-结算对账-横向对账:平仓手续费吃单"},
-        {"money_type": "deliveFee", "case_name": "TestContractAccountCapticalBatch_023",
+        {"money_type": "deliveFee", "id": "TestContractAccountCapticalBatch_023",
             "case_title": "平台流水表-结算对账-横向对账:交割手续费"},
-        {"money_type": "flatMoney", "case_name": "TestContractAccountCapticalBatch_024",
+        {"money_type": "flatMoney", "id": "TestContractAccountCapticalBatch_024",
             "case_title": "平台流水表-结算对账-横向对账:平账"},
-        {"money_type": "currInterest", "case_name": "TestContractAccountCapticalBatch_025",
+        {"money_type": "currInterest", "id": "TestContractAccountCapticalBatch_025",
             "case_title": "平台流水表-结算对账-横向对账:流水当期发生"},
     ]
 
@@ -85,10 +85,9 @@ class TestContractAccountCapticalBatch_008:
         print("前置条件")
 
     @allure.step('测试执行')
-    @pytest.mark.parametrize('param', params)
-    def test_execute(self, param):
-        allure.dynamic.title(param['case_name'])
-        symbol = "BTC"
+    @pytest.mark.parametrize('param', params, ids=[x['id'] for x in params])
+    def test_execute(self, symbol, param):
+        allure.dynamic.title(param['case_title'])
         endDate = (date.today() + timedelta(days=-1)).strftime("%Y%m%d")
         beginDate = (date.today(
         ) + datetime.timedelta(days=random.randint(2, 7)*-1)).strftime("%Y%m%d")
@@ -113,11 +112,8 @@ class TestContractAccountCapticalBatch_008:
         with allure.step('接口正常返回,各流水类型数据不为0'):
             assert len(self.__data['daily']) > 0
         with allure.step('查询各流水类型的DB数据,接口数据与DB数据进行对比'):
-            contract_conn = mysqlComm()
-            symbol = 'btc'
             # money_type 5:开仓手续费-taker,6:开仓手续费-maker,7:平仓手续费-taker,8:平仓手续费-maker,11:平账账户,14:币币转入,15:币币转出,20:平账,21:借贷转运营,22:运营转借贷,23:手续费转运营,24:注入到爆仓,25:从爆仓提取,26:给用户赠币-赔偿,27:扣减用户资产-惩戒,28:活动奖励,29:返利
             # userType 用户类型 1普通用户，2爆仓用户，3应付外债，4交易手续费，5交割手续费，9运营活动，11是平台资产 12是应付用户 13是平账账户
-            platform_capital_dic = None  # 平台资产
             # 验证如下:userType:平台资产=负债+所有者权益
             A = 0  # 资产
             S = 0  # 负债
@@ -130,8 +126,11 @@ class TestContractAccountCapticalBatch_008:
                     A += Decimal(data[param['money_type']])
                 elif data['userType'] == 4 or data['userType'] == 5 or data['userType'] == 9:
                     O += Decimal(data[param['money_type']])
-
-            assert A == S+O, '{},横向校验失败'.format(param['case_title'])
+            # 横向对账：平账和流水当期发生额不用比较，跳过
+            if(param['id'] == 'TestContractAccountCapticalBatch_024' or param['id'] == 'TestContractAccountCapticalBatch_025'):
+                pass
+            else:
+                assert A == S+O, '{},横向校验失败'.format(param['case_title'])
 
     @allure.step('恢复环境')
     def teardown(self):

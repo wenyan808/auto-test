@@ -49,6 +49,7 @@ class TestLinearApiSchema_012:
                     'contract_code': contract_code,
                     "business_type": "swap",
                     "pair": contract_code,
+                    'trade_partition': 'USDT',
                     'list': [
                         {
 

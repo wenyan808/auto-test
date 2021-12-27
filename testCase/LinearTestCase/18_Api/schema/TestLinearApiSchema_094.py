@@ -41,12 +41,12 @@ class TestLinearApiSchema_094:
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_cross_matchresults_exact'):
             r = linear_api.linear_cross_matchresults_exact(contract_code=contract_code,
-                                                  trade_type='0',
-                                                  start_time='',
-                                                  end_time='',
-                                                  from_id='',
-                                                  size='',
-                                                  direct='')
+                                                           trade_type='0',
+                                                           start_time='',
+                                                           end_time='',
+                                                           from_id='',
+                                                           size='',
+                                                           direct='')
             pprint(r)
             schema = {
                 'data': {
@@ -77,7 +77,8 @@ class TestLinearApiSchema_094:
                             'query_id': int,
                             'contract_type': 'swap',
                             'business_type': 'swap',
-                            'pair': str
+                            'pair': str,
+                            'trade_partition': 'USDT'
                         }
                     ]
                 },

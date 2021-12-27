@@ -45,31 +45,33 @@ class TestContractEx_065:
 
     @allure.title('撮合当周 买入开仓 爆仓                  ')
     @allure.step('测试执行')
-    def test_execute(self, symbol, symbol_period,DB_orderSeq):
+    def test_execute(self, symbol, symbol_period, DB_orderSeq):
         with allure.step('详见官方文档'):
             contracttype = 'this_week'
             leverrate = 5
             offset = 'open'
             direction = 'buy'
 
-
             # 撮合成交
             current = ATP.get_current_price(contract_code=symbol_period)
 
             buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=current,
-                                                     volume=10,
-                                                     direction=direction, offset=offset, lever_rate=leverrate,
-                                                     order_price_type='limit')
+                                                    volume=10,
+                                                    direction=direction, offset=offset, lever_rate=leverrate,
+                                                    order_price_type='limit')
             pprint(buy_order)
 
-            res_position = contract_api.contract_account_position_info(symbol=symbol)
+            res_position = contract_api.contract_account_position_info(
+                symbol=symbol)
             pprint(res_position)
 
             # 爆仓，用另一个用户反向砸单，拉低价格
-            ATP.common_user_make_order(contract_code=symbol_period, price=current*0.9, volume=1000, direction='sell', offset=offset)
+            ATP.common_user_make_order(
+                contract_code=symbol_period, price=current*0.9, volume=1000, direction='sell', offset=offset)
             time.sleep(1)
 
-            res_position = contract_api.contract_account_position_info(symbol=symbol)
+            res_position = contract_api.contract_account_position_info(
+                symbol=symbol)
             pprint(res_position)
 
             # ATP.common_user_make_order(
@@ -83,13 +85,15 @@ class TestContractEx_065:
 
             orderId = buy_order['data']['order_id']
 
-            strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderId)
+            strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
+                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (
+                         orderId)
 
             # 给撮合时间，5秒内还未撮合完成则为失败
             n = 0
             while n < 5:
-                isMatch = DB_orderSeq.execute(strStr)[0][0]
+                isMatch = DB_orderSeq.selectdb_execute(
+                    'order_seq', strStr)[0]['c']
                 if 1 == isMatch:
                     break
                 else:

@@ -44,16 +44,15 @@ class TestContractAccountCapticalBatch_028:
 
     @allure.title('平台流水表-结算对账:校验应付外债')
     @allure.step('测试执行')
-    def test_execute(self):
-        symbol = "BTC"
+    def test_execute(self, symbol):
         # userType 用户类型 1普通用户，2爆仓用户，3应付外债，4交易手续费，5交割手续费，9运营活动，11是平台资产 12是应付用户 13是平账账户
         userType = 3
         # 构造请求参数
         contract_conn = mysqlComm()
-        sqlStr = 'SELECT id,settle_date,end_time FROM t_settle_log where progress_code=13 and product_id= "{}" order by id desc limit 2 '.format(
+        sqlStr = 'SELECT id,settle_date,end_time FROM t_settle_log WHERE progress_code=13 AND product_id= "{}" ORDER BY id DESC LIMIT 2 '.format(
             symbol)
         rec_dict_tuples = contract_conn.selectdb_execute(
-            db='btc', sqlStr=sqlStr)
+            dbSchema='btc', sqlStr=sqlStr)
         if(len(rec_dict_tuples) != 2):
             pytest.skip(msg="无结算对账记录")
         beginDate = rec_dict_tuples[1]["settle_date"]
@@ -111,7 +110,7 @@ class TestContractAccountCapticalBatch_028:
                     beginDateTime, endDateTime, value, symbol)
                 print(sqlStr)
                 rec_dict_tuples = contract_conn.selectdb_execute(
-                    db='btc', sqlStr=sqlStr)
+                    dbSchema='btc', sqlStr=sqlStr)
                 money = 0.0
                 if rec_dict_tuples[0]["money"]:
                     currInterest += rec_dict_tuples[0]["money"]
@@ -124,7 +123,7 @@ class TestContractAccountCapticalBatch_028:
             )
             print(sqlStr)
             rec_dict_tuples = contract_conn.selectdb_execute(
-                db='btc', sqlStr=sqlStr)
+                dbSchema='btc', sqlStr=sqlStr)
             # 前一个期未当本期的期初
             begin_static_interest = rec_dict_tuples[0]["static_interest"]
 
@@ -144,7 +143,7 @@ class TestContractAccountCapticalBatch_028:
                 endDate, symbol, userType
             )
             rec_dict_tuples = contract_conn.selectdb_execute(
-                db='btc', sqlStr=sqlStr)
+                dbSchema='btc', sqlStr=sqlStr)
             end_original_interest = rec_dict_tuples[0]["original_interest"]
             end_static_interest = rec_dict_tuples[0]["static_interest"]
             assert end_original_interest == begin_static_interest

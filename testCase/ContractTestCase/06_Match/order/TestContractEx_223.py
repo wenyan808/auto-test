@@ -16,11 +16,15 @@
         TestContractEx_223
 """
 
-from common.ContractServiceAPI import t as contract_api
+import time
 from pprint import pprint
-import pytest, allure, random, time
-from tool.atp import ATP
+
+import allure
+import pytest
+from common.ContractServiceAPI import t as contract_api
 from common.mysqlComm import mysqlComm
+from tool.atp import ATP
+
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
@@ -59,13 +63,15 @@ class TestContractEx_223:
             orderId = buy_order['data']['order_id']
 
             time.sleep(2)
-            strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderId)
-
+            strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
+                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (
+                         orderId)
+            DB_orderSeq = mysqlComm()
             # 给撮合时间，5秒内还未撮合完成则为失败
             n = 0
             while n < 5:
-                isMatch = DB_orderSeq.execute(strStr)[0][0]
+                isMatch = DB_orderSeq.selectdb_execute(
+                    'order_seq', strStr)[0]['c']
                 if 1 == isMatch:
                     break
                 else:

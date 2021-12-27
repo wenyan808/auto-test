@@ -16,25 +16,23 @@
         TestContractEx_074
 """
 
-from common.ContractServiceAPI import t as contract_api
-from common.ContractServiceOrder import t as contract_order
-from common.LinearServiceAPI import t as linear_api
-from common.LinearServiceOrder import t as linear_order
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceOrder import t as swap_order
-
+import time
 from pprint import pprint
-import pytest, allure, random, time
-from tool.atp import ATP
+
+import allure
+import pytest
+from common.ContractServiceAPI import t as contract_api
 from common.mysqlComm import mysqlComm
+from tool.atp import ATP
+
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
 @allure.story('委托单')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
-@allure.tag('Script owner : chenwei', 'Case owner : 邱大伟')
+@allure.tag('Script owner : Alex Li', 'Case owner : 邱大伟')
 class TestContractEx_074:
-    DB_orderSeq = mysqlComm('order_seq')
+
     @allure.step('前置条件')
     def setup(self):
         print(''' 制造成交数据 ''')
@@ -66,13 +64,16 @@ class TestContractEx_074:
             # 撤单
             contract_api.contract_cancel(order_id=orderId)
             time.sleep(2)
-            strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderId)
+            strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
+                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (
+                         orderId)
+            DB_orderSeq = mysqlComm()
 
             # 给撮合时间，5秒内还未撮合完成则为失败
             n = 0
             while n < 5:
-                isMatch = self.DB_orderSeq.execute(strStr)[0][0]
+                isMatch = DB_orderSeq.selectdb_execute(
+                    'order_seq', strStr)[0]['c']
                 if 1 == isMatch:
                     break
                 else:

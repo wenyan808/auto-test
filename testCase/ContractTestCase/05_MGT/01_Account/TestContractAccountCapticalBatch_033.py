@@ -83,15 +83,14 @@ class TestContractAccountCapticalBatch_033:
 
     @allure.step('测试执行')
     @pytest.mark.parametrize('param', params)
-    def test_execute(self, param):
+    def test_execute(self, symbol, param):
         allure.dynamic.title(param['case_name'])
-        symbol = "BTC"
         # 构造请求参数
         contract_conn = mysqlComm()
-        sqlStr = 'SELECT id,settle_date,end_time FROM t_settle_log where progress_code=13 and product_id= "{}" order by id desc limit 2 '.format(
+        sqlStr = 'SELECT id,settle_date,end_time FROM t_settle_log WHERE progress_code=13 AND product_id= "{}" ORDER BY id DESC LIMIT 2 '.format(
             symbol)
         rec_dict_tuples = contract_conn.selectdb_execute(
-            db='btc', sqlStr=sqlStr)
+            dbSchema='btc', sqlStr=sqlStr)
         if(len(rec_dict_tuples) != 2):
             pytest.skip(msg="无结算对账记录")
         beginDate = rec_dict_tuples[1]["settle_date"]

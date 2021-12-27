@@ -54,7 +54,8 @@ class TestLinearApiSchema_079:
                         'transfer_in_min_each': float,
                         'transfer_out_max_daily': float,
                         'transfer_out_max_each': float,
-                        'transfer_out_min_each': float
+                        'transfer_out_min_each': float,
+                        'trade_partition': 'USDT'
                     }
                 ],
                 'status': 'ok',

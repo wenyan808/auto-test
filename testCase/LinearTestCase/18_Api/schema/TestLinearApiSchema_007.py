@@ -60,7 +60,8 @@ class TestLinearApiSchema_007:
                             }
                         ],
                         'margin_mode': 'isolated',
-                        'symbol': symbol
+                        'symbol': symbol,
+                        'trade_partition': 'USDT'
                     }
                 ],
                 'status': 'ok',

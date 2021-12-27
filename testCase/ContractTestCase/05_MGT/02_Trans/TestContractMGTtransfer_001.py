@@ -24,7 +24,6 @@
 
 import allure
 import pytest
-from _pytest.mark import param
 from common.ContractMGTServiceAPI import t as contract_mgt_api
 from common.mysqlComm import *
 
@@ -43,16 +42,16 @@ class TestContractMGTtransfer_001:
 
     @allure.title('借贷转运营')
     @allure.step('测试执行')
-    def test_execute(self):
+    def test_execute(self, symbol):
         with allure.step('打开MGT后台管理系统点击财务-财务工具-转账申请，流水类型选择（借贷转运营），平种标识如（btc），输入金额'):
-            params = ["BTC", {"userAmountList": [],
-                              "productId":"BTC",
-                              "type":21,
-                              "quantity":"1",
-                              "transferOutAccount":3,
-                              "transferInAccount":9,
-                              "remark":"00"
-                              }
+            params = [symbol, {"userAmountList": [],
+                               "productId":symbol,
+                               "type":21,
+                               "quantity":"1",
+                               "transferOutAccount":3,
+                               "transferInAccount":9,
+                               "remark":"00"
+                               }
                       ]
             form_params = "params={}".format(str(params))
             result = contract_mgt_api.accountActionService_saveTransfer(
@@ -63,10 +62,9 @@ class TestContractMGTtransfer_001:
         record_id = 0
         with allure.step('点击转账记录，查看转账单子是否成功'):
             contract_trade_conn = mysqlComm()
-            symbol = 'btc'
             quantity = 1
-            sqlStr = f'select id from t_transfer_data where product_id="{symbol}" ' \
-                     f'AND amount= {quantity} AND transfer_status=6 order by id desc limit 1'
+            sqlStr = f'SELECT id FROM t_transfer_data WHERE product_id="{symbol}" ' \
+                     f'AND amount= {quantity} AND transfer_status=6 ORDER BY id DESC LIMIT 1'
             rec_dict_tuples = contract_trade_conn.selectdb_execute(
                 'contract_trade', sqlStr)
             assert rec_dict_tuples != None

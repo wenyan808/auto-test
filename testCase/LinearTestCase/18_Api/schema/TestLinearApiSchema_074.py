@@ -84,7 +84,8 @@ class TestLinearApiSchema_074:
                         'contract_type': 'swap',
                         'business_type': 'swap',
                         'pair': str,
-                        'last_price': Or(float, int)
+                        'last_price': Or(float, int),
+                        'trade_partition': 'USDT'
                     }
                 ],
                 'status': 'ok',

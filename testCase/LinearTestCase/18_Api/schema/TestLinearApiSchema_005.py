@@ -47,7 +47,8 @@ class TestLinearApiSchema_005:
                         'insurance_fund': float,
                         'contract_code': contract_code,
                         'business_type': 'swap',
-                        'pair': contract_code
+                        'pair': contract_code,
+                        'trade_partition': 'USDT'
                     }
                 ],
                 'status': 'ok',

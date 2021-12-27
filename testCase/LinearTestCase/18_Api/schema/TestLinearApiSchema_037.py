@@ -53,7 +53,8 @@ class TestLinearApiSchema_037:
                         'lever_rate': int,
                         'buy_limit_value': float,
                         'sell_limit_value': float,
-                        'mark_price': float
+                        'mark_price': float,
+                        'trade_partition': 'USDT'
                     }
                 ],
                 'status': 'ok',

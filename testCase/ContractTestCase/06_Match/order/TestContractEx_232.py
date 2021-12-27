@@ -18,7 +18,10 @@
 
 from common.ContractServiceAPI import t as contract_api
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from tool.atp import ATP
 
 
@@ -41,7 +44,7 @@ class TestContractEx_232:
 
     @allure.title('撮合次周 卖出开仓 全部成交单人多笔价格相同的订单      ')
     @allure.step('测试执行')
-    def test_execute(self, symbol, symbol_period,DB_orderSeq):
+    def test_execute(self, symbol, symbol_period, DB_orderSeq):
         with allure.step('详见官方文档'):
             contracttype = 'next_week'
             leverrate = 5
@@ -64,13 +67,15 @@ class TestContractEx_232:
             pprint(buy_order1)
             orderId = buy_order1['data']['order_id']
             time.sleep(2)
-            strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderId)
+            strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
+                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (
+                         orderId)
 
             # 给撮合时间，5秒内还未撮合完成则为失败
             n = 0
             while n < 5:
-                isMatch = DB_orderSeq.execute(strStr)[0][0]
+                isMatch = DB_orderSeq.selectdb_execute(
+                    'order_seq', strStr)[0]['c']
                 if 1 == isMatch:
                     break
                 else:

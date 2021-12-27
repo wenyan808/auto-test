@@ -48,7 +48,8 @@ class TestLinearApiSchema_021:
                                 'funding_rate': str,
                                 'funding_time': str,
                                 'next_funding_time': str,
-                                'symbol': symbol}],
+                                'symbol': symbol,
+                                'trade_partition': 'USDT'}],
                       'status': 'ok',
                       'ts': int}
 

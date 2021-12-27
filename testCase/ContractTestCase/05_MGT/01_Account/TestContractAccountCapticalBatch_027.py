@@ -44,15 +44,14 @@ class TestContractAccountCapticalBatch_027:
 
     @allure.title('平台流水表-结算对账:校验应付用户')
     @allure.step('测试执行')
-    def test_execute(self):
-        symbol = "BTC"
+    def test_execute(self, symbol):
         userType = 12
         # 构造请求参数
         contract_conn = mysqlComm()
-        sqlStr = 'SELECT id,settle_date,end_time FROM t_settle_log where progress_code=13 and product_id= "{}" order by id desc limit 2 '.format(
+        sqlStr = 'SELECT id,settle_date,end_time FROM t_settle_log WHERE progress_code=13 AND product_id= "{}" ORDER BY id DESC LIMIT 2 '.format(
             symbol)
         rec_dict_tuples = contract_conn.selectdb_execute(
-            db='btc', sqlStr=sqlStr)
+            dbSchema='btc', sqlStr=sqlStr)
         if(len(rec_dict_tuples) != 2):
             pytest.skip(msg="无结算对账记录")
         beginDate = rec_dict_tuples[1]["settle_date"]
@@ -61,7 +60,6 @@ class TestContractAccountCapticalBatch_027:
         endDateTime = rec_dict_tuples[0]["end_time"]
         originSettleId = rec_dict_tuples[1]["id"]
         finalSettleId = rec_dict_tuples[0]["id"]
-        contract_conn
         with allure.step('执行查询结算对账数据'):
             params = [symbol,
                       {
@@ -88,15 +86,14 @@ class TestContractAccountCapticalBatch_027:
             assert len(self.__data['daily']) > 0
 
         with allure.step('查询各流水类型的DB数据,接口数据与DB数据进行对比'):
-            symbol = 'btc'
             # money_type 5:开仓手续费-taker,6:开仓手续费-maker,7:平仓手续费-taker,8:平仓手续费-maker,11:交割手续费,14:币币转入,15:币币转出,20:平账,21:借贷转运营,22:运营转借贷,23:手续费转运营,24:注入到爆仓,25:从爆仓提取,26:给用户赠币-赔偿,27:扣减用户资产-惩戒,28:活动奖励,29:返利
             # userType 用户类型 1普通用户，2爆仓用户，3应付外债，4交易手续费，5交割手续费，9运营活动，11是平台资产 12是应付用户 13是平账账户
-            platform_capital_dic = None  # 平台资产
+            platform_capital_api_dic = None  # 平台资产
             for data in self.__data['daily']:
                 if data['userType'] == userType:
-                    platform_capital_dic = data
+                    platform_capital_api_dic = data
                     break
-            assert platform_capital_dic, '返回数据中未找到-平台资产,校验失败'
+            assert platform_capital_api_dic, '返回数据中未找到-平台资产,校验失败'
             # 应付用户验证如下:money_type:币币转入（14）,币币转出（15）,注入到爆仓（24）,从爆仓提取（25）,给用户赠币-赔偿（26）,扣减用户资产-惩戒（27）,活动奖励（28）,返利（29）,开仓手续费挂单（6）,开仓手续费吃单（5）,平仓手续费挂单（8）,平仓手续费吃单（7）,交割手续费（11）,平账（20）
             capital_param_dic = {"moneyIn": 14,
                                  "moneyOut": 15,
@@ -114,46 +111,46 @@ class TestContractAccountCapticalBatch_027:
                                  "flatMoney": 20,
                                  }
             currInterest = 0  # 流水当期发生
-
             for key, value in capital_param_dic.items():
                 sqlStr = 'SELECT SUM(money) as money FROM t_account_action WHERE create_time > {} AND create_time <= {} AND money_type = {} AND product_id = "{}" AND user_id NOT IN(4890429, 193799, 193800, 193798)'.format(
                     beginDateTime, endDateTime, value, symbol)
                 print(sqlStr)
                 rec_dict_tuples = contract_conn.selectdb_execute(
-                    db='btc', sqlStr=sqlStr)
+                    dbSchema='btc', sqlStr=sqlStr)
                 money = 0.0
                 if rec_dict_tuples[0]["money"]:
+                    print("{}-,value:{}".format(key,
+                          rec_dict_tuples[0]["money"]))
                     currInterest += rec_dict_tuples[0]["money"]
                     money = rec_dict_tuples[0]["money"]
-                assert money == Decimal(
-                    platform_capital_dic[key]), "{} 流水比对异常".format(key)
+                    assert money == Decimal(
+                        platform_capital_api_dic[key]), "{} 流水比对异常".format(key)
+            print("当期发生额：{}".format(currInterest))
             # 实际期初静态权益,original_interest(期初),static_interest(期未)
             sqlStr = 'SELECT original_interest,static_interest FROM t_account_capital_virtual_his WHERE settle_date="{}" AND product_id="{}" AND user_type={}'.format(
                 beginDate, symbol, userType
             )
             print(sqlStr)
             rec_dict_tuples = contract_conn.selectdb_execute(
-                db='btc', sqlStr=sqlStr)
+                dbSchema='btc', sqlStr=sqlStr)
             # 前一个期未当本期的期初
             begin_static_interest = rec_dict_tuples[0]["static_interest"]
 
-            originalcapital_dic = None
+            originalcapital_api_dic = None
             for data in self.__data['originalcapital']:
                 if data['userType'] == userType:
-                    originalcapital_dic = data
+                    originalcapital_api_dic = data
                     break
-            assert platform_capital_dic, '返回数据中未找到-平台资产,校验失败'
+            assert originalcapital_api_dic, '返回数据中未找到-平台资产,校验失败'
             assert begin_static_interest == Decimal(
-                originalcapital_dic["staticInterest"])
-            # 流水期末静态权益
-            curr_static_interest = begin_static_interest+currInterest
+                originalcapital_api_dic["staticInterest"])
 
             # 实际期末静态权益
             sqlStr = 'SELECT original_interest,static_interest FROM t_account_capital_virtual_his WHERE settle_date="{}" AND product_id="{}" AND user_type={}'.format(
                 endDate, symbol, userType
             )
             rec_dict_tuples = contract_conn.selectdb_execute(
-                db='btc', sqlStr=sqlStr)
+                dbSchema='btc', sqlStr=sqlStr)
             end_original_interest = rec_dict_tuples[0]["original_interest"]
             end_static_interest = rec_dict_tuples[0]["static_interest"]
             assert end_original_interest == begin_static_interest
@@ -167,8 +164,13 @@ class TestContractAccountCapticalBatch_027:
             assert end_static_interest == Decimal(
                 finalcapital_dic["staticInterest"])
 
-            # 核对
-            assert end_static_interest == curr_static_interest
+            # 核对 流水期末静态权益=期初+发生额
+            curr_static_interest = end_original_interest+currInterest
+
+            a, b = str(end_static_interest).split('.')
+            c, d = str(curr_static_interest).split('.')
+
+            assert float(a+'.'+b[0:7]) == float(c+'.'+d[0:7])
 
     @allure.step('恢复环境')
     def teardown(self):

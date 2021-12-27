@@ -47,7 +47,8 @@ class TestLinearApiSchema_082:
                                 'contract_type': 'swap',
                                 'pair': str,
                                 'business_type': 'swap',
-                                'margin_mode': 'cross'}],
+                                'margin_mode': 'cross',
+                                'trade_partition': 'USDT'}],
                       'status': 'ok',
                       'ts': int}
 

@@ -24,7 +24,6 @@
 
 import allure
 import pytest
-from _pytest.mark import param
 from common.ContractMGTServiceAPI import t as contract_mgt_api
 from common.mysqlComm import *
 
@@ -43,14 +42,14 @@ class TestContractMGTtransfer_008:
 
     @allure.title('扣减用户资产-惩戒')
     @allure.step('测试执行')
-    def test_execute(self):
+    def test_execute(self, symbol):
         with allure.step('打开MGT后台管理系统点击财务-财务工具-转账申请，流水类型选择（扣减用户资产-惩戒），平种标识如（btc），输入金额'):
-            params = ["BTC", {
+            params = [symbol, {
                 "userAmountList": [
                     {"uid": "115384476",
                      "amount": "1"}
                 ],
-                "productId": "BTC",
+                "productId": symbol,
                 "type": 27,
                 "quantity": None,
                 "transferOutAccount": 1,
@@ -68,10 +67,9 @@ class TestContractMGTtransfer_008:
         record_id = 0
         with allure.step('点击转账记录，查看转账单子是否成功'):
             contract_trade_conn = mysqlComm()
-            symbol = 'btc'
             quantity = 1
-            sqlStr = f'select id from t_transfer_data where product_id="{symbol}" ' \
-                     f'AND amount= {quantity} AND transfer_status=6 order by id desc limit 1'
+            sqlStr = f'SELECT id FROM t_transfer_data WHERE product_id="{symbol}" ' \
+                     f'AND amount= {quantity} AND transfer_status=6 ORDER BY id DESC LIMIT 1'
             rec_dict_tuples = contract_trade_conn.selectdb_execute(
                 'contract_trade', sqlStr)
             assert rec_dict_tuples != None

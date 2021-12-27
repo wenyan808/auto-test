@@ -45,7 +45,7 @@ class TestContractEx_212:
 
     @allure.title('撮合次周 卖出开仓全部成交 撤单               ')
     @allure.step('测试执行')
-    def test_execute(self, symbol, symbol_period,DB_orderSeq):
+    def test_execute(self, symbol, symbol_period, DB_orderSeq):
         with allure.step('详见官方文档'):
             contracttype = 'next_week'
             leverrate = 5
@@ -64,13 +64,15 @@ class TestContractEx_212:
             # 撤单
             contract_api.contract_cancel(order_id=orderId)
             time.sleep(2)
-            strStr = "select count(1) from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (orderId)
+            strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
+                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (
+                         orderId)
 
             # 给撮合时间，5秒内还未撮合完成则为失败
             n = 0
             while n < 5:
-                isMatch = DB_orderSeq.execute(strStr)[0][0]
+                isMatch = DB_orderSeq.selectdb_execute(
+                    'order_seq', strStr)[0]['c']
                 if 1 == isMatch:
                     break
                 else:
