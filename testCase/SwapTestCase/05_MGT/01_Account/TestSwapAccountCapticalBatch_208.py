@@ -23,7 +23,7 @@ from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 @allure.tag('Script owner : 余辉青', 'Case owner : 程卓')
 @pytest.mark.stable
 class TestSwapAccountCapticalBatch_208:
-    startDate = -random.randint(2, 7)
+    startDate = -random.randint(2, 5)
     ids = [
         'TestSwapAccountCapticalBatch_208',
         'TestSwapAccountCapticalBatch_209',

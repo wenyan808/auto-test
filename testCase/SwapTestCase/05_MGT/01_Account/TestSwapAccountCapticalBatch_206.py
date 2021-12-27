@@ -80,7 +80,7 @@ class TestSwapAccountCapticalBatch_206:
                 'operateToCapitalFee': 33,
             }
             cls.endDateTime = (date.today() + timedelta(days=-1)).strftime("%Y/%m/%d")
-            cls.beginDateTime = (date.today() + timedelta(days=-8)).strftime("%Y/%m/%d")
+            cls.beginDateTime = (date.today() + timedelta(days=-3)).strftime("%Y/%m/%d")
             pass
 
     @classmethod
