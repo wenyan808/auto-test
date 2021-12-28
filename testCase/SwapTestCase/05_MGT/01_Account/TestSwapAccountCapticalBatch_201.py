@@ -18,7 +18,7 @@ from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 
 @allure.epic(epic[1])
 @allure.feature(features[4]['feature'])
-@allure.story(features[4]['story'][2])
+@allure.story(features[4]['story'][1])
 @allure.tag('Script owner : 余辉青', 'Case owner : 程卓')
 @pytest.mark.stable
 class TestSwapAccountCapticalBatch_201:

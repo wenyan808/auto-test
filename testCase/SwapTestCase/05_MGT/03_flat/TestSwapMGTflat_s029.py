@@ -93,7 +93,7 @@ class TestSwapMGTflat_s029:
                 api_result = SwapServiceMGT.flat(flatAccount=params['flatAccount'], uid=None, money=params['money'])
             pass
         with allure.step('验证:平账执行成功'):
-            assert '数据发送给交易系统成功' in api_result['data'],'接口执行失败'
+            assert '数据发送给交易系统成功' or '操作成功' in api_result['data'],'接口执行失败'
             time.sleep(0.5)
             pass
         with allure.step('验证:用户保证金账户加钱数量与平账数量一致'):
