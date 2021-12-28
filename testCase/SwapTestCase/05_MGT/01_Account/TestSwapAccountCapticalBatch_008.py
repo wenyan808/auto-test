@@ -18,7 +18,7 @@ from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 
 @allure.epic(epic[1])
 @allure.feature(features[4]['feature'])
-@allure.story(features[4]['story'][2])
+@allure.story(features[4]['story'][1])
 @allure.tag('Script owner : 余辉青', 'Case owner : 程卓')
 @pytest.mark.stable
 class TestSwapAccountCapticalBatch_008:
@@ -173,19 +173,18 @@ class TestSwapAccountCapticalBatch_008:
                     hxdz = data    #横向对账
             col_name = param['colName']
         with allure.step(f'验证:{self.fund_flow_type[col_name]}-横向对账'):
+
             if 'flatMoney' in col_name:
                 expectResult = Decimal(flat_user[col_name])
             else:
                 expectResult = Decimal(hxdz[col_name])
-                assert expectResult == 0, f'{self.fund_flow_type[col_name]}-横向对账值不为0'
-
+                # assert expectResult == 0, f'{self.fund_flow_type[col_name]}-横向对账值不为0'
             print(f'\n{self.fund_flow_type[col_name]}:平台资产({plat_form[col_name]})-('
                   f'应付用户({pay_user[col_name]})+'
                   f'应付外债({pay_debt[col_name]})+'
                   f'交易手续费({deal_fee[col_name]})+'
                   f'互换账户({hh_user[col_name]})+'
                   f'运营账户({operate_user[col_name]}))) == 横向对账({expectResult})')
-
             assert Decimal(plat_form[col_name]) -\
                    ( Decimal(pay_user[col_name]) +
                      Decimal(pay_debt[col_name]) +
