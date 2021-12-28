@@ -14,7 +14,7 @@ from tool.SwapTools import SwapTool
 @allure.story(features[6]['story'][6])
 @pytest.mark.stable
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
-class TestSwapNoti_ws_kline_024:
+class TestSwapNoti_ws_kline_s024:
 
     ids = ['TestSwapNoti_ws_kline_024',
            'TestSwapNoti_ws_kline_030',
@@ -26,44 +26,52 @@ class TestSwapNoti_ws_kline_024:
            'TestSwapNoti_ws_kline_066',
            'TestSwapNoti_ws_kline_072']
     params = [
-              {
-                "case_name": "合约交割中-1min",
-                "period": "1min"
-              },
-              {
-                "case_name": "合约交割中-5min",
-                "period": "5min"
-              },
-              {
-                "case_name": "合约交割中-15min",
-                "period": "15min"
-              },
-              {
-                "case_name": "合约交割中-30min",
-                "period": "30min"
-              },
-              {
-                "case_name": "合约交割中-60min",
-                "period": "60min"
-              },
-              {
-                "case_name": "合约交割中-4hour",
-                "period": "4hour"
-              },
-              {
-                "case_name": "合约交割中-1day",
-                "period": "1day"
-              },
-              {
-                "case_name": "合约交割中-1week",
-                "period": "1week"
-              },
-              {
-                "case_name": "合约交割中-1mon",
-                "period": "1mon"
-              }
-            ]
-
+        {
+            "case_name": "合约交割中-1min",
+            "period": "1min",
+            "title": ids[0],
+        },
+        {
+            "case_name": "合约交割中-5min",
+            "period": "5min",
+            "title": ids[1],
+        },
+        {
+            "case_name": "合约交割中-15min",
+            "period": "15min",
+            "title": ids[2],
+        },
+        {
+            "case_name": "合约交割中-30min",
+            "period": "30min",
+            "title": ids[3],
+        },
+        {
+            "case_name": "合约交割中-60min",
+            "period": "60min",
+            "title": ids[4],
+        },
+        {
+            "case_name": "合约交割中-4hour",
+            "period": "4hour",
+            "title": ids[5],
+        },
+        {
+            "case_name": "合约交割中-1day",
+            "period": "1day",
+            "title": ids[6],
+        },
+        {
+            "case_name": "合约交割中-1week",
+            "period": "1week",
+            "title": ids[7],
+        },
+        {
+            "case_name": "合约交割中-1mon",
+            "period": "1mon",
+            "title": ids[8],
+        }
+    ]
 
     @classmethod
     def setup_class(cls):

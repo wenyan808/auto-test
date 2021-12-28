@@ -3,14 +3,15 @@
 # @Date    : 2021/12/17 3:07 下午
 # @Author  : HuiQing Yu
 
-from common.mysqlComm import mysqlComm as mysqlClient
-from decimal import Decimal
+import allure
+import pytest
+import random
 
-import pytest, allure, time,random
 from common.SwapServiceMGT import SwapServiceMGT
-from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE
 from tool.SwapTools import SwapTool
+
 
 @allure.epic(epic[1])
 @allure.feature(features[4]['feature'])
@@ -56,7 +57,7 @@ class TestSwapMGTflat_s015:
         {'title': 'TestSwapMGTflat_028', 'case_name': '平台虚拟资产-减钱失败', 'flatAccount': 11,
          'money': random.randint(10, 100)},
     ]
-    contract_info = SwapTool.getContractStatus(trade_status=0)
+    contract_info = SwapTool.getContractStatus(instrument_status=0)
 
     @classmethod
     def setup_class(cls):
