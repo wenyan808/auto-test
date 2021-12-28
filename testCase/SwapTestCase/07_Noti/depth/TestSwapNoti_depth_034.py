@@ -39,7 +39,6 @@ class TestSwapNoti_depth_034:
         with allure.step('挂单更新深度'):
             for i in range (152):
                 api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice * (1+0.01*i), 2), direction='sell')
-            pass
         with allure.step('查询redis深度更新'):
             for i in range (5):
                 if SwapTool.opponentExist(symbol=cls.symbol, asks='asks'):
@@ -66,19 +65,24 @@ class TestSwapNoti_depth_034:
             }
             flag = False
             # 重试3次未返回预期结果则失败
-            for i in range(1, 4):
+            for i in range(3):
                 result = ws_user01.swap_sub(subs)
                 if 'tick' in result:
                     if result['tick']['asks']:
                         flag = True
                         break
                 time.sleep(1)
-                print('未返回预期结果，第{}次重试………………………………'.format(i))
+                print(f'未返回预期结果，第{i+1}次重试………………………………')
             assert flag, '未返回预期结果'
             pass
         with allure.step('验证：返回结果卖盘长度为{}'.format(params['exceptLength'])):
-            assert len(result['tick']['asks']) == params['exceptLength']
-
-
+            flag = False
+            for i in range(3):
+                if len(result['tick']['asks']) == params['exceptLength']:
+                    flag = True
+                else:
+                    print(f'深度未完全更新，第{i+1}次重试……')
+                    time.sleep(1)
+            assert flag,'多次重试，未还返回预期深度'
 if __name__ == '__main__':
     pytest.main()

@@ -55,11 +55,9 @@ class TestCoinswapLimitOrder_s001:
         with allure.step('操作：下限价单，格为当前价一半，使订单挂盘'):
             limit_order = user01.swap_order(contract_code=self.contract_code,price=round(self.latest_price*params['ratio'],2),
                                             direction=params['direction'])
-            pass
         with allure.step('验证：下单成功'):
             order_id = limit_order['data']['order_id']
             assert 'ok' in limit_order['status'] and order_id
-            pass
         with allure.step('操作：获取订单信息'):
             limit_order_info = user01.swap_order_info(order_id=order_id,contract_code=self.contract_code)
             pass
@@ -72,15 +70,12 @@ class TestCoinswapLimitOrder_s001:
             assert 1 or 3 == limit_order_info['data'][0]['status'],'订单状态校验失败'
             assert 0 == limit_order_info['data'][0]['is_tpsl'],'止盈止损是否设置校验失败'
             assert round(self.latest_price*params['ratio'],2) == limit_order_info['data'][0]['price'],'下单价格校验失败'
-            pass
         with allure.step("操作：获取用户资金信息-得出冻结资金"):
             time.sleep(1)
             account_info = user01.swap_account_info(contract_code=self.contract_code)
             cur_margin_frozen =account_info['data'][0]['margin_frozen']
-            pass
         with allure.step('验证：冻结保证金'):
             assert cur_margin_frozen == limit_order_info['data'][0]['margin_frozen'], '冻结保证金校验失败'
-            pass
         with allure.step("操作：查询限价单列表-未成交委托"):
             flag = False
             for i in range(3):
@@ -91,14 +86,11 @@ class TestCoinswapLimitOrder_s001:
                 else:
                     print('获取限价委托列表数据，第{}次重试……'.format(i+1))
                     time.sleep(1)
-            pass
         with allure.step("验证：订单存在限价委托列表中"):
             assert flag,'订单未存在列表中'
-            pass
         with allure.step("操作：撤销订单"):
             user01.swap_cancelall(contract_code=self.contract_code)
             time.sleep(1)
-            pass
         with allure.step("验证：冻结资金恢复"):
             account_info = user01.swap_account_info(contract_code=self.contract_code)
             cur_margin_frozen = account_info['data'][0]['margin_frozen']

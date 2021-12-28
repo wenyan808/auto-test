@@ -3,8 +3,10 @@
 # @Date    : 20211013
 # @Author : HuiQing Yu
 
+import allure
+import pytest
+
 from common.SwapServiceWS import user01 as ws_user01
-import pytest, allure, random, time
 from config.case_content import epic, features
 from tool.SwapTools import SwapTool
 
@@ -79,13 +81,12 @@ class TestSwapNoti_ws_kline_021:
     def test_execute(self, param):
         allure.dynamic.title(param['case_name'])
         with allure.step('操作：获取合约'):
-            # contract_info = SwapTool.getContractStatus(trade_status=2)
-            # if contract_info['isSkip']:
-            #     assert False,'未找到已下市合约'
+            contract_info = SwapTool.getContractStatus(instrument_status=0)
+            if contract_info['isSkip']:
+                assert False,'未找到已下市合约'
             pass
         with allure.step('操作：执行sub请求'):
-            # self.contract_code = contract_info['data']['instrument_index_code']
-            self.contract_code = 'BSV-USD'
+            self.contract_code = contract_info['data']['instrument_id']
             subs = {
                 "sub": "market.{}.kline.{}".format(self.contract_code, param['period']),
                 "id": "id1"
