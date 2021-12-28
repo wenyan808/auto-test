@@ -37,7 +37,7 @@ from tool.atp import ATP
 @allure.story('用户APO中清算version数据跳号时，检查当周合约下成交情况')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : Alex Li')
 @pytest.mark.stable
-class TestClear_contract_026:
+class TestClear_contract_s034:
     params = [
         {"contract_type": "this_week",  "id": "TestClear_contract_034",
             "case_title": "用户APO中清算version数据跳号时，检查当周合约下成交情况"},

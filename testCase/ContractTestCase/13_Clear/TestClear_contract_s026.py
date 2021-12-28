@@ -7,13 +7,13 @@
 所属分组
     定序,清算,落库,复核
 用例标题
-    用户APO中清算version数据跳号时，检查当周合约下撤单情况
+    用户APO中清算version数据跳号时，检查当周合约下挂单情况
 前置条件
 
 步骤/文本
     # order_version_0#t_version_2999为版本号，修改小一点，例：1）
     1、连接redis， 根据key修改用户APO中的清算版本号数据 key:apo_clear_version,value：999
-    2、当周合约下撤单，记住user_order_id
+    2、当周合约下挂单，记住user_order_id
 
 预期结果
     1、当周合约下单后，下单成功，但是清算处理不成功
@@ -34,19 +34,19 @@ from tool.atp import ATP
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('定序,清算,落库,复核')  # 这里填功能
-@allure.story('用户APO中清算version数据跳号时，检查当周合约下撤单情况')  # 这里填子功能，没有的话就把本行注释掉
+@allure.story('用户APO中清算version数据跳号时，检查当周合约下挂单情况')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : Alex Li')
 @pytest.mark.stable
-class TestClear_contract_026:
+class TestClear_contract_s026:
     params = [
-        {"contract_type": "this_week",  "id": "TestClear_contract_030",
-            "case_title": "用户APO中清算version数据跳号时，检查当周合约下撤单情况"},
-        {"contract_type": "next_week", "id": "TestClear_contract_031",
-            "case_title": "用户APO中清算version数据跳号时，检查次周合约下撤单情况"},
-        {"contract_type": "quarter", "id": "TestClear_contract_032",
-            "case_title": "用户APO中清算version数据跳号时，检查当季合约下撤单情况"},
-        {"contract_type": "next_quarter", "id": "TestClear_contract_033",
-            "case_title": "用户APO中清算version数据跳号时，检查次季合约下撤单情况"}
+        {"contract_type": "this_week",  "id": "TestClear_contract_026",
+            "case_title": "用户APO中清算version数据跳号时，检查当周合约下挂单情况"},
+        {"contract_type": "next_week", "id": "TestClear_contract_027",
+            "case_title": "用户APO中清算version数据跳号时，检查次周合约下挂单情况"},
+        {"contract_type": "quarter", "id": "TestClear_contract_028",
+            "case_title": "用户APO中清算version数据跳号时，检查当季合约下挂单情况"},
+        {"contract_type": "next_quarter", "id": "TestClear_contract_029",
+            "case_title": "用户APO中清算version数据跳号时，检查次季合约下挂单情况"}
     ]
 
     @allure.step('前置条件')
@@ -54,6 +54,7 @@ class TestClear_contract_026:
     def setup(self, symbol_period):
         print("前置条件 {}".format(symbol_period))
 
+    @allure.title('获取合约信息')
     @allure.step('测试执行')
     @pytest.mark.parametrize('param', params, ids=[x['id'] for x in params])
     def test_execute(self, symbol_period, symbol, param):
@@ -70,7 +71,7 @@ class TestClear_contract_026:
             redis_client.hset("RsT:APO:11538447#{}".format(
                 symbol), "apo_clear_version", "{}#{}#{}".format("1", version_list[1], version_list[2]))
             time.sleep(1)
-        with allure.step('2、当周合约下撤单，记住user_order_id'):
+        with allure.step('2、当周合约下挂单，记住user_order_id'):
             current_price = ATP.get_current_price(
                 contract_code=symbol_period)
             common_contract_api.contract_order(
@@ -80,16 +81,13 @@ class TestClear_contract_026:
             print(res)
             if "data" in res.keys():
                 self._user_order_id = res["data"]["order_id_str"]
-                res_cancel_ord = contract_api.contract_cancel(
-                    symbol=symbol, order_id=self._user_order_id)
-                if "data" in res_cancel_ord.keys():
-                    self._user_order_id = res_cancel_ord["data"]["successes"]
             else:
                 self._user_order_id = ""
         with allure.step('2、检查数据库表中订单状态 （state=2，2则订单数据未被清算处理）'):
             btc_conn = mysqlComm()
             sqlStr = 'SELECT state FROM t_tmp_order_check WHERE user_id="{}" AND product_id="{}" AND user_order_id="{}"'.format(
                 11538447, symbol, self._user_order_id)
+            print(sqlStr)
             rec_dict = btc_conn.selectdb_execute(
                 "btc", sqlStr)
             if len(rec_dict) > 0:
@@ -108,7 +106,16 @@ class TestClear_contract_026:
     def teardown(self, symbol):
         time.sleep(1)
         print('\n恢复环境操作')
-
+        # redis_client = redisConf('redis6380').instance()
+        # redis_client.delete("RsT:APO:11538447#BTC")
+        # redis_client.close()
+        # with allure.step('操作：发送MQ信息'):
+        #     mq_result = mqComm.UserProductTriggerInitChannel(
+        #         userId='11538447', symbol=symbol)
+        #     if mq_result and mq_result['routed']:
+        #         print('MQ信息发送成功……')
+        #     else:
+        #         assert False, 'MQ发送失败……'
         ATP.cancel_all_order()
         ATP.clean_market()
 
