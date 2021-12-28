@@ -26,43 +26,52 @@ class TestSwapNoti_ws_kline_022:
            'TestSwapNoti_ws_kline_064',
            'TestSwapNoti_ws_kline_070']
     params = [
-              {
-                "case_name": "待上市合约-1min",
-                "period": "1min"
-              },
-              {
-                "case_name": "待上市合约-5min",
-                "period": "5min"
-              },
-              {
-                "case_name": "待上市合约-15min",
-                "period": "15min"
-              },
-              {
-                "case_name": "待上市合约-30min",
-                "period": "30min"
-              },
-              {
-                "case_name": "待上市合约-60min",
-                "period": "60min"
-              },
-              {
-                "case_name": "待上市合约-4hour",
-                "period": "4hour"
-              },
-              {
-                "case_name": "待上市合约-1day",
-                "period": "1day"
-              },
-              {
-                "case_name": "待上市合约-1week",
-                "period": "1week"
-              },
-              {
-                "case_name": "待上市合约-1mon",
-                "period": "1mon"
-              }
-            ]
+        {
+            "case_name": "合约待开盘-1min",
+            "period": "1min",
+            "title": ids[0],
+        },
+        {
+            "case_name": "合约待开盘-5min",
+            "period": "5min",
+            "title": ids[1],
+        },
+        {
+            "case_name": "合约待开盘-15min",
+            "period": "15min",
+            "title": ids[2],
+        },
+        {
+            "case_name": "合约待开盘-30min",
+            "period": "30min",
+            "title": ids[3],
+        },
+        {
+            "case_name": "合约待开盘-60min",
+            "period": "60min",
+            "title": ids[4],
+        },
+        {
+            "case_name": "合约待开盘-4hour",
+            "period": "4hour",
+            "title": ids[5],
+        },
+        {
+            "case_name": "合约待开盘-1day",
+            "period": "1day",
+            "title": ids[6],
+        },
+        {
+            "case_name": "合约待开盘-1week",
+            "period": "1week",
+            "title": ids[7],
+        },
+        {
+            "case_name": "合约待开盘-1mon",
+            "period": "1mon",
+            "title": ids[8],
+        }
+    ]
 
 
     @classmethod
@@ -81,7 +90,7 @@ class TestSwapNoti_ws_kline_022:
         with allure.step('操作：执行sub请求'):
             contract_info = SwapTool.getContractStatus(instrument_status=4)
             if contract_info['isSkip']:
-                assert False,'未找到待上市合约'
+                assert False,'未找到待开盘合约'
         with allure.step('操作：执行sub请求'):
             self.contract_code = contract_info['data']['instrument_id']
             subs = {
@@ -91,7 +100,8 @@ class TestSwapNoti_ws_kline_022:
             result = ws_user01.swap_sub(subs=subs)
             pass
         with allure.step('校验返回结果'):
-            assert 'invalid topic' in str(result),'待上市校验失败'
+            assert result['subbed'] == "market." + self.contract_code + ".kline." + param['period'], '请求topic校验失败'
+            assert 'ok' in result['status'], 'status-校验失败'
             pass
 
 

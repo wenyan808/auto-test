@@ -13,7 +13,7 @@ from config.case_content import epic, features
 @allure.story(features[6]['story'][6])
 @pytest.mark.stable
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
-class TestSwapNoti_ws_kline_026:
+class TestSwapNoti_ws_kline_s026:
 
     ids = ['TestSwapNoti_ws_kline_026',
            'TestSwapNoti_ws_kline_032',
@@ -25,43 +25,52 @@ class TestSwapNoti_ws_kline_026:
            'TestSwapNoti_ws_kline_068',
            'TestSwapNoti_ws_kline_074']
     params = [
-              {
-                "case_name": "合约不存在-1min",
-                "period": "1min"
-              },
-              {
-                "case_name": "合约不存在-5min",
-                "period": "5min"
-              },
-              {
-                "case_name": "合约不存在-15min",
-                "period": "15min"
-              },
-              {
-                "case_name": "合约不存在-30min",
-                "period": "30min"
-              },
-              {
-                "case_name": "合约不存在-60min",
-                "period": "60min"
-              },
-              {
-                "case_name": "合约不存在-4hour",
-                "period": "4hour"
-              },
-              {
-                "case_name": "合约不存在-1day",
-                "period": "1day"
-              },
-              {
-                "case_name": "合约不存在-1week",
-                "period": "1week"
-              },
-              {
-                "case_name": "合约不存在-1mon",
-                "period": "1mon"
-              }
-            ]
+        {
+            "case_name": "合约不存在-1min",
+            "period": "1min",
+            "title": ids[0],
+        },
+        {
+            "case_name": "合约不存在-5min",
+            "period": "5min",
+            "title": ids[1],
+        },
+        {
+            "case_name": "合约不存在-15min",
+            "period": "15min",
+            "title": ids[2],
+        },
+        {
+            "case_name": "合约不存在-30min",
+            "period": "30min",
+            "title": ids[3],
+        },
+        {
+            "case_name": "合约不存在-60min",
+            "period": "60min",
+            "title": ids[4],
+        },
+        {
+            "case_name": "合约不存在-4hour",
+            "period": "4hour",
+            "title": ids[5],
+        },
+        {
+            "case_name": "合约不存在-1day",
+            "period": "1day",
+            "title": ids[6],
+        },
+        {
+            "case_name": "合约不存在-1week",
+            "period": "1week",
+            "title": ids[7],
+        },
+        {
+            "case_name": "合约不存在-1mon",
+            "period": "1mon",
+            "title": ids[8],
+        }
+    ]
 
     @pytest.mark.parametrize('param', params, ids=ids)
     def test_execute(self, param):
