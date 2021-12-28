@@ -40,9 +40,11 @@ class mysqlComm(object):
         finally:
             cursor.close()
 
-    # def __del__(self):
-    #     try:
-    #         print("MYSQL CONN DESTRUCTOR")
-    #         self.__contract_conn.close()
-    #     except Exception as e:
-    #         print(e)
+    def __del__(self):
+        try:
+            print("MYSQL CONN DESTRUCTOR")
+            self.__contract_conn.close()
+        except Exception as e:
+            print(e)
+
+swapMysql = mysqlComm()

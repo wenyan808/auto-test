@@ -4,7 +4,7 @@
 # @Author  : HuiQing Yu
 import time
 
-from common.mysqlComm import mysqlComm
+from common.mysqlComm import swapMysql
 from common.redisComm import redisConf
 from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
 
@@ -12,7 +12,7 @@ from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
 class SwapTools(object):
 
     def __init__(self):
-        self.mysqlClient = mysqlComm()
+        self.mysqlClient = swapMysql
         self.redis6379 = redisConf('redis6379').redisClient
         self.redis6380 = redisConf('redis6380').redisClient
 
