@@ -71,7 +71,7 @@ class SwapTools(object):
         result = {'isSkip': False,'data':None}
         # 合约状态 0:下市 1:上市 2:待上市 3:停牌 4:待开盘 5:结算中 6:交割中 7 结算完成 8 交割完成
         sqlStr = f'select product_id,instrument_id from t_instrument where instrument_status={instrument_status} limit 1'
-        db_info = self.mysqlClient.selectdb_execute('contract_trade', sqlStr=sqlStr)
+        db_info = self.mysqlClient.selectdb_execute(dbSchema='contract_trade', sqlStr=sqlStr)
         # 如果无数据则返回False通知
         if len(db_info) == 0:
             result['isSkip'] = True
