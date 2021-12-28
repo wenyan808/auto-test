@@ -18,7 +18,7 @@ from config.conf import DEFAULT_SYMBOL, DEFAULT_CONTRACT_CODE
 @allure.story('委托单')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
 @allure.tag('Script owner : 张广南', 'Case owner : 吉龙')
-class TestContractEx_004:
+class TestContractEx_s004:
     ids = ['TestContractEx_004',
            'TestContractEx_008',
            'TestContractEx_012',
@@ -174,24 +174,25 @@ class TestContractEx_004:
                                               contract_type=self.contract_type, direction='sell', offset='close',
                                               order_price_type=params['order_price_type'])
             time.sleep(1)
-            orderId = orderInfo['data']['order_id']
-            strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (
-                         orderId)
-            # 给撮合时间，5秒内还未撮合完成则为失败
-            n = 0
-            while n < 5:
-                isMatch = DB_orderSeq.selectdb_execute(
-                    'order_seq', strStr)[0]['c']
-                if 1 == isMatch:
-                    break
-                else:
-                    n = n + 1
-                    time.sleep(1)
-                    print('等待处理，第' + str(n) + '次重试………………………………')
-                    if n == 5:
-                        assert False
-            pass
+            if "data" in orderInfo:
+                orderId = orderInfo['data']['order_id']
+                strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
+                    "(select f_id from t_order_sequence where f_order_id= '%s')" % (
+                        orderId)
+                # 给撮合时间，5秒内还未撮合完成则为失败
+                n = 0
+                while n < 5:
+                    isMatch = DB_orderSeq.selectdb_execute(
+                        'order_seq', strStr)[0]['c']
+                    if 1 == isMatch:
+                        break
+                    else:
+                        n = n + 1
+                        time.sleep(1)
+                        print('等待处理，第' + str(n) + '次重试………………………………')
+                        if n == 5:
+                            assert False
+                pass
 
 
 if __name__ == '__main__':
