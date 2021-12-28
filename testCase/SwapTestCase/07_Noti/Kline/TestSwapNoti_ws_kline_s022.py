@@ -14,7 +14,7 @@ from tool.SwapTools import SwapTool
 @allure.story(features[6]['story'][6])
 @pytest.mark.stable
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
-class TestSwapNoti_ws_kline_022:
+class TestSwapNoti_ws_kline_s022:
 
     ids = ['TestSwapNoti_ws_kline_022',
            'TestSwapNoti_ws_kline_028',
