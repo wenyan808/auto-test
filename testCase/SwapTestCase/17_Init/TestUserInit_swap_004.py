@@ -9,7 +9,7 @@ import allure
 import pytest
 
 from common.SwapMqComm import mqComm
-from common.SwapServiceAPI import user01, user02
+from common.SwapServiceAPI import user03, user02
 from common.redisComm import redisConf
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
@@ -51,15 +51,15 @@ class TestUserInit_swap_004:
         with allure.step('操作：仓位调整(有多仓则跳过,无则持多仓；有空仓则清仓，无则跳过)'):
             if position_info_1 == 0:
                 print(f'当前用户未持多仓,数量{position_info_1},开始进行持多仓……')
-                user01.swap_order(contract_code=self.contract_code, price=self.latest_price,
+                user03.swap_order(contract_code=self.contract_code, price=self.latest_price,
                                   volume=1,
                                   offset='open', direction='buy')
                 user02.swap_order(contract_code=self.contract_code, price=self.latest_price,
                                   volume=1,
                                   offset='open', direction='sell')
-            elif position_info_2 > 0:
-                print(f'当前用户持有空数量{position_info_1},开始进行清仓……')
-                user01.swap_order(contract_code=self.contract_code, price=self.latest_price,
+            if position_info_2 > 0:
+                print(f'当前用户持有空数量{position_info_2},开始进行清仓……')
+                user03.swap_order(contract_code=self.contract_code, price=self.latest_price,
                                   volume=position_info_2,
                                   offset='close', direction='buy')
                 user02.swap_order(contract_code=self.contract_code, price=self.latest_price,
@@ -79,7 +79,12 @@ class TestUserInit_swap_004:
                 assert False, 'MQ发送失败……'
             pass
         with allure.step(f'验证：Redis Key={name}初始化成功'):
-            time.sleep(1)  # 等待初始化完成
+            for i in range(3):
+                if self.redisClient.exists(name) == 1:
+                    break
+                else:
+                    print(f'key={name},还未初始化完成，等待1秒后,第{i + 1}次重试……')
+                    time.sleep(1)
             keys = [f'Position:#{self.symbol}#{self.contract_code}#1',  # 多仓key
                     f'Position:#{self.symbol}#{self.contract_code}#2',  # 空仓key
                     f'orderPositionFrozen:{self.contract_code}#1',

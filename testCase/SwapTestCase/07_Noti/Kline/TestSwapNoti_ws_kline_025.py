@@ -62,17 +62,17 @@ class TestSwapNoti_ws_kline_025:
                 "period": "1mon"
               }
             ]
-    contract_info = SwapTool.getContractStatus(trade_status=0)
+
 
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：获取结算中合约'):
-            contract_info = SwapTool.getContractStatus(trade_status=0)
+            contract_info = SwapTool.getContractStatus(instrument_status=5)
             if contract_info['isSkip']:
                 assert False,'未找到结算中合约'
         with allure.step('操作：执行sub请求'):
-            self.contract_code = self.contract_info['data']['instrument_index_code']
+            self.contract_code = contract_info['data']['instrument_id']
             subs = {
                 "sub": "market.{}.kline.{}".format(self.contract_code, params['period']),
                 "id": "id1"
