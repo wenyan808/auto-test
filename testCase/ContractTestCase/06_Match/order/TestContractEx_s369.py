@@ -17,7 +17,7 @@ from tool.atp import ATP
 @allure.story('开多')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
 @allure.tag('Script owner : Alex Li', 'Case owner : 吉龙')
-class TestContractEx_369:
+class TestContractEx_s369:
 
     ids = ['TestContractEx_369',
            'TestContractEx_373',
@@ -28,14 +28,14 @@ class TestContractEx_369:
            'TestContractEx_519',
            'TestContractEx_523']
 
-    datas = [('quarter', '买入开仓 部分成交多人多笔价格相同的订单', 0, 1),
-             ('quarter', '买入开仓 全部成交多人多笔价格相同的订单', 0, 2),
-             ('quarter', '买入开仓 部分成交多人多笔价格不同的订单', 0.01, 1),
-             ('quarter', '买入开仓 全部成交多人多笔价格不同的订单', 0.01, 2),
-             ('next_quarter', '买入开仓 部分成交多人多笔价格相同的订单', 0, 1),
-             ('next_quarter', '买入开仓 全部成交多人多笔价格相同的订单', 0, 2),
-             ('next_quarter', '买入开仓 部分成交多人多笔价格不同的订单', 0.01, 1),
-             ('next_quarter', '买入开仓 全部成交多人多笔价格不同的订单', 0.01, 2)]
+    data = [('quarter', '买入开仓 部分成交多人多笔价格相同的订单', 0, 1),
+            ('quarter', '买入开仓 全部成交多人多笔价格相同的订单', 0, 2),
+            ('quarter', '买入开仓 部分成交多人多笔价格不同的订单', 0.01, 1),
+            ('quarter', '买入开仓 全部成交多人多笔价格不同的订单', 0.01, 2),
+            ('next_quarter', '买入开仓 部分成交多人多笔价格相同的订单', 0, 1),
+            ('next_quarter', '买入开仓 全部成交多人多笔价格相同的订单', 0, 2),
+            ('next_quarter', '买入开仓 部分成交多人多笔价格不同的订单', 0.01, 1),
+            ('next_quarter', '买入开仓 全部成交多人多笔价格不同的订单', 0.01, 2)]
 
     @allure.step('前置条件')
     def setup(self):
@@ -44,7 +44,7 @@ class TestContractEx_369:
 
     @allure.step('测试执行')
     @pytest.mark.flaky(reruns=1, reruns_delay=1)
-    @pytest.mark.parametrize('contest_type,caseName,ratio,volume', datas, ids=ids)
+    @pytest.mark.parametrize('contest_type,caseName,ratio,volume', data, ids=ids)
     def test_execute(self, symbol, contest_type, caseName, ratio, volume):
         with allure.step('详见官方文档'):
             allure.dynamic.title(caseName)

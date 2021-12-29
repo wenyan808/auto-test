@@ -7,10 +7,10 @@
 from common.ContractServiceAPI import t as contract_api
 from common.ContractServiceOrder import t as contranct_order
 from common.util import compare_dict
-
-from schema import Schema, And, Or, Regex, SchemaError
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import time
 from tool.get_test_data import case_data
 
 
@@ -21,7 +21,6 @@ class TestContractLimitOrder_001:
 
     def setUp(self):
         print('\n前置条件')
-
 
     def test_contract_account_position_info(self, symbol, symbol_period):
         flag = True
@@ -48,9 +47,10 @@ class TestContractLimitOrder_001:
         r = contract_api.contract_account_info(symbol=symbol)
         pprint(r)
         frozen1 = r['data'][0]['margin_frozen']
-        print("frozen1frozen1：",frozen1)
+        print("frozen1：", frozen1)
         """获取当前委托数量"""
-        r = contract_api.contract_openorders(symbol=symbol, page_index='', page_size='')
+        r = contract_api.contract_openorders(
+            symbol=symbol, page_index='', page_size='')
         totalsize1 = r['data']['total_size']
 
         print('\n步骤三:下一个低于卖一价格的买单\n')
@@ -69,7 +69,8 @@ class TestContractLimitOrder_001:
         frozen2 = r['data'][0]['margin_frozen']
         print("frozen2frozen2：", frozen2)
         """获取当前委托数量及详情"""
-        r = contract_api.contract_openorders(symbol=symbol, page_index='', page_size='')
+        r = contract_api.contract_openorders(
+            symbol=symbol, page_index='', page_size='')
         totalsize2 = r['data']['total_size']
         actual_orderinfo = r['data']['orders'][0]
         expectdic = {'symbol': symbol,
@@ -98,7 +99,8 @@ class TestContractLimitOrder_001:
         pprint(r)
         time.sleep(1)
         """获取历史订单"""
-        r = contract_api.contract_hisorders_exact(symbol=symbol, trade_type='0', type='2', status='7')
+        r = contract_api.contract_hisorders_exact(
+            symbol=symbol, trade_type='0', type='2', status='7')
         pprint(r)
         actual_orderinfo2 = r['data']['orders'][0]
         if compare_dict(expectdic, actual_orderinfo2) is not True:
@@ -108,7 +110,7 @@ class TestContractLimitOrder_001:
         r = contract_api.contract_account_info(symbol=symbol)
         pprint(r)
         frozen3 = r['data'][0]['margin_frozen']
-        print("frozen3frozen3：", frozen3)
+        print("frozen3：", frozen3)
         if frozen3 != frozen1:
             print("冻结资金没有恢复到初始状态，不符合预期")
             flag = False
