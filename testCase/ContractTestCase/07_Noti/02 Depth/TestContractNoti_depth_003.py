@@ -20,8 +20,12 @@ from common.ContractServiceAPI import t as contract_api
 from common.ContractServiceWS import t as contract_service_ws
 
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from tool import atp
+
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('行情')  # 这里填功能
@@ -32,11 +36,9 @@ class TestContractNoti_depth_003:
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, symbol_period):
-        atp.ATP.cancel_all_types_order()
-        time.sleep(1)
-        print("\n清盘》》》》", atp.ATP.clean_market())
-        time.sleep(1)
-        contract_types = {'CW': "this_week", 'NW': "next_week", 'CQ': "quarter", 'NQ': "next_quarter"}
+        print("\n挂盘》》》》", atp.ATP.make_market_depth(depth_count=5))
+        contract_types = {'CW': "this_week", 'NW': "next_week",
+                          'CQ': "quarter", 'NQ': "next_quarter"}
         symbol = symbol_period.split('_')[0]
         contract_type = contract_types[symbol_period.split('_')[1]]
         lever_rate = 5
@@ -46,7 +48,8 @@ class TestContractNoti_depth_003:
         buy_price = atp.ATP.get_adjust_price(rate=0.99)
         time.sleep(1)
 
-        contractInfo = contract_api.contract_contract_info(symbol=symbol, contract_type=contract_type)
+        contractInfo = contract_api.contract_contract_info(
+            symbol=symbol, contract_type=contract_type)
         print('BTC当周合约信息 = ', contractInfo)
         contract_code = contractInfo['data'][0]['contract_code']
 
@@ -64,7 +67,8 @@ class TestContractNoti_depth_003:
     def test_execute(self, symbol, symbol_period):
         with allure.step('WS订阅深度(150档不合并，即传参step0)，可参考文档：https://docs.huobigroup.com/docs/dm/v1/cn/#websocket-3'):
             depth_type = 'step2'
-            result = contract_service_ws.contract_sub_depth(contract_code=symbol_period, type=depth_type)
+            result = contract_service_ws.contract_sub_depth(
+                contract_code=symbol_period, type=depth_type)
             result_str = '\nDepth返回结果 = ' + str(result)
             print('\033[1;32;49m%s\033[0m' % result_str)
             if not result['tick']['bids']:
@@ -76,6 +80,7 @@ class TestContractNoti_depth_003:
     @allure.step('恢复环境')
     def teardown(self):
         atp.ATP.cancel_all_types_order()
+        atp.ATP.clean_market()
         print('\n恢复环境操作')
 
 

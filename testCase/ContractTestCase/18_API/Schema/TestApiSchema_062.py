@@ -64,7 +64,9 @@ class TestApiSchema_062:
                 schema = {
                     "status": "ok",
                     "data": {
-                        "errors": [],
+                        "errors": [{'err_code': Or(int, None),
+                                    'err_msg': Or(str, None),
+                                    'order_id': Or(str, None)}],
                         "successes": str
                     },
                     "ts": int

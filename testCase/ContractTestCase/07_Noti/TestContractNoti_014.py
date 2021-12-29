@@ -33,6 +33,7 @@ from tool.atp import ATP
 from tool.common_assert import Assert
 from tool.atp import ATP
 
+
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('合约测试基线用例//01 交割合约//07 行情')  # 这里填功能
 @allure.story('请求批量聚合行情(所有合约，即不传contract_code)')  # 这里填子功能，没有的话就把本行注释掉
@@ -43,15 +44,12 @@ class TestContractNoti_014:
     @allure.step('前置条件')
     def setup(self):
         print(" 清盘 -》 挂单 ")
-        ATP.cancel_all_types_order()
-        time.sleep(0.5)
-        ATP.make_market_depth()
+        ATP.make_market_depth(depth_count=5)
         self.current_price = ATP.get_current_price()
         sell_price = ATP.get_adjust_price(1.02)
         buy_price = ATP.get_adjust_price(0.98)
         ATP.common_user_make_order(price=sell_price, direction='sell')
         ATP.common_user_make_order(price=buy_price, direction='buy')
-        time.sleep(1)
 
     @allure.title('请求批量聚合行情(所有合约，即不传contract_code)')
     @allure.step('测试执行')
@@ -67,7 +65,8 @@ class TestContractNoti_014:
             tick = ticks[0]
             check_keys = ['symbol', 'vol', 'count', 'open', 'close', 'low', 'high', 'amount', 'ask', 'bid', 'id',
                           'ts']
-            assert isinstance(tick, dict) and set(check_keys) == set(tick.keys()), 'response 中 tick 缺少字段'
+            assert isinstance(tick, dict) and set(check_keys) == set(
+                tick.keys()), 'response 中 tick 缺少字段'
 
             ask = tick.get('ask', [])
             bid = tick.get('bid', [])
@@ -94,12 +93,14 @@ class TestContractNoti_014:
             assert vol >= 20, 'vol 错误'
 
             id = tick.get('id', 0)
-            assert int(time.time()) - (48 * 60 * 60) <= id <= int(time.time()), 'id 错误'
+            assert int(time.time()) - (48 * 60 *
+                                       60) <= id <= int(time.time()), 'id 错误'
 
             res = api.contract_batch_merged()
             pprint(res)
             mul_ticks = Assert.base_check_response(res, 'ticks')
-            assert isinstance(mul_ticks, list) and len(mul_ticks) > 1, 'ticks 不正确'
+            assert isinstance(mul_ticks, list) and len(
+                mul_ticks) > 1, 'ticks 不正确'
             del tick['ts']
             del tick['id']
             for item in mul_ticks:
@@ -111,6 +112,7 @@ class TestContractNoti_014:
     def teardown(self):
         print('\n恢复环境操作')
         ATP.cancel_all_order()
+        ATP.clean_market()
 
 
 if __name__ == '__main__':

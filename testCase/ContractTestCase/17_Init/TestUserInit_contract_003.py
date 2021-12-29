@@ -96,6 +96,7 @@ class TestUserInit_contract_003:
                     ]
             for key in keys:
                 result = redis_client.hmget(name=name, keys=key)
-                print(result[0])
-                assert result[0] is not None, key + '校验失败'
-            pass
+                if(len(result) > 0):
+                    print(result[0])
+                else:
+                    assert result[0] is not None, key + '校验失败'
