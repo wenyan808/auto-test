@@ -245,7 +245,7 @@ def sub(url, subs, keyword=None):
         sub_result = json.loads(gzip.decompress(ws.recv()).decode())
         if keyword:
             for i in range(3):
-                if keyword in sub_result:
+                if keyword in str(sub_result):
                     break
                 else:
                     print(f'返回数据中无关键key={keyword},实际结果={sub_result},第{i+1}次重试……')

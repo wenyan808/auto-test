@@ -24,6 +24,7 @@ class mysqlComm(object):
     def selectdb_execute(self, dbSchema, sqlStr):
         print('数据库Schema:{}，执行sql ={}'.format(dbSchema, sqlStr))
         try:
+            self.__contract_conn.ping(reconnect=True)
             self.__contract_conn.select_db(dbSchema)
             cursor = self.__contract_conn.cursor(
                 cursor=pymysql.cursors.DictCursor)
@@ -46,3 +47,4 @@ class mysqlComm(object):
             self.__contract_conn.close()
         except Exception as e:
             print(e)
+
