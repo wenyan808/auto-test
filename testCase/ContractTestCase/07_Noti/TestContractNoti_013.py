@@ -32,6 +32,7 @@ from tool.atp import ATP
 from tool.common_assert import Assert
 from tool.atp import ATP
 
+
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('合约测试基线用例//01 交割合约//07 行情')  # 这里填功能
 @allure.story('请求聚合行情(单个合约，即传参contract_code)')  # 这里填子功能，没有的话就把本行注释掉
@@ -42,19 +43,16 @@ class TestContractNoti_013:
     @allure.step('前置条件')
     def setup(self):
         print(" 清盘 -》 挂单 ")
-        ATP.cancel_all_types_order()
-        time.sleep(0.5)
-        ATP.make_market_depth()
+        ATP.make_market_depth(depth_count=5)
         self.current_price = ATP.get_current_price()
         sell_price = ATP.get_adjust_price(1.02)
         buy_price = ATP.get_adjust_price(0.98)
         ATP.common_user_make_order(price=sell_price, direction='sell')
         ATP.common_user_make_order(price=buy_price, direction='buy')
-        time.sleep(1)
 
     @allure.title('请求聚合行情(单个合约，即传参contract_code)')
     @allure.step('测试执行')
-    def test_execute(self, symbol, symbol_period):
+    def test_execute(self, symbol_period):
         with allure.step('请求聚合行情(单个合约，即传参contract_code),可参考文档：https://docs.huobigroup.com/docs/dm/v1/cn/#websocket-3'):
             # open、close、low、high价格正确；amount、vol、count值正确asks、bid值正确,不存在Null,[]
             res = api.contract_detail_merged(symbol=symbol_period)
@@ -66,15 +64,16 @@ class TestContractNoti_013:
 
             check_keys = ['vol', 'count', 'open', 'close', 'low', 'high', 'amount', 'ask', 'bid', 'id',
                           'ts']
-            assert isinstance(tick, dict) and set(check_keys) == set(tick.keys()), 'response 中 tick 缺少字段'
+            assert isinstance(tick, dict) and set(check_keys) == set(
+                tick.keys()), 'response 中 tick 缺少字段'
 
             ask = tick.get('ask', [])
             bid = tick.get('bid', [])
 
-            assert isinstance(ask, list) and len(ask) == 2 and ask[0] > 0 and ask[1] == 10 and ask[
+            assert isinstance(ask, list) and ask[0] > 0 and ask[
                 0] > self.current_price, 'ask 价格 或 数量 错误'
 
-            assert isinstance(bid, list) and len(bid) == 2 and bid[0] > 0 and bid[1] == 10 and bid[
+            assert isinstance(bid, list) and bid[
                 0] < self.current_price, 'bid 价格 或 数量 错误'
 
             close = float(tick.get('close', 0))
@@ -93,12 +92,14 @@ class TestContractNoti_013:
             assert vol >= 20, 'vol 错误'
 
             id = tick.get('id', 0)
-            assert int(time.time()) - (48 * 60 * 60) <= id <= int(time.time()), 'id 错误'
+            assert int(time.time()) - (48 * 60 *
+                                       60) <= id <= int(time.time()), 'id 错误'
 
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
         ATP.cancel_all_order()
+        ATP.clean_market()
 
 
 if __name__ == '__main__':

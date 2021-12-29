@@ -32,6 +32,7 @@ from tool.atp import ATP
 from tool.common_assert import Assert
 from tool.atp import ATP
 
+
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('合约测试基线用例//01 交割合约//07 行情')  # 这里填功能
 @allure.story('请求深度(150档不合并)')  # 这里填子功能，没有的话就把本行注释掉
@@ -47,12 +48,11 @@ class TestContractNoti_011:
         time.sleep(1)
         self.current_price = ATP.get_current_price()
         print(''' make market depth ''')
-        ATP.make_market_depth()
+        ATP.make_market_depth(depth_count=5)
         sell_price = ATP.get_adjust_price(1.02)
         buy_price = ATP.get_adjust_price(0.98)
         ATP.common_user_make_order(price=sell_price, direction='sell')
         ATP.common_user_make_order(price=buy_price, direction='buy')
-        time.sleep(2)
 
     @allure.title('请求深度(150档不合并)')
     @allure.step('测试执行')
@@ -64,7 +64,8 @@ class TestContractNoti_011:
             pprint(res)
             tick = Assert.base_check_response(res, 'tick')
             check_keys = ['asks', 'bids', 'ch', 'id', 'mrid', 'ts', 'version']
-            assert isinstance(tick, dict) and set(check_keys) == set(tick.keys()), 'response 中 tick 缺少字段'
+            assert isinstance(tick, dict) and set(check_keys) == set(
+                tick.keys()), 'response 中 tick 缺少字段'
 
             ch = tick.get('ch', '')
             assert ch == f'market.{symbol_period.upper()}.depth.step0', 'ch 不正确'
@@ -72,14 +73,14 @@ class TestContractNoti_011:
             asks = tick.get('asks', [])
             bids = tick.get('bids', [])
             mrid = tick.get('mrid', -1)
-            assert isinstance(asks, list) and len(asks) == 2, 'asks 不正确'
+            assert isinstance(asks, list), 'asks 不正确'
             for ask in asks:
-                assert isinstance(ask, list) and len(ask) == 2 and ask[0] > 0 and ask[1] == 10 and ask[
+                assert isinstance(ask, list) and len(ask) == 2 and ask[0] > 0 and ask[
                     0] > self.current_price, 'ask 价格 或 数量 错误'
 
-            assert isinstance(bids, list) and len(bids) == 2, 'bids 不正确'
+            assert isinstance(bids, list), 'bids 不正确'
             for bid in bids:
-                assert isinstance(bid, list) and len(bid) == 2 and bid[0] > 0 and bid[1] == 10 and bid[
+                assert isinstance(bid, list) and bid[0] > 0 and bid[
                     0] < self.current_price, 'bid 价格 或 数量 错误'
 
             assert isinstance(mrid, int) and mrid >= 0, '获取bbo mrid 错误'
@@ -88,6 +89,7 @@ class TestContractNoti_011:
     def teardown(self):
         print('\n恢复环境操作')
         ATP.cancel_all_order()
+        ATP.clean_market()
 
 
 if __name__ == '__main__':
