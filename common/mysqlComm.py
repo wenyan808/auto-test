@@ -48,4 +48,3 @@ class mysqlComm(object):
         except Exception as e:
             print(e)
 
-swapMysql = mysqlComm()
