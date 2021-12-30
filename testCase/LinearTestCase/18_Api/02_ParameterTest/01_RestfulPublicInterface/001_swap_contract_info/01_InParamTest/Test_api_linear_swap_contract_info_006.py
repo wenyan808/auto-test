@@ -16,20 +16,19 @@
         Test_api_linear_swap_contract_info_006
 """
 
-from common.ContractServiceAPI import t as contract_api
-from common.ContractServiceOrder import t as contract_order
-from common.LinearServiceAPI import t as linear_api
-from common.LinearServiceOrder import t as linear_order
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceOrder import t as swap_order
-
 from pprint import pprint
-import pytest, allure, random, time
+
+import allure
+import pytest
+
+from common.LinearServiceAPI import t as linear_api
 
 
-@allure.epic('业务线')  # 这里填业务线
-@allure.feature('功能')  # 这里填功能
-@allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@allure.epic('正向永续')  # 这里填业务线
+@allure.feature('API参数测试')  # 这里填功能
+@allure.story('swap_contract_info接口')  # 这里填子功能，没有的话就把本行注释掉
+@allure.tag('Script owner : 张广南', 'Case owner : 张广南')
+@pytest.mark.stable
 class Test_api_linear_swap_contract_info_006:
 
     @allure.step('前置条件')
@@ -38,7 +37,7 @@ class Test_api_linear_swap_contract_info_006:
 
     @allure.title('business_type参数为特殊字符测试')
     @allure.step('测试执行')
-    def test_execute(self, symbol, symbol_period):
+    def test_execute(self):
         with allure.step('1、调用linear-swap-api/v1/swap_contract_info接口，business_type参数为特殊字符。检查返回值有结果A'):
             paralist = ['#', '!', '%', '*', '&', '.', '$', '#^%$&%*^()*(@$!']
 
