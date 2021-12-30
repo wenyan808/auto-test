@@ -25,7 +25,7 @@ import pytest, allure, random, time
 
 @allure.epic('正向永续')  # 这里填业务线
 @allure.feature('API参数测试')  # 这里填功能
-@allure.story('linear_swap_index')  # 这里填子功能，没有的话就把本行注释掉
+@allure.story('swap_contract_info接口')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : 张广南', 'Case owner : 张广南')
 @pytest.mark.stable
 class Test_api_linear_swap_contract_info_002:
