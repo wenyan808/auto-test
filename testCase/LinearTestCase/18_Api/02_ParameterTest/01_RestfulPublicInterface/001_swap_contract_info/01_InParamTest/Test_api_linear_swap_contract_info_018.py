@@ -16,20 +16,19 @@
         Test_api_linear_swap_contract_info_018
 """
 
-from common.ContractServiceAPI import t as contract_api
-from common.ContractServiceOrder import t as contract_order
-from common.LinearServiceAPI import t as linear_api
-from common.LinearServiceOrder import t as linear_order
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceOrder import t as swap_order
-
 from pprint import pprint
-import pytest, allure, random, time
+
+import allure
+import pytest
+
+from common.util import api_http_get
 
 
-@allure.epic('业务线')  # 这里填业务线
-@allure.feature('功能')  # 这里填功能
-@allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+@allure.epic('正向永续')  # 这里填业务线
+@allure.feature('API参数测试')  # 这里填功能
+@allure.story('swap_contract_info接口')  # 这里填子功能，没有的话就把本行注释掉
+@allure.tag('Script owner : 张广南', 'Case owner : 张广南')
+@pytest.mark.stable
 class Test_api_linear_swap_contract_info_018:
 
     @allure.step('前置条件')
@@ -38,9 +37,18 @@ class Test_api_linear_swap_contract_info_018:
 
     @allure.title('contract_code参数为空,null测试')
     @allure.step('测试执行')
-    def test_execute(self, symbol, symbol_period):
+    def test_execute(self, contract_code, url):
         with allure.step('1、调用linear-swap-api/v1/swap_contract_info接口，contract_code参数为空,null。检查返回值有结果A'):
-            pass
+            params = ['']#传null报合约不存在
+            url = url + '/linear-swap-api/v1/swap_contract_info'
+            for param in params:
+                request = {'contract_code': param, 'support_margin_mode': 'all', 'pair': 'BTC-USDT',
+                           'contract_type': 'swap', 'business_type': 'swap'}
+                r = api_http_get(url, request)
+                pprint(r)
+
+                assert r['status'] == 'ok'
+
 
     @allure.step('恢复环境')
     def teardown(self):
