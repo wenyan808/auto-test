@@ -3,17 +3,17 @@
 """# @Date    : 20211229
 # @Author : 
     用例标题
-        contract_code参数在取值范围外测试
+        support_margin_mode参数为特殊字符测试
     前置条件
         
     步骤/文本
-        1、调用linear-swap-api/v1/swap_contract_info接口，contract_code参数在取值范围外。检查返回值有结果A
+        1、调用linear-swap-api/v1/swap_contract_info接口,support_margin_mode参数为特殊字符。检查返回值有结果A
     预期结果
         A)提示参数错误
     优先级
         1
     用例别名
-        Test_api_linear_swap_contract_info_020
+        Test_api_linear_swap_contract_info_027
 """
 
 from pprint import pprint
@@ -29,27 +29,26 @@ from common.LinearServiceAPI import t as linear_api
 @allure.story('swap_contract_info接口')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : 张广南', 'Case owner : 张广南')
 @pytest.mark.stable
-class Test_api_linear_swap_contract_info_020:
+class Test_api_linear_swap_contract_info_027:
 
     @allure.step('前置条件')
     def setup(self):
         print('''  ''')
 
-    @allure.title('contract_code参数在取值范围外测试')
+    @allure.title('support_margin_mode参数为特殊字符测试')
     @allure.step('测试执行')
     def test_execute(self):
-        with allure.step('1、调用linear-swap-api/v1/swap_contract_info接口，contract_code参数在取值范围外。检查返回值有结果A'):
-            paralist = ['USDT', 'USDT-USDT', 'USD']
-
+        with allure.step('1、调用linear-swap-api/v1/swap_contract_info接口,support_margin_mode参数为特殊字符。检查返回值有结果A'):
+            paralist = ['#', '!', '%', '*', '&', '.', '$', '#^%$&%*^()*(@$!']
             for i in range(len(paralist)):
-                r = linear_api.linear_contract_info(contract_code=paralist[i],
-                                                    support_margin_mode='',
-                                                    business_type='',
+                r = linear_api.linear_contract_info(contract_code='',
+                                                    support_margin_mode=paralist[i],
+                                                    business_type='swap',
                                                     pair='',
                                                     contract_type='swap')
                 pprint(r)
                 assert r['status'] == 'error'
-                assert r['err_msg'] in ['合约不存在', 'contract_code字段不合法']
+                assert r['err_msg'] == '合约不存在'
 
     @allure.step('恢复环境')
     def teardown(self):
