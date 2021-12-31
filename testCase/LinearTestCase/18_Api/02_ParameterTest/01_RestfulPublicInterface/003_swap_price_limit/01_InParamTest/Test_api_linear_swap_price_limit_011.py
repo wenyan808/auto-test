@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""# @Date    : 20211229
+"""# @Date    : 20211230
 # @Author : 
     用例标题
         pair参数为特殊字符测试
     前置条件
         
     步骤/文本
-        1、调用linear-swap-api/v1/swap_contract_info接口，pair参数为特殊字符。检查返回值有结果A
+        1、调用linear-swap-api/v1/swap_price_limit，pair参数为特殊字符。检查返回值有结果A
     预期结果
         A)提示参数错误
     优先级
         1
     用例别名
-        Test_api_linear_swap_contract_info_011
+        Test_api_linear_swap_price_limit_011
 """
 
 from pprint import pprint
@@ -26,10 +26,10 @@ from common.LinearServiceAPI import t as linear_api
 
 @allure.epic('正向永续')  # 这里填业务线
 @allure.feature('API参数测试')  # 这里填功能
-@allure.story('swap_contract_info接口')  # 这里填子功能，没有的话就把本行注释掉
+@allure.story('linear_swap_price_limit')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : 张广南', 'Case owner : 张广南')
 @pytest.mark.stable
-class Test_api_linear_swap_contract_info_011:
+class Test_api_linear_swap_price_limit_011:
 
     @allure.step('前置条件')
     def setup(self):
@@ -38,15 +38,14 @@ class Test_api_linear_swap_contract_info_011:
     @allure.title('pair参数为特殊字符测试')
     @allure.step('测试执行')
     def test_execute(self):
-        with allure.step('1、调用linear-swap-api/v1/swap_contract_info接口，pair参数为特殊字符。检查返回值有结果A'):
+        with allure.step('1、调用linear-swap-api/v1/swap_price_limit，pair参数为特殊字符。检查返回值有结果A'):
             paralist = ['#', '!', '%', '*', '&', '.', '$', '#^%$&%*^()*(@$!']
 
             for i in range(len(paralist)):
-                r = linear_api.linear_contract_info(contract_code='',
-                                                    support_margin_mode='all',
-                                                    business_type='',
-                                                    pair=paralist[i],
-                                                    contract_type='swap')
+                r = linear_api.linear_price_limit(contract_code='',
+                                                  business_type='',
+                                                  pair=paralist[i],
+                                                  contract_type='swap')
                 pprint(r)
                 assert r['status'] == 'error'
                 assert r['err_msg'] == 'pair字段不合法'
