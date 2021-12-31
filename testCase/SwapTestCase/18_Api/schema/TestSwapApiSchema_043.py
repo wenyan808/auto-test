@@ -56,7 +56,6 @@ class TestSwapApiSchema_043:
                     'volume': Or(float, int, 0, None),
                     'liquidation_type': str,
                     'canceled_at': int,
-                    'update_time':None,
                     "is_tpsl": Or(1, 0)
                 }],
                 'status': 'ok',

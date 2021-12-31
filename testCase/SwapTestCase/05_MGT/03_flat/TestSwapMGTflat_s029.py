@@ -75,7 +75,7 @@ class TestSwapMGTflat_s029:
     def test_execute(self, params):
         allure.dynamic.title(params['title'])
         with allure.step('操作：获取停牌合约'):
-            contract_info = SwapTool.getContractStatus(trade_status=3)
+            contract_info = SwapTool.getContractStatus(instrument_status=3)
             if contract_info['isSkip']:
                 assert False,'未找到停牌合约'
             self.symbol = contract_info['data']['product_id']
