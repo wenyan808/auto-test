@@ -42,10 +42,10 @@ class Test_api_linear_swap_contract_info_004:
 
             for i in range(len(paralist)):
                 r = linear_api.linear_contract_info(contract_code='',
-                                                    support_margin_mode='all',
+                                                    support_margin_mode='',
                                                     business_type=paralist[i],
                                                     pair='',
-                                                    contract_type='swap')
+                                                    contract_type='')
                 pprint(r)
                 for j in r['data']:
                     assert j['business_type'] in expectlist[i]
