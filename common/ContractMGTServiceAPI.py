@@ -55,5 +55,16 @@ class ContractMGTServiceAPI:
         url = self.__url + '/contract-manager-web/service/accountCapitalDailyService/findPaltformFlow'
         return api_http_form_post(url, params, {"token": self.__token})
 
+# 允许在有持仓时切换杠杆
+    def cutLeverWhiteListService_updateCutLeverByPrimaryKey(self, params):
+        url = self.__url + \
+            '/contract-manager-web/service/cutLeverWhiteListService/updateCutLeverByPrimaryKey'
+        return api_http_form_post(url, params, {"token": self.__token})
+
+    def cutLeverWhiteListService_insertCutLeverWhiteList(self, params):
+        url = self.__url + \
+            '/contract-manager-web/service/cutLeverWhiteListService/insertCutLeverWhiteList'
+        return api_http_form_post(url, params, {"token": self.__token})
+
 
 t = ContractMGTServiceAPI(URL)
