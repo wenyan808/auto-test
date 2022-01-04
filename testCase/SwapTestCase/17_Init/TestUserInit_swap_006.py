@@ -20,7 +20,6 @@ from tool.SwapTools import SwapTool
 @allure.feature(features[16]['feature'])
 @allure.story(features[16]['story'][0])
 @allure.tag('Script owner : 余辉青', 'Case owner : 曾超群')
-@pytest.mark.P0
 class TestUserInit_swap_006:
     ids = ['TestUserInit_swap_006']
     params = [{'case_name': '检查用户已开户，有资金持多仓和空仓，个人初始化'}]
@@ -66,7 +65,7 @@ class TestUserInit_swap_006:
                                   volume=1,
                                   offset='open', direction='sell')
             if position_info_2 == 0:
-                print(f'当前用户持有空数量{position_info_1},开始进行持仓……')
+                print(f'当前用户持有空数量{position_info_2},开始进行持仓……')
                 user03.swap_order(contract_code=self.contract_code, price=self.latest_price,
                                   volume=1,
                                   offset='open', direction='sell')
