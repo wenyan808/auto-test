@@ -3,25 +3,24 @@
 # @Date    : 2021/12/6 9:57 上午
 # @Author  : HuiQing Yu
 
-from common.mysqlComm import mysqlComm as mysqlClient
+import time
 
 import allure
 import pytest
-import time
 
-from common.redisComm import redisConf
-from tool.SwapTools import SwapTool
 from common.SwapMqComm import mqComm
 from common.SwapServiceAPI import user03, user02
+from common.redisComm import redisConf
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
 @allure.feature(features[16]['feature'])
 @allure.story(features[16]['story'][0])
 @allure.tag('Script owner : 余辉青', 'Case owner : 曾超群')
-@pytest.mark.stable
+@pytest.mark.P0
 class TestUserInit_swap_003:
     ids = ['TestUserInit_swap_003']
     params = [{'case_name': '检查用户已开户，有资金无持仓，个人初始化'}]
