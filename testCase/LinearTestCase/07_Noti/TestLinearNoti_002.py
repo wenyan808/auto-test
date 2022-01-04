@@ -32,7 +32,6 @@ class TestLinearNoti_002:
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, contract_code, lever_rate, offsetO, directionB, directionS):
-        print("\n清盘》》》》", ATP.clean_market())
 
         lever_rate = 5
 

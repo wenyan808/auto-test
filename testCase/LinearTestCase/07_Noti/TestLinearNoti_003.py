@@ -51,11 +51,7 @@ class TestLinearNoti_003:
     def test_execute(self,contract_code):
         with allure.step('WS订阅深度(20档不合并，即传参step6)，可参考文档：https://docs.huobigroup.com/docs/usdt_swap/v1/cn/#websocket-3'):
             depthType = 'step6'
-            subs = {
-                "sub": "market.{}.depth.{}".format(contract_code, depthType),
-                "id": "id5"
-            }
-            result = linear_service_ws.linear_sub(subs)
+            result = linear_service_ws.linear_sub_depth(contract_code=contract_code, type=depthType)
             result_str = '\nDepth返回结果 = ' + str(result)
             print('\033[1;32;49m%s\033[0m' % result_str)
             # 请求topic校验
