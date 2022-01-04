@@ -40,7 +40,7 @@ from tool.atp import ATP
 @allure.feature('初始化')  # 这里填功能
 @allure.story('个人初始化')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : 曾超群')
-@pytest.mark.stable
+@pytest.mark.unstable
 class TestUserInit_contract_005:
 
     @allure.step('前置条件:')
