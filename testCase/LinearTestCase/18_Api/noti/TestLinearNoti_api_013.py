@@ -50,7 +50,7 @@ class TestLinearNoti_api_013:
                                'low': Or(float, int),
                                'mrid': int,
                                'open': Or(float, int),
-                               'trade_turnover': int,
+                               'trade_turnover': Or(float, int),
                                'vol': int},
                       'ts': int}
             Schema(schema).validate(r)
