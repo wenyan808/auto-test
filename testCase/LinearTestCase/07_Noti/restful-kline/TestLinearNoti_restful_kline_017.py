@@ -60,7 +60,7 @@ class TestLinearNoti_restful_kline_017:
                                         size=2010)
             pprint(r)
             errmsg = r['err-msg']
-            if errmsg != "invalid size, valid range: [1,2000]":
+            if errmsg != "invalid size":
                 assert False
 
     @allure.step('恢复环境')
