@@ -3,14 +3,15 @@
 # @Date    : 2021/11/10 5:26 下午
 # @Author  : HuiQing Yu
 
-from common.mysqlComm import mysqlComm as mysqlClient
-
-import pytest, allure, random, time
-from common.SwapServiceWS import user01 as ws_user01
-from common.SwapServiceAPI import user01 as api_user01
-from config.conf import DEFAULT_CONTRACT_CODE
-from tool.SwapTools import SwapTool
+import allure
+import pytest
+import time
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE
+
+from common.SwapServiceAPI import user01 as api_user01
+from common.SwapServiceWS import user01 as ws_user01
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])

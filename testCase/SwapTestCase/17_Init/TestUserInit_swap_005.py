@@ -20,7 +20,6 @@ from tool.SwapTools import SwapTool
 @allure.feature(features[16]['feature'])
 @allure.story(features[16]['story'][0])
 @allure.tag('Script owner : 余辉青', 'Case owner : 曾超群')
-@pytest.mark.stable
 class TestUserInit_swap_005:
     ids = ['TestUserInit_swap_005']
     params = [{'case_name': '检查用户已开户，有资金持空仓，个人初始化'}]
@@ -44,6 +43,15 @@ class TestUserInit_swap_005:
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：查看用户是否有仓位'):
             name = f'RsT:APO:11538485#{self.symbol}'
+            flag = False
+            for i in range(3):
+                if 1 == self.redisClient.exists(name):
+                    flag = True
+                    break
+                else:
+                    print(f'APO不存在等待1秒重试，第{i + 1}次重试……')
+                    time.sleep(1)
+            assert flag, 'APO不存在,查询多次重试失败'
             key = f'Position:#{self.symbol}#{self.contract_code}#'
             position_info_1 = int(float(str(self.redisClient.hmget(name=name, keys=key + '1')).split(',')[5]))
             position_info_2 = int(float(str(self.redisClient.hmget(name=name, keys=key + '2')).split(',')[5]))

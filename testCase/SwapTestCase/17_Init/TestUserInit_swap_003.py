@@ -3,25 +3,23 @@
 # @Date    : 2021/12/6 9:57 上午
 # @Author  : HuiQing Yu
 
-from common.mysqlComm import mysqlComm as mysqlClient
+import time
 
 import allure
 import pytest
-import time
 
-from common.redisComm import redisConf
-from tool.SwapTools import SwapTool
 from common.SwapMqComm import mqComm
 from common.SwapServiceAPI import user03, user02
+from common.redisComm import redisConf
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
 @allure.feature(features[16]['feature'])
 @allure.story(features[16]['story'][0])
 @allure.tag('Script owner : 余辉青', 'Case owner : 曾超群')
-@pytest.mark.stable
 class TestUserInit_swap_003:
     ids = ['TestUserInit_swap_003']
     params = [{'case_name': '检查用户已开户，有资金无持仓，个人初始化'}]
@@ -45,6 +43,15 @@ class TestUserInit_swap_003:
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：查看用户是否有仓位'):
             name = f'RsT:APO:11538485#{self.symbol}'
+            flag = False
+            for i in range(3):
+                if 1 == self.redisClient.exists(name):
+                    flag = True
+                    break
+                else:
+                    print(f'APO不存在等待1秒重试，第{i + 1}次重试……')
+                    time.sleep(1)
+            assert flag, 'APO不存在,查询多次重试失败'
             key = f'Position:#{self.symbol}#{self.contract_code}#'
             position_info_1 = int(float(str(self.redisClient.hmget(name=name, keys=key + '1')).split(',')[5]))
             position_info_2 = int(float(str(self.redisClient.hmget(name=name, keys=key + '2')).split(',')[5]))
@@ -68,7 +75,9 @@ class TestUserInit_swap_003:
             pass
         with allure.step(f'操作：删除Redis Key={name}'):
             time.sleep(1)  # 等待清仓完成
-            self.redisClient.delete(name)
+            is_del = self.redisClient.delete(name)
+            if is_del==1:
+                print('删除成功')
             pass
         with allure.step('操作：发送MQ信息'):
             mq_result = mqComm.UserProductTriggerInitChannel(userId='11538485', symbol=self.symbol)
