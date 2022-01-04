@@ -40,7 +40,7 @@ class TestUserInit_swap_004:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    @pytest.mark.dependency(depends=['TestUserInit_swap_003'])
+    @pytest.mark.run(order=2)
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：查看用户是否有仓位'):
