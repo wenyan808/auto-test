@@ -24,8 +24,12 @@ from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from tool.atp import ATP
+
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('行情')  # 这里填功能
@@ -43,7 +47,7 @@ class TestContractNoti_restful_detail_006:
     def setup(self, symbol):
         ATP.cancel_all_types_order()
         self.from_time = int(time.time())
-        print(''' 制造成交数据 ''')
+        print(''' 构造成交数据 ''')
         ATP.make_market_depth()
         sell_price = ATP.get_adjust_price(1.02)
         buy_price = ATP.get_adjust_price(0.98)
@@ -57,11 +61,11 @@ class TestContractNoti_restful_detail_006:
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
         with allure.step('详见官方文档'):
-            #获取合约代码，日期格式
+            # 获取合约代码，日期格式
             r = contract_api.contract_contract_info(symbol=symbol)
             contract_code = r['data'][0]['contract_code']
             pprint(contract_code)
-            #请求聚合行情
+            # 请求聚合行情
             res = contract_api.contract_detail_merged(symbol=contract_code)
             pprint(res)
             # errmsg = res['err-msg']

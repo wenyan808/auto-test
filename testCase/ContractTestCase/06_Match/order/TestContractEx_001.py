@@ -122,7 +122,7 @@ class TestContractEx_001:
     @classmethod
     @allure.step('前置条件')
     def setup(cls):
-        print(''' 制造成交数据 ''')
+        print(''' 构造成交数据 ''')
         ATP.make_market_depth(depth_count=5)
 
     @classmethod
@@ -174,24 +174,25 @@ class TestContractEx_001:
                                                   self.currentPrice, 2),
                                               contract_type=self.contract_type, direction='buy',
                                               order_price_type=params['order_price_type'])
-            orderId = orderInfo['data']['order_id']
-            strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (
-                         orderId)
-            # 给撮合时间，5秒内还未撮合完成则为失败
-            n = 0
-            while n < 5:
-                isMatch = DB_orderSeq.selectdb_execute(
-                    'order_seq', strStr)[0]['c']
-                if 1 == isMatch:
-                    break
-                else:
-                    n = n + 1
-                    time.sleep(1)
-                    print('等待处理，第' + str(n) + '次重试………………………………')
-                    if n == 5:
-                        assert False
-            pass
+            if orderInfo['data']:
+                orderId = orderInfo['data']['order_id']
+                strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
+                    "(select f_id from t_order_sequence where f_order_id= '%s')" % (
+                        orderId)
+                # 给撮合时间，5秒内还未撮合完成则为失败
+                n = 0
+                while n < 5:
+                    isMatch = DB_orderSeq.selectdb_execute(
+                        'order_seq', strStr)[0]['c']
+                    if 1 == isMatch:
+                        break
+                    else:
+                        n = n + 1
+                        time.sleep(1)
+                        print('等待处理，第' + str(n) + '次重试………………………………')
+                        if n == 5:
+                            assert False
+                pass
 
 
 if __name__ == '__main__':

@@ -32,6 +32,7 @@ from common.ContractServiceAPI import t as api
 from tool.atp import ATP
 from tool.atp import ATP
 
+
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('合约测试基线用例//01 交割合约//07 行情')  # 这里填功能
 @allure.story('请求K线(传参from,to)')  # 这里填子功能，没有的话就把本行注释掉
@@ -46,7 +47,7 @@ class TestContractNoti_010:
     def setup(self):
         ATP.cancel_all_types_order()
         self.from_time = int(time.time())
-        print(''' 制造成交数据 ''')
+        print(''' 构造成交数据 ''')
         ATP.make_market_depth()
         time.sleep(0.5)
         ATP.clean_market()
@@ -58,14 +59,16 @@ class TestContractNoti_010:
     @allure.step('测试执行')
     def test_execute(self, symbol_period):
         with allure.step('请求K线(传参from,to)，可参考文档：https://docs.huobigroup.com/docs/dm/v1/cn/#websocket-3'):
-            res = api.contract_kline(symbol=symbol_period, period='1min', From=self.from_time, to=self.to_time)
+            res = api.contract_kline(
+                symbol=symbol_period, period='1min', From=self.from_time, to=self.to_time)
             pprint(res)
             # id、open、close、low、high价格正确；amount、vol、count值正确,不存在Null,[]
             data = res.get('data', [])
             assert isinstance(data, list) and 1 <= len(data) <= 2, 'K 线数据不正确'
 
             # 检查字段
-            include_keys = ['amount', 'close', 'count', 'high', 'id', 'low', 'open', 'vol']
+            include_keys = ['amount', 'close', 'count',
+                            'high', 'id', 'low', 'open', 'vol']
             for record in data:
                 assert set(include_keys) == set(record.keys()), 'K 线数据 缺少字段'
 

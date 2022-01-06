@@ -35,7 +35,7 @@ class TestContractEx_106:
 
     @allure.step('前置条件')
     def setup(self):
-        print(''' 制造成交数据 ''')
+        print(''' 构造成交数据 ''')
         ATP.make_market_depth(depth_count=5)
         sell_price = ATP.get_adjust_price(1.01)
         buy_price = ATP.get_adjust_price(0.99)

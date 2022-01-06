@@ -34,7 +34,7 @@ class TestContractEx_125:
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, symbol, symbol_period):
-        print(''' 制造成交数据 ''')
+        print(''' 构造成交数据 ''')
         contract_type = 'this_week'
         current = ATP.get_current_price(contract_code=symbol_period)
 

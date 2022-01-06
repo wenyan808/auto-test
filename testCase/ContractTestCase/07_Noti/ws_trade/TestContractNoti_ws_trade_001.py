@@ -47,7 +47,7 @@ class TestContractNoti_ws_trade_001:
     def setup(self, symbol):
         ATP.cancel_all_types_order()
         self.from_time = int(time.time())
-        print(''' 制造成交数据 ''')
+        print(''' 构造成交数据 ''')
         ATP.make_market_depth()
         time.sleep(0.5)
         ATP.clean_market()

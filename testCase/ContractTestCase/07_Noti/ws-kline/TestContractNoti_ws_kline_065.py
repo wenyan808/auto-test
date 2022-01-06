@@ -41,7 +41,7 @@ class TestContractNoti_ws_kline_065:
     @pytest.fixture(scope='function', autouse=True)
     def setup(self):
         self.from_time = int(time.time())
-        print(''' 制造成交数据 ''')
+        print(''' 构造成交数据 ''')
         ATP.make_market_depth()
 
         self.current_price = ATP.get_current_price()

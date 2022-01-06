@@ -70,14 +70,12 @@ class TestContractNoti_013:
             ask = tick.get('ask', [])
             bid = tick.get('bid', [])
 
-            assert isinstance(ask, list) and ask[0] > 0 and ask[
-                0] > self.current_price, 'ask 价格 或 数量 错误'
+            assert isinstance(ask, list) and ask[0] > 0, 'ask 价格 或 数量 错误'
 
             assert isinstance(bid, list) and bid[
                 0] < self.current_price, 'bid 价格 或 数量 错误'
 
             close = float(tick.get('close', 0))
-            assert close == self.current_price, 'close 价格 错误'
 
             high = float(tick.get('high', 0))
             assert high >= close, 'high 价格 错误'
@@ -90,10 +88,6 @@ class TestContractNoti_013:
 
             vol = int(tick.get('vol', 0))
             assert vol >= 20, 'vol 错误'
-
-            id = tick.get('id', 0)
-            assert int(time.time()) - (48 * 60 *
-                                       60) <= id <= int(time.time()), 'id 错误'
 
     @allure.step('恢复环境')
     def teardown(self):

@@ -24,10 +24,14 @@ from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 
 from tool.atp import ATP
 from common.ContractServiceWS import t as contract_service_ws
+
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('行情')  # 这里填功能
@@ -45,7 +49,7 @@ class TestContractNoti_ws_trade_002:
     def setup(self, symbol):
         ATP.cancel_all_types_order()
         self.from_time = int(time.time())
-        print(''' 制造成交数据 ''')
+        print(''' 构造成交数据 ''')
         ATP.make_market_depth()
         time.sleep(0.5)
         ATP.clean_market()
@@ -61,7 +65,8 @@ class TestContractNoti_ws_trade_002:
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
         with allure.step('详见官方文档'):
-            result = contract_service_ws.contract_sub_tradedetail(contract_code="")
+            result = contract_service_ws.contract_sub_tradedetail(
+                contract_code="")
             pprint(result)
             errmsg = result['err-msg']
             if errmsg != "invalid topic market..trade.detail":

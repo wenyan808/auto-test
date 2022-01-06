@@ -107,7 +107,7 @@ class TestContractAccountCapticalBatch_007:
                 money = 0.000000000000000000
                 if rec_dict_tuples[0]["money"]:
                     currInterest += rec_dict_tuples[0]["money"]*(-1)
-                    money = rec_dict_tuples[0]["money"]
+                    money = rec_dict_tuples[0]["money"]*(-1)
                 assert money == Decimal(platform_capital_dic[key]), "{} 流水比对异常".format(
                     key)
 
