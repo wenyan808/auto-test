@@ -41,7 +41,7 @@ from tool.atp import ATP
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('初始化')  # 这里填功能
-@allure.story('个人初始化')  # 这里填子功能，没有的话就把本行注释掉
+@allure.story('品种初始化')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : 曾超群')
 @pytest.mark.unstable
 class TestUserInit_contract_018:
