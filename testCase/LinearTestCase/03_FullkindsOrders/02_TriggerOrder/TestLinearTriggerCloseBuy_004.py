@@ -3,8 +3,10 @@
 # @Date    : 20210929
 # @Author : YuHuiQing
 
-from common.LinearServiceAPI import user01
+from common.LinearServiceAPI import t
 import pytest, allure, random, time
+
+from config.conf import DEFAULT_CONTRACT_CODE
 from tool.atp import ATP
 
 @allure.epic('正向永续')  # 这里填业务线
@@ -26,8 +28,21 @@ class TestLinearTriggerCloseBuy_004:
             {'titleName': '平多-触发价低于最新价', 'direction':'sell', 'trgRatio':0.99, 'ordRatio':0.98},
             {'titleName': '平多-触发价等于最新价', 'direction':'sell', 'trgRatio':1.00, 'ordRatio':0.98},
             {'titleName': '平多-触发价高于最新价', 'direction':'sell', 'trgRatio':1.01, 'ordRatio':0.98}]
+    contract_code = DEFAULT_CONTRACT_CODE
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=3)
+    @classmethod
+    def setup_class(cls):
+        with allure.step('*->持仓'):
+            pass
+
+    @classmethod
+    def teardown_class(cls):
+        with allure.step('*->恢复环境:取消委托'):
+            time.sleep(1)
+            t.linear_trigger_cancelall(contract_code=cls.contract_code)
+            print("清盘》》》》", ATP.clean_market())
+            pass
+    #@pytest.mark.flaky(reruns=3, reruns_delay=3)
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self,contract_code,params):
         with allure.step('1、行情-最新价更新为49800'):
@@ -38,7 +53,7 @@ class TestLinearTriggerCloseBuy_004:
                                       '\n*、触发计划委托订单；'
                                       '\n*、验证计划委托订单触发否')
             #撤销所有计划委托
-            user01.linear_trigger_cancelall(contract_code=contract_code)
+            t.linear_trigger_cancelall(contract_code=contract_code)
             print("清盘》》》》", ATP.clean_market())
             currentPrice = ATP.get_current_price()  # 最新价
             trigger_price = round(params['trgRatio']*currentPrice,2) #触发价
@@ -50,11 +65,11 @@ class TestLinearTriggerCloseBuy_004:
                 trigger_type = 'le'
             pass
         with allure.step('2、计划委托下单，触发价为50000；买入价为49800；'):
-            orderResult = user01.linear_trigger_order(contract_code=contract_code,
-                                                      trigger_type=trigger_type,
-                                                      trigger_price=trigger_price,
-                                                      offset='close',
-                                                      order_price=order_price,direction=params['direction'])
+            orderResult = t.linear_trigger_order(contract_code=contract_code,
+                                                 trigger_type=trigger_type,
+                                                 trigger_price=trigger_price,
+                                                 offset='close',
+                                                 order_price=order_price, direction=params['direction'])
             # 下单失败则断言失败
             if 'err_msg' in orderResult:
                 print(orderResult)
@@ -66,18 +81,19 @@ class TestLinearTriggerCloseBuy_004:
         with allure.step('3、行情-最新价更新；使最新价达到50000价，触发计划委托单转换为限制单'):
             # 等待成交刷新最新价
             time.sleep(0.5)
-            user01.linear_order(contract_code=contract_code, price=trigger_price, direction='buy')
-            user01.linear_order(contract_code=contract_code, price=trigger_price, direction='sell')
+            t.linear_order(contract_code=contract_code, price=trigger_price, direction='buy')
+            t.linear_order(contract_code=contract_code, price=trigger_price, direction='sell')
             time.sleep(0.5)
             pass
         with allure.step('4、验证计划委托单被触发'):
-            triggerOrderHistoryOrders = user01.linear_trigger_hisorders(contract_code=contract_code,status=4)
+            triggerOrderHistoryOrders = t.linear_trigger_hisorders(contract_code=contract_code, status=4)
             # print('计划委托7天内买入平空单历史 =',triggerOrderHistoryOrder)
             historySize = triggerOrderHistoryOrders['data']['total_size']
             # 单页只显示10条数据
             if historySize > 10:
                 historySize = 10
             elif historySize == 0:  # 未触发
+                print(triggerOrderHistoryOrders)
                 assert False
 
             flag =False
