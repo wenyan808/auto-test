@@ -31,7 +31,7 @@ class TestContractEx_109:
 
     @allure.step('前置条件')
     def setup(self):
-        print(''' 制造成交数据 ''')
+        print(''' 构造成交数据 ''')
         # 不构造数据
 
     @allure.title('撮合当周 买入开仓 部分成交单人多笔价格不同的订单')

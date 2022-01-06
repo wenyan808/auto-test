@@ -24,7 +24,10 @@ from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from common.ContractServiceWS import t as contract_service_ws
 from tool.atp import ATP
 
@@ -45,7 +48,7 @@ class TestContractNoti_ws_kline_061:
     def setup(self, symbol):
         ATP.cancel_all_types_order()
         self.from_time = int(time.time())
-        print(''' 制造成交数据 ''')
+        print(''' 构造成交数据 ''')
         ATP.make_market_depth()
         time.sleep(0.5)
         ATP.clean_market()
@@ -58,7 +61,8 @@ class TestContractNoti_ws_kline_061:
     def test_execute(self, symbol, symbol_period):
         with allure.step('详见官方文档'):
             period = "1min"
-            result = contract_service_ws.contract_sub_kline(contract_code="", period=period)
+            result = contract_service_ws.contract_sub_kline(
+                contract_code="", period=period)
             pprint(result)
             errmsg = result['err-msg']
             if errmsg != "invalid topic market..kline.1min":

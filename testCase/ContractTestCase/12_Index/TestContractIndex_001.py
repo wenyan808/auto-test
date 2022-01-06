@@ -32,6 +32,7 @@ from common.ContractServiceAPI import t as contract_api
 from config import conf
 from tool.atp import ATP
 
+
 def check_index_res(res, symbol):
     assert_err_msg = "获取指数价出错: {res}".format(res=res)
     res_data = res.get('data', [])
@@ -64,7 +65,7 @@ class TestContractIndex_001:
             first_index_price = check_index_res(first_index_res, symbol)
 
         with allure.step('2、对比指数接口两次的数据'):
-            time.sleep(1.5)
+            time.sleep(1.05)
             second_index_res = contract_api.contract_index(symbol)
             second_index_price = check_index_res(second_index_res, symbol)
 

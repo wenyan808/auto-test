@@ -45,7 +45,7 @@ class TestContractEx_339:
             # 平仓挂单
             orderInfo = user01.contract_order(symbol=symbol, contract_code=self.contract_code,
                                               price=round(
-                                                  self.currentPrice * 0.5, 2),
+                                                  self.currentPrice * 0.9, 2),
                                               contract_type=self.contract_type, direction='buy', offset='close')
             orderId = orderInfo['data']['order_id']
             strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \

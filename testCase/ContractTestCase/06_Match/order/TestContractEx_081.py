@@ -24,8 +24,12 @@ from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from tool.atp import ATP
+
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('撮合')  # 这里填功能
@@ -36,7 +40,7 @@ class TestContractEx_081:
 
     @allure.step('前置条件')
     def setup(self):
-        print(''' 制造成交数据 ''')
+        print(''' 构造成交数据 ''')
         ATP.make_market_depth(depth_count=5)
         sell_price = ATP.get_adjust_price(1.01)
         buy_price = ATP.get_adjust_price(0.99)
@@ -48,7 +52,7 @@ class TestContractEx_081:
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
         with allure.step('详见官方文档'):
-            pass #不方便构造结算场景
+            pass  # 不方便构造结算场景
 
     @allure.step('恢复环境')
     def teardown(self):

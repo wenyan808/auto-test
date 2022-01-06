@@ -24,7 +24,10 @@ from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from common.ContractServiceWS import t as contract_service_ws
 from tool.atp import ATP
 
@@ -45,7 +48,7 @@ class TestContractNoti_ws_kline_088:
     def setup(self, symbol):
         ATP.cancel_all_types_order()
         self.from_time = int(time.time())-7200
-        print(''' 制造成交数据 ''')
+        print(''' 构造成交数据 ''')
         ATP.make_market_depth()
         time.sleep(0.5)
         ATP.clean_market()
@@ -62,7 +65,7 @@ class TestContractNoti_ws_kline_088:
                                                             From=0, to=self.to_time)
             pprint(result)
             errmsg = result['err-msg']
-            if errmsg !="invalid from":
+            if errmsg != "invalid from":
                 assert False
 
     @allure.step('恢复环境')
