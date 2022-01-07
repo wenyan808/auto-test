@@ -5,6 +5,7 @@
 
 import json
 import time
+from datetime import date
 from decimal import Decimal
 
 import allure
@@ -83,7 +84,7 @@ class TestSwapAccountCapticalBatch_402:
 
     @pytest.mark.parametrize('param', params, ids=ids)
     def test_execute(self,param):
-        allure.dynamic.title(param['case_name'])
+        allure.dynamic.title(param['title'])
         with allure.step('操作：执行查询'):
             sqlStr = 'SELECT end_time,id ' \
                      'FROM t_settle_log t ' \
@@ -280,12 +281,4 @@ class TestSwapAccountCapticalBatch_402:
                 staticInterest = staticInterest[0]['money']
             assert Decimal(staticInterest_money['staticInterest']) == staticInterest, \
                 f'{self.fund_flow_type["staticInterest"]}-校验失败'
-#################################################    【平台资产】核对结果    ###############################################
-        with allure.step(f'验证:核对结果 == 0'):
-            accountCapitalCheck = None
-            for data in self.daily['accountCapitalCheck']:
-                if data['userType'] == param['userType']:
-                    accountCapitalCheck = data
-                    break
-            assert accountCapitalCheck, '返回数据中未找到-应付用户-数据，校验失败'
-            assert Decimal(accountCapitalCheck['checkResult']) == 0,'核对结果不为0'
+

@@ -27,8 +27,8 @@ class TestSwapNoti_depth_035:
         'TestSwapNoti_depth_037',
     ]
     params = [
-        {'case_name': 'WS订阅深度 20档 买盘>20档','exceptLength':20,'type':'step6'},
-        {'case_name': 'WS订阅深度 150档 买盘>150档', 'exceptLength':150,'type':'step0'},
+        {'title':ids[0],'case_name': 'WS订阅深度 20档 买盘>20档','exceptLength':20,'type':'step6'},
+        {'title':ids[1],'case_name': 'WS订阅深度 150档 买盘>150档', 'exceptLength':150,'type':'step0'},
     ]
 
     @classmethod
@@ -58,7 +58,7 @@ class TestSwapNoti_depth_035:
 
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
-        allure.dynamic.title(params['case_name'])
+        allure.dynamic.title(params['title'])
         with allure.step('操作：执行sub订阅'):
             subs = {
                 "sub": "market.{}.depth.{}".format(self.contract_code,params['type']),
@@ -67,7 +67,7 @@ class TestSwapNoti_depth_035:
             flag = False
             # 重试3次未返回预期结果则失败
             for i in range(3):
-                result = ws_user01.swap_sub(subs)
+                result = ws_user01.swap_sub(subs=subs,keyword='bids')
                 if 'tick' in result:
                     if result['tick']['bids']:
                         flag = True

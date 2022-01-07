@@ -20,20 +20,21 @@ from config.case_content import epic, features
 @pytest.mark.stable
 @allure.tag('Script owner : 张广南', 'Case owner : 吉龙')
 class TestSwapNoti_depth_034:
-    contract_code = DEFAULT_CONTRACT_CODE
-    symbol = DEFAULT_SYMBOL
+
     ids = [
         'TestSwapNoti_depth_034',
         'TestSwapNoti_depth_036',
     ]
     params = [
-        {'case_name': 'WS订阅深度 20档 卖盘>20档','exceptLength':20,'type':'step6'},
-        {'case_name': 'WS订阅深度 150档 卖盘>150档', 'exceptLength': 150,'type':'step0'}
+        {'title':ids[0],'case_name': 'WS订阅深度 20档 卖盘>20档','exceptLength':20,'type':'step6'},
+        {'title':ids[1],'case_name': 'WS订阅深度 150档 卖盘>150档', 'exceptLength': 150,'type':'step0'}
     ]
 
     @classmethod
     def setup_class(cls):
         with allure.step('实始化变量'):
+            cls.contract_code = DEFAULT_CONTRACT_CODE
+            cls.symbol = DEFAULT_SYMBOL
             cls.currentPrice = SwapTool.currentPrice()  # 最新价
             pass
         with allure.step('挂单更新深度'):
@@ -57,7 +58,7 @@ class TestSwapNoti_depth_034:
 
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
-        allure.dynamic.title(params['case_name'])
+        allure.dynamic.title(params['title'])
         with allure.step('操作：执行sub订阅'):
             subs = {
                 "sub": "market.{}.depth.{}".format(self.contract_code,params['type']),

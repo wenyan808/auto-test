@@ -102,7 +102,7 @@ class TestSwapAccountCapticalBatch_204:
         with allure.step(f'操作:从DB获取-{self.fund_flow_type["openFeeMaker"]}-数据'):
             sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
                      f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
-                     f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
+                     f'and create_time < unix_timestamp("{date.today()}")*1000 ' \
                      f'AND money_type =  6 ' \
                      f'AND product_id = "{self.symbol}" ' \
                      f'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
@@ -120,7 +120,7 @@ class TestSwapAccountCapticalBatch_204:
             with allure.step(f'操作:从DB获取-{self.fund_flow_type["openFeeMaker"]}-数据'):
                 sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
                          f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
-                         f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
+                         f'and create_time < unix_timestamp("{date.today()}")*1000 ' \
                          f'AND money_type =  5 ' \
                          f'AND product_id = "{self.symbol}" ' \
                          f'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
@@ -138,7 +138,7 @@ class TestSwapAccountCapticalBatch_204:
             with allure.step(f'操作:从DB获取-{self.fund_flow_type["openFeeMaker"]}-数据'):
                 sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
                          f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
-                         f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
+                         f'and create_time < unix_timestamp("{date.today()}")*1000 ' \
                          f'AND money_type =  8 ' \
                          f'AND product_id = "{self.symbol}" ' \
                          f'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
@@ -156,7 +156,7 @@ class TestSwapAccountCapticalBatch_204:
             with allure.step(f'操作:从DB获取-{self.fund_flow_type["openFeeMaker"]}-数据'):
                 sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
                          f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
-                         f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
+                         f'and create_time < unix_timestamp("{date.today()}")*1000 ' \
                          f'AND money_type =  7 ' \
                          f'AND product_id = "{self.symbol}" ' \
                          f'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
@@ -178,14 +178,14 @@ class TestSwapAccountCapticalBatch_204:
             sqlStr = 'select sum(money) as money from ( ' \
                      'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
                      f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
-                     f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
+                     f'and create_time < unix_timestamp("{date.today()}")*1000 ' \
                      f'AND money_type in (20,23) ' \
                      f'AND product_id = "{self.symbol}" ' \
                      f'AND user_id = {param["userId"]} ' \
                      f'union ' \
                      'SELECT TRUNCATE(-sum(money),8) as money FROM t_account_action ' \
                      f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
-                     f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
+                     f'and create_time < unix_timestamp("{date.today()}")*1000 ' \
                      f'AND money_type in (5,6,7,8) ' \
                      f'AND product_id = "{self.symbol}" ' \
                      f'AND user_id  not in (11186266, 1389607, 1389608, 1389609, 1389766) ) a '
@@ -195,13 +195,13 @@ class TestSwapAccountCapticalBatch_204:
             else:
                 currInterest = currInterest[0]['money']
         with allure.step(f'验证:流水类型-{self.fund_flow_type["currInterest"]}'):
-            assert Decimal(pay_money['currInterest']) == currInterest, \
+            assert Decimal(pay_money['currInterest']) - currInterest<0.000001, \
                 f'{self.fund_flow_type["currInterest"]}-校验失败'
 
     def __dbResult(self,money_type,userId,dbName):
         sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
                  f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
-                 f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
+                 f'and create_time < unix_timestamp("{date.today()}")*1000 ' \
                  f'AND money_type =  {money_type} ' \
                  f'AND product_id = "{self.symbol}" ' \
                  f'AND user_id = "{userId}" '
