@@ -204,7 +204,7 @@ class TestSwapAccountCapticalBatch_004:
             else:
                 currInterest = currInterest[0]['money']
         with allure.step(f'验证:流水类型-{self.fund_flow_type["currInterest"]}'):
-            assert Decimal(pay_money['currInterest']) == currInterest, \
+            assert Decimal(pay_money['currInterest']) - currInterest<0.000001, \
                 f'{self.fund_flow_type["currInterest"]}-校验失败'
 
     def __dbResult(self,money_type,userId,dbName):

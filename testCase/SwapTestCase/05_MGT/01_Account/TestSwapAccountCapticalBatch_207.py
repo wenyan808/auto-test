@@ -117,7 +117,7 @@ class TestSwapAccountCapticalBatch_007:
         with allure.step(f'操作:从DB获取-平台资产(平账)-数据'):
             sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_flat_money_record ' \
                      f'WHERE flat_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
-                     f'and flat_time < unix_timestamp("{self.endDateTime}")*1000 ' \
+                     f'and flat_time < unix_timestamp("{date.today()}")*1000 ' \
                      'and flat_account=11 ' \
                      f'and product_id = "{self.symbol}"'
             flatMoney = self.mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
@@ -128,7 +128,7 @@ class TestSwapAccountCapticalBatch_007:
         with allure.step(f'操作:从DB获取-应付用户(平账)-数据'):
             sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
                      f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
-                     f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
+                     f'and create_time < unix_timestamp("{date.today()}")*1000 ' \
                      f'AND money_type =  20 ' \
                      f'AND product_id = "{self.symbol}" ' \
                      'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
@@ -155,7 +155,7 @@ class TestSwapAccountCapticalBatch_007:
     def __dbResult(self,userId,dbName):
         sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
                  f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
-                 f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
+                 f'and create_time < unix_timestamp("{date.today()}")*1000 ' \
                  f'AND money_type =  20 ' \
                  f'AND product_id = "{self.symbol}" ' \
                  f'AND user_id = "{userId}" '

@@ -69,7 +69,7 @@ class TestSwapAccountCapticalBatch_205:
     def __dbResult(self, money_type, userId, dbName):
         sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
                  f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
-                 f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
+                 f'and create_time < unix_timestamp("{date.today()}")*1000 ' \
                  f'AND money_type =  {money_type} ' \
                  f'AND product_id = "{self.symbol}" ' \
                  f'AND user_id = "{userId}" '
@@ -142,7 +142,7 @@ class TestSwapAccountCapticalBatch_205:
         with allure.step(f'验证:流水类型-{self.fund_flow_type["currInterest"]}'):
             sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
                      f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
-                     f'and create_time < unix_timestamp("{self.endDateTime}")*1000 ' \
+                     f'and create_time < unix_timestamp("{date.today()}")*1000 ' \
                      f'AND money_type in (11,20,30,31,32,33) ' \
                      f'AND product_id = "{self.symbol}" ' \
                      f'AND user_id = {param["userId"]} '
