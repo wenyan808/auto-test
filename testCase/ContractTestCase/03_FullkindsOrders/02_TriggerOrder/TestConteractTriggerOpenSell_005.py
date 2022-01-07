@@ -44,7 +44,7 @@ class TestConteractTriggerOpenSell_005:
         self.symbol = symbol
         print(symbol_period)
         self.symbol = symbol
-        ATP.make_market_depth()
+        ATP.make_market_depth(depth_count=5)
 
     @allure.title('计划委托卖出开空触发价小于最新价')
     @allure.step('测试执行')
@@ -58,8 +58,8 @@ class TestConteractTriggerOpenSell_005:
         contract_type = "this_week"
         print('\n步骤一:获取最近价\n')
         lastprice = ATP.get_current_price(contract_code=symbol_period)
-        triggerPrice = round((lastprice * 0.98), 1)
-        orderPrice = round((lastprice * 0.97), 1)
+        triggerPrice = round((lastprice * 0.998), 1)
+        orderPrice = round((lastprice * 0.997), 1)
         with allure.step('1、登录合约交易系统'):
             pass
         with allure.step('2、选择币种BTC，选择杠杆5X，点击开仓-计划按钮'):
@@ -81,16 +81,16 @@ class TestConteractTriggerOpenSell_005:
             order_id = r['data']['order_id']
             print(order_id)
 
-            res = contract_api.contract_trigger_openorders(
-                symbol=symbol)
-            print(res)
-            hits = 0
-            if(len(res["data"]["orders"]) > 0):
-                for kw in res["data"]["orders"]:
-                    if order_id == kw['order_id']:
-                        hits += 1
-                        break
-                assert hits > 0
+            # res = contract_api.contract_trigger_openorders(
+            #     symbol=symbol)
+            # print(res)
+            # hits = 0
+            # if(len(res["data"]["orders"]) > 0):
+            #     for kw in res["data"]["orders"]:
+            #         if order_id == kw['order_id']:
+            #             hits += 1
+            #             break
+            #     assert hits > 0
 
     @allure.step('恢复环境')
     def teardown(self):
