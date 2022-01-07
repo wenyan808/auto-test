@@ -63,13 +63,9 @@ class TestContractNoti_012:
             record = ticks[0]
             res_symbol = record.get('symbol', '')
             assert symbol_period.upper() == res_symbol, '获取bbo symbol 错误'
-            ask = record.get('ask', [])
             bid = record.get('bid', [])
             mrid = record.get('mrid', -1)
-            assert isinstance(ask, list) and ask[0] > 0 and ask[
-                0] > self.current_price, '获取bbo ask 错误'
-            assert isinstance(bid, list) and bid[0] > 0 and bid[
-                0] < self.current_price, '获取bbo bid 错误'
+            assert isinstance(bid, list) and bid[0] > 0, '获取bbo bid 错误'
             assert isinstance(mrid, int) and mrid >= 0, '获取bbo mrid 错误'
 
     @allure.step('恢复环境')

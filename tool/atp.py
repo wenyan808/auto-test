@@ -478,9 +478,9 @@ class ATP:
         print(cls.common_user_make_order(price=market_price, direction='sell'))
         for index_depth in range(1, depth_count + 1):
             sell_price = cls.get_adjust_price(
-                1 + (0.01 * index_depth), base_price=market_price)
+                1 + (0.001 * index_depth), base_price=market_price)
             buy_price = cls.get_adjust_price(
-                1 - (0.01 * index_depth), base_price=market_price)
+                1 - (0.001 * index_depth), base_price=market_price)
             print(cls.common_user_make_order(
                 price=buy_price, direction='buy', volume=volume))
             print(cls.common_user_make_order(

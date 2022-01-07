@@ -77,7 +77,7 @@ class TestContractEx_269:
             symbol=cls.symbol, contract_type='quarter')
         cls.contract_code = currContractInfo['data'][0]['contract_code']
         cls.currentPrice = ATP.get_redis_current_price(
-            contract_code=cls.curr_contract_code)  # 最新价
+            contract_code=cls.contract_code)  # 最新价
         user01.contract_order(symbol=cls.symbol, contract_code=cls.contract_code,
                               price=cls.currentPrice, direction='sell', volume=100)
         depth = redis6379.hgetall('RsT:MarketBusinessPrice:')

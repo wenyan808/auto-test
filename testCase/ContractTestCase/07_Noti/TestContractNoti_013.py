@@ -67,10 +67,7 @@ class TestContractNoti_013:
             assert isinstance(tick, dict) and set(check_keys) == set(
                 tick.keys()), 'response 中 tick 缺少字段'
 
-            ask = tick.get('ask', [])
             bid = tick.get('bid', [])
-
-            assert isinstance(ask, list) and ask[0] > 0, 'ask 价格 或 数量 错误'
 
             assert isinstance(bid, list) and bid[
                 0] < self.current_price, 'bid 价格 或 数量 错误'
