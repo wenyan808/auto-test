@@ -53,9 +53,9 @@ class TestContractEx_065:
             direction = 'buy'
 
             # 撮合成交
-            current = ATP.get_current_price(contract_code=symbol_period)
+            self.current = ATP.get_current_price(contract_code=symbol_period)
 
-            buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=current,
+            buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=self.current,
                                                     volume=10,
                                                     direction=direction, offset=offset, lever_rate=leverrate,
                                                     order_price_type='limit')
@@ -67,7 +67,7 @@ class TestContractEx_065:
 
             # 爆仓，用另一个用户反向砸单，拉低价格
             ATP.common_user_make_order(
-                contract_code=symbol_period, price=current*0.9, volume=1000, direction='sell', offset=offset)
+                contract_code=symbol_period, price=self.current*0.9, volume=1000, direction='sell', offset=offset)
             time.sleep(1)
 
             res_position = contract_api.contract_account_position_info(
@@ -75,9 +75,9 @@ class TestContractEx_065:
             pprint(res_position)
 
             # ATP.common_user_make_order(
-            #     price=current, direction='sell', offset="close")
+            #     price=self.current, direction='sell', offset="close")
             # time.sleep(1)
-            # sell_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=current,
+            # sell_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=self.current,
             #                                          volume='1',
             #                                          direction="buy", offset='open', lever_rate=leverrate,
             #                                          order_price_type='optimal_20_fok')

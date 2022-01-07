@@ -63,7 +63,7 @@ class TestContractLever_s001:
         allure.dynamic.title(param['case_title'])
 
         with allure.step('1、清仓和取消挂单才能切杠杆'):
-            print("param[contract_type]:".format(param["contract_type"]))
+            print("param[contract_type]:{}".format(param["contract_type"]))
             ATP.cancel_all_types_order(contract_code=param["contract_type"])
             ATP.make_market_depth(
                 contract_code=param["contract_type"], depth_count=5)
@@ -72,6 +72,7 @@ class TestContractLever_s001:
         currentPrice = ATP.get_current_price(contract_code=symbol_period)
         with allure.step('2、在币本位交割合约交易页，选择币本位交割当周合约，检查杠杆倍数'):
             res = contract_api.contract_available_level_rate(symbol=symbol)
+            print(res)
             availableleverlist = res['data'][0]['available_level_rate'].split(
                 ',')
             print(availableleverlist)

@@ -49,13 +49,13 @@ class TestContractEx_214:
         with allure.step('详见官方文档'):
             contracttype = 'next_week'
             leverrate = 5
-            current = ATP.get_current_price(contract_code=symbol_period)
+            self.current = ATP.get_current_price(contract_code=symbol_period)
 
             res = ATP.current_user_make_order(
-                contract_code=symbol_period, price=current, volume=5, direction="buy", offset="close")
+                contract_code=symbol_period, price=self.current, volume=5, direction="buy", offset="close")
             pprint(res)
-            time.sleep(2)
-            buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=current,
+
+            buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=self.current,
                                                     volume=5,
                                                     direction="sell", offset='close', lever_rate=leverrate,
                                                     order_price_type='limit')
@@ -63,7 +63,7 @@ class TestContractEx_214:
             orderId = buy_order['data']['order_id']
             # 撤单
             contract_api.contract_cancel(order_id=orderId)
-            time.sleep(2)
+
             strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
                      "(select f_id from t_order_sequence where f_order_id= '%s')" % (
                          orderId)

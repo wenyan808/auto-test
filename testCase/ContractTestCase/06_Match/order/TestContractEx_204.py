@@ -41,7 +41,6 @@ class TestContractEx_204:
         buy_price = ATP.get_adjust_price(0.99)
         ATP.common_user_make_order(price=sell_price, direction='sell')
         ATP.common_user_make_order(price=buy_price, direction='buy')
-        time.sleep(1)
 
     @allure.title('撮合次周 卖出开仓挂单 撤单                 ')
     @allure.step('测试执行')
@@ -59,7 +58,7 @@ class TestContractEx_204:
             orderId = buy_order['data']['order_id']
             # 撤单
             contract_api.contract_cancel(order_id=orderId)
-            time.sleep(2)
+
             strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
                      "(select f_id from t_order_sequence where f_order_id= '%s')" % (
                          orderId)

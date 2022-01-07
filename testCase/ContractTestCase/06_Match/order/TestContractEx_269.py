@@ -72,11 +72,12 @@ class TestContractEx_269:
     @classmethod
     @pytest.fixture(autouse=True, scope='function')
     def setup_class(cls, redis6379):
-        cls.currentPrice = ATP.get_current_price()  # 最新价
         # 获取交割合约信息
         currContractInfo = user01.contract_contract_info(
             symbol=cls.symbol, contract_type='quarter')
         cls.contract_code = currContractInfo['data'][0]['contract_code']
+        cls.currentPrice = ATP.get_redis_current_price(
+            contract_code=cls.curr_contract_code)  # 最新价
         user01.contract_order(symbol=cls.symbol, contract_code=cls.contract_code,
                               price=cls.currentPrice, direction='sell', volume=100)
         depth = redis6379.hgetall('RsT:MarketBusinessPrice:')

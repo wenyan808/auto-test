@@ -35,16 +35,16 @@ class TestContractEx_257:
     def setup(self, symbol, symbol_period):
         print(''' 构造成交数据 ''')
         contract_type = 'next_week'
-        current = ATP.get_current_price(contract_code=symbol_period)
+        self.current = ATP.get_current_price(contract_code=symbol_period)
 
-        res1 = common_contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=current,
+        res1 = common_contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=self.current,
                                                   volume=5, direction="buy", offset="open", order_price_type='limit', lever_rate=5)
         print(res1)
-        res2 = user01.contract_order(symbol=symbol, contract_type=contract_type, price=current,
+        res2 = user01.contract_order(symbol=symbol, contract_type=contract_type, price=self.current,
                                      volume=5, direction="buy", offset="open", order_price_type='limit', lever_rate=5)
         print(res2)
         res3 = contract_api.contract_order(
-            contract_code=symbol_period, contract_type=contract_type, price=current, volume=10, direction="sell", offset="open", order_price_type='limit', lever_rate=5)
+            contract_code=symbol_period, contract_type=contract_type, price=self.current, volume=10, direction="sell", offset="open", order_price_type='limit', lever_rate=5)
         print(res3)
 
     @allure.title('撮合次周 买入平仓 全部成交多人多笔价格不同的订单')
@@ -52,16 +52,15 @@ class TestContractEx_257:
     def test_execute(self, symbol, symbol_period, DB_orderSeq):
         with allure.step('详见官方文档'):
             contract_type = 'next_week'
-            current = ATP.get_current_price(contract_code=symbol_period)
 
-            res1 = common_contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=round(current *
+            res1 = common_contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=round(self.current *
                                                       0.99, 2), volume=2, direction="sell", offset="close", order_price_type='limit', lever_rate=5)
             print(res1)
             res2 = user01.contract_order(
-                symbol=symbol, contract_type=contract_type, price=round(current*0.98, 2), volume=2, direction="sell", offset="close", order_price_type='limit', lever_rate=5)
+                symbol=symbol, contract_type=contract_type, price=round(self.current*0.98, 2), volume=2, direction="sell", offset="close", order_price_type='limit', lever_rate=5)
             print(res2)
 
-            order = contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=round(current*1.01, 2),
+            order = contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=round(self.current*1.01, 2),
                                                 volume=4, direction="buy", offset='close', order_price_type='limit', lever_rate=5)
 
             order_id = order['data']['order_id']

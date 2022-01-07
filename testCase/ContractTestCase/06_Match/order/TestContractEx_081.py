@@ -41,12 +41,6 @@ class TestContractEx_081:
     @allure.step('前置条件')
     def setup(self):
         print(''' 构造成交数据 ''')
-        ATP.make_market_depth(depth_count=5)
-        sell_price = ATP.get_adjust_price(1.01)
-        buy_price = ATP.get_adjust_price(0.99)
-        ATP.common_user_make_order(price=sell_price, direction='sell')
-        ATP.common_user_make_order(price=buy_price, direction='buy')
-        time.sleep(1)
 
     @allure.title('撮合当周 正常结算发起的订单                ')
     @allure.step('测试执行')
@@ -57,7 +51,6 @@ class TestContractEx_081:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        ATP.clean_market()
 
 
 if __name__ == '__main__':
