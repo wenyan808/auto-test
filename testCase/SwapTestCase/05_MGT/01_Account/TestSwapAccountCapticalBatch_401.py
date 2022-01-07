@@ -24,7 +24,7 @@ from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 class TestSwapAccountCapticalBatch_401:
 
     ids = ['TestSwapAccountCapticalBatch_401']
-    params = [{'case_name':'平台流水表-结算对账-平台资产','userType': 11}]
+    params = [{'title':ids[0],'case_name':'平台流水表-结算对账-平台资产','userType': 11}]
 
     def __dbResult(self,money_type,dbName):
         sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
@@ -83,7 +83,7 @@ class TestSwapAccountCapticalBatch_401:
 
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self,params):
-        allure.dynamic.title(params['case_name'])
+        allure.dynamic.title(params['title'])
         with allure.step('操作：执行查询'):
             sqlStr = 'SELECT end_time,id ' \
                      'FROM t_settle_log t ' \
