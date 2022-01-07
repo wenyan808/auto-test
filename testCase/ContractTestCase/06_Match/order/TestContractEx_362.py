@@ -48,8 +48,8 @@ class TestContractEx_362:
             contractInfo = user01.contract_contract_info(
                 symbol=symbol, contract_type=self.contract_type)
             self.contract_code = contractInfo['data'][0]['contract_code']
-            self.currentPrice = ATP.get_current_price(
-                contract_code=self.contract_code)
+            self.currentPrice = ATP.get_redis_current_price(
+                contract_code=self.contract_code)  # 最新价
             for i in range(2):
                 user01.contract_order(symbol=symbol, contract_code=self.contract_code,
                                       price=round(

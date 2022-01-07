@@ -26,7 +26,10 @@
 from common.ContractServiceAPI import t as contract_api
 from common.util import compare_dict
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 
 from tool.atp import ATP
 
@@ -53,7 +56,8 @@ class TestContractTriggerOrder_021:
         with allure.step('2、选择BTC当周，选择杠杆5X，点击开仓-限价按钮'):
             pass
         with allure.step('3、下一单带有止盈止损的限价单'):
-            r = contract_api.contract_history_trade(symbol=symbol_period, size='1')
+            r = contract_api.contract_history_trade(
+                symbol=symbol_period, size='1')
             pprint(r)
             self.price = r['data'][0]['data'][0]['price']
             orderprice = round((self.price * 0.99), 1)
@@ -94,14 +98,16 @@ class TestContractTriggerOrder_021:
             assert compare_dict(expectdic, actual_orderinfo)
 
         with allure.step('5、查看当前委托-止盈止损页面有结果B'):
-            contract_api.contract_tpsl_cancel(symbol=symbol, order_id=tporderid)
-            time.sleep(2)
+            contract_api.contract_tpsl_cancel(
+                symbol=symbol, order_id=tporderid)
+
             r = contract_api.contract_tpsl_openorders(symbol=symbol)
             totalsize = r['data']['total_size']
             assert totalsize == 0
 
         with allure.step('6、查看历史委托-止盈止损页面有结果C'):
-            r = contract_api.contract_tpsl_hisorders(symbol=symbol, status='0', create_date='7')
+            r = contract_api.contract_tpsl_hisorders(
+                symbol=symbol, status='0', create_date='7')
             actual_orderinfo = r['data']['orders'][0]
             expectdic = {'symbol': symbol,
                          'contract_type': 'this_week',
@@ -114,7 +120,8 @@ class TestContractTriggerOrder_021:
 
     @allure.step('恢复环境')
     def teardown(self):
-        r = contract_api.contract_empty_position(symbol=self.symbol, price=self.price)
+        r = contract_api.contract_empty_position(
+            symbol=self.symbol, price=self.price)
         print('\n恢复环境操作完毕')
         return r
 

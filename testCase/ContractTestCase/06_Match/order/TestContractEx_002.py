@@ -121,7 +121,6 @@ class TestContractEx_002:
     @classmethod
     def setup_class(cls):
         with allure.step('*->挂盘'):
-            cls.currentPrice = ATP.get_current_price()  # 最新价
             # 获取交割合约信息
             currContractInfo = user01.contract_contract_info(
                 symbol=cls.symbol, contract_type='this_week')
@@ -129,6 +128,9 @@ class TestContractEx_002:
                 symbol=cls.symbol, contract_type='next_week')
             cls.curr_contract_code = currContractInfo['data'][0]['contract_code']
             cls.next_contract_code = nextContractInfo['data'][0]['contract_code']
+
+            cls.currentPrice = ATP.get_redis_current_price(contract_code=cls.curr_contract_code)  # 最新价
+
             user01.contract_order(symbol=cls.symbol, contract_code=cls.curr_contract_code, price=cls.currentPrice,
                                   direction='buy', volume=100)
             user01.contract_order(symbol=cls.symbol, contract_code=cls.next_contract_code, price=cls.currentPrice,

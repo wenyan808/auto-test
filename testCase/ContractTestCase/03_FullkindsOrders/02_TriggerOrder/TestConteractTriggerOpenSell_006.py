@@ -79,7 +79,7 @@ class TestConteractTriggerOpenSell_006:
             print(r)
             order_id = r['data']['order_id']
             print(order_id)
-            time.sleep(2)
+
             res = contract_api.contract_trigger_openorders(
                 symbol=symbol)
             print(res)

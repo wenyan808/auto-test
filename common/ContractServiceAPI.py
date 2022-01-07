@@ -3,10 +3,11 @@
 # @Date    : 2020/7/31
 # @Author  : zhangranghan
 from pprint import pprint
-from config.conf import USERINFO
+from common.redisComm import redisConf
+from config.conf import DEFAULT_SYMBOL, USERINFO
 from common.util import api_http_get, api_key_post, api_key_get
 from config import conf
-from config.conf import URL, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
+from config.conf import URL, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY, DEFAULT_CONTRACT_CODE
 import time
 
 
@@ -139,6 +140,22 @@ class ContractServiceAPI:
 
         url = self.__url + '/market/trade'
         return api_http_get(url, params)
+
+    # 获取最新价
+    def current_redis_price(self, contract_code=None):
+        # 如果未传合约，获取默认
+        if contract_code is None:
+            contract_code = DEFAULT_CONTRACT_CODE
+            contractInfo = self.contract_contract_info(
+                symbol=DEFAULT_SYMBOL)
+            contract_code = contractInfo['data'][0]['contract_code']
+        # 查询最新价
+        redis_client = redisConf('redis6379').instance()
+        redis_value = redis_client.hget('RsT:BILP:', 'CP:' + contract_code)
+        print("{}:{}".format('RsT:BILPCP:' + contract_code, redis_value))
+        # 以2个小数点返回结果
+        last_price = redis_value.split('#')[0]
+        return round(float(last_price), 2)
 
     # 批量获取最近的交易记录
     def contract_history_trade(self, symbol=None, size=None):
@@ -1420,7 +1437,7 @@ class ContractServiceAPI:
                 time.sleep(0.5)
                 self.contract_order(symbol=symbol, contract_type=contracttype1, price=price, volume=str(volume1),
                                     direction='sell', offset='close', lever_rate=leverrate, order_price_type='limit')
-                time.sleep(2)
+
                 r = self.contract_position_info(symbol=symbol)
                 count = len(r["data"])
                 if count == 0:

@@ -13,7 +13,7 @@ from config import conf
 
 
 class ATP:
-    ATPHost = 'http://172.18.169.20:8000' #华为云
+    ATPHost = 'http://172.18.169.20:8000'  # 华为云
     # ATPHost = 'http://172.18.6.52:8000' #光环
     header = {'accept': 'application/json', 'Content-Type': 'application/json'}
 
@@ -28,10 +28,12 @@ class ATP:
             contract_code = conf.DEFAULT_CONTRACT_CODE
         json_body = {}
         if conf.SYSTEM_TYPE == 'Delivery':
-            contract_types = {'CW': "this_week", 'NW': "next_week", 'CQ': "quarter", 'NQ': "next_quarter"}
+            contract_types = {'CW': "this_week", 'NW': "next_week",
+                              'CQ': "quarter", 'NQ': "next_quarter"}
             if '_' in contract_code:
                 json_body['symbol'] = contract_code.split('_')[0]
-                json_body['contract_type'] = contract_types[contract_code.split('_')[1]]
+                json_body['contract_type'] = contract_types[contract_code.split('_')[
+                    1]]
             else:
                 json_body['symbol'] = contract_code[:-6]
                 json_body['contract_type'] = contract_types['CW']
@@ -56,7 +58,8 @@ class ATP:
         data_keys, variables_values_list = cls.get_api_test_data_old(script_path,
                                                                      priority_list=priority_list,
                                                                      tags=tags)
-        api_test_data_list = [dict(zip(data_keys, variables_values)) for variables_values in variables_values_list]
+        api_test_data_list = [dict(zip(data_keys, variables_values))
+                              for variables_values in variables_values_list]
         return api_test_data_list
 
     @classmethod
@@ -108,10 +111,11 @@ class ATP:
     def common_user_cancel_all_order(cls, contract_code=None):
         json_body = cls.get_base_json_body(contract_code)
 
-        response = cls.common_user_key_post(conf.CANCEL_ALL_ORDER_URL, json_body)
+        response = cls.common_user_key_post(
+            conf.CANCEL_ALL_ORDER_URL, json_body)
         if conf.SYSTEM_TYPE == 'LinearSwap':
             cross_response = cls.common_user_key_post(conf.CANCEL_ALL_ORDER_URL.replace('swap_cancelall', 'swap_cross_cancelall'),
-                                          json_body)
+                                                      json_body)
             response = {
                 "cross": cross_response,
                 "isolated": response
@@ -159,11 +163,12 @@ class ATP:
     @classmethod
     def common_user_cancel_all_trigger_order(cls, contract_code=None):
         json_body = cls.get_base_json_body(contract_code)
-        response = cls.common_user_key_post(conf.CANCEL_ALL_TRIGGER_ORDER_URL, json_body)
+        response = cls.common_user_key_post(
+            conf.CANCEL_ALL_TRIGGER_ORDER_URL, json_body)
         if conf.SYSTEM_TYPE == 'LinearSwap':
             cross_response = cls.common_user_key_post(conf.CANCEL_ALL_TRIGGER_ORDER_URL.replace('swap_trigger_cancelall',
-                                                                                    'swap_cross_trigger_cancelall'),
-                                          json_body)
+                                                                                                'swap_cross_trigger_cancelall'),
+                                                      json_body)
             response = {
                 "cross": cross_response,
                 "isolated": response
@@ -195,7 +200,8 @@ class ATP:
     def common_user_cancel_all_tpsl_order(cls, contract_code=None):
         json_body = cls.get_base_json_body(contract_code)
 
-        response = cls.common_user_key_post(conf.CANCEL_ALL_TPSL_ORDER_URL, json_body)
+        response = cls.common_user_key_post(
+            conf.CANCEL_ALL_TPSL_ORDER_URL, json_body)
         if conf.SYSTEM_TYPE == 'LinearSwap':
             cross_response = cls.common_user_key_post(
                 conf.CANCEL_ALL_TPSL_ORDER_URL.replace('swap_tpsl_cancelall',
@@ -229,7 +235,8 @@ class ATP:
     @classmethod
     def common_user_cancel_all_track_order(cls, contract_code=None):
         json_body = cls.get_base_json_body(contract_code)
-        response = cls.common_user_key_post(conf.CANCEL_ALL_TRACK_ORDER_URL, json_body)
+        response = cls.common_user_key_post(
+            conf.CANCEL_ALL_TRACK_ORDER_URL, json_body)
         if conf.SYSTEM_TYPE == 'LinearSwap':
             cross_response = cls.common_user_key_post(
                 conf.CANCEL_ALL_TRACK_ORDER_URL.replace('swap_track_cancelall',
@@ -260,7 +267,8 @@ class ATP:
                                     conf.SECRET_KEY)
 
         if 'data' not in response:
-            err_msg = {'status': 'error', 'err_msg': '获取仓位出错', 'response': response}
+            err_msg = {'status': 'error',
+                       'err_msg': '获取仓位出错', 'response': response}
             return err_msg
         position_list = response["data"]
         if conf.SYSTEM_TYPE == 'Delivery':
@@ -268,13 +276,15 @@ class ATP:
                            list(filter(
                                lambda i: i['contract_type'] == json_body['contract_type'], position_list))}
         else:
-            volume_dict = {item['direction']: int(item['volume']) for item in position_list}
+            volume_dict = {item['direction']: int(
+                item['volume']) for item in position_list}
 
         # 下单平仓
         for direction, volume in volume_dict.items():
             if volume:
                 print(cls.current_user_make_order(contract_code=contract_code, offset='close',
-                                                  direction='buysell'.replace(direction, ''),
+                                                  direction='buysell'.replace(
+                                                      direction, ''),
                                                   volume=volume, iscross=iscross))
 
         ATP.clean_market(contract_code=contract_code)
@@ -290,7 +300,8 @@ class ATP:
                                'LinearSwap': common_user_linear_service_api.linear_trade,
                                }
         response = trade_price_methods[conf.SYSTEM_TYPE](contract_code)
-        err_msg = {'status': 'error', 'err_msg': '获取最新价出错', 'response': response}
+        err_msg = {'status': 'error',
+                   'err_msg': '获取最新价出错', 'response': response}
         tick = response.get('tick', {})
         if not tick:
             print(err_msg)
@@ -308,6 +319,12 @@ class ATP:
         return current_price
 
     @classmethod
+    def get_redis_current_price(cls, contract_code=None):
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
+        return contract_api.current_redis_price(contract_code=contract_code)
+
+    @classmethod
     def get_index_price(cls, contract_code=None):
         if not contract_code:
             contract_code = conf.DEFAULT_CONTRACT_CODE
@@ -319,7 +336,8 @@ class ATP:
         response = index_price_methods[conf.SYSTEM_TYPE](contract_code)
         print("===获取index价===")
         pprint(response)
-        err_msg = {'status': 'error', 'err_msg': '获取index价出错', 'response': response}
+        err_msg = {'status': 'error',
+                   'err_msg': '获取index价出错', 'response': response}
         data = response.get('data', {})
         if not (isinstance(data, list) and len(data) == 1):
             print(err_msg)
@@ -459,10 +477,14 @@ class ATP:
         print(cls.common_user_make_order(price=market_price, direction='buy'))
         print(cls.common_user_make_order(price=market_price, direction='sell'))
         for index_depth in range(1, depth_count + 1):
-            sell_price = cls.get_adjust_price(1 + (0.01 * index_depth), base_price=market_price)
-            buy_price = cls.get_adjust_price(1 - (0.01 * index_depth), base_price=market_price)
-            print(cls.common_user_make_order(price=buy_price, direction='buy', volume=volume))
-            print(cls.common_user_make_order(price=sell_price, direction='sell', volume=volume))
+            sell_price = cls.get_adjust_price(
+                1 + (0.01 * index_depth), base_price=market_price)
+            buy_price = cls.get_adjust_price(
+                1 - (0.01 * index_depth), base_price=market_price)
+            print(cls.common_user_make_order(
+                price=buy_price, direction='buy', volume=volume))
+            print(cls.common_user_make_order(
+                price=sell_price, direction='sell', volume=volume))
 
         return True
 
@@ -498,7 +520,7 @@ if __name__ == '__main__':
     for system_type in system_types:
         conf.set_run_env_and_system_type('Test6', system_type)
         index_price = ATP.get_index_price()
-        ATP.make_market_depth(market_price=index_price,depth_count=5)
+        ATP.make_market_depth(market_price=index_price, depth_count=5)
         # print(ATP.get_api_test_data("test_linear_account_info"))
         # print(ATP.get_api_test_data("test_linear_account_info", priority_list=["P0", "P1"]))
         #

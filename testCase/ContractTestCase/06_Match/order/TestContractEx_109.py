@@ -39,16 +39,16 @@ class TestContractEx_109:
     def test_execute(self, symbol, symbol_period, DB_orderSeq):
         with allure.step('详见官方文档'):
             contract_type = 'this_week'
-            current = ATP.get_current_price(contract_code=symbol_period)
+            self.current = ATP.get_current_price(contract_code=symbol_period)
 
-            res1 = common_contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=round(current *
+            res1 = common_contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=round(self.current *
                                                       1.01), volume=2, direction="sell", offset="open", order_price_type='limit', lever_rate=5)
             print(res1)
             res2 = common_contract_api.contract_order(
-                symbol=symbol, contract_type=contract_type, price=round(current*1.02, 2), volume=2, direction="sell", offset="open", order_price_type='limit', lever_rate=5)
+                symbol=symbol, contract_type=contract_type, price=round(self.current*1.02, 2), volume=2, direction="sell", offset="open", order_price_type='limit', lever_rate=5)
             print(res2)
 
-            order = contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=round(current*1.03, 2),
+            order = contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=round(self.current*1.03, 2),
                                                 volume=5, direction="buy", offset='open', order_price_type='limit', lever_rate=5)
 
             order_id = order['data']['order_id']
