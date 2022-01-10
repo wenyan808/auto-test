@@ -31,7 +31,6 @@ class TestContractTransfer_001:
         print('\n步骤一\n')
         r = contranct_order.contract_transfer(symbol=symbol, amount=amount, _type="1")
         pprint(r)
-        time.sleep(2)
         print('\n步骤二\n')
         r2 = contranct_api.contract_financial_record(symbol=symbol,
                                                      type='14',

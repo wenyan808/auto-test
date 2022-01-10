@@ -52,7 +52,7 @@ class TestContractNoti_ws_trade_018:
         self.buy_price = ATP.get_adjust_price(1.02)
         ATP.common_user_make_order(
             price=self.sell_price, order_price_type='opponent', direction='sell')
-        time.sleep(2)
+        time.sleep(0.5)
         ATP.common_user_make_order(
             price=self.buy_price, order_price_type='opponent', direction='buy')
         time.sleep(1)

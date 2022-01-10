@@ -59,7 +59,6 @@ class TestContractLimitOrder_001:
                                         direction='buy', offset='open', lever_rate=leverrate,
                                         order_price_type='limit')
         pprint(r)
-        time.sleep(2)
 
         orderid2 = r['data']['order_id']
 

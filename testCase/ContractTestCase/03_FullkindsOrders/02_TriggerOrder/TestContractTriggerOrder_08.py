@@ -41,7 +41,7 @@ class TestContractTriggerOrder_008:
         buy_price = ATP.get_adjust_price(0.98)
         ATP.common_user_make_order(price=sell_price, direction='sell')
         ATP.common_user_make_order(price=buy_price, direction='buy')
-        time.sleep(2)
+        time.sleep(0.5)
 
     @allure.title('计划止损正常限价')
     def test_contract_account_position_info(self, symbol, symbol_period):
