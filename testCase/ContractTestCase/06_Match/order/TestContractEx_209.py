@@ -23,6 +23,7 @@ import pytest
 import time
 
 from common.ContractServiceAPI import t as contract_api
+from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
 from tool.atp import ATP
 
 
@@ -32,16 +33,24 @@ from tool.atp import ATP
 @pytest.mark.stable
 @allure.tag('Script owner : 张广南', 'Case owner : 吉龙')
 class TestContractEx_209:
-
+    @pytest.fixture(autouse=True, scope='function')
     @allure.step('前置条件')
-    def setup(self):
+    def setup(self, symbol):
         print(''' 构造成交数据 ''')
+        contracttype = 'next_week'
         ATP.make_market_depth(depth_count=5)
         sell_price = ATP.get_adjust_price(1.01)
         buy_price = ATP.get_adjust_price(0.99)
         ATP.common_user_make_order(price=sell_price, direction='sell')
         ATP.common_user_make_order(price=buy_price, direction='buy')
-        time.sleep(1)
+        common_contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=sell_price,
+                                           volume=10,
+                                           direction="buy", offset='open',
+                                           order_price_type='limit')
+        contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=buy_price,
+                                    volume=10,
+                                    direction="sell", offset='open',
+                                    order_price_type='limit')
 
     @allure.title('撮合次周 买入平仓部分成交 撤单               ')
     @allure.step('测试执行')
@@ -54,6 +63,11 @@ class TestContractEx_209:
             res = ATP.current_user_make_order(
                 contract_code=symbol_period, price=self.current, volume=5, direction="sell", offset="close")
             pprint(res)
+
+            common_contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=self.current,
+                                               volume=5,
+                                               direction="sell", offset='open', lever_rate=leverrate,
+                                               order_price_type='limit')
 
             buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=self.current,
                                                     volume=10,
