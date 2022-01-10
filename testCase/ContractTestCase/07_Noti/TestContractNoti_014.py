@@ -71,11 +71,11 @@ class TestContractNoti_014:
             ask = tick.get('ask', [])
             bid = tick.get('bid', [])
 
-            assert isinstance(ask, list) and len(ask) == 2 and ask[0] > 0 and ask[1] == 10 and ask[
-                0] > self.current_price, 'ask 价格 或 数量 错误'
-
-            assert isinstance(bid, list) and len(bid) == 2 and bid[0] > 0 and bid[1] == 10 and bid[
-                0] < self.current_price, 'bid 价格 或 数量 错误'
+            assert isinstance(ask, list) and len(
+                ask) == 2 and ask[0] > 0, 'ask 价格 或 数量 错误'
+            if bid:
+                assert isinstance(bid, list) and len(
+                    bid) == 2 and bid[0] > 0, 'bid 价格 或 数量 错误'
 
             close = float(tick.get('close', 0))
             assert close == self.current_price, 'close 价格 错误'
@@ -91,10 +91,6 @@ class TestContractNoti_014:
 
             vol = int(tick.get('vol', 0))
             assert vol >= 20, 'vol 错误'
-
-            id = tick.get('id', 0)
-            assert int(time.time()) - (48 * 60 *
-                                       60) <= id <= int(time.time()), 'id 错误'
 
             res = api.contract_batch_merged()
             pprint(res)
