@@ -43,7 +43,7 @@ class TestConteractTriggerOpenBuy_006:
     def setup(self, symbol, symbol_period):
         self.symbol = symbol
         print(symbol_period)
-        self.symbol = symbol
+        self.symbol = symbol_period
         ATP.make_market_depth()
 
     @allure.title('计划委托买入开多触发价等于最新价')
@@ -58,7 +58,7 @@ class TestConteractTriggerOpenBuy_006:
         print('\n步骤一:获取最近价\n')
         lastprice = ATP.get_current_price(contract_code=symbol_period)
         triggerPrice = round(lastprice, 2)
-        orderPrice = round(lastprice, 2)
+        orderPrice = triggerPrice
         with allure.step('1、登录合约交易系统'):
             pass
         with allure.step('2、选择币种BTC，选择杠杆5X，点击开仓-计划按钮'):
@@ -71,7 +71,7 @@ class TestConteractTriggerOpenBuy_006:
             pass
         with allure.step('6、点击买入开多按钮，弹框点击确认'):
             common_contract_api.contract_order(
-                symbol=symbol, contract_type="limit", volume=volume, direction="sell",
+                symbol=symbol, contract_type="limit", volume=volume, direction="sell", price=lastprice,
                 offset=offset, lever_rate=leverRate)
             r = contract_api.contract_trigger_order(symbol=symbol, trigger_type=trigger_type, trigger_price=triggerPrice, contract_type=contract_type,
                                                     order_price=orderPrice, volume=volume, direction=direction,
