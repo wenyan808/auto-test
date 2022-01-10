@@ -39,16 +39,15 @@ from schema import Schema, Or
 @allure.tag('Script owner : Alex Li', 'Case owner : 叶永刚')
 @pytest.mark.stable
 class TestContractLever_s001:
-
     params = [
         {"contract_type": "this_week", "case_title": "母用户- 币本位交割当周-无持仓切换杠杆倍数",
-            "id": "TestContractLever_001"},
+         "id": "TestContractLever_001"},
         {"contract_type": "next_week", "case_title": "母用户- 币本位交割次周-无持仓切换杠杆倍数",
-            "id": "TestContractLever_002"},
+         "id": "TestContractLever_002"},
         {"contract_type": "quarter", "case_title": "母用户- 币本位交割当季-无持仓切换杠杆倍数",
-            "id": "TestContractLever_003"},
+         "id": "TestContractLever_003"},
         {"contract_type": "next_quarter",
-            "case_title": "母用户- 币本位交割次季-无持仓切换杠杆倍数", "id": "TestContractLever_004"}
+         "case_title": "母用户- 币本位交割次季-无持仓切换杠杆倍数", "id": "TestContractLever_004"}
     ]
 
     @allure.step('前置条件')
@@ -60,14 +59,18 @@ class TestContractLever_s001:
     @allure.step('测试执行')
     @pytest.mark.parametrize('param', params, ids=[x['id'] for x in params])
     def test_execute(self, symbol_period, symbol, param):
+        print("默认symbol_period：", symbol_period)
+        print("默认symbol：", symbol)
         allure.dynamic.title(param['case_title'])
 
         with allure.step('1、清仓和取消挂单才能切杠杆'):
-            print("param[contract_type]:{}".format(param["contract_type"]))
-            ATP.cancel_all_types_order(contract_code=param["contract_type"])
+            contract_typedic = {'this_week': "CW", 'next_week': "NW",
+                                'quarter': "CQ", 'next_quarter': "NQ"}
+            contract_code = symbol + contract_typedic[param["contract_type"]]
+            ATP.cancel_all_types_order(contract_code=contract_code)
             ATP.make_market_depth(
-                contract_code=param["contract_type"], depth_count=5)
-            ATP.close_all_position(contract_code=param["contract_type"])
+                contract_code=contract_code, depth_count=5)
+            ATP.close_all_position(contract_code=contract_code)
 
         currentPrice = ATP.get_current_price(contract_code=symbol_period)
         with allure.step('2、在币本位交割合约交易页，选择币本位交割当周合约，检查杠杆倍数'):
@@ -84,7 +87,8 @@ class TestContractLever_s001:
             print(res)
             if res['status'] == 'ok':
                 contract_api.contract_order(
-                    symbol=symbol, contract_type=param["contract_type"], price=currentPrice, volume=1, lever_rate=self._lever_rate, direction="buy", offset="open", order_price_type="limit")
+                    symbol=symbol, contract_type=param["contract_type"], price=currentPrice, volume=1,
+                    lever_rate=self._lever_rate, direction="buy", offset="open", order_price_type="limit")
 
                 redis_client = redisConf('redis6380').instance()
                 self._redis_lever_rate = int(redis_client.hget(
@@ -98,7 +102,7 @@ class TestContractLever_s001:
                         11538447, symbol)
                     print(sqlStr)
                     rec_db_dic = btc_conn.selectdb_execute("btc", sqlStr)
-                    if(len(rec_db_dic) > 0):
+                    if (len(rec_db_dic) > 0):
                         rec_db_dic[0]["leverage"] == self._redis_lever_rate
             else:  # {'status': 'error', 'err_code': 1045, 'err_msg': '当前有挂单,无法切换倍数', 'ts': 1640760719058}
                 schema = {'status': str, 'err_code': int,
