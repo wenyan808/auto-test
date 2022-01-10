@@ -23,6 +23,8 @@ import pytest
 import time
 
 from common.ContractServiceAPI import t as contract_api
+from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
+
 from tool.atp import ATP
 
 
@@ -54,6 +56,11 @@ class TestContractEx_225:
             res = ATP.current_user_make_order(
                 contract_code=symbol_period, price=self.current, volume=5, direction="sell", offset="close")
             pprint(res)
+
+            common_contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=self.current,
+                                               volume=5,
+                                               direction="buy", offset='open', lever_rate=leverrate,
+                                               order_price_type='limit')
 
             buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=self.current,
                                                     volume=5,

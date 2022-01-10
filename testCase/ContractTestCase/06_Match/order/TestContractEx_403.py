@@ -111,8 +111,6 @@ class TestContractEx_403:
             elif self.contract_type == 'next_quarter':
                 self.contract_code = self.next_contract_code
 
-            self.currentPrice = ATP.get_current_price(
-                contract_code=self.contract_code)
             orderInfo = user01.contract_order(symbol=symbol, contract_code=self.contract_code,
                                               price=round(
                                                   self.currentPrice, 2),
