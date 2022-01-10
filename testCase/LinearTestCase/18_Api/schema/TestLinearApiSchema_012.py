@@ -41,7 +41,7 @@ class TestLinearApiSchema_012:
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_elite_account_ratio'):
             r = linear_api.linear_elite_account_ratio(contract_code=contract_code,
-                                                      period='60min')
+                                                      period='1day')
             pprint(r)
             schema = {
                 'data': {

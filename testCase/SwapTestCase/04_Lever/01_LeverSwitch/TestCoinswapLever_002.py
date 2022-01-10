@@ -31,20 +31,18 @@ class TestCoinswapLever_002:
     @allure.title('当前有挂单切换杠杆倍数测试')
     def test_execute(self, contract_code):
         with allure.step('操作: 挂个限价单'):
-            latest_price = SwapTool.wcurrentPrice()
-            user01.swap_order(contract_code=DEFAULT_CONTRACT_CODE,price=round(latest_price*0.5,2),direction='buy')
+            latest_price = SwapTool.currentPrice()
+            user01.swap_order(contract_code=DEFAULT_CONTRACT_CODE,price=round(latest_price*0.8,2),direction='buy')
             time.sleep(1)
             pass
         with allure.step('操作: 获取可用的杠杆总数'):
-            tmp = user01.swap_available_level_rate(contract_code=contract_code)
-            availableLeverList = tmp['data'][0]['available_level_rate'].split(',')
+            availableLeverList = [1,2,3,10,20,30,50,75]
             pass
         with allure.step('操作: 杠杆倍数切换为任意值'):
-            availableLeverList.remove('5')
             i = random.choice(availableLeverList)
             r = user01.swap_switch_lever_rate(contract_code=contract_code, lever_rate=i)
             pass
-        with allure.step('验证: 切换成功'):
+        with allure.step('验证: 是否切换成功'):
             assert r['status'] == 'error' and '当前有挂单,无法切换倍数' in r['err_msg']
             pass
 

@@ -3,7 +3,7 @@
 # @Date    : 2020/7/1
 # @Author  : HuiQing Yu
 
-from common.mysqlComm import mysqlComm as mysqlClient
+from common.mysqlComm import mysqlComm
 from decimal import Decimal
 
 import allure
@@ -49,6 +49,7 @@ class TestCoinswapTriggerOrder_010:
         with allure.step("变量初始化"):
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.latest_price = SwapTool.currentPrice()
+            cls.mysqlClient = mysqlComm()
             pass
         with allure.step("持仓"):
             user01.swap_order(contract_code=cls.contract_code,price=cls.latest_price,direction='buy',volume=3)
@@ -83,7 +84,7 @@ class TestCoinswapTriggerOrder_010:
                      f'from t_trigger_order t ' \
                      f'where user_order_id = {orderId}'
             for i in range(3):
-                db_info_list = mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
+                db_info_list = self.mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
                 if len(db_info_list) == 0:
                     print(f'查询为空，第{i}一次重试……')
                     time.sleep(1)
@@ -92,9 +93,9 @@ class TestCoinswapTriggerOrder_010:
             for db_info in db_info_list:
                 assert params['direction'] in db_info['direction'], '订单方向 买|卖 校验失败'
                 assert params['trigger_type'] in db_info['trigger_type'], '触发类型校验失败'
-                assert round(Decimal(currentPrice() * params['ratio']), 2) == round(db_info['trigger_price'],
+                assert round(Decimal(self.latest_price * params['ratio']), 2) == round(db_info['trigger_price'],
                                                                                     2), '触发价校验失败'
-                assert round(Decimal(currentPrice() * params['ratio']), 2) == round(db_info['order_price'],
+                assert round(Decimal(self.latest_price * params['ratio']), 2) == round(db_info['order_price'],
                                                                                     2), '订单价校验失败'
                 assert 5 == db_info['lever_rate'], '杠杆位数校验失败'
                 assert params['offset'] in db_info['offset'], '订单仓位 开|平 校验失败'
@@ -109,7 +110,7 @@ class TestCoinswapTriggerOrder_010:
                 sqlStr = f'select t.state,t.order_id,t.triggered_at ' \
                          f'from t_trigger_order t ' \
                          f'where user_order_id = {orderId}'
-                is_trigger = mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)[0]
+                is_trigger = self.mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)[0]
                 if is_trigger['state'] == 2:
                     print(f'校验失败，第{i+1}次重试……')
                     time.sleep(1)

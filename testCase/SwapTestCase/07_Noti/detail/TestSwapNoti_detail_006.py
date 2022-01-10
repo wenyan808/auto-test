@@ -26,7 +26,7 @@ class TestSwapNoti_detail_006:
     @classmethod
     def setup_class(cls):
         with allure.step('更新深度'):
-            cls.current_price = currentPrice()
+            cls.current_price = SwapTool.currentPrice()
             for i in range(10):
                 api_user01.swap_order(contract_code=cls.contract_code,
                                       price=round(cls.current_price * (1 - i * 0.01), 2),

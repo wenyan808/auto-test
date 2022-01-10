@@ -30,10 +30,10 @@ class TestSwapApiSchema_017:
                         "symbol": symbol,
                         "contract_code": contract_code,
                         "fee_asset": symbol,
-                        "funding_time": str,
-                        "funding_rate": str,
-                        "estimated_rate": str,
-                        "next_funding_time": str
+                        "funding_time": Or(str,None),
+                        "funding_rate": Or(str,None),
+                        "estimated_rate": Or(str,None),
+                        "next_funding_time": Or(str,None)
                     }],
                 "ts": int
             }

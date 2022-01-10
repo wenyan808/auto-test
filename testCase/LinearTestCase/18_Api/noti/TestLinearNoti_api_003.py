@@ -38,10 +38,11 @@ class TestLinearNoti_api_003:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('详见官方文档'):
-            r = linear_api.linear_detail_batch_merged(contract_code=contract_code, type='step0')
+            r = linear_api.linear_detail_batch_merged(contract_code=contract_code)
             pprint(r)
             schema = {'status': 'ok',
                       'ticks': [{'contract_code': contract_code,
+                                 'business_type': 'swap',
                                  'amount': str,
                                  'ask': list,
                                  'bid': list,
@@ -52,6 +53,7 @@ class TestLinearNoti_api_003:
                                  'low': str,
                                  'open': str,
                                  'trade_turnover': str,
+                                 'trade_partition': 'USDT',
                                  'ts': int,
                                  'vol': str}],
                       'ts': int}

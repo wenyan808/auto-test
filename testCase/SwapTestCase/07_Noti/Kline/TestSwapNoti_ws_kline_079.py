@@ -21,12 +21,10 @@ class TestSwapNoti_ws_kline_079:
     @allure.title('WS订阅K线(sub) 合约代码为空')
     def test_execute(self, contract_code):
         with allure.step('操作：执行sub订阅'):
-            self.contract_code = ''
-            self.period = '1min'
             self.toTime = int(time.time())
             self.fromTime = self.toTime - 60 * 3
             subs = {
-                "sub": "market.{}.kline.{}".format(self.contract_code,self.period),
+                "sub": "market. .kline.1min",
                 "id": "id4"
             }
             result = swap_service_ws.swap_sub(subs)

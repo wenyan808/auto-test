@@ -26,6 +26,11 @@ def symbol():
     symbol = conf.DEFAULT_SYMBOL
     return symbol
 
+@pytest.fixture()
+def url():
+    url = conf.URL
+    return url
+
 # 开仓
 @pytest.fixture()
 def offsetO():

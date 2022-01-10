@@ -3,27 +3,27 @@
 # @Date    : 2021/12/7 2:35 下午
 # @Author  : HuiQing Yu
 
-from common.mysqlComm import mysqlComm as mysqlClient
-
 import json
+import random
 from datetime import date, timedelta
 from decimal import Decimal
-import random
+
 import allure
 import pytest
 
 from common.SwapServiceMGT import SwapServiceMGT
-from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
+from common.mysqlComm import mysqlComm
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 
 
 @allure.epic(epic[1])
 @allure.feature(features[4]['feature'])
-@allure.story(features[4]['story'][2])
+@allure.story(features[4]['story'][1])
 @allure.tag('Script owner : 余辉青', 'Case owner : 程卓')
 @pytest.mark.stable
 class TestSwapAccountCapticalBatch_208:
-    startDate = -random.randint(2, 7)
+    startDate = -random.randint(2, 5)
     ids = [
         'TestSwapAccountCapticalBatch_208',
         'TestSwapAccountCapticalBatch_209',
@@ -79,6 +79,7 @@ class TestSwapAccountCapticalBatch_208:
         with allure.step('变量初始化'):
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.symbol = DEFAULT_SYMBOL
+            cls.mysqlClient = mysqlComm()
             cls.fund_flow_type = {
                 "moneyIn": "从币币转入",
                 "moneyOut": "转出至币币",

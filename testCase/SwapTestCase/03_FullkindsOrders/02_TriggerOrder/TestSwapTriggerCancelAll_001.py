@@ -27,7 +27,7 @@ class TestSwapTriggerCancelAll_001:
     @classmethod
     def setup_class(cls):
         with allure.step('*->计划委托下单(多单)'):
-            cls.currentPrice = currentPrice()  # 最新价
+            cls.currentPrice = SwapTool.currentPrice()  # 最新价
             trigger_price = round(cls.currentPrice, 2)
             # ge大于等于(触发价比最新价大)；le小于(触发价比最新价小)
             if trigger_price >= cls.currentPrice:
@@ -45,7 +45,7 @@ class TestSwapTriggerCancelAll_001:
     def test_execute(self, contract_code):
         with allure.step('*->计划委托订单全部撤单'):
             time.sleep(1)
-            cancelResult = user01.swap_trigger_cancelall(contract_code=contract_code)
+            cancelResult = user01.swap_trigger_cancelall(contract_code=self.contract_code)
             pass
         with allure.step('验证撤单订单结果返回'):
             assert cancelResult['status'] == 'ok'

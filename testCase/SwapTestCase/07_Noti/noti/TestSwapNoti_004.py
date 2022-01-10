@@ -24,7 +24,7 @@ class TestSwapNoti_004:
     @classmethod
     def setup_class(cls):
         with allure.step('挂盘'):
-            cls.current_price = currentPrice()
+            cls.current_price = SwapTool.currentPrice()
             api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.current_price * (1-1*0.01), 2),
                                   direction='buy')
             api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.current_price * (1+1*0.01), 2),
@@ -48,7 +48,7 @@ class TestSwapNoti_004:
             flag = False
             # 重试3次未返回预期结果则失败
             for i in range(3):
-                result = ws_user01.swap_sub(subs)
+                result = ws_user01.swap_sub(subs=subs,keyword='tick')
                 if 'tick' in result:
                     if 'bid' in result['tick'] and 'ask' in result['tick']:
                         flag = True

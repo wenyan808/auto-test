@@ -32,7 +32,7 @@ class TestSwapNoti_ws_kline_081:
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：执行sub订阅'):
             subs = {
-                "sub": "market.{}.kline.1min".format(params['contract_code']),
+                "sub": f"market.{params['contract_code']}.kline.1min",
                 "id": "id4"
             }
             result = swap_service_ws.swap_sub(subs)

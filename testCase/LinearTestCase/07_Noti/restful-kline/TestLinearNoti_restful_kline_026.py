@@ -59,7 +59,7 @@ class TestLinearNoti_restful_kline_026:
             r = linear_api.linear_kline(contract_code=contract_code, period="15min", size=2010, FROM=self.from_time,to="10000")
             pprint(r)
             errmsg = r['err-msg']
-            if errmsg != "invalid size, valid range: [1,2000]":
+            if errmsg != "invalid size":
                 assert False
 
     @allure.step('恢复环境')

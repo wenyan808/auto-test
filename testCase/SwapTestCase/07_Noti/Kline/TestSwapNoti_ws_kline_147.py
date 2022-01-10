@@ -27,34 +27,34 @@ class TestSwapNoti_ws_kline_147:
         'TestSwapNoti_ws_kline_169'
     ]
     params = [
-        {'case_name': 'WS请求(req)-不传to', 'subs': {"req": "market.{}.kline.1min".format(contract_code),
+        {'case_name': 'WS请求(req)-不传to', 'subs': {"req": f"market.{contract_code}.kline.1min",
                                                     "id": "id4",
                                                     "from": fromTime
                                                     }},
-        {'case_name': 'WS请求(req)-from=0', 'subs': {"req": "market.{}.kline.1min".format(contract_code),
+        {'case_name': 'WS请求(req)-from=0', 'subs': {"req": f"market.{contract_code}.kline.1min",
                                                  "id": "id4",
                                                  "from": 0,
                                                  "to": toTime
                                                  }},
-        {'case_name': 'WS请求(req)-to=0', 'subs': {"req": "market.{}.kline.1min".format(contract_code),
+        {'case_name': 'WS请求(req)-to=0', 'subs': {"req": f"market.{contract_code}.kline.1min",
                                                     "id": "id4",
                                                     "from": fromTime,
                                                     "to": 0
                                                     }},
-        {'case_name': 'WS请求(req)-from为空', 'subs': {"req": "market.{}.kline.1min".format(contract_code),
+        {'case_name': 'WS请求(req)-from为空', 'subs': {"req": f"market.{contract_code}.kline.1min",
                                                  "id": "id4",
                                                  "from": None,
                                                  "to": toTime
                                                  }},
-        {'case_name': 'WS请求(req)-to为空', 'subs': {"req": "market.{}.kline.1min".format(contract_code),
+        {'case_name': 'WS请求(req)-to为空', 'subs': {"req": f"market.{contract_code}.kline.1min",
                                                     "id": "id4",
                                                     "from": fromTime,
                                                     "to": None
                                                     }},
-        {'case_name': 'WS请求(req)-不传from', 'subs': {"req": "market.{}.kline.1min".format(contract_code),
-                                                 "id": "id4",
-                                                 "to": toTime
-                                                 }},
+        {'case_name': 'WS请求(req)-不传from', 'subs': {"req": f"market.{contract_code}.kline.1min",
+                                                   "id": "id4",
+                                                   "to": toTime
+                                                   }},
     ]
 
     @pytest.mark.parametrize('params', params, ids=ids)

@@ -39,7 +39,6 @@ from schema import Schema, Or
 @allure.tag('Script owner : Alex Li', 'Case owner : 叶永刚')
 @pytest.mark.stable
 class TestContractLever_s001:
-
     params = [
         {"contract_type": "this_week", "period": "_CW", "case_title": "母用户- 币本位交割当周-无持仓切换杠杆倍数",
             "id": "TestContractLever_001"},
@@ -84,7 +83,8 @@ class TestContractLever_s001:
             print(res)
             if res['status'] == 'ok':
                 contract_api.contract_order(
-                    symbol=symbol, contract_type=param["contract_type"], price=currentPrice, volume=1, lever_rate=self._lever_rate, direction="buy", offset="open", order_price_type="limit")
+                    symbol=symbol, contract_type=param["contract_type"], price=currentPrice, volume=1,
+                    lever_rate=self._lever_rate, direction="buy", offset="open", order_price_type="limit")
 
                 redis_client = redisConf('redis6380').instance()
                 self._redis_lever_rate = int(redis_client.hget(
@@ -98,7 +98,7 @@ class TestContractLever_s001:
                         11538447, symbol)
                     print(sqlStr)
                     rec_db_dic = btc_conn.selectdb_execute("btc", sqlStr)
-                    if(len(rec_db_dic) > 0):
+                    if (len(rec_db_dic) > 0):
                         rec_db_dic[0]["leverage"] == self._redis_lever_rate
             else:  # {'status': 'error', 'err_code': 1045, 'err_msg': '当前有挂单,无法切换倍数', 'ts': 1640760719058}
                 schema = {'status': str, 'err_code': int,

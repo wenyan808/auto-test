@@ -3,12 +3,13 @@
 # @Date    : 2021/12/6 3:16 下午
 # @Author  : HuiQing Yu
 
-from common.mysqlComm import mysqlComm as mysqlClient
+from common.mysqlComm import mysqlComm as mysqlClient, mysqlComm
 
 import allure
 import pytest
 import time
 
+from common.redisComm import redisConf
 from tool.SwapTools import SwapTool
 from common.SwapMqComm import mqComm
 from common.SwapServiceAPI import user01, user02
@@ -20,7 +21,6 @@ from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 @allure.feature(features[16]['feature'])
 @allure.story(features[16]['story'][0])
 @allure.tag('Script owner : 余辉青', 'Case owner : 曾超群')
-@pytest.mark.stable
 class TestProductInit_swap_015:
     ids = ['TestProductInit_swap_015']
     params = [{'case_name':'检查用户已开户，有资金无持仓，品种初始化'}]
@@ -28,6 +28,8 @@ class TestProductInit_swap_015:
     @classmethod
     def setup_class(cls):
         with allure.step('变量初始化'):
+            cls.mysqlClient = mysqlComm()
+            cls.redisClient = redisConf('redis6380').instance()
             cls.symbol = DEFAULT_SYMBOL
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.latest_price = SwapTool.currentPrice()
@@ -39,13 +41,13 @@ class TestProductInit_swap_015:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params, redis6380):
+    def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：查看用户是否有仓位'):
-            name = f'RsT:APO:11538483#{self.symbol}'
+            name = f'RsT:APO:11538485#{self.symbol}'
             key = f'Position:#{self.symbol}#{self.contract_code}#'
-            position_info_1 = int(float(str(redis6380.hmget(name=name, keys=key + '1')).split(',')[5]))
-            position_info_2 = int(float(str(redis6380.hmget(name=name, keys=key + '2')).split(',')[5]))
+            position_info_1 = int(float(str(self.redisClient.hmget(name=name, keys=key + '1')).split(',')[5]))
+            position_info_2 = int(float(str(self.redisClient.hmget(name=name, keys=key + '2')).split(',')[5]))
             pass
         with allure.step('操作：有仓位进行清仓(无则跳过)'):
             if position_info_1 > 0:
@@ -66,7 +68,7 @@ class TestProductInit_swap_015:
             pass
         with allure.step(f'操作：删除Redis Key={name}'):
             time.sleep(1)  # 等待清仓完成
-            redis6380.delete(name)
+            self.redisClient.delete(name)
             pass
         with allure.step('操作：发送MQ信息'):
             mq_result = mqComm.productTradeStatus(symbol=self.symbol)
@@ -88,14 +90,14 @@ class TestProductInit_swap_015:
                     'clearUnFrozenMargin',
                     ]
             for key in keys:
-                result = redis6380.hmget(name=name, keys=key)
+                result = self.redisClient.hmget(name=name, keys=key)
                 assert result[0] is not None, key + '校验失败'
             pass
         with allure.step(f'验证：t_product 中品种={self.symbol}初始化成功'):
             sqlStr = f'select init_status from t_product where product_id="{self.symbol}"'
             flag = False
             for i in range(3):
-                db_info = mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
+                db_info = self.mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
                 if len(db_info) and db_info[0]['init_status'] == 1:
                     flag = True
                     break

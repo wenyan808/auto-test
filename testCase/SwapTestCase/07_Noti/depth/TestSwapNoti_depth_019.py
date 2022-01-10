@@ -3,15 +3,12 @@
 # @Date    : 20211012
 # @Author : 张广南
 
-import time
 import allure
 import pytest
 
 from common.SwapServiceWS import user01 as ws_user01
-from common.SwapServiceAPI import user01 as api_user01
-from tool.SwapTools import SwapTool, opponentExist
-from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 
 
 @allure.epic(epic[1])
@@ -25,8 +22,8 @@ class TestSwapNoti_depth_001:
         'TestSwapNoti_depth_020',
     ]
     params = [
-        {'case_name': 'WS订阅深度 20档0.0000001不合并)', 'type': 'step18'},
-        {'case_name': 'WS订阅深度 20档0.000001不合并)', 'type': 'step19'},
+        {'case_name': 'WS订阅深度 非SHIB 20档)', 'type': 'step18'},
+        {'case_name': 'WS订阅深度 非SHIB 20档)', 'type': 'step19'},
     ]
 
     @classmethod

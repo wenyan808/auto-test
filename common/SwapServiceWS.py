@@ -15,10 +15,10 @@ class WebsocketSevice:
         self.__secret_key = secret_key
 
     #WS市场行情
-    def swap_sub(self,subs):
+    def swap_sub(self,subs=None,keyword=None):
         path = '/swap-ws'
         url = self.__url + path
-        return sub(url, subs)
+        return sub(url=url, subs=subs,keyword=keyword)
 
     # WS鉴权订阅，请求
     def swap_sub_auth(self, subs):
@@ -27,10 +27,10 @@ class WebsocketSevice:
         return api_key_sub(url, self.__access_key, self.__secret_key, subs)
 
     # 订阅(sub) 指数与基差数据
-    def swap_sub_index(self,subs):
+    def swap_sub_index(self,subs,keyword):
         path = '/ws_index'
         url = self.__url + path
-        return sub(url, subs)
+        return sub(url, subs,keyword)
 
 
 t = WebsocketSevice(WSURL,ACCESS_KEY,SECRET_KEY)

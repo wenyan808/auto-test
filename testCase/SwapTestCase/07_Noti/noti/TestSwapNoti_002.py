@@ -3,12 +3,15 @@
 # @Date    : 20211009
 # @Author : HuiQing Yu
 
-from common.SwapServiceWS import user01 as ws_user01
+import allure
+import pytest
+import time
+
 from common.SwapServiceAPI import user01 as api_user01
-import pytest, allure, random, time
-from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
-from tool.SwapTools import SwapTool,opponentExist
+from common.SwapServiceWS import user01 as ws_user01
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
@@ -24,15 +27,13 @@ class TestSwapNoti_002:
     @classmethod
     def setup_class(cls):
         with allure.step('挂盘'):
-            cls.current_price = currentPrice()
+            cls.current_price = SwapTool.currentPrice()
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.symbol = DEFAULT_SYMBOL
-            api_user01.swap_order(contract_code=cls.contract_code,price=round(cls.current_price*0.5,2),direction='buy')
-            api_user01.swap_order(contract_code=cls.contract_code,price=round(cls.current_price*1.5,2),direction='sell')
+            api_user01.swap_order(contract_code=cls.contract_code,price=round(cls.current_price*0.8,2),direction='buy')
+            api_user01.swap_order(contract_code=cls.contract_code,price=round(cls.current_price*1.2,2),direction='sell')
             pass
-        with allure.step(''):
-            cls.flag = ~opponentExist(symbol=cls.symbol,asks='asks',bids='bids')
-            pass
+
 
     @classmethod
     def teardown_class(cls):
@@ -42,7 +43,6 @@ class TestSwapNoti_002:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    @pytest.mark.skipif(condition=flag,reason='环境问题盘口未更新，跳过用例')
     def test_execute(self,params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：执行sub请求'):
@@ -50,16 +50,8 @@ class TestSwapNoti_002:
                 "sub": "market.{}.depth.{}".format(self.contract_code, params['depth_type']),
                 "id": "id1"
             }
-            flag = False
-            # 重试3次未返回预期结果则失败
-            for i in range(3):
-                result = ws_user01.swap_sub(subs)
-                if 'tick' in result:
-                    flag = True
-                    break
-                time.sleep(1)
-                print(f'未返回预期结果，第{i + 1}次重试………………………………')
-            assert flag
+            result = ws_user01.swap_sub(subs=subs, keyword='tick')
+            assert 'tick' in result, '未返回预期结果'
             pass
         with allure.step('验证：返回结果tick字段不为空'):
             assert result['tick'], '返回结果无tick,校验不通过'

@@ -3,10 +3,11 @@
 # @Date    : 20211013
 # @Author : HuiQing Yu
 
-import allure
-import pytest
 import time
 
+import allure
+import pytest
+from config.conf import DEFAULT_CONTRACT_CODE
 from common.SwapServiceWS import t as swap_service_ws
 from config.case_content import epic, features
 
@@ -29,13 +30,14 @@ class TestSwapNoti_ws_kline_154:
     ]
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, contract_code,params):
+    def test_execute(self,params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：执行req请求'):
+            self.contract_code = DEFAULT_CONTRACT_CODE
             self.toTime = int(time.time())
             self.fromTime = self.toTime - 60 * 60 * 24 * 30 * 12
             subs = {
-                "req": "market.{}.kline.{}".format(contract_code, params['period']),
+                "req": f"market.{self.contract_code}.kline.{params['period']}",
                 "id": "id4",
                 "from": self.fromTime,
                 "to": self.toTime

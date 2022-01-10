@@ -8,7 +8,7 @@ import time
 import allure
 import pytest
 
-from tool.SwapTools import SwapTool, opponentExist
+from tool.SwapTools import SwapTool
 from common.SwapServiceAPI import user01 as api_user01
 from common.SwapServiceWS import user01 as ws_user01
 from common.redisComm import redisConf
@@ -37,7 +37,7 @@ class TestSwapNoti_depth_028:
         with allure.step('实始化变量'):
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.symbol = DEFAULT_SYMBOL
-            cls.currentPrice = currentPrice()  # 最新价
+            cls.currentPrice = SwapTool.currentPrice()  # 最新价
             cls.redis6379 = redisConf('redis6379').instance()
             pass
         with allure.step('清理盘口'):
@@ -59,7 +59,7 @@ class TestSwapNoti_depth_028:
             pass
         with allure.step('查询redis深度更新'):
             for i in range (5):
-                if opponentExist(symbol=cls.symbol,bids='bids'):
+                if SwapTool.opponentExist(symbol=cls.symbol, bids='bids'):
                     break
                 else:
                     print('深度未更新,第{}次重试……'.format(i+1))

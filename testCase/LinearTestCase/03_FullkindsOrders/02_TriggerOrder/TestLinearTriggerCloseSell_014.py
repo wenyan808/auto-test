@@ -3,7 +3,7 @@
 # @Date    : 20211103
 # @Author : ZhangGuangNan
 
-from common.LinearServiceAPI import user01
+from common.LinearServiceAPI import t
 import pytest
 import allure
 import time
@@ -138,15 +138,15 @@ class TestLinearTriggerCloseSell_014:
     def setup_class(cls):
         with allure.step('*->持仓'):
             cls.currentPrice = ATP.get_current_price()  # 最新价
-            user01.linear_order(contract_code=cls.contract_code, price=cls.currentPrice, direction='buy')
-            user01.linear_order(contract_code=cls.contract_code, price=cls.currentPrice, direction='sell')
+            t.linear_order(contract_code=cls.contract_code, price=cls.currentPrice, direction='buy')
+            t.linear_order(contract_code=cls.contract_code, price=cls.currentPrice, direction='sell')
             pass
 
     @classmethod
     def teardown_class(cls):
         with allure.step('*->恢复环境:取消委托'):
             time.sleep(1)
-            user01.linear_trigger_cancelall(contract_code=cls.contract_code)
+            t.linear_trigger_cancelall(contract_code=cls.contract_code)
             pass
 
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
@@ -160,11 +160,11 @@ class TestLinearTriggerCloseSell_014:
                 trigger_type = 'ge'
             else:
                 trigger_type = 'le'
-            self.orderInfo = user01.linear_trigger_order(contract_code=contract_code, trigger_price=trigger_price,
-                                                         trigger_type=trigger_type,
-                                                         order_price=trigger_price, direction=params['direction'],
-                                                         offset='close', volume=1,
-                                                         order_price_type=params['order_price_type'])
+            self.orderInfo = t.linear_trigger_order(contract_code=contract_code, trigger_price=trigger_price,
+                                                    trigger_type=trigger_type,
+                                                    order_price=trigger_price, direction=params['direction'],
+                                                    offset='close', volume=1,
+                                                    order_price_type=params['order_price_type'])
             pass
         with allure.step('*->验证' + params['caseName'] + '下单成功'):
             assert self.orderInfo['data']['order_id']

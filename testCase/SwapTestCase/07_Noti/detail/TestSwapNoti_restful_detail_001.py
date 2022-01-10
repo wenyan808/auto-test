@@ -25,10 +25,10 @@ class TestSwapNoti_restful_detail_001:
     @classmethod
     def setup_class(cls):
         with allure.step('挂盘'):
-            cls.currentPrice = currentPrice()
-            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice * 0.5, 2),
+            cls.currentPrice = SwapTool.currentPrice()
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice * 0.8, 2),
                                   direction='buy')
-            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice * 1.5, 2),
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice * 1.2, 2),
                                   direction='sell')
             pass
 
@@ -63,7 +63,7 @@ class TestSwapNoti_restful_detail_001:
         with allure.step('验证：返回结果各字段不为空'):
             checked_col = ['amount', 'ask', 'bid', 'close', 'count', 'high', 'id', 'low', 'open', 'vol']
             for col in checked_col:
-                assert result['tick'][col], str(col) + '为None,不符合预期'
+                assert result['tick'][col] is not None, str(col) + '为None,不符合预期'
 
 if __name__ == '__main__':
     pytest.main()

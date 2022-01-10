@@ -12,7 +12,7 @@ from config.case_content import epic, features
 @allure.story(features[6]['story'][6])
 @pytest.mark.stable
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
-class TestSwapNoti_ws_kline_089:
+class TestSwapNoti_ws_kline_s089:
 
     ids = ['TestSwapNoti_ws_kline_089',
            'TestSwapNoti_ws_kline_095',
@@ -26,39 +26,48 @@ class TestSwapNoti_ws_kline_089:
     params = [
         {
             "case_name": "合约不存在-1min",
-            "period": "1min"
+            "period": "1min",
+            "title": ids[0],
         },
         {
             "case_name": "合约不存在-5min",
-            "period": "5min"
+            "period": "5min",
+            "title": ids[1],
         },
         {
             "case_name": "合约不存在-15min",
-            "period": "15min"
+            "period": "15min",
+            "title": ids[2],
         },
         {
             "case_name": "合约不存在-30min",
-            "period": "30min"
+            "period": "30min",
+            "title": ids[3],
         },
         {
             "case_name": "合约不存在-60min",
-            "period": "60min"
+            "period": "60min",
+            "title": ids[4],
         },
         {
             "case_name": "合约不存在-4hour",
-            "period": "4hour"
+            "period": "4hour",
+            "title": ids[5],
         },
         {
             "case_name": "合约不存在-1day",
-            "period": "1day"
+            "period": "1day",
+            "title": ids[6],
         },
         {
             "case_name": "合约不存在-1week",
-            "period": "1week"
+            "period": "1week",
+            "title": ids[7],
         },
         {
             "case_name": "合约不存在-1mon",
-            "period": "1mon"
+            "period": "1mon",
+            "title": ids[8],
         }
     ]
 
@@ -66,11 +75,10 @@ class TestSwapNoti_ws_kline_089:
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：发送req请求'):
-            self.contract_code = 'BTC-BTC'
             self.toTime = int(time.time())
             self.fromTime = self.toTime - 60 * 60 * 24
             subs = {
-                "req": "market.{}.kline.{}".format(self.contract_code, params['period']),
+                "req": f"market.BTC-BTC.kline.{params['period']}",
                 "id": "id4",
                 "from": self.fromTime,
                 "to": self.toTime

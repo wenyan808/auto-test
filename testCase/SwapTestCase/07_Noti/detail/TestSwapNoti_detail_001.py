@@ -3,14 +3,15 @@
 # @Date    : 2021/11/15 2:10 下午
 # @Author  : HuiQing Yu
 
-from common.mysqlComm import mysqlComm as mysqlClient
+import allure
+import pytest
+import time
 
-import pytest, allure, random, time
 from common.SwapServiceAPI import user01 as api_user01
 from common.SwapServiceWS import user01 as ws_user01
-from config.conf import DEFAULT_CONTRACT_CODE
-from tool.SwapTools import SwapTool
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
@@ -28,10 +29,19 @@ class TestSwapNoti_detail_001:
     @classmethod
     def setup_class(cls):
         with allure.step('挂盘'):
-            cls.currentPrice = currentPrice()
-            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice*0.5, 2), direction='buy')
-            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice*1.5, 2), direction='sell')
+            cls.symbol=DEFAULT_SYMBOL
+            cls.currentPrice = SwapTool.currentPrice()
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice*0.8, 2), direction='buy')
+            api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice*1.2, 2), direction='sell')
             pass
+        with allure.step('查看盘口是否更新'):
+            for i in range(5):
+                if ~SwapTool.opponentExist(symbol=cls.symbol, bids='asks'):
+                    break
+                else:
+                    print(f'深度未更新,第{i + 1}次重试……')
+                    time.sleep(1)
+
 
     @classmethod
     def teardown_class(cls):
@@ -43,13 +53,8 @@ class TestSwapNoti_detail_001:
     def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step('ws:执行sub请求'):
-            api_user01.swap_order(contract_code=self.contract_code, price=round(self.currentPrice, 2),
-                                  direction='buy')
-            api_user01.swap_order(contract_code=self.contract_code, price=round(self.currentPrice, 2),
-                                  direction='sell')
-            time.sleep(2)
             subs = {
-                "sub": "market.{}.detail".format(params['contract_code']),
+                "sub": f"market.{params['contract_code']}.detail",
                 "id": "id6"
             }
             flag = False

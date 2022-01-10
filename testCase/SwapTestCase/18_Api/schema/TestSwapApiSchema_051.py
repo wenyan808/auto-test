@@ -32,7 +32,7 @@ class TestSwapApiSchema_051:
             flag = False
             # 重试3次未返回预期结果则失败
             for i in range(3):
-                self.currentPrice = currentPrice()
+                self.currentPrice = SwapTool.currentPrice()
                 r = user01.swap_trigger_order(contract_code=contract_code, volume=1,
                                               trigger_price=round(self.currentPrice * 1.01, 2),
                                               order_price=round(self.currentPrice * 0.99, 2), trigger_type="ge",
