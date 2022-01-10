@@ -72,15 +72,17 @@ class TestConteractTriggerOpenSell_004:
             pass
         with allure.step('6、点击卖出开空按钮，弹框点击确认'):
             common_contract_api.contract_order(
-                symbol=symbol, contract_type="limit", volume=volume, direction="buy",
+                symbol=symbol, contract_type="limit", volume=volume, direction="buy", price=triggerPrice,
                 offset=offset, lever_rate=leverRate)
+
             r = contract_api.contract_trigger_order(symbol=symbol, trigger_type=trigger_type, trigger_price=triggerPrice, contract_type=contract_type,
                                                     order_price=orderPrice, volume=volume, direction=direction,
                                                     offset=offset, lever_rate=leverRate)
             print(r)
             order_id = r['data']['order_id']
             print(order_id)
-
+            ATP.make_market_depth(depth_count=2)
+            time.sleep(1)
             res = contract_api.contract_trigger_openorders(
                 symbol=symbol)
             print(res)
