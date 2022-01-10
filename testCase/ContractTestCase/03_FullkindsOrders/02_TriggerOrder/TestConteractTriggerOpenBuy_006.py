@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """# @Date    : 20210930
-# @Author : chenwei
+# @Author : alex
     用例标题
         计划委托买入开多触发价等于最新价
     前置条件
@@ -80,6 +80,8 @@ class TestConteractTriggerOpenBuy_006:
             order_id = r['data']['order_id']
             print(order_id)
 
+            ATP.make_market_depth(depth_count=2)
+            time.sleep(1)
             res = contract_api.contract_trigger_openorders(
                 symbol=symbol)
             print(res)

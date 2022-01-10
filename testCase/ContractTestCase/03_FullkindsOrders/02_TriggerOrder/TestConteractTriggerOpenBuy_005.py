@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """# @Date    : 20210930
-# @Author : chenwei
+# @Author : alex
     用例标题
         计划委托买入开多触发价小于最新价
     前置条件
@@ -43,7 +43,7 @@ class TestConteractTriggerOpenBuy_005:
     def setup(self, symbol, symbol_period):
         print(symbol_period)
         self.symbol = symbol
-        ATP.make_market_depth()
+        ATP.make_market_depth(depth_count=2)
 
     @allure.title('计划委托买入开多触发价小于最新价')
     @allure.step('测试执行')
@@ -57,8 +57,8 @@ class TestConteractTriggerOpenBuy_005:
         contract_type = "this_week"
         print('\n步骤一:获取最近价\n')
         lastprice = ATP.get_current_price(contract_code=symbol_period)
-        triggerPrice = round(lastprice*0.99, 2)
-        orderPrice = round(lastprice*0.98, 2)
+        triggerPrice = round(lastprice*0.9999, 2)
+        orderPrice = round(lastprice*0.999, 2)
         with allure.step('1、登录合约交易系统'):
             pass
         with allure.step('2、选择币种BTC，选择杠杆5X，点击开仓-计划按钮'):
@@ -79,7 +79,8 @@ class TestConteractTriggerOpenBuy_005:
             print(r)
             order_id = r['data']['order_id']
             print(order_id)
-
+            ATP.make_market_depth(depth_count=2)
+            time.sleep(1)
             res = contract_api.contract_trigger_openorders(
                 symbol=symbol)
             print(res)
