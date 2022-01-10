@@ -18,7 +18,6 @@ from config.conf import DEFAULT_CONTRACT_CODE
 @allure.feature(features[7]['feature'])
 @allure.story(features[7]['story'][0])
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
-@pytest.mark.stable
 class TestSwapExIndex_premiumindex_001:
 
     ids = ['TestSwapExIndex_premiumindex_001',
@@ -69,7 +68,7 @@ class TestSwapExIndex_premiumindex_001:
             flag = False
             # 重试3次未返回预期结果则失败
             for i in range(1, 4):
-                result = ws_user01.swap_sub_index(subs)
+                result = ws_user01.swap_sub_index(subs=subs,keyword='data')
                 if result['data']:
                     flag = True
                     break

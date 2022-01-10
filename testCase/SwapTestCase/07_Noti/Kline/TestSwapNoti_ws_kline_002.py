@@ -16,7 +16,7 @@ from config.case_content import epic, features
 @allure.story(features[6]['story'][6])
 @pytest.mark.stable
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
-class TestSwapNoti_ws_kline_001:
+class TestSwapNoti_ws_kline_002:
     ids = [
            'TestSwapNoti_ws_kline_002',
            'TestSwapNoti_ws_kline_003',
@@ -39,11 +39,12 @@ class TestSwapNoti_ws_kline_001:
               {'case_name': 'WS订阅K线(sub)-1mon', 'period': '1mon'},
               {'case_name': 'WS订阅K线(sub)-1min', 'period': '1min'}
             ]
-    contract_code = DEFAULT_CONTRACT_CODE
+
 
     @classmethod
     def setup_class(cls):
-        cls.currentPrice = currentPrice()  # 最新价
+        cls.currentPrice = SwapTool.currentPrice()  # 最新价
+        cls.contract_code = DEFAULT_CONTRACT_CODE
         api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice*1.01, 2), direction='buy')
         api_user01.swap_order(contract_code=cls.contract_code, price=round(cls.currentPrice*1.01, 2), direction='sell')
 
@@ -60,16 +61,8 @@ class TestSwapNoti_ws_kline_001:
                 "sub": "market.{}.kline.{}".format(self.contract_code, params['period']),
                 "id": "id1"
             }
-            flag = False
-            # 重试3次未返回预期结果则失败
-            for i in range(1, 4):
-                result = ws_user01.swap_sub(subs)
-                if 'tick' in result:
-                    flag = True
-                    break
-                time.sleep(1)
-                print('未返回预期结果，第{}次重试………………………………'.format(i))
-            assert flag
+            result = ws_user01.swap_sub(subs=subs, keyword='tick')
+            assert 'tick' in result, '未返回预期结果'
             pass
         with allure.step('校验返回结果'):
             # 请求topic校验

@@ -22,7 +22,7 @@ class TestSwapApiSchema_053:
     @allure.title("合约计划委托全部撤单")
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：先挂计划委托单'):
-            self.currentPrice = currentPrice()
+            self.currentPrice = SwapTool.currentPrice()
             user01.swap_trigger_order(contract_code=contract_code, volume=1,
                                       trigger_price=round(self.currentPrice * 1.01, 2),
                                       order_price=round(self.currentPrice * 0.99, 2), trigger_type="ge",

@@ -9,7 +9,7 @@ import pytest
 
 from common.SwapServiceWS import user01 as ws_user01
 from common.SwapServiceAPI import user01 as api_user01
-from tool.SwapTools import SwapTool,opponentExist
+from tool.SwapTools import SwapTool
 from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
 from config.case_content import epic, features
 
@@ -27,14 +27,14 @@ class TestSwapNoti_depth_035:
         'TestSwapNoti_depth_037',
     ]
     params = [
-        {'case_name': 'WS订阅深度 20档 买盘>20档','exceptLength':20,'type':'step6'},
-        {'case_name': 'WS订阅深度 150档 买盘>150档', 'exceptLength':150,'type':'step0'},
+        {'title':ids[0],'case_name': 'WS订阅深度 20档 买盘>20档','exceptLength':20,'type':'step6'},
+        {'title':ids[1],'case_name': 'WS订阅深度 150档 买盘>150档', 'exceptLength':150,'type':'step0'},
     ]
 
     @classmethod
     def setup_class(cls):
         with allure.step('实始化变量'):
-            cls.currentPrice = currentPrice()  # 最新价
+            cls.currentPrice = SwapTool.currentPrice()  # 最新价
             pass
         with allure.step('挂单更新深度'):
             for i in range (151):
@@ -42,7 +42,7 @@ class TestSwapNoti_depth_035:
             pass
         with allure.step('查询redis深度更新'):
             for i in range (5):
-                if opponentExist(symbol=cls.symbol,bids='bids'):
+                if SwapTool.opponentExist(symbol=cls.symbol, bids='bids'):
                     break
                 else:
                     print('深度未更新,第{}次重试……'.format(i+1))
@@ -58,7 +58,7 @@ class TestSwapNoti_depth_035:
 
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
-        allure.dynamic.title(params['case_name'])
+        allure.dynamic.title(params['title'])
         with allure.step('操作：执行sub订阅'):
             subs = {
                 "sub": "market.{}.depth.{}".format(self.contract_code,params['type']),
@@ -67,7 +67,7 @@ class TestSwapNoti_depth_035:
             flag = False
             # 重试3次未返回预期结果则失败
             for i in range(3):
-                result = ws_user01.swap_sub(subs)
+                result = ws_user01.swap_sub(subs=subs,keyword='bids')
                 if 'tick' in result:
                     if result['tick']['bids']:
                         flag = True

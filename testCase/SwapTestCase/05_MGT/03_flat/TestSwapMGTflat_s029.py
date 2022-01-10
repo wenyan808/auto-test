@@ -19,7 +19,7 @@ from tool.SwapTools import SwapTool
 @allure.epic(epic[1])
 @allure.feature(features[4]['feature'])
 @allure.story(features[4]['story'][3])
-@allure.tag('Script owner : 余辉青', 'Case owner : ')
+@allure.tag('Script owner : 余辉青', 'Case owner : 程卓')
 @pytest.mark.stable
 class TestSwapMGTflat_s029:
     ids = ['TestSwapMGTflat_029',
@@ -59,12 +59,10 @@ class TestSwapMGTflat_s029:
          'money': -random.randint(10, 100)},
         {'title': 'TestSwapMGTflat_042', 'case_name': '虚拟平台资产-加钱成功', 'flatAccount': 11, 'money': -random.randint(10, 100)},
     ]
-    symbol = SwapTool.getContractStatus(init_status=3)
 
     @classmethod
     def setup_class(cls):
         with allure.step('变量初始化'):
-            cls.symbol = cls.symbol
             cls.mysqlClient = mysqlComm()
             pass
 
@@ -76,6 +74,11 @@ class TestSwapMGTflat_s029:
     @pytest.mark.parametrize('params', params, ids=ids)
     def test_execute(self, params):
         allure.dynamic.title(params['title'])
+        with allure.step('操作：获取停牌合约'):
+            contract_info = SwapTool.getContractStatus(instrument_status=3)
+            if contract_info['isSkip']:
+                assert False,'未找到停牌合约'
+            self.symbol = contract_info['data']['product_id']
         with allure.step('操作:查询用户当前保证金数量'):
             if 11==params['flatAccount']:
                 pass
@@ -90,7 +93,7 @@ class TestSwapMGTflat_s029:
                 api_result = SwapServiceMGT.flat(flatAccount=params['flatAccount'], uid=None, money=params['money'])
             pass
         with allure.step('验证:平账执行成功'):
-            assert '数据发送给交易系统成功' in api_result['data'],'接口执行失败'
+            assert '数据发送给交易系统成功' or '操作成功' in api_result['data'],'接口执行失败'
             time.sleep(0.5)
             pass
         with allure.step('验证:用户保证金账户加钱数量与平账数量一致'):

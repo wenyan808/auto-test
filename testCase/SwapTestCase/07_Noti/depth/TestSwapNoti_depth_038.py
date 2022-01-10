@@ -3,15 +3,12 @@
 # @Date    : 20211012
 # @Author : 张广南
 
-import time
 import allure
 import pytest
 
 from common.SwapServiceWS import user01 as ws_user01
-from common.SwapServiceAPI import user01 as api_user01
-from tool.SwapTools import SwapTool,opponentExist
-from config.conf import DEFAULT_CONTRACT_CODE,DEFAULT_SYMBOL
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE
 
 
 @allure.epic(epic[1])

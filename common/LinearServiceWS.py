@@ -45,7 +45,8 @@ class WebsocketSevice:
         }
         path = '/linear-swap-ws'
         url = self.__url + path
-        return sub(url, subs)
+        keyword = 'tick'
+        return sub(url, subs, keyword)
 
     # 通用】买一卖一逐笔行情推送
     def linear_sub_bbo(self, contract_code):
@@ -55,12 +56,13 @@ class WebsocketSevice:
         }
         path = '/linear-swap-ws'
         url = self.__url + path
-        return sub(url, subs)
+        keyword = 'tick'
+        return sub(url, subs, keyword)
 
-    def linear_req_kline(self, contract_code, period, From, to):
+    def linear_req_kline(self, contract_code, period, from_, to):
         subs = {
             "req": "market.{}.kline.{}".format(contract_code, period),
-            "from": int(From),
+            "from": int(from_),
             "to": int(to)
         }
         path = '/linear-swap-ws'
@@ -78,9 +80,19 @@ class WebsocketSevice:
         keyword = 'tick'
         return sub(url, subs, keyword)
 
-    def linear_sub_depth_high_freq(self, data_type, contract_code, size, ):
+    def linear_sub_depth_web(self, contract_code, type):
         subs = {
-            "data_type": "{}".format(data_type),
+            "sub": "market.{}.depth.{}.sync".format(contract_code, type),
+            "id": "id6"
+        }
+        path = '/linear-swap-ws'
+        url = self.__url + path
+        keyword = 'tick'
+        return sub(url, subs, keyword)
+
+    def linear_sub_depth_high_freq(self, contract_code, size, data_type="incremental"):
+        subs = {
+            "data_type": data_type,
             "sub": "market.{}.depth.size_{}.high_freq".format(contract_code, size),
             "id": "id1"
         }
@@ -116,6 +128,26 @@ class WebsocketSevice:
         path = '/linear-swap-ws'
         url = self.__url + path
         return sub(url, subs)
+
+    # 订阅聚合行情
+    def linear_sub_detail_merged(self, contract_code):
+        subs = {
+            "zip": 0,
+            "sub": f"market.{contract_code}.detail",
+            "id": "id7"
+        }
+        path = '/linear-swap-ws'
+        url = self.__url + path
+        return sub(url, subs)
+
+    # 订阅深度图
+    def linear_sub_depth_chart(self, contract_code, percent):
+        subs = {"sub": f"market.{contract_code}.depth.{percent}",
+                "id": "id8"}
+        path = '/linear-swap-ws'
+        url = self.__url + path
+        return sub(url, subs)
+
     # 订阅基差数据
 
     def linear_sub_basis(self, contract_code, period, basis_price_type="open"):

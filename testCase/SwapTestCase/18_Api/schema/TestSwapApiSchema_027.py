@@ -37,7 +37,7 @@ class TestSwapApiSchema_027:
                         }
                     ],
                     "remain_size": int,
-                    "next_id": int
+                    "next_id": Or(int,None)
                 },
                 "ts": int
             }

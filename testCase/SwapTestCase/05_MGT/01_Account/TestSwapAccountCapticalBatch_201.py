@@ -3,24 +3,22 @@
 # @Date    : 2021/12/7 2:35 下午
 # @Author  : HuiQing Yu
 
-from common.mysqlComm import mysqlComm as mysqlClient
-
 import json
 from datetime import date, timedelta
 from decimal import Decimal
-import time
+
 import allure
 import pytest
 
 from common.SwapServiceMGT import SwapServiceMGT
 from common.mysqlComm import mysqlComm
-from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
 
 
 @allure.epic(epic[1])
 @allure.feature(features[4]['feature'])
-@allure.story(features[4]['story'][2])
+@allure.story(features[4]['story'][1])
 @allure.tag('Script owner : 余辉青', 'Case owner : 程卓')
 @pytest.mark.stable
 class TestSwapAccountCapticalBatch_201:
@@ -36,7 +34,7 @@ class TestSwapAccountCapticalBatch_201:
                  f'AND money_type = {money_type} ' \
                  f'AND product_id = "{self.symbol}" ' \
                  'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) '
-        money = mysqlClient.selectdb_execute(dbSchema=dbName,sqlStr=sqlStr)
+        money = self.mysqlClient.selectdb_execute(dbSchema=dbName,sqlStr=sqlStr)
         if len(money) == 0 or money[0]['money'] is None:
             money = 0
         else:
@@ -48,6 +46,7 @@ class TestSwapAccountCapticalBatch_201:
         with allure.step('变量初始化'):
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.symbol = DEFAULT_SYMBOL
+            cls.mysqlClient = mysqlComm()
             cls.fund_flow_type = {
                 "moneyIn": "从币币转入",
                 "moneyOut": "转出至币币",
@@ -72,8 +71,9 @@ class TestSwapAccountCapticalBatch_201:
                 "flatMoney": "平账",
                 "currInterest": "当期流水"
             }
+
             cls.endDateTime = (date.today() + timedelta(days=-1)).strftime("%Y/%m/%d")
-            cls.beginDateTime = (date.today() + timedelta(days=-8)).strftime("%Y/%m/%d")
+            cls.beginDateTime = (date.today() + timedelta(days=-3)).strftime("%Y/%m/%d")
             pass
 
 
@@ -123,10 +123,10 @@ class TestSwapAccountCapticalBatch_201:
             with allure.step(f'操作:从DB获取-{self.fund_flow_type["flatMoney"]}-数据'):
                 sqlStr = 'SELECT TRUNCATE(sum(money),8) as money FROM t_flat_money_record ' \
                          f'WHERE flat_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
-                         f'and flat_time< UNIX_TIMESTAMP("{self.endDateTime}")*1000   ' \
+                         f'and flat_time< UNIX_TIMESTAMP("{date.today()}")*1000   ' \
                          'and flat_account=11 ' \
                          f'and product_id = "{self.symbol}"'
-                flatMoney = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
+                flatMoney = self.mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
                 if len(flatMoney) == 0 or flatMoney[0]['money'] is None:
                     flatMoney = 0
                 else:
@@ -139,7 +139,7 @@ class TestSwapAccountCapticalBatch_201:
                 sqlStr = 'select sum(money) as money from ( ' \
                          'SELECT TRUNCATE(sum(money),8) as money FROM t_account_action ' \
                          f'WHERE create_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
-                         f'and create_time < UNIX_TIMESTAMP("{self.endDateTime}")*1000 ' \
+                         f'and create_time < UNIX_TIMESTAMP("{date.today()}")*1000 ' \
                          f'AND money_type in (14,15) ' \
                          f'AND product_id = "{self.symbol}" ' \
                          'AND user_id not in (11186266, 1389607, 1389608, 1389609, 1389766) ' \
@@ -147,9 +147,9 @@ class TestSwapAccountCapticalBatch_201:
                          'SELECT TRUNCATE(sum(money), 8) as money ' \
                          'FROM t_flat_money_record ' \
                          f'WHERE flat_time >= UNIX_TIMESTAMP("{self.beginDateTime}")*1000 ' \
-                         f'and flat_time< UNIX_TIMESTAMP("{self.endDateTime}")*1000   ' \
+                         f'and flat_time< UNIX_TIMESTAMP("{date.today()}")*1000   ' \
                          f'and product_id = "{self.symbol}" and flat_account = 11 ) a'
-                currInterest = mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
+                currInterest = self.mysqlClient.selectdb_execute(dbSchema='btc',sqlStr=sqlStr)
                 if len(currInterest) == 0 or currInterest[0]['money'] is None:
                     currInterest = 0
                 else:

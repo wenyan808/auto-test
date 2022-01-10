@@ -21,9 +21,9 @@ class TestSwapApiSchema_043:
     @allure.title("获取用户的合约订单信息")
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
-            self.currentPrice = currentPrice()
+            self.currentPrice = SwapTool.currentPrice()
             orderId = user01.swap_order(contract_code=contract_code,
-                                        price=round(self.currentPrice * 0.5, 2), direction='buy')['data'][
+                                        price=round(self.currentPrice * 0.8, 2), direction='buy')['data'][
                 'order_id_str']
             time.sleep(1)
             r = user01.swap_order_info(order_id=orderId, contract_code=contract_code)
@@ -56,7 +56,6 @@ class TestSwapApiSchema_043:
                     'volume': Or(float, int, 0, None),
                     'liquidation_type': str,
                     'canceled_at': int,
-                    'update_time':None,
                     "is_tpsl": Or(1, 0)
                 }],
                 'status': 'ok',

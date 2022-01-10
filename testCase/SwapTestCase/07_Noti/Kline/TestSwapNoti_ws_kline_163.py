@@ -3,10 +3,13 @@
 # @Date    : 20211013
 # @Author : HuiQing Yu
 
+import allure
+import pytest
+import time
+
 from common.SwapServiceWS import user01 as ws_user01
-import pytest, allure, random, time
-from config.conf import DEFAULT_CONTRACT_CODE
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE
 
 
 @allure.epic(epic[1])
@@ -14,7 +17,7 @@ from config.case_content import epic, features
 @allure.story(features[6]['story'][6])
 @pytest.mark.stable
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
-class TestSwapNoti_ws_kline_147:
+class TestSwapNoti_ws_kline_163:
     contract_code = DEFAULT_CONTRACT_CODE
     toTime = int(time.time())
     fromTime = toTime - 60 * 3
@@ -23,12 +26,12 @@ class TestSwapNoti_ws_kline_147:
         'TestSwapNoti_ws_kline_164'
     ]
     params = [
-        {'case_name': 'WS请求(req)-from格式不合法', 'subs': {"req": "market.{}.kline.1min".format(contract_code),
+        {'case_name': 'WS请求(req)-from格式不合法', 'subs': {"req": f"market.{contract_code}.kline.1min",
                                                  "id": "id4",
                                                  "from": 'invalid',
                                                  "to": toTime
                                                  }},
-        {'case_name': 'WS请求(req)-to格式不合法', 'subs': {"req": "market.{}.kline.1min".format(contract_code),
+        {'case_name': 'WS请求(req)-to格式不合法', 'subs': {"req": f"market.{contract_code}.kline.1min",
                                                     "id": "id4",
                                                     "from": fromTime,
                                                     "to": 'invalid'

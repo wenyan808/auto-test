@@ -3,14 +3,15 @@
 # @Date    : 2021/11/10 5:26 下午
 # @Author  : HuiQing Yu
 
-from common.mysqlComm import mysqlComm as mysqlClient
-
-import pytest, allure, random, time
-from common.SwapServiceWS import user01 as ws_user01
-from common.SwapServiceAPI import user01 as api_user01
-from config.conf import DEFAULT_CONTRACT_CODE
-from tool.SwapTools import SwapTool
+import allure
+import pytest
+import time
 from config.case_content import epic, features
+from config.conf import DEFAULT_CONTRACT_CODE
+
+from common.SwapServiceAPI import user01 as api_user01
+from common.SwapServiceWS import user01 as ws_user01
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
@@ -26,8 +27,8 @@ class TestSwapNoti_freq_001:
     @classmethod
     def setup_class(cls):
         with allure.step('挂盘21档更新深度'):
-            cls.currentPrice = currentPrice()
-            for i in range(21):
+            cls.currentPrice = SwapTool.currentPrice()
+            for i in range(22):
                 api_user01.swap_order(contract_code=cls.contract_code,direction='buy',price=round(cls.currentPrice*(1-i*0.01),2))
                 api_user01.swap_order(contract_code=cls.contract_code,direction='sell',price=round(cls.currentPrice*(1+i*0.01),2))
             pass
@@ -52,14 +53,14 @@ class TestSwapNoti_freq_001:
                     }
             flag = False
             # 重试3次未返回预期结果则失败
-            for i in range(1, 4):
-                result = ws_user01.swap_sub(subs)
+            for i in range(3):
+                result = ws_user01.swap_sub(subs=subs,keyword='asks')
                 if 'tick' in result:
                     if result['tick']['asks'] and result['tick']['bids']:
                         flag = True
                         break
                 time.sleep(1)
-                print('未返回预期结果，第{}次重试………………………………'.format(i))
+                print(f'未返回预期结果，第{i+1}次重试………………………………')
             assert flag, '未返回预期结果'
             pass
         with allure.step('验证：深度asks,bids只有20档'):

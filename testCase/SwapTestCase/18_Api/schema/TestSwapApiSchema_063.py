@@ -21,7 +21,7 @@ class TestSwapApiSchema_063:
 
     @classmethod
     def setup_class(cls):
-        cls.currentPrice = currentPrice()
+        cls.currentPrice = SwapTool.currentPrice()
         cls.orderId = user01.swap_track_order(contract_code=DEFAULT_CONTRACT_CODE, volume=1, direction='buy',
                                               order_price_type='optimal_5',
                                               offset='open', lever_rate=5, active_price=round(cls.currentPrice*0.99, 2),

@@ -54,12 +54,13 @@ class TestSwapTriggerCloseBuy10_010:
                 "direction":"sell",
               }
             ]
-    contract_code = DEFAULT_CONTRACT_CODE
+
 
     @classmethod
     def setup_class(cls):
         with allure.step('*->获取最新价'):
-            cls.currentPrice = currentPrice()  # 最新价
+            cls.contract_code = DEFAULT_CONTRACT_CODE
+            cls.currentPrice = SwapTool.currentPrice()  # 最新价
             pass
 
     @classmethod
@@ -70,7 +71,7 @@ class TestSwapTriggerCloseBuy10_010:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, contract_code,params):
+    def test_execute(self, params):
         allure.dynamic.title(params['caseName'])
         with allure.step('*-> 取消所有挂单'):
             user01.swap_trigger_cancelall(contract_code=self.contract_code)
@@ -83,7 +84,7 @@ class TestSwapTriggerCloseBuy10_010:
                 trigger_type = 'ge'
             else:
                 trigger_type = 'le'
-            self.orderInfo = user01.swap_trigger_order(contract_code=contract_code, trigger_price=trigger_price,
+            self.orderInfo = user01.swap_trigger_order(contract_code=self.contract_code, trigger_price=trigger_price,
                                                        trigger_type=trigger_type,volume=1,offset='close',
                                                        order_price=self.currentPrice, direction=params['direction'],
                                                         order_price_type=params['order_price_type'])
@@ -92,7 +93,7 @@ class TestSwapTriggerCloseBuy10_010:
             assert 'ok' in self.orderInfo['status']
             pass
         with allure.step('*->切换杠杆 '+params['caseName']+' 执行切换'):
-            self.switch_lever_result = user01.swap_switch_lever_rate(contract_code=contract_code, lever_rate=10)
+            self.switch_lever_result = user01.swap_switch_lever_rate(contract_code=self.contract_code, lever_rate=10)
             pass
         with allure.step('*->验证切换结果 '+params['caseName']+''):
             assert 'error' in self.switch_lever_result['status']

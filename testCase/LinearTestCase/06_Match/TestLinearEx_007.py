@@ -36,7 +36,7 @@ class TestLinearEx_007:
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, contract_code):
         print("前置条件  {}".format(contract_code))
-        ATP.make_market_depth()
+        ATP.make_market_depth(volume=1, depth_count=10)
 
     @allure.title('撮合 对手价 买入 平仓')
     @allure.step('测试执行')

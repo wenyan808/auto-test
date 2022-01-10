@@ -66,7 +66,7 @@ class TestLinearApiSchema_030:
                 'status': 'ok',
                 'ts': int
             }
-
+            assert r['data']['financial_record']
             Schema(schema).validate(r)
 
     @allure.step('恢复环境')

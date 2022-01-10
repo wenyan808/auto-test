@@ -21,7 +21,7 @@ class TestSwapApiSchema_039:
     @allure.title("合约批量下单")
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
-            self.currentPrice = currentPrice()
+            self.currentPrice = SwapTool.currentPrice()
             orders_data = {'orders_data':[
                 {
                     'contract_code': contract_code,

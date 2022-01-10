@@ -18,13 +18,13 @@ from config.case_content import epic, features
 class TestSwapNoti_ws_kline_080:
 
     @allure.title('WS订阅K线(sub) 不传合约代码')
-    def test_execute(self, contract_code):
+    def test_execute(self):
         with allure.step('操作：执行sub订阅'):
             self.period = '1min'
             self.toTime = int(time.time())
             self.fromTime = self.toTime - 60 * 3
             subs = {
-                "sub": "market.kline.{}".format(self.period),
+                "sub": f"market.kline.{self.period}",
                 "id": "id4"
             }
             result = swap_service_ws.swap_sub(subs)
@@ -32,10 +32,6 @@ class TestSwapNoti_ws_kline_080:
         with allure.step('验证：返回结果提示invalid topic'):
             assert 'invalid topic' in result['err-msg']
             pass
-
-    @allure.step('恢复环境')
-    def teardown(self):
-        print('\n恢复环境操作')
 
 
 if __name__ == '__main__':

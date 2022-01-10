@@ -15,8 +15,8 @@ from config.case_content import epic, features
 @allure.tag('Script owner : 余辉青', 'Case owner : 吉龙')
 class TestSwapNoti_ws_kline_075:
 
+    @allure.title('WS订阅K线(sub) period不存在 合约不存在')
     def test_execute(self):
-        allure.dynamic.title('WS订阅K线(sub) period不存在 合约不存在')
         with allure.step('操作：执行sub请求'):
             self.contract_code = 'BTC-BTC'  # 不存在的合约
             self.period = '1year'  # 不存在的period

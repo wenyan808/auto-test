@@ -3,18 +3,17 @@
 # @Date    : 2020/7/1
 # @Author  : HuiQing Yu
 
-from common.mysqlComm import mysqlComm as mysqlClient
-
-import time
-from decimal import Decimal
 import random
+import time
+
 import allure
 import pytest
 
-from tool.SwapTools import SwapTool
-from common.SwapServiceAPI import user01,user02
+from common.SwapServiceAPI import user01, user02
+from common.mysqlComm import mysqlComm
 from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
+from tool.SwapTools import SwapTool
 
 
 @allure.epic(epic[1])
@@ -43,6 +42,7 @@ class TestCoinswapTriggerOrder_016:
         with allure.step("变量初始化"):
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.latest_price = SwapTool.currentPrice()
+            cls.mysqlClient = mysqlComm()
             pass
 
 
@@ -54,7 +54,7 @@ class TestCoinswapTriggerOrder_016:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params, mysqlClient):
+    def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step("操作：挂卖盘"):
             user02.swap_order(contract_code=self.contract_code, price=self.latest_price, direction='sell')
@@ -70,12 +70,13 @@ class TestCoinswapTriggerOrder_016:
             for i in range(5):
                 relation_tpsl_order = user01.swap_relation_tpsl_order(contract_code=self.contract_code,
                                                                       order_id=limit_order['data']['order_id'])
-                if relation_tpsl_order['data']['tpsl_order_info'] == [] or 1 != relation_tpsl_order['data']['tpsl_order_info'][0]['status']:
+                tpsl_order_info = relation_tpsl_order['data']['tpsl_order_info'][0]
+
+                if relation_tpsl_order['data']['tpsl_order_info'] == [] or 2 != tpsl_order_info['status']:
                     print(f'触发后数据未更新，第{i+1}次重试')
                     time.sleep(1)
                 else:
                     break
-            tpsl_order_info = relation_tpsl_order['data']['tpsl_order_info'][0]
             assert 2 == tpsl_order_info['status'], '成交前状态校验失败'
             pass
         with allure.step('验证：未成交时，止盈信息'):

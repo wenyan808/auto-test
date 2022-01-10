@@ -3,7 +3,7 @@
 # @Date    : 2020/7/1
 # @Author  : HuiQing Yu
 
-from common.mysqlComm import mysqlComm as mysqlClient
+from common.mysqlComm import mysqlComm
 from decimal import Decimal
 
 import allure
@@ -11,6 +11,7 @@ import pytest
 import time
 import random
 
+from common.redisComm import redisConf
 from config.case_content import epic, features
 from common.SwapServiceAPI import user01
 from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
@@ -43,6 +44,9 @@ class TestCoinswapTriggerOrder_001:
         with allure.step("变量初始化"):
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.latest_price = SwapTool.currentPrice()
+            cls.redisClient = redisConf('redis6379').instance()
+            cls.mysqlClient = mysqlComm()
+
             pass
 
     @classmethod
@@ -52,7 +56,7 @@ class TestCoinswapTriggerOrder_001:
             pass
 
     @pytest.mark.parametrize('params', params, ids=ids)
-    def test_execute(self, params,redis6379):
+    def test_execute(self, params):
         allure.dynamic.title(params['case_name'])
         with allure.step('操作：下单'):
             order_reps = user01.swap_trigger_order(contract_code=self.contract_code, trigger_type='ge',
@@ -89,7 +93,7 @@ class TestCoinswapTriggerOrder_001:
                      f't.order_price, '\
                      f't.state '\
                      f'from t_trigger_order t where t.user_order_id={orderId}'
-            db_info_list = mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
+            db_info_list = self.mysqlClient.selectdb_execute(dbSchema='contract_trade',sqlStr=sqlStr)
             for db_info in db_info_list:
                 assert 'open' == db_info['offset']
                 assert 'buy' == db_info['direction']
@@ -105,7 +109,7 @@ class TestCoinswapTriggerOrder_001:
         with allure.step('验证：下单数据与redis一致(RsT:TriggerOrderStateList:userid)'):
             name = 'RsT:TriggerOrderStateList:11538483'
             key = 'TriggerOrderStates:BTC#2'
-            redis_result = redis6379.hmget(name=name,keys=key)
+            redis_result = self.redisClient.hmget(name=name,keys=key)
             assert str(redis_result).find(str(orderId)) != -1,'redis校验失败'
             pass
 if __name__ == '__main__':
