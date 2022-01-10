@@ -41,13 +41,13 @@ from schema import Schema, Or
 class TestContractLever_s001:
 
     params = [
-        {"contract_type": "this_week", "case_title": "母用户- 币本位交割当周-无持仓切换杠杆倍数",
+        {"contract_type": "this_week", "period": "_CW", "case_title": "母用户- 币本位交割当周-无持仓切换杠杆倍数",
             "id": "TestContractLever_001"},
-        {"contract_type": "next_week", "case_title": "母用户- 币本位交割次周-无持仓切换杠杆倍数",
+        {"contract_type": "next_week", "period": "_NW", "case_title": "母用户- 币本位交割次周-无持仓切换杠杆倍数",
             "id": "TestContractLever_002"},
-        {"contract_type": "quarter", "case_title": "母用户- 币本位交割当季-无持仓切换杠杆倍数",
+        {"contract_type": "quarter", "period": "_CQ", "case_title": "母用户- 币本位交割当季-无持仓切换杠杆倍数",
             "id": "TestContractLever_003"},
-        {"contract_type": "next_quarter",
+        {"contract_type": "next_quarter", "period": "_NQ",
             "case_title": "母用户- 币本位交割次季-无持仓切换杠杆倍数", "id": "TestContractLever_004"}
     ]
 
@@ -59,15 +59,15 @@ class TestContractLever_s001:
     @allure.title('母用户- 币本位交割当周-切换杠杆倍数')
     @allure.step('测试执行')
     @pytest.mark.parametrize('param', params, ids=[x['id'] for x in params])
-    def test_execute(self, symbol_period, symbol, param):
+    def test_execute(self, symbol, param):
         allure.dynamic.title(param['case_title'])
+
+        symbol_period = symbol+param["period"]
 
         with allure.step('1、清仓和取消挂单才能切杠杆'):
             print("param[contract_type]:{}".format(param["contract_type"]))
-            ATP.cancel_all_types_order(contract_code=param["contract_type"])
-            ATP.make_market_depth(
-                contract_code=param["contract_type"], depth_count=5)
-            ATP.close_all_position(contract_code=param["contract_type"])
+            ATP.cancel_all_types_order(contract_code=symbol_period)
+            ATP.close_all_position(contract_code=symbol_period)
 
         currentPrice = ATP.get_current_price(contract_code=symbol_period)
         with allure.step('2、在币本位交割合约交易页，选择币本位交割当周合约，检查杠杆倍数'):

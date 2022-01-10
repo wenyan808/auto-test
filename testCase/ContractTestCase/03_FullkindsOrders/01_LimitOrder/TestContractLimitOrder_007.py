@@ -55,7 +55,7 @@ class TestContractLimitOrder_007:
             if not bids:
                 price = ATP.get_current_price()
             else:
-                price = round(max([i[0] for i in bids]) * 1.1, 1)
+                price = round(max([i[0] for i in bids]) * 1.001, 1)
             r_common_sell = common_user.contract_order(symbol=symbol, contract_code=contract_this_week, price=price,
                                                        volume=1, direction="sell", offset="open", lever_rate=lever_rate,
                                                        order_price_type="limit")
