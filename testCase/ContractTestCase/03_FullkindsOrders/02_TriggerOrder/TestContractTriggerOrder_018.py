@@ -81,7 +81,7 @@ class TestContractTriggerOrder_018:
             # 止盈类型
             tp_sl_order_price_type = "optimal_5"
             # 止损触发价
-            sl_trigger_price = round(open_price * 0.9, 1)
+            sl_trigger_price = round(open_price * 0.99, 1)
             # 止损委托价
             sl_order_price = sl_trigger_price
             # 止损类型

@@ -9,7 +9,10 @@ from common.ContractServiceOrder import t as contranct_order
 
 from schema import Schema, And, Or, Regex, SchemaError
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 
 from tool.atp import ATP
 from tool.get_test_data import case_data
@@ -26,7 +29,6 @@ class TestContractTrackOrder_003:
         ATP.close_all_position()
         ATP.clean_market()
 
-
     def test_contract_account_position_info(self, symbol, symbol_period):
         flag = True
 
@@ -35,23 +37,22 @@ class TestContractTrackOrder_003:
         pprint(r)
         price = r['data'][0]['data'][0]['price']
         activationprice = round((price * 0.98), 1)
-        callbackrate = 0.1
+        callbackrate = 0.01
         triggerprice = round((activationprice * (1.01+callbackrate)), 1)
         print(symbol)
-
-
 
         print('\n步骤二:按激活价下单\n')
 
         r = contract_api.contract_track_order(symbol=symbol,
-                                               contract_type='this_week',
-                                               direction='buy',
-                                               offset='open',
-                                               lever_rate='5',
-                                               volume='1',
-                                               callback_rate=callbackrate,
-                                               active_price=str(activationprice),
-                                               order_price_type='formula_price')
+                                              contract_type='this_week',
+                                              direction='buy',
+                                              offset='open',
+                                              lever_rate='5',
+                                              volume='1',
+                                              callback_rate=callbackrate,
+                                              active_price=str(
+                                                  activationprice),
+                                              order_price_type='formula_price')
         pprint(r)
         time.sleep(0.5)
         orderid = r['data']['order_id']
@@ -71,7 +72,7 @@ class TestContractTrackOrder_003:
 
         print('\n步骤四:控制现价到激活价格\n')
         contract_api.contract_control_price(symbol=symbol, price=activationprice,
-                                             contract_type='this_week', lever_rate='5')
+                                            contract_type='this_week', lever_rate='5')
 
         print('\n步骤五:查询跟踪委托当前委托状态为已激活\n')
 
@@ -87,17 +88,17 @@ class TestContractTrackOrder_003:
             print("预期状态为：%s, 预期单号为%s" % (1, orderid))
             flag = False
 
-
         print('\n步骤六:控制现价到触发价格\n')
 
         contract_api.contract_control_price(symbol=symbol, price=triggerprice,
-                                             contract_type='this_week', lever_rate='5')
+                                            contract_type='this_week', lever_rate='5')
 
         time.sleep(0.5)
 
         print('\n步骤七:查询当前未成交委托\n')
 
-        r = contract_api.contract_openorders(symbol=symbol, page_index='', page_size='')
+        r = contract_api.contract_openorders(
+            symbol=symbol, page_index='', page_size='')
         pprint(r)
 
         ordersource = r['data']['orders'][0]['order_source']
@@ -105,13 +106,14 @@ class TestContractTrackOrder_003:
 
         if ordersource != 'track':
             print("订单来源不符合预期")
-            print("实际状态为：%s" %ordersource)
+            print("实际状态为：%s" % ordersource)
             print("预期状态为：track")
             flag = False
 
         print('\n步骤八: 查询跟踪委托历史委托\n')
 
-        r = contract_api.contract_track_hisorders(symbol=symbol,status='0',trade_type='0',create_date='1')
+        r = contract_api.contract_track_hisorders(
+            symbol=symbol, status='0', trade_type='0', create_date='1')
         pprint(r['data']['orders'][0])
 
         status3 = r['data']['orders'][0]['status']
@@ -135,10 +137,8 @@ class TestContractTrackOrder_003:
         r = contract_api.contract_cancel(symbol=symbol, order_id=limitorderid)
         pprint(r)
 
-
-
-
         assert flag == True
+
 
 if __name__ == '__main__':
     pytest.main()

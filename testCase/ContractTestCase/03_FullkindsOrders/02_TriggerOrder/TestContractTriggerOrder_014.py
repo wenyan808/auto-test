@@ -25,20 +25,14 @@
         TestContractTriggerOrder_014
 """
 import common.util
-from common.ContractServiceAPI import t as contract_api, ContractServiceAPI
-from common.ContractServiceOrder import t as contract_order
-from common.LinearServiceAPI import t as linear_api
-from common.LinearServiceOrder import t as linear_order
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceOrder import t as swap_order
+from common.ContractServiceAPI import t as contract_api
 
 from pprint import pprint
 import pytest
 import allure
-import random
 import time
 
-from config.conf import URL, SECRET_KEY, ACCESS_KEY
+from tool.atp import ATP
 
 
 @allure.epic('反向交割')  # 这里填业务线
@@ -49,6 +43,7 @@ class TestContractTriggerOrder_014:
 
     @allure.step('前置条件')
     def setup(self):
+        ATP.cancel_all_types_order()
         print(''' 不要触发，至少2条以上订单 ''')
 
     @allure.title('全部撤销计划委托订单')
@@ -57,34 +52,32 @@ class TestContractTriggerOrder_014:
         with allure.step('1、登录交割合约界面'):
             pass
         with allure.step('2、选择BTC当周，选择杠杆5X，点击开仓-计划按钮'):
-            c = ContractServiceAPI(
-                url=URL, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
-            #     获取最新价
-            r_contract_trade = c.contract_trade(symbol=symbol_period)
-            data_r_tract_trade = r_contract_trade.get("tick").get("data")
-            last_price = float(data_r_tract_trade[0].get("price"))
-            pprint("\n前置： 获取合约code\n")
-            contract_ltc_info = c.contract_contract_info(
-                symbol=symbol).get("data")
-            pprint("\n步骤一: 开仓-计划委托单\n")
             contract_type = "this_week"
-            contract_code = [i.get("contract_code") for i in contract_ltc_info if i.get(
-                "contract_type") == contract_type][0]
+
+            # 获取最新价
+            current_price = ATP.get_current_price(contract_code=symbol_period)
+
+            pprint("\n前置： 获取合约code\n")
+            contract_info = contract_api.contract_contract_info(
+                symbol=symbol, contract_type=contract_type).get("data")[0]
+            print(contract_info)
+            pprint("\n步骤一: 开仓-计划委托单\n")
+            contract_code = contract_info["contract_code"]
             direction = "buy"
-            volume_1 = 10
+            volume_1 = 1
             volume_2 = 1
-            trigger_price = last_price
-            order_price_1 = round(last_price * 1.03, 1)
-            order_price_2 = round(last_price * 1.02, 1)
+            trigger_price = current_price
+            order_price_1 = round(current_price * 1.03, 2)
+            order_price_2 = round(current_price * 1.02, 2)
             trigger_type = "ge"
             offset = "open"
             lever_rate = 5
             order_price_type = "limit"
         with allure.step('3、下单至少2条以上订单'):
-            resp_plan_buy_1 = c.contract_trigger_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code, trigger_type=trigger_type, trigger_price=trigger_price, order_price=order_price_1, order_price_type=order_price_type, volume=volume_1,
-                                                       direction=direction, offset=offset, lever_rate=lever_rate)
-            resp_plan_buy_2 = c.contract_trigger_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code, trigger_type=trigger_type, trigger_price=trigger_price, order_price=order_price_2, order_price_type=order_price_type, volume=volume_2,
-                                                       direction=direction, offset=offset, lever_rate=lever_rate)
+            resp_plan_buy_1 = contract_api.contract_trigger_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code, trigger_type=trigger_type, trigger_price=trigger_price, order_price=order_price_1, order_price_type=order_price_type, volume=volume_1,
+                                                                  direction=direction, offset=offset, lever_rate=lever_rate)
+            resp_plan_buy_2 = contract_api.contract_trigger_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code, trigger_type=trigger_type, trigger_price=trigger_price, order_price=order_price_2, order_price_type=order_price_type, volume=volume_2,
+                                                                  direction=direction, offset=offset, lever_rate=lever_rate)
             assert resp_plan_buy_1.get(
                 "status") == "ok", "下单出错: {res}".format(res=resp_plan_buy_1)
             assert resp_plan_buy_2.get(
@@ -93,7 +86,7 @@ class TestContractTriggerOrder_014:
             order_id_2 = resp_plan_buy_2['data']['order_id']
             time.sleep(5)
         with allure.step('4、检查当前委托-计划委托列表有结果A'):
-            res_all_his_orders = c.contract_trigger_openorders(
+            res_all_his_orders = contract_api.contract_trigger_openorders(
                 symbol=symbol, contract_code=contract_code).get("data").get("orders")
             expected_order_ids = [order_id_1, order_id_2]
             actual_orders = [i for i in res_all_his_orders if i.get(
@@ -112,20 +105,15 @@ class TestContractTriggerOrder_014:
                     expected_order_info, actual_orders[i])
 
         with allure.step('5、点击全部撤销按钮弹框选择计划委托类型,点击确定后有结果B'):
-            r_cancel = c.contract_trigger_cancel(
+            r_cancel = contract_api.contract_trigger_cancel(
                 symbol=symbol, order_id=",".join([str(i) for i in actual_order_ids]))
             assert r_cancel.get("status") == "ok"
             assert not r_cancel.get("data").get(
                 "errors"), "撤单时，发生错误: {r_cancel}".format(r_cancel=r_cancel)
             time.sleep(3)
-        with allure.step('6、检查当前委托-计划委托信息有结果C'):
-            current_contract_open_orders = c.contract_openorders(symbol=symbol)
-            uncanceled_contract_open_orders = current_contract_open_orders.get(
-                "data").get("orders")
-            assert not uncanceled_contract_open_orders, "订单取消成功后, 在当前委托里订单{uncanceled_contract_open_orders}未消失!".format(
-                uncanceled_contract_open_orders=uncanceled_contract_open_orders)
-        with allure.step('7、检查历史委托-计划委托信息有结果D'):
-            res_all_trigger_orders = c.contract_trigger_hisorders(
+
+        with allure.step('6、检查历史委托-计划委托信息有结果D'):
+            res_all_trigger_orders = contract_api.contract_trigger_hisorders(
                 symbol=symbol, trade_type=0, contract_code=contract_code, status=0, create_date=7).get("data").get("orders")
             actual_orders = [i for i in res_all_trigger_orders if i.get(
                 "order_id") in expected_order_ids]

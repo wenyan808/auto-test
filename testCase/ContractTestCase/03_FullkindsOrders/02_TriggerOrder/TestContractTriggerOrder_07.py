@@ -54,12 +54,7 @@ class TestContractTriggerOrder_007:
             ATP.current_user_make_order(direction='sell')
             time.sleep(1)
             ATP.current_user_make_order(direction='buy')
-            #
-            # r_temp_buy = contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=100.0, volume=volume_at_least, direction='sell', offset='open', lever_rate=lever_rate, order_price_type="limit")
-            # assert r_temp_buy.get("status") == "ok"
-            # pprint("\n步骤二(2): 挂一个买单\n")
-            # r_temp_buy = contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=100.0, volume=volume_at_least, direction='buy', offset='open', lever_rate=lever_rate, order_price_type="limit")
-            # assert r_temp_buy.get("status") == "ok"
+
             pprint("\n步骤二(3): 等待5s成交\n")
             time.sleep(1)
 
@@ -69,7 +64,7 @@ class TestContractTriggerOrder_007:
         else:
             pprint("\n找到最新价，准备获取持仓数据...\n")
             last_price = float(data_r_tract_trade[0].get("price"))
-        order_price = round((last_price * 1.1), 1)
+        order_price = round((last_price * 1.01), 1)
         self.trigger_price = order_price
 
         # 如果有持仓且可平量>=10，直接下计划委托单

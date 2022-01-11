@@ -129,12 +129,13 @@ class TestContractEx_002:
             cls.curr_contract_code = currContractInfo['data'][0]['contract_code']
             cls.next_contract_code = nextContractInfo['data'][0]['contract_code']
 
-            cls.currentPrice = ATP.get_redis_current_price(contract_code=cls.curr_contract_code)  # 最新价
+            cls.currentPrice = ATP.get_redis_current_price(
+                contract_code=cls.curr_contract_code)  # 最新价
 
             user01.contract_order(symbol=cls.symbol, contract_code=cls.curr_contract_code, price=cls.currentPrice,
-                                  direction='buy', volume=100)
+                                  direction='buy', volume=10)
             user01.contract_order(symbol=cls.symbol, contract_code=cls.next_contract_code, price=cls.currentPrice,
-                                  direction='buy', volume=100)
+                                  direction='buy', volume=10)
             depth = cls.redisComm.hgetall('RsT:MarketBusinessPrice:')
             n = 0
             while not cls.flag:
