@@ -154,8 +154,8 @@ class TestContractAccountCapticalBatch_032:
             assert end_static_interest == Decimal(
                 finalcapital_dic["staticInterest"])
 
-            # 核对
-            assert end_static_interest == curr_static_interest
+            # 平账账户无需核对
+            # assert end_static_interest == curr_static_interest
 
     @allure.step('恢复环境')
     def teardown(self):

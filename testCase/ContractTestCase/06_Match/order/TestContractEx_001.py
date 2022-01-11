@@ -176,7 +176,7 @@ class TestContractEx_001:
                                                   self.currentPrice, 2),
                                               contract_type=self.contract_type, direction='buy',
                                               order_price_type=params['order_price_type'])
-            if orderInfo['data']:
+            if "data" in orderInfo:
                 orderId = orderInfo['data']['order_id']
                 strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (
