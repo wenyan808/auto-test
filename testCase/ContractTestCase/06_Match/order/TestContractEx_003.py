@@ -132,12 +132,12 @@ class TestContractEx_003:
                 contract_code=cls.curr_contract_code)  # 最新价
 
             user01.contract_order(symbol=cls.symbol, contract_code=cls.curr_contract_code, price=cls.currentPrice,
-                                  direction='buy', volume=100)
+                                  direction='buy', volume=10)
             user01.contract_order(symbol=cls.symbol, contract_code=cls.curr_contract_code, price=cls.currentPrice,
                                   direction='sell', volume=200)
 
             user01.contract_order(symbol=cls.symbol, contract_code=cls.next_contract_code, price=cls.currentPrice,
-                                  direction='buy', volume=100)
+                                  direction='buy', volume=10)
             user01.contract_order(symbol=cls.symbol, contract_code=cls.next_contract_code, price=cls.currentPrice,
                                   direction='sell', volume=200)
 

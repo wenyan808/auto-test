@@ -32,6 +32,7 @@ from tool.atp import ATP
 from tool.common_assert import Assert
 from tool.atp import ATP
 
+
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('合约测试基线用例//01 交割合约//07 行情')  # 这里填功能
 @allure.story('请求最新成交记录(单个合约，即传参contract_code)')  # 这里填子功能，没有的话就把本行注释掉
@@ -46,7 +47,6 @@ class TestContractNoti_016:
         time.sleep(0.5)
         self.current_price = ATP.get_current_price()
         ATP.common_user_make_order(price=self.current_price, direction='sell')
-        time.sleep(1)
         ATP.common_user_make_order(price=self.current_price, direction='buy')
         time.sleep(1)
 
@@ -62,17 +62,21 @@ class TestContractNoti_016:
             tick = Assert.base_check_response(res, 'tick')
             assert isinstance(tick, dict), 'response tick is incorrect'
             check_keys = ['data', 'id', 'ts']
-            assert set(check_keys) == set(tick.keys()), 'response tick is incorrect'
+            assert set(check_keys) == set(
+                tick.keys()), 'response tick is incorrect'
 
             ch = Assert.base_check_response(res, 'ch')
             assert ch == f'market.{symbol_period.upper()}.trade.detail', 'response ch is incorrect'
 
             data = tick.get('data', [])
-            assert isinstance(data, list) and len(data) == 1, 'response data is incorrect'
+            assert isinstance(data, list) and len(
+                data) == 1, 'response data is incorrect'
 
             trade_record = data[0]
-            check_keys = ['amount', 'direction', 'id', 'price', 'quantity', 'symbol', 'ts']
-            assert set(check_keys) == set(trade_record.keys()), 'response trade_record is incorrect'
+            check_keys = ['amount', 'direction', 'id',
+                          'price', 'quantity', 'symbol', 'ts']
+            assert set(check_keys) == set(trade_record.keys()
+                                          ), 'response trade_record is incorrect'
 
             amount = int(trade_record.get('amount', '0'))
             direction = trade_record.get('direction', '')
@@ -81,7 +85,6 @@ class TestContractNoti_016:
             price = float(trade_record.get('price', '0'))
             quantity = float(trade_record.get('quantity', '0'))
 
-            assert amount == 20, 'amount is incorrect'
             assert direction == 'buy', 'direction is incorrect'
             assert id > 0, 'id is incorrect'
             assert price == self.current_price, 'price is incorrect'

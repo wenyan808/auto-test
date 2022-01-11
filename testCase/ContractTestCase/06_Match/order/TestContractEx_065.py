@@ -67,7 +67,7 @@ class TestContractEx_065:
 
             # 爆仓，用另一个用户反向砸单，拉低价格
             ATP.common_user_make_order(
-                contract_code=symbol_period, price=self.current*0.9, volume=1000, direction='sell', offset=offset)
+                contract_code=symbol_period, price=self.current*0.9, volume=100, direction='sell', offset=offset)
             time.sleep(1)
 
             res_position = contract_api.contract_account_position_info(

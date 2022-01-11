@@ -79,7 +79,7 @@ class TestContractEx_269:
         cls.currentPrice = ATP.get_redis_current_price(
             contract_code=cls.contract_code)  # 最新价
         user01.contract_order(symbol=cls.symbol, contract_code=cls.contract_code,
-                              price=cls.currentPrice, direction='sell', volume=100)
+                              price=cls.currentPrice, direction='sell', volume=10)
         depth = redis6379.hgetall('RsT:MarketBusinessPrice:')
         for i in range(1, 10):
             if cls.currentPrice not in depth:

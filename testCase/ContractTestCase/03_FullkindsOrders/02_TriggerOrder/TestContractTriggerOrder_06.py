@@ -55,12 +55,6 @@ class TestContractTriggerOrder_006:
             ATP.current_user_make_order(direction='sell')
             time.sleep(1)
             ATP.current_user_make_order(direction='buy')
-            #
-            # r_temp_buy = contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=100.0, volume=volume_at_least, direction='sell', offset='open', lever_rate=lever_rate, order_price_type="limit")
-            # assert r_temp_buy.get("status") == "ok"
-            # pprint("\n步骤二(2): 挂一个买单\n")
-            # r_temp_buy = contract_api.contract_order(symbol=symbol, contract_type=contract_type, price=100.0, volume=volume_at_least, direction='buy', offset='open', lever_rate=lever_rate, order_price_type="limit")
-            # assert r_temp_buy.get("status") == "ok"
             pprint("\n步骤二(3): 等待5s成交\n")
             time.sleep(1)
 

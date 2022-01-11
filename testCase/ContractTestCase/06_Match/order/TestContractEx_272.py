@@ -134,12 +134,12 @@ class TestContractEx_272:
             user01.contract_order(symbol=cls.symbol, contract_code=cls.curr_contract_code, price=cls.currentPrice,
                                   direction='buy', volume=200)
             user01.contract_order(symbol=cls.symbol, contract_code=cls.curr_contract_code, price=cls.currentPrice,
-                                  direction='sell', volume=100)
+                                  direction='sell', volume=10)
 
             user01.contract_order(symbol=cls.symbol, contract_code=cls.next_contract_code, price=cls.currentPrice,
                                   direction='buy', volume=200)
             user01.contract_order(symbol=cls.symbol, contract_code=cls.next_contract_code, price=cls.currentPrice,
-                                  direction='sell', volume=100)
+                                  direction='sell', volume=10)
 
             depth = cls.redisComm.hgetall('RsT:MarketBusinessPrice:')
             n = 0
