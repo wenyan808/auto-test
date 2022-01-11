@@ -140,8 +140,10 @@ class TestContractAccountCapticalBatch_033:
                     A += Decimal(data[param['money_type']])
                 elif data['userType'] == 4 or data['userType'] == 5 or data['userType'] == 9:
                     O += Decimal(data[param['money_type']])
-
-            assert A == S+O, '{},横向校验失败'.format(param['case_title'])
+            if param["money_type"] == "flatMoney" or param["money_type"] == "currInterest":
+                pass
+            else:
+                assert A == S+O, '{},横向校验失败'.format(param['case_title'])
 
 
 if __name__ == '__main__':
