@@ -62,13 +62,13 @@ class TestContractMGTtransfer_004:
         with allure.step('点击转账记录，查看转账单子是否成功'):
             contract_trade_conn = mysqlComm()
             quantity = 1
-            sqlStr = f'SELECT id FROM t_transfer_data WHERE product_id="{symbol}" ' \
+            sqlStr = f'SELECT transfer_id FROM t_transfer_data WHERE product_id="{symbol}" ' \
                      f'AND amount= {quantity} AND transfer_status=6 ORDER BY id DESC LIMIT 1'
             rec_dict_tuples = contract_trade_conn.selectdb_execute(
                 'contract_trade', sqlStr)
             assert rec_dict_tuples != None
             if(len(rec_dict_tuples) > 0):
-                record_id = rec_dict_tuples[0]["id"]
+                record_id = rec_dict_tuples[0]["transfer_id"]
                 assert record_id > 0
         if record_id > 0:
             with allure.step('点击审核，是否成功'):

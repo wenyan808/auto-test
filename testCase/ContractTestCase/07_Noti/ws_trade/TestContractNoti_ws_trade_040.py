@@ -24,9 +24,13 @@ from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from tool.atp import ATP
 from common.ContractServiceWS import t as contract_service_ws
+
 
 @allure.epic('反向交割')  # 这里填业务线
 @allure.feature('行情')  # 这里填功能
@@ -45,16 +49,19 @@ class TestContractNoti_ws_trade_040:
         ATP.make_market_depth()
         sell_price = ATP.get_adjust_price(1.02)
         buy_price = ATP.get_adjust_price(0.98)
-        ATP.common_user_make_order(price=sell_price, order_price_type='opponent',  direction='sell')
-        ATP.common_user_make_order(price=buy_price, order_price_type='opponent', direction='buy')
-        time.sleep(2)
+        ATP.common_user_make_order(
+            price=sell_price, order_price_type='opponent',  direction='sell')
+        ATP.common_user_make_order(
+            price=buy_price, order_price_type='opponent', direction='buy')
+        time.sleep(0.5)
         self.current_price = ATP.get_current_price()
 
     @allure.title('WS订阅成交(req)  对手价成交')
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
         with allure.step('详见官方文档'):
-            result = contract_service_ws.contract_req_tradedetail(symbol_period)
+            result = contract_service_ws.contract_req_tradedetail(
+                symbol_period)
             pprint(result)
             tradedetail = result['data'][0]
             if tradedetail['amount'] == None:

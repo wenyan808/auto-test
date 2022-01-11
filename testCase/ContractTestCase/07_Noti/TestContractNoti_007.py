@@ -75,7 +75,7 @@ class TestContractNoti_007:
                                    lever_rate=leverrate,
                                    order_price_type='limit')
         pprint(r)
-        time.sleep(2)
+        time.sleep(0.5)
         with allure.step('WS订阅最新成交记录(单个合约，即传参contract_code)，可参考文档：https://docs.huobigroup.com/docs/dm/v1/cn/#websocket-3'):
             r = contract_api.contract_depth(symbol=symbol_period, type="step0")
             pprint(r)

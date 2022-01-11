@@ -52,7 +52,7 @@ class TestContractNoti_ws_trade_007:
         buy_price = ATP.get_adjust_price(0.98)
         ATP.common_user_make_order(price=sell_price, direction='sell')
         ATP.common_user_make_order(price=buy_price, direction='buy')
-        time.sleep(2)
+        time.sleep(0.5)
 
     @allure.title('WS订阅成交(sub)  有挂单 无成交时')
     @allure.step('测试执行')

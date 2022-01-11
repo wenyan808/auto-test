@@ -39,7 +39,7 @@ class TestContractTransfer_005:
                                                        sub_uid=subuid,
                                                        type='master_to_sub')
         pprint(r)
-        time.sleep(2)
+        time.sleep(0.5)
         r2 = contranct_api.contract_financial_record(symbol=symbol,
                                                      type='34',
                                                      create_date='',
