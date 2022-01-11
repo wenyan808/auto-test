@@ -51,7 +51,8 @@ class TestLinearApiSchema_019:
                                 'margin_account': 'USDT',
                                 'open': int,
                                 'close': int,
-                                'cancel': int}],
+                                'cancel': int,
+                                'trade_partition': 'USDT'}],
                       'status': 'ok',
                       'ts': int}
             assert r['data']
