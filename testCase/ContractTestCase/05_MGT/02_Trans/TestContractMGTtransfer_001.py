@@ -43,14 +43,15 @@ class TestContractMGTtransfer_001:
     @allure.title('借贷转运营')
     @allure.step('测试执行')
     def test_execute(self, symbol):
+        quantity = 1
         with allure.step('打开MGT后台管理系统点击财务-财务工具-转账申请，流水类型选择（借贷转运营），平种标识如（btc），输入金额'):
             params = [symbol, {"userAmountList": [],
                                "productId":symbol,
                                "type":21,
-                               "quantity":"1",
+                               "quantity":"{}".format(quantity),
                                "transferOutAccount":3,
                                "transferInAccount":9,
-                               "remark":"00"
+                               "remark":"0011"
                                }
                       ]
             form_params = "params={}".format(str(params))
@@ -62,14 +63,13 @@ class TestContractMGTtransfer_001:
         record_id = 0
         with allure.step('点击转账记录，查看转账单子是否成功'):
             contract_trade_conn = mysqlComm()
-            quantity = 1
-            sqlStr = f'SELECT id FROM t_transfer_data WHERE product_id="{symbol}" ' \
+            sqlStr = f'SELECT transfer_id FROM t_transfer_data WHERE product_id="{symbol}" ' \
                      f'AND amount= {quantity} AND transfer_status=6 ORDER BY id DESC LIMIT 1'
             rec_dict_tuples = contract_trade_conn.selectdb_execute(
                 'contract_trade', sqlStr)
             assert rec_dict_tuples != None
             if(len(rec_dict_tuples) > 0):
-                record_id = rec_dict_tuples[0]["id"]
+                record_id = rec_dict_tuples[0]["transfer_id"]
                 assert record_id > 0
         if record_id > 0:
             with allure.step('点击审核，是否成功'):
