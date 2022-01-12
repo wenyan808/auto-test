@@ -23,7 +23,7 @@ from tool.get_test_data import case_data
 @allure.epic('反向交割')
 @allure.feature('功能')
 @pytest.mark.stable
-class TestContractTriggerOrder_0010:
+class TestContractTriggerOrder_010:
 
     def setup(self):
         self.symbol = None
@@ -39,15 +39,20 @@ class TestContractTriggerOrder_0010:
         common_user = ContractServiceAPI(
             url=URL, access_key=COMMON_ACCESS_KEY, secret_key=COMMON_SECRET_KEY)
         #     获取最新价
-        r_contract_trade = current_user.contract_trade(symbol=symbol_period)
-        data_r_tract_trade = r_contract_trade.get("tick").get("data")
-        last_price = float(data_r_tract_trade[0].get("price"))
+        currContractInfo = current_user.contract_contract_info(
+            symbol=symbol, contract_type='this_week')
+
+        contract_code = currContractInfo['data'][0]['contract_code']
+        last_price = ATP.get_redis_current_price(
+            contract_code=contract_code)  # 最新价
+
         pprint("\n前置： 获取合约code\n")
         contract_ltc_info = current_user.contract_contract_info(
             symbol=symbol).get("data")
         print("查询当前限价委托单")
         res_before_limit_created_orders = current_user.contract_openorders(
             symbol=symbol, trade_type=0).get("data").get("orders")
+        print(res_before_limit_created_orders)
         pprint("\n步骤一: 开仓-计划委托单\n")
         contract_type = "this_week"
         contract_code = [i.get("contract_code") for i in contract_ltc_info if i.get(
@@ -66,7 +71,7 @@ class TestContractTriggerOrder_0010:
         assert resp_plan_buy.get(
             "status") == "ok", "下单出错: {res}".format(res=resp_plan_buy)
         order_id = resp_plan_buy['data']['order_id']
-        time.sleep(5)
+        time.sleep(1)
         res_all_his_orders = current_user.contract_trigger_openorders(
             symbol=symbol, contract_code=contract_code).get("data").get("orders")
         order_created = False
@@ -80,11 +85,11 @@ class TestContractTriggerOrder_0010:
         if order_created:
             print("步骤二：用另一个账号做一个限价卖->买的成交，使最新价达到触发价")
             resp_limit_sell = common_user.contract_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code,
-                                                         price=order_price, volume=1, direction="sell", offset="open", lever_rate=lever_rate, order_price_type=order_price_type)
+                                                         price=trigger_price, volume=1, direction="sell", offset="open", lever_rate=lever_rate, order_price_type=order_price_type)
             assert resp_limit_sell.get(
                 "status") == "ok", "下单出错: {res}".format(res=resp_limit_sell)
             resp_limit_buy = common_user.contract_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code,
-                                                        price=order_price, volume=1, direction="buy", offset="open", lever_rate=lever_rate, order_price_type=order_price_type)
+                                                        price=trigger_price, volume=1, direction="buy", offset="open", lever_rate=lever_rate, order_price_type=order_price_type)
             assert resp_limit_buy.get(
                 "status") == "ok", "下单出错: {res}".format(res=resp_limit_buy)
             after_orders = None

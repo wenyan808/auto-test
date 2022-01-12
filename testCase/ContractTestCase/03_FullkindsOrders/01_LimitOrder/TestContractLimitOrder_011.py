@@ -23,7 +23,7 @@ from tool.atp import ATP
 @allure.epic('反向交割')
 @allure.feature('功能')
 @pytest.mark.stable
-class TestContractLimitOrder_0011:
+class TestContractLimitOrder_011:
 
     def setUp(self):
         print('\n前置条件')

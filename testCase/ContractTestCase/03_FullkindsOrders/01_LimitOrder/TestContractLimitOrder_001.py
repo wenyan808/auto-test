@@ -12,6 +12,7 @@ import pytest
 import allure
 import time
 from tool.get_test_data import case_data
+from tool.atp import ATP
 
 
 @allure.epic('反向交割')
@@ -21,6 +22,7 @@ class TestContractLimitOrder_001:
 
     def setUp(self):
         print('\n前置条件')
+        ATP.cancel_all_types_order()
 
     def test_contract_account_position_info(self, symbol, symbol_period):
         flag = True
@@ -29,17 +31,19 @@ class TestContractLimitOrder_001:
 
         self.setUp()
         print('\n步骤一:获取最近价\n')
-        r = contract_api.contract_history_trade(symbol=symbol_period, size='1')
-        pprint(r)
-        lastprice = r['data'][0]['data'][0]['price']
-        print(lastprice)
-        orderprice = round((lastprice * 0.98), 1)
+
+        contract_code = ""
+        currContractInfo = contract_api.contract_contract_info(
+            symbol=symbol, contract_type=contracttype)
+        contract_code = currContractInfo['data'][0]['contract_code']
+        lastprice = ATP.get_redis_current_price(contract_code=contract_code)
+        sellprice = round((lastprice * 1.02), 2)
+        buyprice = round((lastprice * 0.99), 2)
 
         print('\n步骤二:下一个卖单\n')
 
-        r = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=str(lastprice), volume='1',
-                                        direction='sell', offset='open', lever_rate=leverrate,
-                                        order_price_type='limit')
+        r = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=sellprice,
+                                        volume=1, direction='sell', offset='open', lever_rate=leverrate, order_price_type='limit')
         pprint(r)
         time.sleep(1)
         orderid1 = r['data']['order_id']
@@ -55,9 +59,8 @@ class TestContractLimitOrder_001:
 
         print('\n步骤三:下一个低于卖一价格的买单\n')
 
-        r = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=orderprice, volume='1',
-                                        direction='buy', offset='open', lever_rate=leverrate,
-                                        order_price_type='limit')
+        r = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=buyprice, volume=1,
+                                        direction='buy', offset='open', lever_rate=leverrate, order_price_type='limit')
         pprint(r)
 
         orderid2 = r['data']['order_id']
@@ -75,8 +78,8 @@ class TestContractLimitOrder_001:
         expectdic = {'symbol': symbol,
                      'order_price_type': 'limit',
                      'lever_rate': leverrate,
-                     'price': orderprice,
-                     'volume': '1',
+                     'price': buyprice,
+                     'volume': 1,
                      'contract_type': contracttype}
 
         if frozen2 <= frozen1:
@@ -97,14 +100,7 @@ class TestContractLimitOrder_001:
         r = contract_api.contract_cancel(symbol=symbol, order_id=orderid2)
         pprint(r)
         time.sleep(1)
-        """获取历史订单"""
-        r = contract_api.contract_hisorders_exact(
-            symbol=symbol, trade_type='0', type='2', status='7')
-        pprint(r)
-        actual_orderinfo2 = r['data']['orders'][0]
-        if compare_dict(expectdic, actual_orderinfo2) is not True:
-            print("订单信息不符合预期")
-            flag = False
+
         """获取当前冻结保证金"""
         r = contract_api.contract_account_info(symbol=symbol)
         pprint(r)

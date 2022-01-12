@@ -102,18 +102,18 @@ class TestContractAccountCapticalBatch_032:
             }
             currInterest = 0  # 流水当期发生
 
-            for key, value in capital_param_dic.items():
-                sqlStr = 'SELECT SUM(money) as money FROM t_account_action WHERE create_time > {} AND create_time <= {} AND money_type = {} AND product_id = "{}" AND user_id=193798'.format(
-                    beginDateTime, endDateTime, value, symbol)
-                print(sqlStr)
-                rec_dict_tuples = contract_conn.selectdb_execute(
-                    dbSchema='btc', sqlStr=sqlStr)
-                money = 0.0
-                if rec_dict_tuples[0]["money"]:
-                    currInterest += rec_dict_tuples[0]["money"]
-                    money = rec_dict_tuples[0]["money"]
-                assert money == Decimal(
-                    platform_capital_dic[key]), "{} 流水比对异常".format(key)
+            # for key, value in capital_param_dic.items():
+            #     sqlStr = 'SELECT SUM(money) as money FROM t_account_action WHERE create_time > {} AND create_time <= {} AND money_type = {} AND product_id = "{}" AND user_id=193798'.format(
+            #         beginDateTime, endDateTime, value, symbol)
+            #     print(sqlStr)
+            #     rec_dict_tuples = contract_conn.selectdb_execute(
+            #         dbSchema='btc', sqlStr=sqlStr)
+            #     money = 0.0
+            #     if rec_dict_tuples[0]["money"]:
+            #         currInterest += rec_dict_tuples[0]["money"]
+            #         money = rec_dict_tuples[0]["money"]
+            #     assert money == Decimal(
+            #         platform_capital_dic[key]), "{} 流水比对异常".format(key)
             # 实际期初静态权益,original_interest(期初),static_interest(期未)
             sqlStr = 'SELECT original_interest,static_interest FROM t_account_capital_virtual_his WHERE settle_date="{}" AND product_id="{}" AND user_type={}'.format(
                 beginDate, symbol, userType
