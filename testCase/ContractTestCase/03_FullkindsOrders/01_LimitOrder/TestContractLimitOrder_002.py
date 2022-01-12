@@ -33,12 +33,8 @@
 """
 
 from common.ContractServiceAPI import t as contract_api
-from common.util import compare_dict
-
-from pprint import pprint
 import pytest
 import allure
-import random
 import time
 
 from tool.atp import ATP
@@ -61,7 +57,7 @@ class TestContractLimitOrder_002:
         4、本次用例场景为无成交下撤单场景 ''')
         # 清除盘口所有卖单
         ATP.clean_market()
-        time.sleep(1)
+        ATP.cancel_all_types_order()
 
     @allure.title('限价委托输入价格下单卖出开空后撤单测试')
     @allure.step('测试执行')
@@ -75,17 +71,18 @@ class TestContractLimitOrder_002:
 
         with allure.step('1、卖出开空限价手动输入价格高于买一价'):
             print('\n获取最近价\n')
-            r = contract_api.contract_history_trade(
-                symbol=symbol_period, size='1')
-
-            lastprice = r['data'][0]['data'][0]['price']
-            orderprice = round((lastprice * 1.02), 1)
+            contract_code = ""
+            currContractInfo = contract_api.contract_contract_info(
+                symbol=symbol, contract_type=contracttype)
+            contract_code = currContractInfo['data'][0]['contract_code']
+            lastprice = ATP.get_redis_current_price(
+                contract_code=contract_code)
+            orderprice = round((lastprice * 1.02), 2)
 
             print('\n下一个买单\n')
 
-            r = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=str(lastprice), volume='1',
-                                            direction='buy', offset='open', lever_rate=leverrate,
-                                            order_price_type='limit')
+            r = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=lastprice, volume=1,
+                                            direction='buy', offset='open', lever_rate=leverrate, order_price_type='limit')
 
             time.sleep(1)
             self.orderid1 = r['data']['order_id']
@@ -101,7 +98,7 @@ class TestContractLimitOrder_002:
 
             print('\n下一个高于买一价格的卖单\n')
 
-            r = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=orderprice, volume='1',
+            r = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=orderprice, volume=1,
                                             direction='sell', offset='open', lever_rate=leverrate,
                                             order_price_type='limit')
 
@@ -123,17 +120,8 @@ class TestContractLimitOrder_002:
             r = contract_api.contract_openorders(
                 symbol=symbol, page_index='', page_size='')
             totalsize2 = r['data']['total_size']
-            actual_orderinfo = r['data']['orders'][0]
-            expectdic = {'symbol': symbol,
-                         'order_price_type': 'limit',
-                         'lever_rate': leverrate,
-                         'price': orderprice,
-                         'volume': '1',
-                         'contract_type': contracttype}
 
             assert (totalsize2 - totalsize1 == 1)
-
-            assert compare_dict(expectdic, actual_orderinfo)
 
         with allure.step('4、观察资产信息有结果C'):
             assert frozen2 > frozen1
@@ -146,10 +134,6 @@ class TestContractLimitOrder_002:
             """获取历史订单"""
             r = contract_api.contract_hisorders_exact(
                 symbol=symbol, trade_type='0', type='2', status='7')
-
-            actual_orderinfo2 = r['data']['orders'][0]
-
-            assert compare_dict(expectdic, actual_orderinfo2)
 
         with allure.step('7、观察资产信息有结果E'):
             """获取当前冻结保证金"""

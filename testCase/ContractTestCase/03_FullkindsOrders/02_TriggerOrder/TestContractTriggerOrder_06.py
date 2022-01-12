@@ -64,7 +64,7 @@ class TestContractTriggerOrder_006:
         else:
             pprint("\n找到最新价，准备获取持仓数据...\n")
             last_price = float(data_r_tract_trade[0].get("price"))
-        order_price = round((last_price * 1.1), 1)
+        order_price = round((last_price * 1.01), 2)
         self.trigger_price = order_price
 
         # 如果有持仓且可平量>=10，直接下计划委托单
@@ -81,7 +81,8 @@ class TestContractTriggerOrder_006:
                             order = contract_api.contract_trigger_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code, trigger_type=trigger_type, trigger_price=self.trigger_price, order_price=order_price, order_price_type=order_price_type,
                                                                         volume=self.available,
                                                                         direction=direction, offset=offset, lever_rate=lever_rate)
-                            time.sleep(5)
+                            time.sleep(1)
+                            print(order)
                             return order['data']['order_id']
                         else:
                             pprint("\n可平量少于10个\n")

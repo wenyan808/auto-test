@@ -53,11 +53,11 @@ class TestContractEx_205:
             sell_price = ATP.get_adjust_price(1.01)
             buy_price = ATP.get_adjust_price(0.99)
 
-            common_contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=buy_price,
+            common_contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=sell_price,
                                                volume='1',
                                                direction="sell", offset='open', lever_rate=leverrate,
                                                order_price_type='limit')
-                                               
+
             buy_order = contract_api.contract_order(symbol=symbol, contract_type=contracttype, price=buy_price,
                                                     volume='1',
                                                     direction="buy", offset='close', lever_rate=leverrate,
@@ -65,8 +65,8 @@ class TestContractEx_205:
             pprint(buy_order)
             orderId = buy_order['data']['order_id']
             # 撤单
-            contract_api.contract_cancel(order_id=orderId)
-
+            r = contract_api.contract_cancel(order_id=orderId)
+            print(r)
             strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
                      "(select f_id from t_order_sequence where f_order_id= '%s')" % (
                          orderId)

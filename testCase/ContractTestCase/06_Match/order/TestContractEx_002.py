@@ -8,7 +8,7 @@ import pytest
 import allure
 import random
 import time
-from common.ContractServiceAPI import user01
+from common.ContractServiceAPI import t as contract_api
 from common.redisComm import redisConf
 from config.conf import DEFAULT_SYMBOL, DEFAULT_CONTRACT_CODE
 
@@ -122,9 +122,9 @@ class TestContractEx_002:
     def setup_class(cls):
         with allure.step('*->挂盘'):
             # 获取交割合约信息
-            currContractInfo = user01.contract_contract_info(
+            currContractInfo = contract_api.contract_contract_info(
                 symbol=cls.symbol, contract_type='this_week')
-            nextContractInfo = user01.contract_contract_info(
+            nextContractInfo = contract_api.contract_contract_info(
                 symbol=cls.symbol, contract_type='next_week')
             cls.curr_contract_code = currContractInfo['data'][0]['contract_code']
             cls.next_contract_code = nextContractInfo['data'][0]['contract_code']
@@ -132,10 +132,10 @@ class TestContractEx_002:
             cls.currentPrice = ATP.get_redis_current_price(
                 contract_code=cls.curr_contract_code)  # 最新价
 
-            user01.contract_order(symbol=cls.symbol, contract_code=cls.curr_contract_code, price=cls.currentPrice,
-                                  direction='buy', volume=10)
-            user01.contract_order(symbol=cls.symbol, contract_code=cls.next_contract_code, price=cls.currentPrice,
-                                  direction='buy', volume=10)
+            contract_api.contract_order(symbol=cls.symbol, contract_code=cls.curr_contract_code, price=cls.currentPrice,
+                                        direction='buy', volume=1)
+            contract_api.contract_order(symbol=cls.symbol, contract_code=cls.next_contract_code, price=cls.currentPrice,
+                                        direction='buy', volume=1)
             depth = cls.redisComm.hgetall('RsT:MarketBusinessPrice:')
             n = 0
             while not cls.flag:
@@ -151,7 +151,7 @@ class TestContractEx_002:
     @classmethod
     def teardown_class(cls):
         with allure.step('*->恢复环境:取消挂单'):
-            user01.contract_cancelall(symbol=cls.symbol)
+            contract_api.contract_cancelall(symbol=cls.symbol)
             pass
 
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
@@ -165,29 +165,30 @@ class TestContractEx_002:
                 self.contract_code = self.curr_contract_code
             elif self.contract_type == 'next_week':
                 self.contract_code = self.next_contract_code
-            orderInfo = user01.contract_order(symbol=symbol, contract_code=self.contract_code,
-                                              price=round(
-                                                  self.currentPrice, 2),
-                                              contract_type=self.contract_type, direction='sell',
-                                              order_price_type=params['order_price_type'])
-            orderId = orderInfo['data']['order_id']
-            strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (
-                         orderId)
-            # 给撮合时间，5秒内还未撮合完成则为失败
-            n = 0
-            while n < 5:
-                isMatch = DB_orderSeq.selectdb_execute(
-                    'order_seq', strStr)[0]['c']
-                if 1 == isMatch:
-                    break
-                else:
-                    n = n + 1
-                    time.sleep(1)
-                    print('等待处理，第' + str(n) + '次重试………………………………')
-                    if n == 5:
-                        assert False
-            pass
+            orderInfo = contract_api.contract_order(symbol=symbol, contract_code=self.contract_code,
+                                                    price=round(
+                                                        self.currentPrice, 2),
+                                                    contract_type=self.contract_type, direction='sell',
+                                                    order_price_type=params['order_price_type'])
+            print(orderInfo)
+            if "data" in orderInfo:
+                orderId = orderInfo['data']['order_id']
+                strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
+                    "(select f_id from t_order_sequence where f_order_id= '%s')" % (
+                        orderId)
+                # 给撮合时间，5秒内还未撮合完成则为失败
+                n = 0
+                while n < 5:
+                    isMatch = DB_orderSeq.selectdb_execute(
+                        'order_seq', strStr)[0]['c']
+                    if 1 == isMatch:
+                        break
+                    else:
+                        n = n + 1
+                        time.sleep(1)
+                        print('等待处理，第' + str(n) + '次重试………………………………')
+                        if n == 5:
+                            assert False
 
 
 if __name__ == '__main__':
