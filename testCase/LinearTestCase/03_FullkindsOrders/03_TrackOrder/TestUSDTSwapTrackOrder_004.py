@@ -128,6 +128,7 @@ class TestUSDTSwapTrackOrder_004:
 
         r = linear_api.linear_cross_cancel(contract_code=contract_code, order_id=limitorderid)
         pprint(r)
+        ATP.cancel_all_types_order()
 
 
         assert flag == True
