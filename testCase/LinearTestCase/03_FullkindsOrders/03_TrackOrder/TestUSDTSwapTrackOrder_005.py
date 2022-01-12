@@ -26,7 +26,8 @@ class TestUSDTSwapTrackOrder_005:
         ATP.close_all_position()
         ATP.clean_market()
 
-    def test_contract_account_position_info(self, contract_code):
+    @allure.title('跟踪委托单因资金不足委托失败测试')
+    def test_execute(self, contract_code):
         flag = True
 
         print('\n步骤一:获取最近价\n')
@@ -35,18 +36,18 @@ class TestUSDTSwapTrackOrder_005:
         price = r['data'][0]['data'][0]['price']
         activationprice = round((price * 0.98), 2)
         callbackrate = 0.03
-        triggerprice = round((activationprice * (1.01+callbackrate)), 2)
+        triggerprice = round((activationprice * (1.01 + callbackrate)), 2)
         print(activationprice)
         print('\n步骤二:按激活价下单\n')
 
         r = linear_api.linear_cross_track_order(contract_code=contract_code,
-                                          direction='buy',
-                                          offset='open',
-                                          lever_rate='5',
-                                      volume='7000000000',
-                                          callback_rate=callbackrate,
-                                          active_price=str(activationprice),
-                                          order_price_type='formula_price')
+                                                direction='buy',
+                                                offset='open',
+                                                lever_rate='5',
+                                                volume='7000000000',
+                                                callback_rate=callbackrate,
+                                                active_price=str(activationprice),
+                                                order_price_type='formula_price')
         pprint(r)
         time.sleep(3)
         orderid = r['data']['order_id']
@@ -82,7 +83,6 @@ class TestUSDTSwapTrackOrder_005:
             print("预期状态为：%s, 预期单号为%s" % (1, orderid))
             flag = False
 
-
         print('\n步骤六:控制现价到触发价格\n')
 
         linear_api.linear_control_price(contract_code=contract_code, price=triggerprice, lever_rate='5')
@@ -91,20 +91,22 @@ class TestUSDTSwapTrackOrder_005:
 
         print('\n步骤七: 查询跟踪委托历史委托\n')
 
-        r = linear_api.linear_cross_track_hisorders(contract_code=contract_code, status='0', trade_type='0', create_date='1')
+        r = linear_api.linear_cross_track_hisorders(contract_code=contract_code, status='0', trade_type='0',
+                                                    create_date='1')
         pprint(r['data']['orders'][0])
 
         status3 = r['data']['orders'][0]['status']
         actual_orderid3 = r['data']['orders'][0]['order_id']
         failreason3 = r['data']['orders'][0]['fail_reason']
 
-        if (status3 != 5) or (actual_orderid3 != orderid) or (failreason3 != '触发平台限仓,请修改后下单'):
+        if (status3 != 5) or (actual_orderid3 != orderid) or ('下单数量+挂单数量+持仓数量超过了单用户多仓持仓限制' not in failreason3):
             print("查询跟踪委托历史委托不符合预期")
             print("实际订单状态：%s, 实际单号为%s, 实际失败原因为%s" % (status3, actual_orderid3, failreason3))
-            print("预期订单状态：5 ，4:已委托、5:委托失败 , 预期单号为%s, 预期失败原因：触发平台限仓,请修改后下单" % orderid)
+            print("预期订单状态：5 ，4:已委托、5:委托失败 , 预期单号为%s, 预期失败原因：下单数量+挂单数量+持仓数量超过了单用户多仓持仓限制" % orderid)
             flag = False
 
         assert flag == True
+
 
 if __name__ == '__main__':
     pytest.main()
