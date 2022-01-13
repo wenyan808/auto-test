@@ -52,14 +52,16 @@ class TestUSDTSwapTriggerOrder_009:
     def setup(self):
         print(''' 有持仓且大于等于10张， 触发价小于最新价 ''')
         self.contract_code = conf.DEFAULT_CONTRACT_CODE
-        self.current_user = LinearServiceAPI(url=URL2, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
+        self.current_user = LinearServiceAPI(
+            url=URL2, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
         position_larger_than_10 = self.current_user.check_positions_larger_than(contract_code=self.contract_code,
                                                                                 direction="buy", amount=10,
                                                                                 position_type=1)
         price = ATP.get_current_price()
         if not position_larger_than_10:
             # 获取买一价, 以稍高与买一价的价格进行一次买->卖，制造持仓(逐仓)
-            contract_depth = self.current_user.linear_depth(contract_code=self.contract_code, type="step5")
+            contract_depth = self.current_user.linear_depth(
+                contract_code=self.contract_code, type="step5")
             bids = contract_depth.get("tick").get("bids")
             if bids:
                 highest_price_bid = round(max([i[0] for i in bids]) * 1.1, 1)
@@ -80,8 +82,10 @@ class TestUSDTSwapTriggerOrder_009:
     def test_execute(self, symbol):
         with allure.step('1、登录U本位永续界面'):
             # 获取最新价
-            latest_trades = self.current_user.linear_trade(contract_code=self.contract_code)
-            last_price = float(latest_trades.get("tick").get("data")[0].get("price"))
+            latest_trades = self.current_user.linear_trade(
+                contract_code=self.contract_code)
+            last_price = float(latest_trades.get(
+                "tick").get("data")[0].get("price"))
             trigger_price = round(last_price * 0.9, 1)
             order_price = trigger_price
             current_plan_orders_before = self.current_user.linear_trigger_openorders(
@@ -90,9 +94,10 @@ class TestUSDTSwapTriggerOrder_009:
                                                                   trigger_price=trigger_price, order_price=order_price,
                                                                   order_price_type="optimal_5", volume=10,
                                                                   direction="sell", offset="close")
-            assert r_order_plan.get("status") == "ok", f"下计划委托单失败: {r_order_plan}"
+            assert r_order_plan.get(
+                "status") == "ok", f"下计划委托单失败: {r_order_plan}"
             order_id = r_order_plan.get("data").get("order_id")
-            time.sleep(5)
+            time.sleep(1)
         with allure.step('2、在当前持仓tab选择持仓BTC当周/USDT-多单，点击计划委托按钮'):
             pass
         with allure.step('3、选择计划止损按钮'):
@@ -108,8 +113,10 @@ class TestUSDTSwapTriggerOrder_009:
         with allure.step('7、查看当前委托列表中的计划委托有结果B'):
             current_plan_orders_after = self.current_user.linear_trigger_openorders(
                 contract_code=self.contract_code).get("data").get("orders")
-            new_plan_orders = [i for i in current_plan_orders_after if i not in current_plan_orders_before]
-            assert len(new_plan_orders) == 1, f"新增计划委托单不止一个或为0个: {new_plan_orders}"
+            new_plan_orders = [
+                i for i in current_plan_orders_after if i not in current_plan_orders_before]
+            assert len(
+                new_plan_orders) == 1, f"新增计划委托单不止一个或为0个: {new_plan_orders}"
             new_plan_order = new_plan_orders[0]
             expected_info = {"contract_code": self.contract_code, "trigger_type": "le", "volume": 10,
                              "direction": "sell", "lever_rate": 5, "trigger_price": trigger_price, "order_price": 0,
@@ -118,10 +125,10 @@ class TestUSDTSwapTriggerOrder_009:
 
     @allure.step('恢复环境')
     def teardown(self):
-        r_cancel = self.current_user.linear_trigger_cancelall(contract_code=self.contract_code)
+        r_cancel = self.current_user.linear_trigger_cancelall(
+            contract_code=self.contract_code)
         assert r_cancel.get('status') == "ok", f"撤单失败: {r_cancel}"
         ATP.cancel_all_types_order()
-
 
 
 if __name__ == '__main__':

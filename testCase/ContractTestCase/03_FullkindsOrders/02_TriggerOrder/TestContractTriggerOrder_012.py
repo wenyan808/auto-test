@@ -55,7 +55,7 @@ class TestContractTriggerOrder_0012:
         assert resp_plan_buy.get(
             "status") == "ok", "下单出错: {res}".format(res=resp_plan_buy)
         order_id = resp_plan_buy['data']['order_id']
-        time.sleep(5)
+        time.sleep(1)
         res_all_his_orders = c.contract_trigger_openorders(
             symbol=symbol, contract_code=contract_code).get("data").get("orders")
         order_created = False

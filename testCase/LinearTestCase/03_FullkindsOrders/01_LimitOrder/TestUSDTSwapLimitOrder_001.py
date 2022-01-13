@@ -48,9 +48,13 @@ from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
 
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 from common.util import compare_dict
 from tool.atp import ATP
+
 
 @allure.epic('正向永续')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
@@ -58,143 +62,151 @@ from tool.atp import ATP
 @pytest.mark.stable
 class TestUSDTSwapLimitOrder_001:
 
-	@allure.step('前置条件')
-	@pytest.fixture(scope='function', autouse=True)
-	def setup(self, contract_code):
-		print(''' 初始化环境准备
+    @allure.step('前置条件')
+    @pytest.fixture(scope='function', autouse=True)
+    def setup(self, contract_code):
+        print(''' 初始化环境准备
 		1、建议准备两个账户，一个用于初始化环境，一个用于测试下单验证。
 		1、建议初始化环境是初始化账户吃掉其他所有买卖挂单，盘口无任何挂单
 		2、再根据测试场景进行拿初始化账户进行买一卖一挂单作为对手方
 		3、每次完成测试后再还原环境
 		4、本次用例场景为无成交下撤单场景 ''')
-		# 撤销当前用户 某个品种所有限价挂单
-		ATP.cancel_all_order(contract_code=contract_code)
-		# 修改当前品种杠杆 默认5倍
-		ATP.switch_level(contract_code=contract_code)
-		# 清除盘口所有卖单
-		ATP.clean_market(contract_code=contract_code, direction='sell')
-		# 清除盘口所有买单
-		ATP.clean_market(contract_code=contract_code, direction='buy')
+        # 撤销当前用户 某个品种所有限价挂单
+        ATP.cancel_all_order(contract_code=contract_code)
+        # 修改当前品种杠杆 默认5倍
+        ATP.switch_level(contract_code=contract_code)
+        # 清除盘口所有卖单
+        ATP.clean_market(contract_code=contract_code, direction='sell')
+        # 清除盘口所有买单
+        ATP.clean_market(contract_code=contract_code, direction='buy')
 
-	@allure.step('测试执行')
-	def test_execute(self, contract_code):
-		self.contract_code = contract_code;
-		self.orderid1 = 0;
-		self.orderid2 = 0;
-		flag = True
-		leverrate = '5'
-		print('\n获取最近价\n')
-		r = linear_api.linear_history_trade(contract_code=contract_code, size='1')
-		pprint(r)
-		#得到最近的价格
-		lastprice = r['data'][0]['data'][0]['price']
-		lastprice = round((lastprice * 1.01), 2)
-		print('\n下一个卖单\n')
-		r = linear_api.linear_order(contract_code=contract_code,
-									client_order_id='',
-									price=lastprice,
-									volume='1',
-									direction='sell',
-									offset='open',
-									lever_rate=leverrate,
-									order_price_type='limit')
-		pprint(r)
-		orderid1 = r['data']['order_id']
-		self.orderid1 = orderid1
-		time.sleep(3)
-		"""获取当前冻结保证金"""
-		r = linear_api.linear_account_info(contract_code=contract_code)
-		"""frozen1:"""
-		pprint(r)
-		frozen1 = r['data'][0]['margin_frozen']
+    @allure.step('测试执行')
+    def test_execute(self, contract_code):
+        self.contract_code = contract_code
+        self.orderid1 = 0
+        self.orderid2 = 0
+        flag = True
+        leverrate = '5'
+        print('\n获取最近价\n')
+        r = linear_api.linear_history_trade(
+            contract_code=contract_code, size='1')
+        pprint(r)
+        # 得到最近的价格
+        lastprice = r['data'][0]['data'][0]['price']
+        lastprice = round((lastprice * 1.01), 2)
+        print('\n下一个卖单\n')
+        r = linear_api.linear_order(contract_code=contract_code,
+                                    client_order_id='',
+                                    price=lastprice,
+                                    volume='1',
+                                    direction='sell',
+                                    offset='open',
+                                    lever_rate=leverrate,
+                                    order_price_type='limit')
+        pprint(r)
+        orderid1 = r['data']['order_id']
+        self.orderid1 = orderid1
+        time.sleep(3)
+        """获取当前冻结保证金"""
+        r = linear_api.linear_account_info(contract_code=contract_code)
+        """frozen1:"""
+        pprint(r)
+        frozen1 = r['data'][0]['margin_frozen']
 
-		"""获取当前委托数量及详情"""
-		r = linear_api.linear_openorders(contract_code=contract_code, page_index='', page_size='')
-		pprint(r)
-		totalsize1 = r['data']['total_size']
-		pprint(totalsize1)
-		with allure.step('1、买入开多限价手动输入价格低于卖一价'):
-			#生成一个买入下单价(低于卖一价)
-			orderprice = round((lastprice * 0.98), 1)
-			print('\n买入开多限价\n')
-			#买入开多限价
-			r = linear_api.linear_order(contract_code=contract_code,
-										client_order_id='',
-										price=orderprice,
-										volume='1',
-										direction='buy',
-										offset='open',
-										lever_rate=leverrate,
-										order_price_type='limit')
-			pprint(r)
-			time.sleep(5)
-			orderid2 = r['data']['order_id']
-			self.orderid2 = orderid2;
-		with allure.step('2、观察盘口有结果A'):
-			"""获取当前冻结保证金"""
-			r = linear_api.linear_account_info(contract_code=contract_code)
-			pprint(r)
-			frozen2 = r['data'][0]['margin_frozen']
-			if frozen2 <= frozen1:
-				print("冻结资金没有增加，不符合预期")
-				flag = False
-				assert frozen2 <= frozen1
-		with allure.step('3、观察当前委托-限价委托页面有结果B'):
-			"""获取当前委托数量及详情"""
-			r = linear_api.linear_openorders(contract_code=contract_code, page_index='', page_size='')
-			pprint(r)
-			totalsize2 = r['data']['total_size']
-			actual_orderinfo = r['data']['orders'][0]
-	# expectdic = {'contract_code': contract_code,
-	# 			 'order_price_type': 'limit',
-	# 			 'lever_rate': leverrate,
-	# 			 'price': orderprice,
-	# 			 'volume': '1',
-	# 			 'contract_type': 'this_week'}
-		with allure.step('4、观察资产信息有结果C'):
-			pprint(totalsize1)
-			pprint(totalsize2)
-			if totalsize2 - totalsize1 !=1:
-				print("当前委托数量增量不为1，不符合预期")
-				flag = False
-				print(actual_orderinfo)
-	# if compare_dict(expectdic, actual_orderinfo) is not True:
-	# 	print("订单信息不符合预期")
-	# 	flag = False
-		with allure.step('5、在当前委托-限价委托点击撤单'):
-			print('\n撤掉刚才下的买入单\n')
-			r = linear_api.linear_cancel(order_id=orderid2, contract_code=contract_code)
-			pprint(r)
-			time.sleep(1)
-		with allure.step('6、观察历史委托-限价委托有结果D'):
-			"""获取历史订单"""
-			r = linear_api.linear_hisorders_exact(contract_code=contract_code, trade_type='1', type='2', status='7')
-			actual_orderinfo2 = r['data']['orders'][0]
-	# if compare_dict(expectdic, actual_orderinfo2) is not True:
-	# 	print("订单信息不符合预期")
-	# 	flag = False
-		with allure.step('7、观察资产信息有结果E'):
-			"""获取当前冻结保证金"""
-			r = linear_api.linear_account_info(contract_code=contract_code)
-			pprint(r)
-			frozen3 = r['data'][0]['margin_frozen']
-			if frozen3 != frozen1:
-				print("冻结资金没有恢复到初始状态，不符合预期")
-				flag = False
-			print('\n恢复环境:撤单\n')
-			#回撤卖单
-			r = linear_api.linear_cancel(contract_code=contract_code, order_id=orderid1)
-			pprint(r)
-			assert flag == True
+        """获取当前委托数量及详情"""
+        r = linear_api.linear_openorders(
+            contract_code=contract_code, page_index='', page_size='')
+        pprint(r)
+        totalsize1 = r['data']['total_size']
+        pprint(totalsize1)
+        with allure.step('1、买入开多限价手动输入价格低于卖一价'):
+            # 生成一个买入下单价(低于卖一价)
+            orderprice = round((lastprice * 0.98), 1)
+            print('\n买入开多限价\n')
+            # 买入开多限价
+            r = linear_api.linear_order(contract_code=contract_code,
+                                        client_order_id='',
+                                        price=orderprice,
+                                        volume='1',
+                                        direction='buy',
+                                        offset='open',
+                                        lever_rate=leverrate,
+                                        order_price_type='limit')
+            pprint(r)
+            time.sleep(1)
+            orderid2 = r['data']['order_id']
+            self.orderid2 = orderid2
+        with allure.step('2、观察盘口有结果A'):
+            """获取当前冻结保证金"""
+            r = linear_api.linear_account_info(contract_code=contract_code)
+            pprint(r)
+            frozen2 = r['data'][0]['margin_frozen']
+            if frozen2 <= frozen1:
+                print("冻结资金没有增加，不符合预期")
+                flag = False
+                assert frozen2 <= frozen1
+        with allure.step('3、观察当前委托-限价委托页面有结果B'):
+            """获取当前委托数量及详情"""
+            r = linear_api.linear_openorders(
+                contract_code=contract_code, page_index='', page_size='')
+            pprint(r)
+            totalsize2 = r['data']['total_size']
+            actual_orderinfo = r['data']['orders'][0]
+    # expectdic = {'contract_code': contract_code,
+    # 			 'order_price_type': 'limit',
+    # 			 'lever_rate': leverrate,
+    # 			 'price': orderprice,
+    # 			 'volume': '1',
+    # 			 'contract_type': 'this_week'}
+        with allure.step('4、观察资产信息有结果C'):
+            pprint(totalsize1)
+            pprint(totalsize2)
+            if totalsize2 - totalsize1 != 1:
+                print("当前委托数量增量不为1，不符合预期")
+                flag = False
+                print(actual_orderinfo)
+    # if compare_dict(expectdic, actual_orderinfo) is not True:
+    # 	print("订单信息不符合预期")
+    # 	flag = False
+        with allure.step('5、在当前委托-限价委托点击撤单'):
+            print('\n撤掉刚才下的买入单\n')
+            r = linear_api.linear_cancel(
+                order_id=orderid2, contract_code=contract_code)
+            pprint(r)
+            time.sleep(1)
+        with allure.step('6、观察历史委托-限价委托有结果D'):
+            """获取历史订单"""
+            r = linear_api.linear_hisorders_exact(
+                contract_code=contract_code, trade_type='1', type='2', status='7')
+            actual_orderinfo2 = r['data']['orders'][0]
+    # if compare_dict(expectdic, actual_orderinfo2) is not True:
+    # 	print("订单信息不符合预期")
+    # 	flag = False
+        with allure.step('7、观察资产信息有结果E'):
+            """获取当前冻结保证金"""
+            r = linear_api.linear_account_info(contract_code=contract_code)
+            pprint(r)
+            frozen3 = r['data'][0]['margin_frozen']
+            if frozen3 != frozen1:
+                print("冻结资金没有恢复到初始状态，不符合预期")
+                flag = False
+            print('\n恢复环境:撤单\n')
+            # 回撤卖单
+            r = linear_api.linear_cancel(
+                contract_code=contract_code, order_id=orderid1)
+            pprint(r)
+            assert flag == True
 
-	@allure.step('恢复环境')
-	def teardown(self):
-		r = linear_api.linear_cancel(contract_code=self.contract_code, order_id=self.orderid1)
-		pprint(r)
-		time.sleep(3)
-		r = linear_api.linear_cancel(contract_code=self.contract_code, order_id=self.orderid2)
-		pprint(r)
-		print('\n恢复环境操作')
+    @allure.step('恢复环境')
+    def teardown(self):
+        r = linear_api.linear_cancel(
+            contract_code=self.contract_code, order_id=self.orderid1)
+        pprint(r)
+        time.sleep(3)
+        r = linear_api.linear_cancel(
+            contract_code=self.contract_code, order_id=self.orderid2)
+        pprint(r)
+        print('\n恢复环境操作')
 
 
 if __name__ == '__main__':

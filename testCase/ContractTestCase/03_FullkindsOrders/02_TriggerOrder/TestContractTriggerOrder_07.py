@@ -81,7 +81,7 @@ class TestContractTriggerOrder_007:
                             order = contract_api.contract_trigger_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code, trigger_type=trigger_type, trigger_price=self.trigger_price, order_price=order_price, order_price_type=order_price_type,
                                                                         volume=self.available,
                                                                         direction=direction, offset=offset, lever_rate=lever_rate)
-                            time.sleep(5)
+                            time.sleep(1)
                             return order['data']['order_id']
                         else:
                             pprint("\n可平量少于10个\n")

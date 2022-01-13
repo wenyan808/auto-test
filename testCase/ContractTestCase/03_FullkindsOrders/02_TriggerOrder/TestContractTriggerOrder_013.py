@@ -36,7 +36,10 @@ from common.SwapServiceAPI import t as swap_api
 from common.SwapServiceOrder import t as swap_order
 import common.util
 from pprint import pprint
-import pytest, allure, random, time
+import pytest
+import allure
+import random
+import time
 
 from config.conf import URL, ACCESS_KEY, SECRET_KEY
 
@@ -55,11 +58,14 @@ class TestContractTriggerOrder_013:
     @allure.step('测试执行')
     def test_execute(self, symbol, symbol_period):
         with allure.step('1、登录交割合约界面'):
-            c = ContractServiceAPI(url=URL, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
+            c = ContractServiceAPI(
+                url=URL, access_key=ACCESS_KEY, secret_key=SECRET_KEY)
         with allure.step('2、选择BTC当周，选择杠杆5X，点击平仓-计划按钮'):
-            contract_ltc_info = c.contract_contract_info(symbol=symbol).get("data")
+            contract_ltc_info = c.contract_contract_info(
+                symbol=symbol).get("data")
             contract_type = "this_week"
-            contract_code = [i.get("contract_code") for i in contract_ltc_info if i.get("contract_type") == contract_type][0]
+            contract_code = [i.get("contract_code") for i in contract_ltc_info if i.get(
+                "contract_type") == contract_type][0]
             lever_rate = 5
             offset = "close"
         with allure.step('3、输入触发价（如：50000）'):
@@ -81,10 +87,12 @@ class TestContractTriggerOrder_013:
                                                      direction=direction, offset=offset, lever_rate=lever_rate)
             time.sleep(3)
         with allure.step('7、查看当前委托列表中的计划委托有结果B'):
-            assert resp_plan_buy.get("status") == "ok", "下单出错: {res}".format(res=resp_plan_buy)
+            assert resp_plan_buy.get(
+                "status") == "ok", "下单出错: {res}".format(res=resp_plan_buy)
             order_id = resp_plan_buy['data']['order_id']
-            time.sleep(5)
-            res_all_his_orders = c.contract_trigger_openorders(symbol=symbol, contract_code=contract_code).get("data").get("orders")
+            time.sleep(1)
+            res_all_his_orders = c.contract_trigger_openorders(
+                symbol=symbol, contract_code=contract_code).get("data").get("orders")
             order_created = False
             for r in res_all_his_orders:
                 if r.get("order_id") == order_id:
@@ -95,24 +103,31 @@ class TestContractTriggerOrder_013:
                     break
         with allure.step('8、点击撤销按钮有结果C'):
             if order_created:
-                r_cancel = c.contract_trigger_cancel(symbol=symbol, order_id=order_id)
+                r_cancel = c.contract_trigger_cancel(
+                    symbol=symbol, order_id=order_id)
                 assert r_cancel.get("status") == "ok"
-                assert not r_cancel.get("data").get("errors"), "撤单时，发生错误: {r_cancel}".format(r_cancel=r_cancel)
+                assert not r_cancel.get("data").get(
+                    "errors"), "撤单时，发生错误: {r_cancel}".format(r_cancel=r_cancel)
                 time.sleep(3)
             else:
-                raise BaseException("在{res_all_his_orders}中未找到历史订单含有订单号: {order_id}".format(res_all_his_orders=res_all_his_orders, order_id=order_id))
+                raise BaseException("在{res_all_his_orders}中未找到历史订单含有订单号: {order_id}".format(
+                    res_all_his_orders=res_all_his_orders, order_id=order_id))
         with allure.step('9、检查历史委托-计划委托界面有结果D'):
-            res_all_orders = c.contract_trigger_hisorders(symbol=symbol, trade_type=0, contract_code=contract_code, status=0, create_date=7).get("data").get("orders")
-            expected_dic = {"symbol": symbol, "order_price_type": order_price_type, "trigger_price": trigger_price, "lever_rate": lever_rate, "volume": volume, "order_price": order_price, "status": 6}
+            res_all_orders = c.contract_trigger_hisorders(
+                symbol=symbol, trade_type=0, contract_code=contract_code, status=0, create_date=7).get("data").get("orders")
+            expected_dic = {"symbol": symbol, "order_price_type": order_price_type, "trigger_price": trigger_price,
+                            "lever_rate": lever_rate, "volume": volume, "order_price": order_price, "status": 6}
             for r in res_all_orders:
                 if r.get("order_id") == order_id:
                     assert common.util.compare_dict(expected_dic, r)
-                    created_time = datetime.datetime.fromtimestamp(r.get("created_at") / 1000)
+                    created_time = datetime.datetime.fromtimestamp(
+                        r.get("created_at") / 1000)
                     now = datetime.datetime.now()
-                    assert (now + datetime.timedelta(seconds=180) >= created_time >= now) or (created_time + datetime.timedelta(seconds=180) >= now >= created_time), "时间过长对不上(时间差超过180s)"
+                    assert (now + datetime.timedelta(seconds=180) >= created_time >= now) or (
+                        created_time + datetime.timedelta(seconds=180) >= now >= created_time), "时间过长对不上(时间差超过180s)"
                     return
-            raise BaseException("在历史订单：{res_all_orders}中未找到订单号: {order_id}".format(res_all_orders=res_all_orders, order_id=order_id))
-
+            raise BaseException("在历史订单：{res_all_orders}中未找到订单号: {order_id}".format(
+                res_all_orders=res_all_orders, order_id=order_id))
 
     @allure.step('恢复环境')
     def teardown(self):
