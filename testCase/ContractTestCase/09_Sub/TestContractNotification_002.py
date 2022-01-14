@@ -28,7 +28,7 @@ from common.ContractServiceWS import t as contract_service_ws
 @allure.feature('订单推送')  # 这里填功能
 @allure.story('订阅资金变动（无资金变动）')  # 这里填子功能，没有的话就把本行注释掉
 @allure.tag('Script owner : Alex Li', 'Case owner : 柳攀峰')
-@pytest.mark.unstable
+@pytest.mark.stable
 class TestContractNotification_002:
 
     @allure.step('前置条件:非colo域名')

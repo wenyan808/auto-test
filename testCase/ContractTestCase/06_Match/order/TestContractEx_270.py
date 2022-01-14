@@ -6,7 +6,6 @@
 from tool.atp import ATP
 import pytest
 import allure
-import random
 import time
 from common.ContractServiceAPI import user01
 from common.redisComm import redisConf
@@ -134,13 +133,14 @@ class TestContractEx_270:
                                   direction='buy', volume=10)
             user01.contract_order(symbol=cls.symbol, contract_code=cls.next_contract_code, price=cls.currentPrice,
                                   direction='buy', volume=10)
+            ATP.make_market_depth(depth_count=3)
             depth = cls.redisComm.hgetall('RsT:MarketBusinessPrice:')
             n = 0
             while not cls.flag:
                 if cls.currentPrice not in depth:
                     n = n + 1
                     time.sleep(1)
-                    if n > 10:
+                    if n > 5:
                         cls.flag = True
                 else:
                     break
@@ -167,24 +167,24 @@ class TestContractEx_270:
                                               price=round(
                                                   self.currentPrice, 2),
                                               contract_type=self.contract_type, direction='sell', order_price_type=params['order_price_type'])
-            orderId = orderInfo['data']['order_id']
-            strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
-                     "(select f_id from t_order_sequence where f_order_id= '%s')" % (
-                         orderId)
-            # 给撮合时间，5秒内还未撮合完成则为失败
-            n = 0
-            while n < 5:
-                isMatch = DB_orderSeq.selectdb_execute(
-                    'order_seq', strStr)[0]['c']
-                if 1 == isMatch:
-                    break
-                else:
-                    n = n + 1
-                    time.sleep(1)
-                    print('等待处理，第' + str(n) + '次重试………………………………')
-                    if n == 5:
-                        assert False
-            pass
+            if "data" in orderInfo:
+                orderId = orderInfo['data']['order_id']
+                strStr = "select count(1) as c from t_exchange_match_result WHERE f_id = " \
+                    "(select f_id from t_order_sequence where f_order_id= '%s')" % (
+                        orderId)
+                # 给撮合时间，5秒内还未撮合完成则为失败
+                n = 0
+                while n < 5:
+                    isMatch = DB_orderSeq.selectdb_execute(
+                        'order_seq', strStr)[0]['c']
+                    if 1 == isMatch:
+                        break
+                    else:
+                        n = n + 1
+                        time.sleep(1)
+                        print('等待处理，第' + str(n) + '次重试………………………………')
+                        if n == 5:
+                            assert False
 
 
 if __name__ == '__main__':

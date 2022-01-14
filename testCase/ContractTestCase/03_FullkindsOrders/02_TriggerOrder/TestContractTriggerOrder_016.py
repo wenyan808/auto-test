@@ -139,7 +139,7 @@ class TestContractTriggerOrder_016:
                                              price=open_price, volume=volume, direction="sell", offset="open", lever_rate=lever_rate, order_price_type="limit")
             assert res_sell.get("status") == "ok", "下开仓卖单失败: {res_sell}".format(
                 res_sell=res_sell)
-            time.sleep(5)
+            time.sleep(1)
         with allure.step("12. 检查止盈止损单状态"):
             after_contract_tpsl_openorders = self.c.contract_tpsl_openorders(
                 symbol=symbol, contract_code=self.contract_code).get('data').get('orders')

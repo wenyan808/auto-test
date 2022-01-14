@@ -83,7 +83,7 @@ class TestContractTriggerOrder_008:
                             pprint("步骤三: 下单(计划委托止损单)")
                             order = c.contract_trigger_order(symbol=symbol, contract_type=contract_type, contract_code=contract_code, trigger_type=trigger_type, trigger_price=self.trigger_price, order_price=order_price, order_price_type=order_price_type, volume=10,
                                                              direction=direction, offset=offset, lever_rate=lever_rate)
-                            time.sleep(5)
+                            time.sleep(1)
                             assert order.get(
                                 "status") == "ok", "下单出错: {res}".format(res=order)
                             return order['data']['order_id']

@@ -84,7 +84,7 @@ class TestContractTriggerOrder_014:
                 "status") == "ok", "下单出错: {res}".format(res=resp_plan_buy_1)
             order_id_1 = resp_plan_buy_1['data']['order_id']
             order_id_2 = resp_plan_buy_2['data']['order_id']
-            time.sleep(5)
+            time.sleep(1)
         with allure.step('4、检查当前委托-计划委托列表有结果A'):
             res_all_his_orders = contract_api.contract_trigger_openorders(
                 symbol=symbol, contract_code=contract_code).get("data").get("orders")

@@ -79,7 +79,7 @@ class TestContractLimitOrder_008:
                                                    order_price_type=order_price_type)
         pprint(r_order_sell)
         current_time = int(str(time.time()).split(".")[0])
-        time.sleep(5)
+        time.sleep(1)
         generated_order_id = r_order_sell['data']['order_id']
         history_orders = contract_api.contract_hisorders(
             symbol=symbol, trade_type=0, type=1, status=0, create_date=7)
