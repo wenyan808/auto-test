@@ -36,6 +36,7 @@ class TestLinearApiSchema_056:
     @allure.step('前置条件')
     def setup(self):
         ATP.make_market_depth(volume=2, depth_count=5)
+        pass
 
     @allure.title('合约闪电平仓下单（逐仓）')
     @allure.step('测试执行')
