@@ -50,6 +50,7 @@ class TestLinearApiSchema_110:
                                                 order_price_type='formula_price')
 
             time.sleep(1)
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_cross_track_openorders(contract_code=contract_code,
                                                          page_index='',
                                                          page_size='')
@@ -62,7 +63,7 @@ class TestLinearApiSchema_110:
                                            'direction': str,
                                            'is_active': int,
                                            'lever_rate': int,
-                                           'margin_account': 'USDT',
+                                           'margin_account': trade_partition,
                                            'margin_mode': 'cross',
                                            'offset': str,
                                            'order_id': int,
@@ -76,7 +77,7 @@ class TestLinearApiSchema_110:
                                            'business_type': 'swap',
                                            'pair': str,
                                            'volume': float,
-                                           'trade_partition': 'USDT'}],
+                                           'trade_partition': trade_partition}],
                                'total_page': int,
                                'total_size': int},
                       'status': 'ok',

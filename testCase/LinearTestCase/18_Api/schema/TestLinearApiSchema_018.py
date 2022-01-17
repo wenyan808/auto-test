@@ -40,14 +40,15 @@ class TestLinearApiSchema_018:
     @allure.step('测试执行')
     def test_execute(self, contract_code,symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_cross_transfer_state'):
-            r = linear_api.linear_cross_transfer_state()
+            trade_partition = linear_api.get_trade_partition(contract_code)
+            r = linear_api.linear_cross_transfer_state(margin_account=trade_partition)
             pprint(r)
             schema = {
                 "status": str,
                 "data": [
                     {
                         "margin_mode": 'cross',
-                        "margin_account": 'USDT',
+                        "margin_account": trade_partition,
                         "transfer_in": Or(0, 1),
                         "transfer_out": Or(0, 1),
                         "master_transfer_sub": Or(0, 1),

@@ -40,6 +40,7 @@ class TestLinearApiSchema_023:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_account_info'):
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_account_info(contract_code=contract_code)
             pprint(r)
             schema = {
@@ -50,19 +51,19 @@ class TestLinearApiSchema_023:
                         'lever_rate': int,
                         'margin_account': str,
                         'liquidation_price': Or(float, None),
-                        'margin_asset': 'USDT',
-                        'margin_available': Or(float, None),
-                        'margin_balance': Or(float, None),
+                        'margin_asset': trade_partition,
+                        'margin_available': Or(float, None, int),
+                        'margin_balance': Or(float, None, int),
                         'margin_frozen': Or(float, None, int),
                         'margin_mode': 'isolated',
                         'margin_position': Or(float, None, int),
-                        'margin_static': Or(float, None),
-                        'profit_real': Or(float, None),
+                        'margin_static': Or(float, None, int),
+                        'profit_real': Or(float, None, int),
                         'profit_unreal': Or(float, None, int),
                         'risk_rate': Or(float, None),
                         'symbol': symbol,
-                        'withdraw_available': Or(float, None),
-                        'trade_partition': 'USDT'
+                        'withdraw_available': Or(float, None, int),
+                        'trade_partition': trade_partition
                     }
                 ],
                 'status': 'ok',

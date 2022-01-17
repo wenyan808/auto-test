@@ -10,6 +10,7 @@ from config.conf import URL2, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_
 import time
 from config.conf import USERINFO
 
+
 class LinearServiceAPI:
 
     def __init__(self, url, access_key, secret_key):
@@ -19,12 +20,13 @@ class LinearServiceAPI:
 
     # 获取合约信息
     def linear_contract_info(self, contract_code=None, support_margin_mode=None, business_type=None, pair=None,
-                             contract_type=None):
+                             contract_type=None, trade_partition=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
         """
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
         if support_margin_mode:
@@ -35,31 +37,41 @@ class LinearServiceAPI:
             params['pair'] = pair
         if contract_type:
             params['contract_type'] = contract_type
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         url = self.__url + '/linear-swap-api/v1/swap_contract_info'
         return api_http_get(url, params)
 
     # 获取合约指数信息
-    def linear_index(self, contract_code=None):
+    def linear_index(self, contract_code=None, trade_partition=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
         """
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         url = self.__url + '/linear-swap-api/v1/swap_index'
         return api_http_get(url, params)
 
     # 获取合约最高限价和最低限价
-    def linear_price_limit(self, contract_code=None, business_type=None, pair=None, contract_type=None):
+    def linear_price_limit(self, contract_code=None, business_type=None, pair=None, contract_type=None,
+                           trade_partition=None):
         """
         参数名称         参数类型            必填     描述
         contract_code   string            true    BTC-USD.....
         """
         params = {}
-
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
         if business_type:
@@ -68,16 +80,23 @@ class LinearServiceAPI:
             params['pair'] = pair
         if contract_type:
             params['contract_type'] = contract_type
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
+
         url = self.__url + '/linear-swap-api/v1/swap_price_limit'
         return api_http_get(url, params)
 
     # 获取当前可用合约总持仓量
-    def linear_open_interest(self, contract_code=None, business_type=None, pair=None, contract_type=None):
+    def linear_open_interest(self, contract_code=None, business_type=None, pair=None, contract_type=None,
+                             trade_partition=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
         """
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
         if business_type:
@@ -86,17 +105,23 @@ class LinearServiceAPI:
             params['pair'] = pair
         if contract_type:
             params['contract_type'] = contract_type
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
         url = self.__url + '/linear-swap-api/v1/swap_open_interest'
         return api_http_get(url, params)
 
     # 查询合约风险准备金余额和预估分摊比例
-    def linear_risk_info(self, contract_code=None, business_type=None, pair=None, contract_type=None):
+    def linear_risk_info(self, contract_code=None, business_type=None, pair=None, contract_type=None,
+                         trade_partition=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
         """
 
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
         if business_type:
@@ -105,6 +130,10 @@ class LinearServiceAPI:
             params['pair'] = pair
         if contract_type:
             params['contract_type'] = contract_type
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
         url = self.__url + '/linear-swap-api/v1/swap_risk_info'
         return api_http_get(url, params)
 
@@ -128,15 +157,20 @@ class LinearServiceAPI:
         return api_http_get(url, params)
 
     # 查询平台阶梯调整系数
-    def linear_adjustfactor(self, contract_code=None):
+    def linear_adjustfactor(self, contract_code=None, trade_partition=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
         """
 
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         url = self.__url + '/linear-swap-api/v1/swap_adjustfactor'
         return api_http_get(url, params)
@@ -233,15 +267,20 @@ class LinearServiceAPI:
         return api_http_get(url, params)
 
     # 查询系统状态
-    def linear_api_state(self, contract_code=None):
+    def linear_api_state(self, contract_code=None, trade_partition=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
         """
 
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         url = self.__url + '/linear-swap-api/v1/swap_api_state'
         return api_http_get(url, params)
@@ -409,17 +448,21 @@ class LinearServiceAPI:
         return api_http_get(url, params)
 
     # 获取市场最近成交记录  ##tag
-    def linear_trade(self, contract_code=None, business_type=None):
+    def linear_trade(self, contract_code=None, business_type=None, trade_partition=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            true     BTC-USD.....
         """
         params = {}
-
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if business_type:
             params['business_type'] = business_type
         if contract_code:
             params['contract_code'] = contract_code
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         url = self.__url + '/linear-swap-ex/market/trade'
         return api_http_get(url, params)
@@ -451,49 +494,63 @@ class LinearServiceAPI:
         return api_http_get(url, params)
 
     # 获取用户账户信息
-    def linear_account_info(self, contract_code=None):
+    def linear_account_info(self, contract_code=None, trade_partition=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
         """
 
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         request_path = '/linear-swap-api/v1/swap_account_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取用户持仓信息
-    def linear_position_info(self, contract_code=None):
+    def linear_position_info(self, contract_code=None, trade_partition=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
         """
 
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
-
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
         request_path = '/linear-swap-api/v1/swap_position_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询母账户下所有子账户资产信息
-    def linear_sub_account_list(self, contract_code=None):
+    def linear_sub_account_list(self, contract_code=None, trade_partition=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
         """
 
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         request_path = '/linear-swap-api/v1/swap_sub_account_list'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询单个子账户资产信息
-    def linear_sub_account_info(self, contract_code=None, sub_uid=None):
+    def linear_sub_account_info(self, contract_code=None, sub_uid=None, trade_partition=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
@@ -501,8 +558,13 @@ class LinearServiceAPI:
         """
 
         params = {'sub_uid': sub_uid}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         request_path = '/linear-swap-api/v1/swap_sub_account_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
@@ -520,7 +582,7 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询单个子账户持仓信息
-    def linear_sub_position_info(self, contract_code=None, sub_uid=None):
+    def linear_sub_position_info(self, contract_code=None, sub_uid=None, trade_partition=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
@@ -528,22 +590,32 @@ class LinearServiceAPI:
         """
 
         params = {'sub_uid': sub_uid}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         request_path = '/linear-swap-api/v1/swap_sub_position_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询单个子账户资产信息
-    def linear_sub_account_info_list(self, contract_code=None, page_index=None, page_size=None):
+    def linear_sub_account_info_list(self, contract_code=None, page_index=None, page_size=None, trade_partition=None):
 
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
         if page_index:
             params['page_index'] = page_index
         if page_size:
             params['page_size'] = page_size
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         request_path = '/linear-swap-api/v1/swap_sub_account_info_list'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
@@ -602,7 +674,7 @@ class LinearServiceAPI:
 
     # 查询用户当前的下单量限制
     def linear_order_limit(self, contract_code=None, order_price_type=None, business_type=None, pair=None,
-                           contract_type=None):
+                           contract_type=None, trade_partition=None):
         """
         参数名称              参数类型       必填      描述
         contract_code        string       false    "BTC-USD",不填查询所有合约
@@ -610,6 +682,7 @@ class LinearServiceAPI:
         """
 
         params = {'order_price_type': order_price_type}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
         if business_type:
@@ -618,17 +691,22 @@ class LinearServiceAPI:
             params['pair'] = pair
         if contract_type:
             params['contract_type'] = contract_type
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
         request_path = '/linear-swap-api/v1/swap_order_limit'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询用户当前的手续费费率
-    def linear_fee(self, contract_code=None, business_type=None, pair=None, contract_type=None):
+    def linear_fee(self, contract_code=None, business_type=None, pair=None, contract_type=None, trade_partition=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
         """
 
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
         if business_type:
@@ -637,39 +715,53 @@ class LinearServiceAPI:
             params['pair'] = pair
         if contract_type:
             params['contract_type'] = contract_type
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
         request_path = '/linear-swap-api/v1/swap_fee'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询用户当前的划转限制
-    def linear_transfer_limit(self, contract_code=None):
+    def linear_transfer_limit(self, contract_code=None, trade_partition=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
         """
 
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         request_path = '/linear-swap-api/v1/swap_transfer_limit'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 用户持仓量限制的查询
-    def linear_position_limit(self, contract_code=None):
+    def linear_position_limit(self, contract_code=None, trade_partition=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USD",不填查询所有合约
         """
 
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         request_path = '/linear-swap-api/v1/swap_position_limit'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取用户资产和持仓信息
-    def linear_account_position_info(self, contract_code=None):
+    def linear_account_position_info(self, contract_code=None, trade_partition=None):
         """
 
         :param contract_code:
@@ -677,8 +769,13 @@ class LinearServiceAPI:
         """
 
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         request_path = '/linear-swap-api/v1/swap_account_position_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
@@ -1135,12 +1232,14 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询平台阶梯调整系数--全仓
-    def linear_cross_adjustfactor(self, contract_code=None, business_type=None, pair=None, contract_type=None):
+    def linear_cross_adjustfactor(self, contract_code=None, business_type=None, pair=None, contract_type=None,
+                                  trade_partition=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USDT",不填查询所有合约
         """
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
         if business_type:
@@ -1149,6 +1248,10 @@ class LinearServiceAPI:
             params['pair'] = pair
         if contract_type:
             params['contract_type'] = contract_type
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         url = self.__url + '/linear-swap-api/v1/swap_cross_adjustfactor'
         return api_http_get(url, params)
@@ -1167,12 +1270,14 @@ class LinearServiceAPI:
         return api_http_get(url, params)
 
     # 查询系统交易权限--全仓
-    def linear_cross_trade_state(self, contract_code=None, business_type=None, pair=None, contract_type=None):
+    def linear_cross_trade_state(self, contract_code=None, business_type=None, pair=None, contract_type=None,
+                                 trade_partition=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            false    "BTC-USDT",不填查询所有合约
         """
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
         if business_type:
@@ -1181,48 +1286,66 @@ class LinearServiceAPI:
             params['pair'] = pair
         if contract_type:
             params['contract_type'] = contract_type
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
         url = self.__url + '/linear-swap-api/v1/swap_cross_trade_state'
         return api_http_get(url, params)
 
     # 获取用户的合约账户信息--全仓
-    def linear_cross_account_info(self, margin_account=None):
+    def linear_cross_account_info(self, margin_account=None, trade_partition=None):
 
         params = {}
-
         if margin_account:
             params['margin_account'] = margin_account
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        else:
+            params['trade_partition'] = margin_account
 
         request_path = '/linear-swap-api/v1/swap_cross_account_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取用户的合约持仓信息--全仓
-    def linear_cross_position_info(self, contract_code=None, pair=None, contract_type=None):
+    def linear_cross_position_info(self, contract_code=None, pair=None, contract_type=None, trade_partition=None):
 
         params = {}
-
+        trade_partition_from_contract_code = None
         if contract_code:
             params['contract_code'] = contract_code
+            trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        elif pair:
+            trade_partition_from_contract_code = self.get_trade_partition(pair)
         if pair:
             params['pair'] = pair
         if contract_type:
             params['contract_type'] = contract_type
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         request_path = '/linear-swap-api/v1/swap_cross_position_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询母账户下所有子账户资产信息--全仓
-    def linear_cross_sub_account_list(self, margin_account=None):
+    def linear_cross_sub_account_list(self, margin_account=None, trade_partition=None):
 
         params = {}
 
         if margin_account:
             params['margin_account'] = margin_account
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        else:
+            params['trade_partition'] = margin_account
 
         request_path = '/linear-swap-api/v1/swap_cross_sub_account_list'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询母账户下的单个子账户资产信息--全仓
-    def linear_cross_sub_account_info(self, margin_account=None, sub_uid=None):
+    def linear_cross_sub_account_info(self, margin_account=None, sub_uid=None, trade_partition=None):
 
         params = {}
 
@@ -1230,12 +1353,17 @@ class LinearServiceAPI:
             params['margin_account'] = margin_account
         if sub_uid:
             params['sub_uid'] = sub_uid
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        else:
+            params['trade_partition'] = margin_account
 
         request_path = '/linear-swap-api/v1/swap_cross_sub_account_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询母账户下的单个子账户资产信息--全仓
-    def linear_cross_sub_account_info_list(self, margin_account=None, page_index=None, page_size=None):
+    def linear_cross_sub_account_info_list(self, margin_account=None, page_index=None, page_size=None,
+                                           trade_partition=None):
 
         params = {}
 
@@ -1245,51 +1373,74 @@ class LinearServiceAPI:
             params['page_index'] = page_index
         if page_size:
             params['page_size'] = page_size
-
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        else:
+            params['trade_partition'] = margin_account
         request_path = '/linear-swap-api/v1/swap_cross_sub_account_info_list'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询母账户下的单个子账户持仓信息--全仓
-    def linear_cross_sub_position_info(self, contract_code=None, sub_uid=None, pair=None, contract_type=None):
+    def linear_cross_sub_position_info(self, contract_code=None, sub_uid=None, pair=None, contract_type=None,
+                                       trade_partition=None):
 
         params = {}
-
+        trade_partition_from_contract_code = None
         if contract_code:
             params['contract_code'] = contract_code
+            trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        elif pair:
+            trade_partition_from_contract_code = self.get_trade_partition(pair)
         if sub_uid:
             params['sub_uid'] = sub_uid
         if pair:
             params['pair'] = pair
         if contract_type:
             params['contract_type'] = contract_type
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         request_path = '/linear-swap-api/v1/swap_cross_sub_position_info'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取用户的合约划转限制--全仓
-    def linear_cross_transfer_limit(self, margin_account=None):
+    def linear_cross_transfer_limit(self, margin_account=None, trade_partition=None):
 
         params = {}
 
         if margin_account:
             params['margin_account'] = margin_account
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        else:
+            params['trade_partition'] = margin_account
 
         request_path = '/linear-swap-api/v1/swap_cross_transfer_limit'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取用户的合约持仓量限制--全仓
-    def linear_cross_position_limit(self, contract_code=None, business_type=None, pair=None, contract_type=None):
+    def linear_cross_position_limit(self, contract_code=None, business_type=None, pair=None, contract_type=None,
+                                    trade_partition=None):
 
         params = {}
-
+        trade_partition_from_contract_code = None
         if contract_code:
             params['contract_code'] = contract_code
+            trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        elif pair:
+            trade_partition_from_contract_code = self.get_trade_partition(pair)
         if business_type:
             params['business_type'] = business_type
         if pair:
             params['pair'] = pair
         if contract_type:
             params['contract_type'] = contract_type
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         request_path = '/linear-swap-api/v1/swap_cross_position_limit'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
@@ -1344,29 +1495,40 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询用户品种实际可用杠杆倍数--全仓
-    def linear_available_level_rate(self, contract_code=None):
+    def linear_available_level_rate(self, contract_code=None, trade_partition=None):
 
         params = {}
-
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
-
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
         request_path = '/linear-swap-api/v1/swap_available_level_rate'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询用户品种实际可用杠杆倍数--全仓
-    def linear_cross_available_level_rate(self, contract_code=None, business_type=None, pair=None, contract_type=None):
+    def linear_cross_available_level_rate(self, contract_code=None, business_type=None, pair=None, contract_type=None,
+                                          trade_partition=None):
 
         params = {}
-
+        trade_partition_from_contract_code = None
         if contract_code:
             params['contract_code'] = contract_code
+            trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        elif pair:
+            trade_partition_from_contract_code = self.get_trade_partition(pair)
         if business_type:
             params['business_type'] = business_type
         if pair:
             params['pair'] = pair
         if contract_type:
             params['contract_type'] = contract_type
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         request_path = '/linear-swap-api/v1/swap_cross_available_level_rate'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
@@ -1537,18 +1699,28 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取用户的合约当前未成交委托--全仓
-    def linear_cross_openorders(self, contract_code=None, pair=None, page_index=None, page_size=None):
+    def linear_cross_openorders(self, contract_code=None, pair=None, page_index=None, page_size=None, sort_by=None,
+                                trade_partition=None):
 
         params = {}
-
+        trade_partition_from_contract_code = None
         if contract_code:
             params['contract_code'] = contract_code
+            trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        elif pair:
+            trade_partition_from_contract_code = self.get_trade_partition(pair)
         if page_index:
             params['page_index'] = page_index
         if page_size:
             params['page_size'] = page_size
         if pair:
             params['pair'] = pair
+        if sort_by:
+            params['sort_by'] = sort_by
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         request_path = '/linear-swap-api/v1/swap_cross_openorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
@@ -1721,18 +1893,26 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取计划委托当前委托--全仓
-    def linear_cross_trigger_openorders(self, contract_code=None, pair=None, page_index=None, page_size=None):
+    def linear_cross_trigger_openorders(self, contract_code=None, pair=None, page_index=None, page_size=None,
+                                        trade_partition=None):
 
         params = {}
-
+        trade_partition_from_contract_code = None
         if contract_code:
             params['contract_code'] = contract_code
+            trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        elif pair:
+            trade_partition_from_contract_code = self.get_trade_partition(pair)
         if page_index:
             params['page_index'] = page_index
         if page_size:
             params['page_size'] = page_size
         if pair:
             params['pair'] = pair
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         request_path = '/linear-swap-api/v1/swap_cross_trigger_openorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
@@ -1844,8 +2024,10 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 获取预估结算价（全逐通用）
-    def linear_estimated_settlement_price(self, contract_code=None, business_type=None, pair=None, contract_type=None):
+    def linear_estimated_settlement_price(self, contract_code=None, business_type=None, pair=None, contract_type=None,
+                                          trade_partition=None):
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
         if business_type:
@@ -1854,22 +2036,32 @@ class LinearServiceAPI:
             params['pair'] = pair
         if contract_type:
             params['contract_type'] = contract_type
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         url = self.__url + '/linear-swap-api/v1/swap_estimated_settlement_price'
         return api_http_get(url, params)
 
     # 获取平台阶梯保证金（逐仓）
-    def linear_ladder_margin(self, contract_code=None):
+    def linear_ladder_margin(self, contract_code=None, trade_partition=None):
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         url = self.__url + '/linear-swap-api/v1/swap_ladder_margin'
         return api_http_get(url, params)
 
     # 获取平台阶梯保证金（全仓）
-    def linear_cross_ladder_margin(self, contract_code=None, business_type=None, contract_type=None, pair=None):
+    def linear_cross_ladder_margin(self, contract_code=None, business_type=None, contract_type=None, pair=None, trade_partition=None):
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
         if business_type:
@@ -1878,6 +2070,10 @@ class LinearServiceAPI:
             params['contract_type'] = contract_type
         if pair:
             params['pair'] = pair
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         url = self.__url + '/linear-swap-api/v1/swap_cross_ladder_margin'
         return api_http_get(url, params)
@@ -2015,18 +2211,28 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询止盈止损订单当前委托（全仓）
-    def linear_cross_tpsl_openorders(self, contract_code=None, page_index=None, page_size=None, pair=None):
+    def linear_cross_tpsl_openorders(self, contract_code=None, page_index=None, page_size=None, pair=None,
+                                     trade_type=None, trade_partition=None):
 
         params = {}
-
+        trade_partition_from_contract_code = None
         if contract_code:
             params['contract_code'] = contract_code
+            trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        elif pair:
+            trade_partition_from_contract_code = self.get_trade_partition(pair)
         if page_index:
             params['page_index'] = page_index
         if page_size:
             params['page_size'] = page_size
         if pair:
             params['pair'] = pair
+        if trade_type:
+            params['trade_type'] = trade_type
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         request_path = '/linear-swap-api/v1/swap_cross_tpsl_openorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
@@ -2226,17 +2432,28 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 查询跟踪委托订单当前委托接口（全仓）
-    def linear_cross_track_openorders(self, contract_code=None, trade_type=None, page_index=None, page_size=None):
+    def linear_cross_track_openorders(self, contract_code=None, trade_type=None, page_index=None, page_size=None,
+                                      pair=None, trade_partition=None):
 
         params = {}
+        trade_partition_from_contract_code = None
         if contract_code:
             params['contract_code'] = contract_code
+            trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        elif pair:
+            trade_partition_from_contract_code = self.get_trade_partition(pair)
         if trade_type:
             params['trade_type'] = trade_type
         if page_index:
             params['page_index'] = page_index
         if page_size:
             params['page_size'] = page_size
+        if pair:
+            params['pair'] = pair
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         request_path = '/linear-swap-api/v1/swap_cross_track_openorders'
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
@@ -2288,10 +2505,15 @@ class LinearServiceAPI:
         return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
 
     # 批量获取合约的资金费率（全逐通用）
-    def linear_batch_funding_rate(self, contract_code=None):
+    def linear_batch_funding_rate(self, contract_code=None, trade_partition=None):
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
         url = self.__url + '/linear-swap-api/v1/swap_batch_funding_rate'
         return api_http_get(url, params)
 
@@ -2381,6 +2603,13 @@ class LinearServiceAPI:
     def linear_market_over_view(self):
         request_path = '/linear-swap-ex/market/overview'
         return api_http_get(self.__url + request_path, {})
+
+    def get_trade_partition(self, contract_code):
+        if contract_code and '-' in contract_code:
+            return contract_code.split('-')[-1][:4]
+        else:
+            print("合约代码错误:", contract_code)
+            return None
 
 
 # 定义t并传入公私钥和URL,供用例直接调用

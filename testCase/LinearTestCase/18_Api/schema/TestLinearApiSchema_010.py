@@ -40,13 +40,14 @@ class TestLinearApiSchema_010:
     @allure.step('测试执行')
     def test_execute(self, contract_code,symbol):
         with allure.step('调用接口：linear-swap-api/v1/swap_ladder_margin'):
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_ladder_margin(contract_code=contract_code)
             pprint(r)
             schema = {'data': [{'symbol': symbol,
                                 'contract_code': contract_code,
                                 'margin_mode': 'isolated',
                                 'margin_account': contract_code,
-                                'trade_partition': 'USDT',
+                                'trade_partition': trade_partition,
                                 'list': [{'ladders': [{'max_margin_available': Or(int, float, None),
                                                        'max_margin_balance': Or(int, float, None),
                                                        'min_margin_available': Or(int, float, None),

@@ -40,11 +40,12 @@ class TestLinearApiSchema_040:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_master_sub_transfer_record'):
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_master_sub_transfer_record(margin_account=contract_code,
-                                                    transfer_type='34',
-                                                    create_date='7',
-                                                    page_index='',
-                                                    page_size='')
+                                                             transfer_type='34',
+                                                             create_date='7',
+                                                             page_index='',
+                                                             page_size='')
             pprint(r)
             schema = {
                 'data': {
@@ -54,7 +55,7 @@ class TestLinearApiSchema_040:
                     'transfer_record': [
                         {
                             'amount': float,
-                            'asset': 'USDT',
+                            'asset': trade_partition,
                             'from_margin_account': str,
                             'id': int,
                             'margin_account': str,

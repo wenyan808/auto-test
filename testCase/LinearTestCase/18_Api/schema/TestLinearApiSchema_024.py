@@ -60,6 +60,7 @@ class TestLinearApiSchema_024:#文档没更新，待确认
             pprint(buy_order)
 
             time.sleep(1)
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_position_info(contract_code=contract_code)
             pprint(r)
             schema = {
@@ -75,14 +76,14 @@ class TestLinearApiSchema_024:#文档没更新，待确认
                         'profit_unreal': float,
                         'profit_rate': float,
                         'profit': float,
-                        'margin_asset': 'USDT',
+                        'margin_asset': trade_partition,
                         'position_margin': float,
                         'lever_rate': int,
                         'margin_account': str,
                         'margin_mode': 'isolated',
                         'direction': str,
                         'last_price': Or(float, int),
-                        'trade_partition': 'USDT'
+                        'trade_partition': trade_partition
                     }
                 ],
                 'status': 'ok',

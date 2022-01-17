@@ -51,7 +51,7 @@ class TestLinearApiSchema_085:
             time.sleep(1)
             order_id = a['data']['order_id']
             r = linear_api.linear_cross_cancel(contract_code=contract_code,
-                                      order_id=order_id)
+                                               order_id=order_id)
             pprint(r)
             schema = {
                 'data': {

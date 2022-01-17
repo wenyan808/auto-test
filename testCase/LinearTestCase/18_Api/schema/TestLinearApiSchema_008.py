@@ -40,7 +40,8 @@ class TestLinearApiSchema_008:
     @allure.step('测试执行')
     def test_execute(self, contract_code,symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_cross_adjustfactor'):
-            r = linear_api.linear_cross_adjustfactor()
+            trade_partition = linear_api.get_trade_partition(contract_code)
+            r = linear_api.linear_cross_adjustfactor(contract_code=contract_code)
             pprint(r)
             schema = {
                 'data': [
@@ -51,7 +52,7 @@ class TestLinearApiSchema_008:
                         'contract_type': 'swap',
                         'pair': str,
                         'margin_mode': str,
-                        'trade_partition': 'USDT',
+                        'trade_partition': trade_partition,
                         'list': [
                             {
                                 'ladders': [

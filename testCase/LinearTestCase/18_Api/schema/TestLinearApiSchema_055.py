@@ -39,6 +39,7 @@ class TestLinearApiSchema_055:
     @allure.title('组合查询用户历史成交记录（逐仓）')
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
+        trade_partition = linear_api.get_trade_partition(contract_code)
         with allure.step('调用接口：/linear-swap-api/v1/swap_matchresults_exact'):
             r = linear_api.linear_matchresults_exact(contract_code=contract_code,
                                                      trade_type='0',
@@ -50,14 +51,14 @@ class TestLinearApiSchema_055:
             pprint(r)
             schema = {
                 'data': {
-                    'next_id': int,
+                    'next_id': Or(int, None),
                     'remain_size': int,
                     'trades': [
                         {
                             'contract_code': contract_code,
                             'create_date': int,
                             'direction': str,
-                            'fee_asset': 'USDT',
+                            'fee_asset': trade_partition,
                             'id': str,
                             'margin_account': str,
                             'margin_mode': 'isolated',
@@ -75,7 +76,7 @@ class TestLinearApiSchema_055:
                             'trade_turnover': float,
                             'trade_volume': float,
                             'query_id': int,
-                            'trade_partition': 'USDT'
+                            'trade_partition': trade_partition
                         }
                     ]
                 },

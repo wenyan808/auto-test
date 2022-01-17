@@ -40,6 +40,7 @@ class TestLinearApiSchema_034:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_order_limit'):
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_order_limit(contract_code=contract_code, order_price_type='limit')
             pprint(r)
             schema = {
@@ -53,7 +54,7 @@ class TestLinearApiSchema_034:
                             'business_type': 'swap',
                             'open_limit': Or(float, None),
                             'close_limit': Or(float, None),
-                            'trade_partition': 'USDT'
+                            'trade_partition': trade_partition
                         }
                     ],
                     'order_price_type': str

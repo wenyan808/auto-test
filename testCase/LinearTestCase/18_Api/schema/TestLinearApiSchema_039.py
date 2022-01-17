@@ -42,10 +42,11 @@ class TestLinearApiSchema_039:
         with allure.step('调用接口：/linear-swap-api/v1/swap_master_sub_transfer'):
             r = linear_api.linear_sub_account_list(contract_code=contract_code)
             subuid = r['data'][0]['sub_uid']
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_master_sub_transfer(sub_uid=subuid,
-                                                      asset='usdt',
+                                                      asset=trade_partition,
                                                       from_margin_account=contract_code,
-                                                      to_margin_account='eth-usdt',
+                                                      to_margin_account=contract_code,
                                                       amount='1',
                                                       type='master_to_sub')
             pprint(r)
@@ -60,9 +61,9 @@ class TestLinearApiSchema_039:
             Schema(schema).validate(r)
 
             r = linear_api.linear_master_sub_transfer(sub_uid=subuid,
-                                                      asset='usdt',
+                                                      asset=trade_partition,
                                                       from_margin_account=contract_code,
-                                                      to_margin_account='eth-usdt',
+                                                      to_margin_account=contract_code,
                                                       amount='1',
                                                       type='sub_to_master')
             pprint(r)

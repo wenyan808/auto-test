@@ -40,8 +40,14 @@ class TestLinearApiSchema_041:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_transfer_inner'):
-            r = linear_api.linear_transfer_inner(asset='usdt', from_margin_account=contract_code,
-                                        to_margin_account='btc-usdt', amount='1')
+            trade_partition = linear_api.get_trade_partition(contract_code)
+            symbollist = ['BTC', 'ETH']
+            symbollist.remove(symbol)
+            print("symbollist:", symbollist)
+            to_symbol = symbollist[0]
+            to_margin_account = to_symbol + '-' + trade_partition
+            r = linear_api.linear_transfer_inner(asset=trade_partition, from_margin_account=contract_code,
+                                                 to_margin_account=to_margin_account, amount='1')
             pprint(r)
             schema = {
                 'data': {

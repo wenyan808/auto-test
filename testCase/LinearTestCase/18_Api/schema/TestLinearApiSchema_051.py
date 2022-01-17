@@ -50,6 +50,7 @@ class TestLinearApiSchema_051:
                                     lever_rate=5,
                                     order_price_type='limit')
             time.sleep(1)
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_openorders(contract_code=contract_code,
                                              page_index='',
                                              page_size='')
@@ -65,12 +66,12 @@ class TestLinearApiSchema_051:
                             'created_at': int,
                             'direction': str,
                             'fee': Or(int, float),
-                            'fee_asset': 'USDT',
+                            'fee_asset': trade_partition,
                             'is_tpsl': Or(0, 1),
                             'lever_rate': int,
                             'liquidation_type': Or(str, None),
                             'margin_account': str,
-                            'margin_asset': 'USDT',
+                            'margin_asset': trade_partition,
                             'margin_frozen': Or(int, float, None),
                             'margin_mode': 'isolated',
                             'offset': str,
@@ -89,7 +90,7 @@ class TestLinearApiSchema_051:
                             'trade_volume': int,
                             'update_time': int,
                             'volume': int,
-                            'trade_partition': 'USDT'
+                            'trade_partition': trade_partition
                         }
                     ],
                     'total_page': int,

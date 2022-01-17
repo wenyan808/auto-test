@@ -40,7 +40,8 @@ class TestLinearApiSchema_079:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_cross_transfer_limit'):
-            r = linear_api.linear_cross_transfer_limit(margin_account='USDT')
+            trade_partition = linear_api.get_trade_partition(contract_code)
+            r = linear_api.linear_cross_transfer_limit(margin_account=trade_partition)
             pprint(r)
             schema = {
                 'data': [
@@ -55,7 +56,7 @@ class TestLinearApiSchema_079:
                         'transfer_out_max_daily': float,
                         'transfer_out_max_each': float,
                         'transfer_out_min_each': float,
-                        'trade_partition': 'USDT'
+                        'trade_partition': trade_partition
                     }
                 ],
                 'status': 'ok',

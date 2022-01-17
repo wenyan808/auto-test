@@ -62,6 +62,7 @@ class TestLinearApiSchema_089:
             time.sleep(1)
             order_id = buy_order['data']['order_id']
             created_at = buy_order['ts']
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_cross_order_detail(contract_code=contract_code,
                                                      order_id=order_id,
                                                      created_at=created_at,
@@ -79,14 +80,14 @@ class TestLinearApiSchema_089:
                     'current_page': int,
                     'direction': str,
                     'fee': Or(int, float),
-                    'fee_asset': 'USDT',
+                    'fee_asset': trade_partition,
                     'final_interest': int,
                     'instrument_price': Or(int, float),
                     'is_tpsl': Or(0, 1),
                     'lever_rate': int,
                     'liquidation_type': str,
                     'margin_account': str,
-                    'margin_asset': 'USDT',
+                    'margin_asset': trade_partition,
                     'margin_frozen': Or(float, int),
                     'margin_mode': 'cross',
                     'offset': str,
@@ -108,10 +109,10 @@ class TestLinearApiSchema_089:
                     'contract_type': 'swap',
                     'business_type': 'swap',
                     'pair': str,
-                    'trade_partition': 'USDT',
+                    'trade_partition': trade_partition,
                     'trades': [
                         {'created_at': int,
-                         'fee_asset': 'USDT',
+                         'fee_asset': trade_partition,
                          'id': str,
                          'profit': float,
                          'real_profit': float,
@@ -135,7 +136,7 @@ class TestLinearApiSchema_089:
     def teardown(self):
         print('\n恢复环境操作')
         print(ATP.cancel_all_order())
-        print(ATP.close_all_position())
+        #print(ATP.close_all_position())
 
 
 

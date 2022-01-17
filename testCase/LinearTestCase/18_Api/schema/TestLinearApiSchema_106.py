@@ -69,7 +69,7 @@ class TestLinearApiSchema_106:
 
             time.sleep(2)
             order_id = buy_order['data']['order_id']
-
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_cross_relation_tpsl_order(contract_code=contract_code,
                                                             order_id=order_id)
 
@@ -80,9 +80,9 @@ class TestLinearApiSchema_106:
                                 'created_at': int,
                                 'direction': str,
                                 'fee': Or(float, int),
-                                'fee_asset': 'USDT',
+                                'fee_asset': trade_partition,
                                 'lever_rate': int,
-                                'margin_account': 'USDT',
+                                'margin_account': trade_partition,
                                 'margin_frozen': float,
                                 'margin_mode': 'cross',
                                 'offset': str,
@@ -98,7 +98,7 @@ class TestLinearApiSchema_106:
                                 'contract_type': 'swap',
                                 'business_type': 'swap',
                                 'pair': contract_code,
-                                'trade_partition': 'USDT',
+                                'trade_partition': trade_partition,
                                 'tpsl_order_info': [{'canceled_at': int,
                                                      'created_at': int,
                                                      'direction': str,
@@ -149,7 +149,7 @@ class TestLinearApiSchema_106:
         print('\n恢复环境操作')
         print(ATP.cancel_all_tpsl_order())
         print(ATP.cancel_all_order())
-        print(ATP.close_all_position())
+        #print(ATP.close_all_position())
 
 
 if __name__ == '__main__':

@@ -49,6 +49,7 @@ class TestLinearApiSchema_071:
                                           active_price=self.price,
                                           order_price_type='formula_price')
             time.sleep(1)
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_track_openorders(contract_code=contract_code,
                                                    page_index='',
                                                    page_size='')
@@ -72,7 +73,7 @@ class TestLinearApiSchema_071:
                                            'status': int,
                                            'symbol': symbol,
                                            'volume': float,
-                                           'trade_partition': 'USDT'}],
+                                           'trade_partition': trade_partition}],
                                'total_page': int,
                                'total_size': int},
                       'status': 'ok',

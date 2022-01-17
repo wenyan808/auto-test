@@ -42,7 +42,7 @@ class TestLinearApiSchema_050:  # 疑似bug，trades的值为[]
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_order_detail'):
             lastprice = ATP.get_current_price()
-
+            trade_partition = linear_api.get_trade_partition(contract_code)
             sell_order = linear_api.linear_order(contract_code=contract_code,
                                                  price=lastprice,
                                                  volume='1',
@@ -79,14 +79,14 @@ class TestLinearApiSchema_050:  # 疑似bug，trades的值为[]
                     'current_page': int,
                     'direction': str,
                     'fee': Or(int, float),
-                    'fee_asset': 'USDT',
+                    'fee_asset': trade_partition,
                     'final_interest': int,
                     'instrument_price': Or(int, float),
                     'is_tpsl': Or(0, 1),
                     'lever_rate': int,
                     'liquidation_type': str,
                     'margin_account': str,
-                    'margin_asset': 'USDT',
+                    'margin_asset': trade_partition,
                     'margin_frozen': Or(float, int),
                     'margin_mode': 'isolated',
                     'offset': str,
@@ -105,10 +105,10 @@ class TestLinearApiSchema_050:  # 疑似bug，trades的值为[]
                     'trade_avg_price': Or(int, float, None),
                     'trade_turnover': float,
                     'trade_volume': float,
-                    'trade_partition': 'USDT',
+                    'trade_partition': trade_partition,
                     'trades': [
                         {'created_at': int,
-                         'fee_asset': 'USDT',
+                         'fee_asset': trade_partition,
                          'id': str,
                          'profit': float,
                          'real_profit': float,
@@ -126,7 +126,7 @@ class TestLinearApiSchema_050:  # 疑似bug，trades的值为[]
             }
 
             schema2 = {'created_at': int,
-                       'fee_asset': 'USDT',
+                       'fee_asset': trade_partition,
                        'id': str,
                        'profit': float,
                        'real_profit': float,

@@ -50,9 +50,10 @@ class TestLinearApiSchema_099:
                                                       offset='open',
                                                       lever_rate=5)
             time.sleep(1)
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_cross_trigger_openorders(contract_code=contract_code,
-                                                  page_index='',
-                                                  page_size='')
+                                                           page_index='',
+                                                           page_size='')
             pprint(r)
             schema = {
                 'data': {
@@ -80,7 +81,7 @@ class TestLinearApiSchema_099:
                             'contract_type': 'swap',
                             'business_type': 'swap',
                             'pair': str,
-                            'trade_partition': 'USDT'
+                            'trade_partition': trade_partition
 
                         }
                     ],

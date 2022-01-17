@@ -40,7 +40,8 @@ class TestLinearApiSchema_081:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_cross_account_position_info'):
-            r = linear_api.linear_cross_account_position_info(margin_account='USDT')
+            trade_partition = linear_api.get_trade_partition(contract_code)
+            r = linear_api.linear_cross_account_position_info(margin_account=trade_partition)
             pprint(r)
             schema1 = {'data': {'contract_detail': [{'symbol': str,
                                                      'contract_code': str,
@@ -54,11 +55,11 @@ class TestLinearApiSchema_081:
                                                      'liquidation_price': Or(None, float),
                                                      'lever_rate': int,
                                                      'adjust_factor': float,
-                                                     'trade_partition': 'USDT'}, ],
+                                                     'trade_partition': trade_partition}, ],
                                 'futures_contract_detail': [{'symbol': str,
                                                              'contract_code': str,
                                                              'contract_type': Or('swap', 'next_quarter', 'this_week',
-                                                                   'next_week', 'quarter'),
+                                                                                 'next_week', 'quarter'),
                                                              'pair': str,
                                                              'business_type': 'futures',
                                                              'margin_position': Or(int, float),
@@ -68,9 +69,9 @@ class TestLinearApiSchema_081:
                                                              'liquidation_price': Or(None, float),
                                                              'lever_rate': int,
                                                              'adjust_factor': float,
-                                                             'trade_partition': 'USDT'}, ],
-                                'margin_account': 'USDT',
-                                'margin_asset': 'USDT',
+                                                             'trade_partition': trade_partition}, ],
+                                'margin_account': trade_partition,
+                                'margin_asset': trade_partition,
                                 'margin_balance': Or(float, int),
                                 'margin_frozen': Or(float, int),
                                 'margin_mode': 'cross',
@@ -83,7 +84,7 @@ class TestLinearApiSchema_081:
                                                'pair': str,
                                                'business_type': Or('swap', 'futures'),
                                                'margin_mode': 'cross',
-                                               'margin_account': 'USDT',
+                                               'margin_account': trade_partition,
                                                'volume': float,
                                                'available': Or(float, int),
                                                'frozen': float,
@@ -92,12 +93,12 @@ class TestLinearApiSchema_081:
                                                'profit_unreal': Or(float, int),
                                                'profit_rate': Or(float, int),
                                                'profit': Or(float, int),
-                                               'margin_asset': 'USDT',
+                                               'margin_asset': trade_partition,
                                                'position_margin': Or(float, int),
                                                'lever_rate': int,
                                                'direction': str,
                                                'last_price': Or(float, int),
-                                               'trade_partition': 'USDT'}, ],
+                                               'trade_partition': trade_partition}, ],
                                 'profit_real': float,
                                 'profit_unreal': float,
                                 'risk_rate': float,

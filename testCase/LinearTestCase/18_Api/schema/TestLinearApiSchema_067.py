@@ -69,7 +69,7 @@ class TestLinearApiSchema_067:
 
             time.sleep(2)
             order_id = buy_order['data']['order_id']
-
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_relation_tpsl_order(contract_code=contract_code,
                                                       order_id=order_id)
             pprint(r)
@@ -79,7 +79,7 @@ class TestLinearApiSchema_067:
                                'created_at': int,
                                'direction': str,
                                'fee': Or(float, int),
-                               'fee_asset': 'USDT',
+                               'fee_asset': trade_partition,
                                'lever_rate': int,
                                'margin_account': contract_code,
                                'margin_frozen': float,
@@ -94,7 +94,7 @@ class TestLinearApiSchema_067:
                                'profit': Or(int, float),
                                'status': int,
                                'symbol': str,
-                               'trade_partition': 'USDT',
+                               'trade_partition': trade_partition,
                                'tpsl_order_info': [{'canceled_at': int,
                                                     'created_at': int,
                                                     'direction': str,
@@ -126,7 +126,7 @@ class TestLinearApiSchema_067:
         print('\n恢复环境操作')
         print(ATP.cancel_all_tpsl_order())
         print(ATP.cancel_all_order())
-        print(ATP.close_all_position())
+        #print(ATP.close_all_position())
 
 
 if __name__ == '__main__':

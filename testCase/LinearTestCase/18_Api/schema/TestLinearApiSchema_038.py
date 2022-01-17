@@ -60,6 +60,7 @@ class TestLinearApiSchema_038:
             pprint(buy_order)
 
             time.sleep(1)
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_account_position_info(contract_code=contract_code)
             pprint(r)
             schema = {
@@ -70,14 +71,14 @@ class TestLinearApiSchema_038:
                         'lever_rate': int,
                         'liquidation_price': Or(float, None),
                         'margin_account': str,
-                        'margin_asset': 'USDT',
+                        'margin_asset': trade_partition,
                         'margin_available': Or(float, None),
                         'margin_balance': Or(float, None),
                         'margin_frozen': Or(float, None, int),
                         'margin_mode': 'isolated',
                         'margin_position': Or(float, None),
                         'margin_static': Or(float, None),
-                        'trade_partition': 'USDT',
+                        'trade_partition': trade_partition,
                         'positions': Or([
                             {
                                 'available': Or(float, None),
@@ -89,7 +90,7 @@ class TestLinearApiSchema_038:
                                 'last_price': Or(float, None, int),
                                 'lever_rate': int,
                                 'margin_account': str,
-                                'margin_asset': 'USDT',
+                                'margin_asset': trade_partition,
                                 'margin_mode': 'isolated',
                                 'position_margin': Or(float, None),
                                 'profit': Or(float, None),
@@ -97,7 +98,7 @@ class TestLinearApiSchema_038:
                                 'profit_unreal': Or(float, None),
                                 'symbol': symbol,
                                 'volume': Or(float, None),
-                                'trade_partition': 'USDT'
+                                'trade_partition': trade_partition
                             }
                         ], None),
                         'profit_real': Or(float, None),

@@ -40,7 +40,8 @@ class TestLinearApiSchema_073:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_cross_account_info'):
-            r = linear_api.linear_cross_account_info(margin_account='USDT')
+            trade_partition = linear_api.get_trade_partition(contract_code)
+            r = linear_api.linear_cross_account_info(margin_account=trade_partition)
             pprint(r)
             schema1 = {'data': [{'contract_detail': [{'symbol': str,
                                                       'contract_code': str,
@@ -54,7 +55,7 @@ class TestLinearApiSchema_073:
                                                       'liquidation_price': Or(None, float),
                                                       'lever_rate': int,
                                                       'adjust_factor': float,
-                                                      'trade_partition': 'USDT'}, ],
+                                                      'trade_partition': trade_partition}, ],
                                  'futures_contract_detail': [{'symbol': str,
                                                               'contract_code': str,
                                                               'contract_type': Or('next_quarter', 'this_week',
@@ -68,13 +69,13 @@ class TestLinearApiSchema_073:
                                                               'liquidation_price': Or(None, float),
                                                               'lever_rate': int,
                                                               'adjust_factor': float,
-                                                              'trade_partition': 'USDT'}, ],
+                                                              'trade_partition': trade_partition}, ],
                                  'margin_mode': 'cross',
-                                 'margin_account': 'USDT',
-                                 'margin_asset': 'USDT',
+                                 'margin_account': trade_partition,
+                                 'margin_asset': trade_partition,
                                  'margin_balance': float,
                                  'margin_static': float,
-                                 'margin_position': float,
+                                 'margin_position': Or(float, int),
                                  'margin_frozen': Or(int, float, None),
                                  'profit_real': float,
                                  'profit_unreal': Or(int, float),
