@@ -40,6 +40,7 @@ class TestLinearApiSchema_061:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_trigger_hisorders'):
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_trigger_hisorders(contract_code=contract_code,
                                                     trade_type='1',
                                                     status='0',
@@ -78,7 +79,7 @@ class TestLinearApiSchema_061:
                             'triggered_price': Or(int, float, None),
                             'update_time': int,
                             'volume': float,
-                            'trade_partition': 'USDT'
+                            'trade_partition': trade_partition
                         }
                     ],
                     'total_page': int,

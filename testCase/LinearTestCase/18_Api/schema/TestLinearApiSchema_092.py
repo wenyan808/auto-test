@@ -51,16 +51,17 @@ class TestLinearApiSchema_092:
                                                         size='',
                                                         direct='')
             pprint(r)
+            trade_partition = linear_api.get_trade_partition(contract_code)
             schema = {'data': {'next_id': Or(int, None),
                                'orders': [{'contract_code': contract_code,
                                            'create_date': int,
                                            'direction': str,
                                            'fee': float,
-                                           'fee_asset': 'USDT',
+                                           'fee_asset': trade_partition,
                                            'is_tpsl': int,
                                            'lever_rate': int,
                                            'liquidation_type': str,
-                                           'margin_account': 'USDT',
+                                           'margin_account': trade_partition,
                                            'margin_frozen': float,
                                            'margin_mode': 'cross',
                                            'offset': str,
@@ -82,7 +83,7 @@ class TestLinearApiSchema_092:
                                            'contract_type': 'swap',
                                            'business_type': 'swap',
                                            'pair': str,
-                                           'trade_partition': 'USDT'}, ],
+                                           'trade_partition': trade_partition}, ],
                                'remain_size': int},
                       'status': 'ok',
                       'ts': int}

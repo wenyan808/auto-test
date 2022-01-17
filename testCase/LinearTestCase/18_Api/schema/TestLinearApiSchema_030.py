@@ -40,6 +40,7 @@ class TestLinearApiSchema_030:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_financial_record'):
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_financial_record(margin_account=contract_code, type='', create_date='7',
                                                    page_index='',
                                                    page_size='')
@@ -50,13 +51,13 @@ class TestLinearApiSchema_030:
                         {
                             'id': int,
                             'ts': int,
-                            'asset': 'USDT',
+                            'asset': trade_partition,
                             'contract_code': contract_code,
                             'margin_account': contract_code,
                             'face_margin_account': Or(str, None),
                             'type': int,
                             'amount': float,
-                            'trade_partition': 'USDT'
+                            'trade_partition': trade_partition
                         }
                     ],
                     'total_page': int,

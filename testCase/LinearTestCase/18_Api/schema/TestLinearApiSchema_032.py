@@ -40,6 +40,7 @@ class TestLinearApiSchema_032:#文档没有更新，待确认，pair值为None
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_user_settlement_records'):
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_user_settlement_records(contract_code=contract_code,
                                                           start_time='',
                                                           end_time='',
@@ -50,7 +51,7 @@ class TestLinearApiSchema_032:#文档没有更新，待确认，pair值为None
                                'settlement_records': [{'clawback': float,
                                                        'contract_code': contract_code,
                                                        'fee': float,
-                                                       'fee_asset': 'USDT',
+                                                       'fee_asset': trade_partition,
                                                        'funding_fee': float,
                                                        'margin_account': contract_code,
                                                        'margin_balance': Or(float, int),
@@ -69,7 +70,7 @@ class TestLinearApiSchema_032:#文档没有更新，待确认，pair值为None
                                                                       'volume': float}, ],
                                                        'settlement_profit_real': float,
                                                        'settlement_time': int,
-                                                       'trade_partition': 'USDT',
+                                                       'trade_partition': trade_partition,
                                                        'symbol': symbol}, ],
                                'total_page': int,
                                'total_size': int},

@@ -40,6 +40,7 @@ class TestLinearApiSchema_022:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_historical_funding_rate'):
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_historical_funding_rate(contract_code=contract_code,
                                                           page_index='',
                                                           page_size='')
@@ -51,12 +52,12 @@ class TestLinearApiSchema_022:
                         {
                             'avg_premium_index': str,
                             'contract_code': contract_code,
-                            'fee_asset': 'USDT',
+                            'fee_asset': trade_partition,
                             'funding_rate': str,
                             'funding_time': str,
                             'realized_rate': str,
                             'symbol': symbol,
-                            'trade_partition': 'USDT'
+                            'trade_partition': trade_partition
                         }
                     ],
                     'total_page': int,

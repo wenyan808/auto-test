@@ -40,6 +40,7 @@ class TestLinearApiSchema_111:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_cross_track_hisorders'):
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_cross_track_hisorders(contract_code=contract_code,
                                                         status='0',
                                                         trade_type='0',
@@ -61,7 +62,7 @@ class TestLinearApiSchema_111:
                                            'formula_price': Or(None, str, int, float),
                                            'is_active': int,
                                            'lever_rate': int,
-                                           'margin_account': 'USDT',
+                                           'margin_account': trade_partition,
                                            'margin_mode': 'cross',
                                            'market_limit_price': Or(None, int, float, str),
                                            'offset': str,
@@ -80,7 +81,7 @@ class TestLinearApiSchema_111:
                                            'business_type': 'swap',
                                            'pair': str,
                                            'volume': float,
-                                           'trade_partition': 'USDT'}, ],
+                                           'trade_partition': trade_partition}, ],
                                'total_page': int,
                                'total_size': int},
                       'status': 'ok',

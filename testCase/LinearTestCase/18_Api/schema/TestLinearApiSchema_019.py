@@ -40,6 +40,7 @@ class TestLinearApiSchema_019:
     @allure.step('测试执行')
     def test_execute(self, contract_code,symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_cross_trade_state'):
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_cross_trade_state(contract_code=contract_code)
             pprint(r)
             schema = {'data': [{'symbol': symbol,
@@ -48,11 +49,11 @@ class TestLinearApiSchema_019:
                                 'pair': contract_code,
                                 'business_type': 'swap',
                                 'margin_mode': 'cross',
-                                'margin_account': 'USDT',
+                                'margin_account': trade_partition,
                                 'open': int,
                                 'close': int,
                                 'cancel': int,
-                                'trade_partition': 'USDT'}],
+                                'trade_partition': trade_partition}],
                       'status': 'ok',
                       'ts': int}
             assert r['data']

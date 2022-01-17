@@ -38,6 +38,7 @@ class TestLinearApiSchema_004:
     @allure.step('测试执行')
     def test_execute(self, contract_code,symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_open_interest'):
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_open_interest(contract_code=contract_code)
             pprint(r)
             schema = {
@@ -54,7 +55,7 @@ class TestLinearApiSchema_004:
                         'trade_amount': Or(int, float),
                         'trade_volume': Or(int, float),
                         'trade_turnover': Or(int, float),
-                        'trade_partition': 'USDT'
+                        'trade_partition': trade_partition
                     }
                 ],
                 'status': 'ok',

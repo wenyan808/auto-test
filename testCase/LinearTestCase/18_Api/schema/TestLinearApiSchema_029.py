@@ -42,7 +42,7 @@ class TestLinearApiSchema_029:
         with allure.step('调用接口：/linear-swap-api/v1/swap_sub_position_info'):
             r = linear_api.linear_sub_account_list(contract_code=contract_code)
             subuid = r['data'][0]['sub_uid']
-
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_sub_position_info(contract_code=contract_code, sub_uid=subuid)
             pprint(r)
             schema = {
@@ -56,7 +56,7 @@ class TestLinearApiSchema_029:
                         'frozen': float,
                         'last_price': Or(float, int),
                         'lever_rate': int,
-                        'margin_asset': 'USDT',
+                        'margin_asset': trade_partition,
                         'margin_account': str,
                         'margin_mode': 'isolated',
                         'position_margin': float,
@@ -65,7 +65,7 @@ class TestLinearApiSchema_029:
                         'profit_unreal': float,
                         'symbol': symbol,
                         'volume': float,
-                        'trade_partition': 'USDT'
+                        'trade_partition': trade_partition
                     }
                 ],
                 'status': 'ok',

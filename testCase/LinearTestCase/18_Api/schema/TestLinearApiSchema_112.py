@@ -40,7 +40,7 @@ class TestLinearApiSchema_112:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_balance_valuation'):
-            r = linear_api.linear_balance_valuation(valuation_asset="")
+            r = linear_api.linear_balance_valuation(valuation_asset="USDT")
             pprint(r)
             schema = {'data': [{'valuation_asset': Or("BTC", "USDT", "USD", "CNY", "EUR", "GBP", "VND", "HKD", "TWD",
                                                       "MYR", "SGD", "KRW", "RUB", "TRY"),

@@ -40,6 +40,7 @@ class TestLinearApiSchema_012:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_elite_account_ratio'):
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_elite_account_ratio(contract_code=contract_code,
                                                       period='1day')
             pprint(r)
@@ -49,7 +50,7 @@ class TestLinearApiSchema_012:
                     'contract_code': contract_code,
                     "business_type": "swap",
                     "pair": contract_code,
-                    'trade_partition': 'USDT',
+                    'trade_partition': trade_partition,
                     'list': [
                         {
 

@@ -52,8 +52,9 @@ class TestLinearApiSchema_088:
 
             time.sleep(1)
             order_id = a['data']['order_id']
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_cross_order_info(contract_code=contract_code,
-                                             order_id=order_id)
+                                                   order_id=order_id)
             pprint(r)
             schema = {
                 'data': [
@@ -64,12 +65,12 @@ class TestLinearApiSchema_088:
                         'created_at': int,
                         'direction': str,
                         'fee': Or(int, float),
-                        'fee_asset': 'USDT',
+                        'fee_asset': trade_partition,
                         'is_tpsl': Or(0, 1),
                         'lever_rate': int,
                         'liquidation_type': str,
                         'margin_account': str,
-                        'margin_asset': 'USDT',
+                        'margin_asset': trade_partition,
                         'margin_frozen': Or(float, None),
                         'margin_mode': 'cross',
                         'offset': str,
@@ -89,8 +90,8 @@ class TestLinearApiSchema_088:
                         'volume': int,
                         'business_type': 'swap',
                         'contract_type': 'swap',
-                        'pair': 'ETH-USDT',
-                        'trade_partition': 'USDT'
+                        'pair': contract_code,
+                        'trade_partition': trade_partition
                     }
                 ],
                 'status': 'ok',

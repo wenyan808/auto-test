@@ -40,6 +40,7 @@ class TestLinearApiSchema_035:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_fee'):
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_fee(contract_code=contract_code)
             pprint(r)
             schema = {
@@ -55,8 +56,8 @@ class TestLinearApiSchema_035:
                         'open_taker_fee': str,
                         'close_maker_fee': str,
                         'close_taker_fee': str,
-                        'fee_asset': 'USDT',
-                        'trade_partition': 'USDT'
+                        'fee_asset': trade_partition,
+                        'trade_partition': trade_partition
                     }
                 ],
                 'status': 'ok',

@@ -43,6 +43,7 @@ class TestLinearApiSchema_028:
             r = linear_api.linear_sub_account_list(contract_code=contract_code)
             subuid = r['data'][0]['sub_uid']
 
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_sub_account_info(contract_code=contract_code, sub_uid=subuid)
             pprint(r)
             schema = {
@@ -53,7 +54,7 @@ class TestLinearApiSchema_028:
                         'lever_rate': int,
                         'liquidation_price': Or(int, float, None),
                         'margin_account': str,
-                        'margin_asset': 'USDT',
+                        'margin_asset': trade_partition,
                         'margin_available': float,
                         'margin_balance': float,
                         'margin_frozen': Or(int, float),
@@ -65,7 +66,7 @@ class TestLinearApiSchema_028:
                         'risk_rate': Or(float, None),
                         'symbol': symbol,
                         'withdraw_available': Or(int, float),
-                        'trade_partition': 'USDT'
+                        'trade_partition': trade_partition
                     }
                 ],
                 'status': 'ok',

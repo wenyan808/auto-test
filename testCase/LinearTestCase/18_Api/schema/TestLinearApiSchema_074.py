@@ -60,6 +60,7 @@ class TestLinearApiSchema_074:
             pprint(buy_order)
 
             time.sleep(1)
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_cross_position_info(contract_code=contract_code)
             pprint(r)
             schema = {
@@ -75,7 +76,7 @@ class TestLinearApiSchema_074:
                         'profit_unreal': float,
                         'profit_rate': float,
                         'profit': float,
-                        'margin_asset': 'USDT',
+                        'margin_asset': trade_partition,
                         'position_margin': float,
                         'lever_rate': int,
                         'margin_account': str,
@@ -85,7 +86,7 @@ class TestLinearApiSchema_074:
                         'business_type': 'swap',
                         'pair': str,
                         'last_price': Or(float, int),
-                        'trade_partition': 'USDT'
+                        'trade_partition': trade_partition
                     }
                 ],
                 'status': 'ok',
@@ -98,7 +99,7 @@ class TestLinearApiSchema_074:
     def teardown(self):
         print('\n恢复环境操作')
         print(ATP.cancel_all_order())
-        print(ATP.close_all_position())
+        #print(ATP.close_all_position())
 
 
 if __name__ == '__main__':

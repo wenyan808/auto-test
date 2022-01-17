@@ -42,18 +42,19 @@ class TestLinearApiSchema_090:
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_cross_openorders'):
             linear_api.linear_cross_order(contract_code=contract_code,
-                                              client_order_id='',
-                                              price=self.price,
-                                              volume='1',
-                                              direction='buy',
-                                              offset='open',
-                                              lever_rate=5,
-                                              order_price_type='limit')
+                                          client_order_id='',
+                                          price=self.price,
+                                          volume='1',
+                                          direction='buy',
+                                          offset='open',
+                                          lever_rate=5,
+                                          order_price_type='limit')
 
             time.sleep(1)
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_cross_openorders(contract_code=contract_code,
-                                          page_index='',
-                                          page_size='')
+                                                   page_index='',
+                                                   page_size='')
             pprint(r)
             schema = {
                 'data': {
@@ -66,12 +67,12 @@ class TestLinearApiSchema_090:
                             'created_at': int,
                             'direction': str,
                             'fee': Or(int, float),
-                            'fee_asset': 'USDT',
+                            'fee_asset': trade_partition,
                             'is_tpsl': Or(0, 1),
                             'lever_rate': int,
                             'liquidation_type': Or(str, None),
                             'margin_account': str,
-                            'margin_asset': 'USDT',
+                            'margin_asset': trade_partition,
                             'margin_frozen': Or(int, float, None),
                             'margin_mode': 'cross',
                             'offset': str,
@@ -93,7 +94,7 @@ class TestLinearApiSchema_090:
                             'business_type': 'swap',
                             'contract_type': 'swap',
                             'pair': str,
-                            'trade_partition': 'USDT'
+                            'trade_partition': trade_partition
                         }
                     ],
                     'total_page': int,

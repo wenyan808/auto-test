@@ -40,6 +40,7 @@ class TestLinearApiSchema_016:
     @allure.step('测试执行')
     def test_execute(self, contract_code,symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_estimated_settlement_price'):
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_estimated_settlement_price(contract_code=contract_code)
             pprint(r)
             schema = {'data': [{'contract_code': contract_code,
@@ -48,7 +49,7 @@ class TestLinearApiSchema_016:
                                 'business_type': 'swap',
                                 'estimated_settlement_price': Or(float, int, None),
                                 'settlement_type': 'settlement',
-                                'trade_partition': 'USDT'}],
+                                'trade_partition': trade_partition}],
                       'status': 'ok',
                       'ts': int}
 

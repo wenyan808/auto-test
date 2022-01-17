@@ -40,7 +40,9 @@ class TestLinearApiSchema_033:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_cross_user_settlement_records'):
-            r = linear_api.linear_cross_user_settlement_records(margin_account='USDT',
+            contract_code = 'BTC-USDT'
+            trade_partition = linear_api.get_trade_partition(contract_code)
+            r = linear_api.linear_cross_user_settlement_records(margin_account=trade_partition,
                                                                 start_time='',
                                                                 end_time='',
                                                                 page_size='',
@@ -50,7 +52,7 @@ class TestLinearApiSchema_033:
                                'settlement_records': [{'clawback': float,
                                                        'contract_detail': [{'contract_code': str,
                                                                             'fee': float,
-                                                                            'fee_asset': 'USDT',
+                                                                            'fee_asset': trade_partition,
                                                                             'offset_profitloss': float,
                                                                             'pair': str,
                                                                             'positions': [{'symbol': str,
@@ -65,11 +67,11 @@ class TestLinearApiSchema_033:
                                                                                            'settlement_profit_unreal': float,
                                                                                            'settlement_type': 'settlement'}, ],
                                                                             'symbol': str,
-                                                                            'trade_partition': 'USDT'}, ],
+                                                                            'trade_partition': trade_partition}, ],
                                                        'fee': float,
-                                                       'fee_asset': 'USDT',
+                                                       'fee_asset': trade_partition,
                                                        'funding_fee': float,
-                                                       'margin_account': 'USDT',
+                                                       'margin_account': trade_partition,
                                                        'margin_balance': Or(float, None),
                                                        'margin_balance_init': Or(float, None),
                                                        'margin_mode': 'cross',

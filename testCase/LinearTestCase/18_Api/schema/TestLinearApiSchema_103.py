@@ -46,31 +46,31 @@ class TestLinearApiSchema_103:
             sl_price = ATP.get_adjust_price(rate=0.95)
 
             sell_order = linear_api.linear_cross_order(contract_code=contract_code,
-                                                 price=lastprice,
-                                                 volume='1',
-                                                 direction='sell',
-                                                 offset='open',
-                                                 order_price_type="limit")
+                                                       price=lastprice,
+                                                       volume='1',
+                                                       direction='sell',
+                                                       offset='open',
+                                                       order_price_type="limit")
             pprint(sell_order)
 
             buy_order = linear_api.linear_cross_order(contract_code=contract_code,
-                                                price=lastprice,
-                                                volume='1',
-                                                direction='buy',
-                                                offset='open',
-                                                order_price_type="limit")
+                                                      price=lastprice,
+                                                      volume='1',
+                                                      direction='buy',
+                                                      offset='open',
+                                                      order_price_type="limit")
             pprint(buy_order)
 
             time.sleep(2)
             a = linear_api.linear_cross_tpsl_order(contract_code=contract_code,
-                                             direction='sell',
-                                             volume='1',
-                                             tp_trigger_price=tp_price,
-                                             tp_order_price=tp_price,
-                                             tp_order_price_type='limit',
-                                             sl_order_price=sl_price,
-                                             sl_order_price_type='limit',
-                                             sl_trigger_price=sl_price)
+                                                   direction='sell',
+                                                   volume='1',
+                                                   tp_trigger_price=tp_price,
+                                                   tp_order_price=tp_price,
+                                                   tp_order_price_type='limit',
+                                                   sl_order_price=sl_price,
+                                                   sl_order_price_type='limit',
+                                                   sl_trigger_price=sl_price)
             time.sleep(1)
             r = linear_api.linear_cross_tpsl_cancelall(contract_code=contract_code)
             pprint(r)
@@ -86,7 +86,7 @@ class TestLinearApiSchema_103:
         print('\n恢复环境操作')
         print(ATP.cancel_all_tpsl_order())
         print(ATP.cancel_all_order())
-        print(ATP.close_all_position())
+        # print(ATP.close_all_position())
 
 
 if __name__ == '__main__':

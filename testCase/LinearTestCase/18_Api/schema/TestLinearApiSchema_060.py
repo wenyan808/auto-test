@@ -50,7 +50,7 @@ class TestLinearApiSchema_060:
                                             offset='open',
                                             lever_rate=5)
             time.sleep(1)
-
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_trigger_openorders(contract_code=contract_code,
                                                      page_index='',
                                                      page_size='')
@@ -78,7 +78,7 @@ class TestLinearApiSchema_060:
                             'trigger_price': float,
                             'trigger_type': str,
                             'volume': float,
-                            'trade_partition': 'USDT'
+                            'trade_partition': trade_partition
                         }
                     ],
                     'total_page': int,

@@ -40,16 +40,17 @@ class TestLinearApiSchema_021:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_batch_funding_rate'):
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_batch_funding_rate(contract_code=contract_code)
             pprint(r)
             schema = {'data': [{'contract_code': contract_code,
                                 'estimated_rate': str,
-                                'fee_asset': 'USDT',
+                                'fee_asset': trade_partition,
                                 'funding_rate': str,
                                 'funding_time': str,
                                 'next_funding_time': str,
                                 'symbol': symbol,
-                                'trade_partition': 'USDT'}],
+                                'trade_partition': trade_partition}],
                       'status': 'ok',
                       'ts': int}
 

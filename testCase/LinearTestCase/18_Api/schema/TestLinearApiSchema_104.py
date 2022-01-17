@@ -73,6 +73,7 @@ class TestLinearApiSchema_104:
                                                    sl_trigger_price=sl_price)
             time.sleep(1)
             pprint(r)
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_cross_tpsl_openorders(contract_code=contract_code,
                                                         page_index='',
                                                         page_size='')
@@ -81,7 +82,7 @@ class TestLinearApiSchema_104:
                                'orders': [{'contract_code': contract_code,
                                            'created_at': int,
                                            'direction': str,
-                                           'margin_account': 'USDT',
+                                           'margin_account': trade_partition,
                                            'margin_mode': 'cross',
                                            'order_id': int,
                                            'order_id_str': str,
@@ -100,7 +101,7 @@ class TestLinearApiSchema_104:
                                            'business_type': 'swap',
                                            'pair': contract_code,
                                            'volume': float,
-                                           'trade_partition': 'USDT'}, ],
+                                           'trade_partition': trade_partition}, ],
                                'total_page': int,
                                'total_size': int},
                       'status': 'ok',
@@ -113,7 +114,7 @@ class TestLinearApiSchema_104:
         print('\n恢复环境操作')
         print(ATP.cancel_all_tpsl_order())
         print(ATP.cancel_all_order())
-        print(ATP.close_all_position())
+        #print(ATP.close_all_position())
 
 
 if __name__ == '__main__':
