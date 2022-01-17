@@ -6,7 +6,7 @@
 
 from common.util import api_http_get, api_key_post, api_key_get
 from config import conf
-from config.conf import URL2, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY, URL
+from config.conf import URL2, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY, ATP_SERVER_ACCESS_KEY, ATP_SERVER_SECRET_KEY, URL
 import time
 from config.conf import USERINFO
 
@@ -2615,6 +2615,7 @@ class LinearServiceAPI:
 # 定义t并传入公私钥和URL,供用例直接调用
 t = LinearServiceAPI(URL, ACCESS_KEY, SECRET_KEY)
 common_user_linear_service_api = LinearServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
+atp_linear_service_api = LinearServiceAPI(URL, ATP_SERVER_ACCESS_KEY, ATP_SERVER_SECRET_KEY)
 userList = eval(USERINFO)
 user01 = LinearServiceAPI(URL, userList[0]['ACCESS_KEY'], userList[0]['SECRET_KEY'])
 user02 = LinearServiceAPI(URL, userList[1]['ACCESS_KEY'], userList[1]['SECRET_KEY'])
