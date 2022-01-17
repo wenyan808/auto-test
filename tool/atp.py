@@ -4,11 +4,13 @@ import requests
 
 from common.ContractServiceAPI import common_user_contract_service_api
 from common.ContractServiceAPI import t as contract_api
+from common.ContractServiceAPI import atp_contract_service_api
 from common.LinearServiceAPI import common_user_linear_service_api
 from common.LinearServiceAPI import t as linear_api
 from common.LinearServiceAPI import atp_linear_service_api
 from common.SwapServiceAPI import common_user_swap_service_api
 from common.SwapServiceAPI import t as swap_api
+from common.SwapServiceAPI import atp_swap_service_api
 from common.util import api_key_post, api_http_get
 from config import conf
 
@@ -434,8 +436,8 @@ class ATP:
 
         if user == 'atp':
 
-            order_methods = {'Delivery': common_user_contract_service_api.contract_order,  ####待改
-                             'Swap': common_user_swap_service_api.swap_order,  ####待改
+            order_methods = {'Delivery': atp_contract_service_api.contract_order,
+                             'Swap': atp_swap_service_api.swap_order,
                              'LinearSwap': atp_linear_service_api.linear_order,
                              }
             if iscross:

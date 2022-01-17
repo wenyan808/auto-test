@@ -2,15 +2,13 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2020/7/31
 # @Author  : zhangranghan
+
 import time
 
 from common.util import api_http_get, api_key_post, api_key_get
 from config import conf
-from config.conf import URL, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY
-from common.util import api_http_get, api_key_post, api_key_get
-from config.conf import URL, ACCESS_KEY, SECRET_KEY
+from config.conf import URL, ACCESS_KEY, SECRET_KEY, COMMON_ACCESS_KEY, COMMON_SECRET_KEY, ATP_SERVER_ACCESS_KEY, ATP_SERVER_SECRET_KEY
 from config.conf import USERINFO
-import time
 
 
 class SwapService:
@@ -1394,6 +1392,7 @@ class SwapService:
 # 定义t并传入公私钥和URL,供用例直接调用
 t = SwapService(URL, ACCESS_KEY, SECRET_KEY)
 common_user_swap_service_api = SwapService(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
+atp_swap_service_api = SwapService(URL, ATP_SERVER_ACCESS_KEY, ATP_SERVER_SECRET_KEY)
 userList = eval(USERINFO)
 user01 = SwapService(URL, userList[0]['ACCESS_KEY'], userList[0]['SECRET_KEY'])
 user01Child01 = SwapService(URL, userList[0]['01C_ACCESS_KEY'], userList[0]['01C_SECRET_KEY'])
