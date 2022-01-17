@@ -6,6 +6,7 @@ from common.ContractServiceAPI import common_user_contract_service_api
 from common.ContractServiceAPI import t as contract_api
 from common.LinearServiceAPI import common_user_linear_service_api
 from common.LinearServiceAPI import t as linear_api
+from common.LinearServiceAPI import atp_linear_service_api
 from common.SwapServiceAPI import common_user_swap_service_api
 from common.SwapServiceAPI import t as swap_api
 from common.util import api_key_post, api_http_get
@@ -74,13 +75,15 @@ class ATP:
         return data_keys, variables_values_list
 
     @classmethod
-    def clean_market(cls, contract_code=None, direction=None):
+    def clean_market_old(cls, contract_code=None, direction=None):
         if not contract_code:
             contract_code = conf.DEFAULT_CONTRACT_CODE
+        trade_partition_from_contract_code = contract_code.split('-')[-1][:4]
         atp_url = cls.ATPHost + "/jobs/market_control"
         body = {"env": conf.ENV,
                 "system_type": conf.SYSTEM_TYPE,
                 'contract_code': contract_code,
+                'trade_partition': trade_partition_from_contract_code,
                 'job_name': 'CleanMarket'
                 }
         if direction == 'sell':
@@ -89,6 +92,68 @@ class ATP:
             body['job_name'] = 'CleanBuy'
         response = requests.post(atp_url, headers=cls.header, json=body)
         return response.json()
+
+    @classmethod
+    def clean_market(cls, contract_code=None, direction=None):
+
+        if not direction:
+            cls.clean_all_asks(contract_code=contract_code)
+            cls.clean_all_bids(contract_code=contract_code)
+
+        if direction == 'sell':
+            cls.clean_all_asks(contract_code=contract_code)
+
+        if direction == 'buy':
+            cls.clean_all_bids(contract_code=contract_code)
+
+
+    @classmethod
+    def clean_all_bids(cls, contract_code=None):
+        tick = cls.get_depth().get('tick', {})
+        direction = 'sell'
+        offset = 'open'
+        bids = tick.get('bids', [])
+        for bid in bids:
+            price = bid[0]
+            volume = bid[1]
+            response = cls.common_user_make_order(contract_code=contract_code, price=price, volume=volume, direction=direction,
+                                                  offset=offset, lever_rate=5, order_price_type='limit',
+                                                  user='atp', iscross=False)
+            if response.get('status', 'error') == 'error':
+                print(response)
+                return response
+        return {'status': 'ok'}
+
+    @classmethod
+    def clean_all_asks(cls, contract_code=None):
+        tick = cls.get_depth().get('tick', {})
+        direction = 'buy'
+        offset = 'open'
+        asks = tick.get('asks', [])
+        for ask in asks:
+            price = ask[0]
+            volume = ask[1]
+            response = cls.common_user_make_order(contract_code=contract_code, price=price, volume=volume, direction=direction,
+                                                  offset=offset, lever_rate=5, order_price_type='limit',
+                                                  user='atp', iscross=False)
+            if response.get('status', 'error') == 'error':
+                print(response)
+                return response
+        return {'status': 'ok'}
+
+    @classmethod
+    def get_depth(cls, contract_code=None):
+        json_body = cls.get_base_json_body(contract_code)
+        params = {'type': 'step0'}
+        if conf.SYSTEM_TYPE == 'Delivery':
+            params['symbol'] = contract_code
+        else:
+            params['contract_code'] = contract_code
+
+        response = cls.get(conf.MARKET_DEPTH_URL, json_body)
+
+        print(response)
+        return response
 
     @classmethod
     def cancel_all_order(cls, contract_code=None):
@@ -114,8 +179,9 @@ class ATP:
         response = cls.common_user_key_post(
             conf.CANCEL_ALL_ORDER_URL, json_body)
         if conf.SYSTEM_TYPE == 'LinearSwap':
-            cross_response = cls.common_user_key_post(conf.CANCEL_ALL_ORDER_URL.replace('swap_cancelall', 'swap_cross_cancelall'),
-                                                      json_body)
+            cross_response = cls.common_user_key_post(
+                conf.CANCEL_ALL_ORDER_URL.replace('swap_cancelall', 'swap_cross_cancelall'),
+                json_body)
             response = {
                 "cross": cross_response,
                 "isolated": response
@@ -166,9 +232,10 @@ class ATP:
         response = cls.common_user_key_post(
             conf.CANCEL_ALL_TRIGGER_ORDER_URL, json_body)
         if conf.SYSTEM_TYPE == 'LinearSwap':
-            cross_response = cls.common_user_key_post(conf.CANCEL_ALL_TRIGGER_ORDER_URL.replace('swap_trigger_cancelall',
-                                                                                                'swap_cross_trigger_cancelall'),
-                                                      json_body)
+            cross_response = cls.common_user_key_post(
+                conf.CANCEL_ALL_TRIGGER_ORDER_URL.replace('swap_trigger_cancelall',
+                                                          'swap_cross_trigger_cancelall'),
+                json_body)
             response = {
                 "cross": cross_response,
                 "isolated": response
@@ -258,7 +325,9 @@ class ATP:
         cls.cancel_all_order(contract_code=contract_code)
         json_body = cls.get_base_json_body(contract_code)
 
-        if conf.SYSTEM_TYPE == 'LinearSwap' and iscross is True:
+        if conf.SYSTEM_TYPE == 'LinearSwap':
+            json_body['trade_partition'] = contract_code.split('-')[-1][:4]
+        if iscross is True:
             response = api_key_post(conf.URL, conf.POSITION_INFO_URL.replace('swap_position_info',
                                                                              'swap_cross_position_info'),
                                     json_body, conf.ACCESS_KEY, conf.SECRET_KEY)
@@ -362,6 +431,15 @@ class ATP:
                              }
             if iscross:
                 order_methods['LinearSwap'] = common_user_linear_service_api.linear_cross_order
+
+        if user == 'atp':
+
+            order_methods = {'Delivery': common_user_contract_service_api.contract_order,  ####待改
+                             'Swap': common_user_swap_service_api.swap_order,  ####待改
+                             'LinearSwap': atp_linear_service_api.linear_order,
+                             }
+            if iscross:
+                order_methods['LinearSwap'] = atp_linear_service_api.linear_cross_order
 
         else:
             order_methods = {'Delivery': contract_api.contract_order,

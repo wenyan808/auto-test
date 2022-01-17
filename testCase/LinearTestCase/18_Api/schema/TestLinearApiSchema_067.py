@@ -126,7 +126,7 @@ class TestLinearApiSchema_067:
         print('\n恢复环境操作')
         print(ATP.cancel_all_tpsl_order())
         print(ATP.cancel_all_order())
-        #print(ATP.close_all_position())
+        print(ATP.close_all_position())
 
 
 if __name__ == '__main__':
