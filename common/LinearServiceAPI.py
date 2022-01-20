@@ -375,13 +375,20 @@ class LinearServiceAPI:
         return api_http_get(url, params)
 
     # 获取聚合行情   ##tag
-    def linear_detail_batch_merged(self, contract_code=None):
+    def linear_detail_batch_merged(self, contract_code=None, trade_partition=None):
         """
         参数名称         参数类型            必填      描述
         contract_code   string            true     BTC-USD.....
         """
 
-        params = {'contract_code': contract_code} if contract_code else {}
+        params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        if contract_code:
+            params['contract_code'] = contract_code
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
 
         url = self.__url + '/linear-swap-ex/market/detail/batch_merged'
         return api_http_get(url, params)
@@ -496,12 +503,17 @@ class LinearServiceAPI:
         return api_http_get(url, params)
 
     # 获取市场最优挂单
-    def linear_bbo(self, contract_code=None, business_type=None):
+    def linear_bbo(self, contract_code=None, business_type=None, trade_partition=None):
         params = {}
+        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
         if contract_code:
             params['contract_code'] = contract_code
         if business_type:
             params['business_type'] = business_type
+        if trade_partition:
+            params['trade_partition'] = trade_partition
+        elif trade_partition_from_contract_code:
+            params['trade_partition'] = trade_partition_from_contract_code
         url = self.__url + '/linear-swap-ex/market/bbo'
         return api_http_get(url, params)
 

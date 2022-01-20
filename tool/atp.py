@@ -97,6 +97,8 @@ class ATP:
 
     @classmethod
     def clean_market(cls, contract_code=None, direction=None):
+        ATP.cancel_all_order(contract_code=contract_code)
+        ATP.common_user_cancel_all_order(contract_code=contract_code)
 
         if not direction:
             cls.clean_all_asks(contract_code=contract_code)
@@ -146,11 +148,7 @@ class ATP:
     @classmethod
     def get_depth(cls, contract_code=None):
         json_body = cls.get_base_json_body(contract_code)
-        params = {'type': 'step0'}
-        if conf.SYSTEM_TYPE == 'Delivery':
-            params['symbol'] = contract_code
-        else:
-            params['contract_code'] = contract_code
+        json_body['type'] = 'step0'
 
         response = cls.get(conf.MARKET_DEPTH_URL, json_body)
 

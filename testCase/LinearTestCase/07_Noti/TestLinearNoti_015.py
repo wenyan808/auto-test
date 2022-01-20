@@ -56,6 +56,7 @@ class TestLinearNoti_015:
         with allure.step(
                 '请求批量Overview(所有合约，即不传contract_code),可参考文档：https://docs.huobigroup.com/docs/usdt_swap/v1/cn/#0737c93bf7'):
             # open、close、low、high价格正确；amount、vol、count值正确,不存在Null,[]
+            trade_partition = api.get_trade_partition(contract_code)
             res = api.linear_market_over_view()
             print()
             pprint(res)
@@ -71,7 +72,7 @@ class TestLinearNoti_015:
                 assert set(check_keys) == set(tick.keys()), 'missing keys in data'
 
                 act_symbol: str = tick.get('symbol', '')
-                assert act_symbol.find('-USDT') != -1, 'symbol is incorrect'
+                assert act_symbol.find('-USDT') != -1 or act_symbol.find('-HUSD') != -1, 'symbol is incorrect'
 
                 close = float(tick.get('close', 0))
                 assert close > 0, 'close 价格 错误'
