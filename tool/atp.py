@@ -97,6 +97,8 @@ class ATP:
 
     @classmethod
     def clean_market(cls, contract_code=None, direction=None):
+        ATP.cancel_all_order(contract_code=contract_code)
+        ATP.common_user_cancel_all_order(contract_code=contract_code)
 
         if not direction:
             cls.clean_all_asks(contract_code=contract_code)

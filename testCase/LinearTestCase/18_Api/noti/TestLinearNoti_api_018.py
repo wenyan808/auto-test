@@ -33,11 +33,12 @@ class TestLinearNoti_api_018:
     @allure.step('前置条件')
     def setup(self):
         print('''  ''')
-
+        ATP.make_market_depth(volume=1, depth_count=10)
     @allure.title('ws 深度图')
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('详见官方文档'):
+            #contract_code = 'BTC-USDT'
             percent = 'percent10'
             r = linear_service_ws.linear_sub_depth_chart(contract_code=contract_code, percent=percent)
             pprint(r)
@@ -56,7 +57,7 @@ class TestLinearNoti_api_018:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-
+        ATP.cancel_all_types_order()
 
 if __name__ == '__main__':
     pytest.main()

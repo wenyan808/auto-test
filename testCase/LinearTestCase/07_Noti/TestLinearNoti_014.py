@@ -57,6 +57,7 @@ class TestLinearNoti_014:
         with allure.step(
                 '请求批量聚合行情(所有合约，即不传contract_code),可参考文档：https://docs.huobigroup.com/docs/usdt_swap/v1/cn/#0737c93bf7'):
             res = api.linear_detail_batch_merged(contract_code=contract_code)
+            trade_partition = api.get_trade_partition(contract_code)
             pprint(res)
             ticks = Assert.base_check_response(res, 'ticks')
             assert isinstance(ticks, list) and len(ticks) == 1, 'ticks 不正确'
@@ -97,7 +98,7 @@ class TestLinearNoti_014:
             id = tick.get('id', 0)
             assert int(time.time()) - (48 * 60 * 60) <= id <= int(time.time()), 'id 错误'
 
-            res = api.linear_detail_batch_merged()
+            res = api.linear_detail_batch_merged(trade_partition=trade_partition)
             pprint(res)
             mul_ticks = Assert.base_check_response(res, 'ticks')
             assert isinstance(mul_ticks, list) and len(mul_ticks) > 1, 'ticks 不正确'

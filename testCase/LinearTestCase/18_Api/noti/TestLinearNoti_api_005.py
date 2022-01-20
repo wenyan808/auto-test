@@ -38,6 +38,7 @@ class TestLinearNoti_api_005:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('详见官方文档'):
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_trade(contract_code=contract_code)
             pprint(r)
             schema = {'ch': f'market.{contract_code}.trade.detail',
@@ -48,8 +49,8 @@ class TestLinearNoti_api_005:
                                          'price': str,
                                          'quantity': str,
                                          'trade_turnover': str,
-                                         "business_type": Or("swap","futures"),
-                                         'trade_partition': 'USDT',
+                                         "business_type": Or("swap", "futures"),
+                                         'trade_partition': trade_partition,
                                          'ts': int}],
                                'id': int,
                                'ts': int},

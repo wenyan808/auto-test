@@ -33,11 +33,12 @@ class TestLinearNoti_api_003:
     @allure.step('前置条件')
     def setup(self):
         print('''  ''')
-
+        ATP.make_market_depth(volume=1, depth_count=2)
     @allure.title('restful批量聚合行情')
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('详见官方文档'):
+            trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_detail_batch_merged(contract_code=contract_code)
             pprint(r)
             schema = {'status': 'ok',
@@ -53,7 +54,7 @@ class TestLinearNoti_api_003:
                                  'low': str,
                                  'open': str,
                                  'trade_turnover': str,
-                                 'trade_partition': 'USDT',
+                                 'trade_partition': trade_partition,
                                  'ts': int,
                                  'vol': str}],
                       'ts': int}
@@ -63,6 +64,7 @@ class TestLinearNoti_api_003:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
+        ATP.cancel_all_types_order()
 
 
 if __name__ == '__main__':
