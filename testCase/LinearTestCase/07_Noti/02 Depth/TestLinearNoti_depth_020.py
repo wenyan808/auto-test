@@ -16,10 +16,12 @@
         TestLinearNoti_depth_020
 """
 
-from common.LinearServiceAPI import t as linear_api
+import allure
+import pytest
+
 from common.LinearServiceWS import t as linear_service_ws
-import pytest, allure, random, time
-from tool import atp
+from tool.atp import ATP
+
 
 @allure.epic('正向永续')  # 这里填业务线
 @allure.feature('行情')  # 这里填功能
@@ -31,22 +33,9 @@ class TestLinearNoti_depth_020:
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, contract_code, lever_rate, offsetO, directionB, directionS):
-        print("\n清盘》》》》", atp.ATP.clean_market())
+        ATP.clean_market()
 
-        lever_rate = 5
-
-        # 获取交割合约当前价格
-        sell_price = atp.ATP.get_adjust_price(rate=1.01)
-        buy_price = atp.ATP.get_adjust_price(rate=0.99)
-
-        print('下两单，更新盘口数据')
-        linear_api.linear_order(contract_code=contract_code, price=buy_price, volume='1', direction=directionB,
-                                offset=offsetO, lever_rate=lever_rate, order_price_type='limit')
-        linear_api.linear_order(contract_code=contract_code, price=sell_price, volume='1', direction=directionS,
-                                offset=offsetO, lever_rate=lever_rate, order_price_type='limit')
-
-        # 等待深度信息更新
-        time.sleep(3)
+        ATP.make_market_depth(volume=1, depth_count=1)
 
     @allure.title('WS订阅深度 非SHIB 20档step19')
     @allure.step('测试执行')
@@ -60,11 +49,11 @@ class TestLinearNoti_depth_020:
             result = linear_service_ws.linear_sub(subs)
             result_str = '\nDepth返回结果 = ' + str(result)
             print('\033[1;32;49m%s\033[0m' % result_str)
-            assert result['err-msg'] == 'invalid topic market.ETH-USDT.depth.step19'
+            assert result['err-msg'] == 'invalid topic market.%s.depth.step19' % contract_code
 
     @allure.step('恢复环境')
     def teardown(self):
-        atp.ATP.cancel_all_types_order()
+        ATP.cancel_all_types_order()
         print('\n恢复环境操作')
 
 

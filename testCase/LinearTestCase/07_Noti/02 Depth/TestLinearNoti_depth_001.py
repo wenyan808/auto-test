@@ -11,6 +11,7 @@ from common.LinearServiceAPI import t as linear_api
 from common.LinearServiceWS import t as linear_service_ws
 from common.CommonUtils import currentPrice, opponentExist
 from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
+from tool.atp import ATP
 
 
 @allure.epic('正向永续')  # 这里填业务线
@@ -61,22 +62,14 @@ class TestLinearNoti_depth_001:
         with allure.step('实始化变量'):
             cls.contract_code = DEFAULT_CONTRACT_CODE
             cls.symbol = DEFAULT_SYMBOL
-            cls.currentPrice = currentPrice()  # 最新价
             pass
         with allure.step('挂单更新深度'):
-            for i in range(5):
-                linear_api.linear_order(contract_code=cls.contract_code,
-                                        price=round(cls.currentPrice * (1 - 0.01 * i), 2), direction='buy')
-                linear_api.linear_order(contract_code=cls.contract_code,
-                                        price=round(cls.currentPrice * (1 + 0.01 * i), 2), direction='sell')
-            pass
-
-        time.sleep(3)
+            ATP.make_market_depth(volume=1, depth_count=5)
 
     @classmethod
     def teardown_class(cls):
         with allure.step('恢复环境，撤销挂单'):
-            linear_api.linear_cancelall(contract_code=cls.contract_code)
+            ATP.cancel_all_types_order()
             pass
 
     @pytest.mark.flaky(reruns=1, reruns_delay=1)
