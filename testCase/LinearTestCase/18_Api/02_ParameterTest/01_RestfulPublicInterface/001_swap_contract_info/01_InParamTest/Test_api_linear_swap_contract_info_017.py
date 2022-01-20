@@ -38,7 +38,7 @@ class Test_api_linear_swap_contract_info_017:
     def test_execute(self, contract_code):
         with allure.step('1、调用linear-swap-api/v1/swap_contract_info接口，仅不填contract_code参数。检查返回值有结果A'):
             r = linear_api.linear_contract_info(contract_code='',
-                                                support_margin_mode='all',
+                                                support_margin_mode='',
                                                 business_type='swap',
                                                 pair=contract_code,
                                                 contract_type='')

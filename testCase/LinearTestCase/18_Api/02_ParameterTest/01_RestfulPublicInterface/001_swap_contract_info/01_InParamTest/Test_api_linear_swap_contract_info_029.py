@@ -38,7 +38,7 @@ class Test_api_linear_swap_contract_info_029:
     def test_execute(self, contract_code):
         with allure.step('调用linear-swap-api/v1/swap_contract_info接口，所有参数都用大小写混合的方式，检查系统响应有结果A'):
             r = linear_api.linear_contract_info(contract_code=contract_code.capitalize(),
-                                                support_margin_mode='ALL',
+                                                support_margin_mode='',
                                                 business_type='swaP',
                                                 pair=contract_code.lower(),
                                                 contract_type='sWap')

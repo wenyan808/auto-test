@@ -26,9 +26,12 @@ class LinearServiceAPI:
         contract_code   string            false    "BTC-USD",不填查询所有合约
         """
         params = {}
-        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        trade_partition_from_contract_code = None
         if contract_code:
             params['contract_code'] = contract_code
+            trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        elif pair:
+            trade_partition_from_contract_code = self.get_trade_partition(pair)
         if support_margin_mode:
             params['support_margin_mode'] = support_margin_mode
         if business_type:
@@ -71,9 +74,12 @@ class LinearServiceAPI:
         contract_code   string            true    BTC-USD.....
         """
         params = {}
-        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        trade_partition_from_contract_code = None
         if contract_code:
             params['contract_code'] = contract_code
+            trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        elif pair:
+            trade_partition_from_contract_code = self.get_trade_partition(pair)
         if business_type:
             params['business_type'] = business_type
         if pair:
@@ -96,9 +102,12 @@ class LinearServiceAPI:
         contract_code   string            false    "BTC-USD",不填查询所有合约
         """
         params = {}
-        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        trade_partition_from_contract_code = None
         if contract_code:
             params['contract_code'] = contract_code
+            trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        elif pair:
+            trade_partition_from_contract_code = self.get_trade_partition(pair)
         if business_type:
             params['business_type'] = business_type
         if pair:
@@ -121,9 +130,12 @@ class LinearServiceAPI:
         """
 
         params = {}
-        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        trade_partition_from_contract_code = None
         if contract_code:
             params['contract_code'] = contract_code
+            trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        elif pair:
+            trade_partition_from_contract_code = self.get_trade_partition(pair)
         if business_type:
             params['business_type'] = business_type
         if pair:
@@ -706,9 +718,12 @@ class LinearServiceAPI:
         """
 
         params = {}
-        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        trade_partition_from_contract_code = None
         if contract_code:
             params['contract_code'] = contract_code
+            trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        elif pair:
+            trade_partition_from_contract_code = self.get_trade_partition(pair)
         if business_type:
             params['business_type'] = business_type
         if pair:
@@ -1239,9 +1254,12 @@ class LinearServiceAPI:
         contract_code   string            false    "BTC-USDT",不填查询所有合约
         """
         params = {}
-        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        trade_partition_from_contract_code = None
         if contract_code:
             params['contract_code'] = contract_code
+            trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        elif pair:
+            trade_partition_from_contract_code = self.get_trade_partition(pair)
         if business_type:
             params['business_type'] = business_type
         if pair:
@@ -1277,9 +1295,12 @@ class LinearServiceAPI:
         contract_code   string            false    "BTC-USDT",不填查询所有合约
         """
         params = {}
-        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        trade_partition_from_contract_code = None
         if contract_code:
             params['contract_code'] = contract_code
+            trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        elif pair:
+            trade_partition_from_contract_code = self.get_trade_partition(pair)
         if business_type:
             params['business_type'] = business_type
         if pair:
@@ -2027,9 +2048,12 @@ class LinearServiceAPI:
     def linear_estimated_settlement_price(self, contract_code=None, business_type=None, pair=None, contract_type=None,
                                           trade_partition=None):
         params = {}
-        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        trade_partition_from_contract_code = None
         if contract_code:
             params['contract_code'] = contract_code
+            trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        elif pair:
+            trade_partition_from_contract_code = self.get_trade_partition(pair)
         if business_type:
             params['business_type'] = business_type
         if pair:
@@ -2061,9 +2085,12 @@ class LinearServiceAPI:
     # 获取平台阶梯保证金（全仓）
     def linear_cross_ladder_margin(self, contract_code=None, business_type=None, contract_type=None, pair=None, trade_partition=None):
         params = {}
-        trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        trade_partition_from_contract_code = None
         if contract_code:
             params['contract_code'] = contract_code
+            trade_partition_from_contract_code = self.get_trade_partition(contract_code)
+        elif pair:
+            trade_partition_from_contract_code = self.get_trade_partition(pair)
         if business_type:
             params['business_type'] = business_type
         if contract_type:
