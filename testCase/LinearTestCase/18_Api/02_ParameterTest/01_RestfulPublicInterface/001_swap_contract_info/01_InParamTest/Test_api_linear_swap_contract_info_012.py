@@ -38,14 +38,14 @@ class Test_api_linear_swap_contract_info_012:
     def test_execute(self, contract_code):
         with allure.step('1、调用linear-swap-api/v1/swap_contract_info接口，仅不填contract_type参数。检查返回值有结果A'):
             r1 = linear_api.linear_contract_info(contract_code=contract_code,
-                                                 support_margin_mode='all',
+                                                 support_margin_mode='',
                                                  business_type='swap',
                                                  pair='BTC-USDT',
                                                  contract_type='')
             pprint(r1)
         with allure.step('2、再次调用此接口，传business参数为swap,对比第1步的返回值，有结果A'):
             r2 = linear_api.linear_contract_info(contract_code=contract_code,
-                                                 support_margin_mode='all',
+                                                 support_margin_mode='',
                                                  business_type='swap',
                                                  pair='BTC-USDT',
                                                  contract_type='swap')

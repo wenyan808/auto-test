@@ -23,6 +23,7 @@ import allure
 import pytest
 
 from common.util import api_http_get
+from common.LinearServiceAPI import t as linear_api
 
 
 @allure.epic('正向永续')  # 这里填业务线
@@ -42,9 +43,10 @@ class Test_api_linear_swap_contract_info_003:
         with allure.step('1、调用linear-swap-api/v1/swap_contract_info接口，business_type参数为空,null。检查返回值有结果A'):
             params = ['']#传null返回business_type字段不合法，接口校验不一致，不过也不是什么问题
             url = url + '/linear-swap-api/v1/swap_contract_info'
+            trade_partition = linear_api.get_trade_partition(contract_code)
             for param in params:
-                request = {'contract_code': 'ETH-USDT', 'support_margin_mode': 'all', 'pair': 'BTC-USDT',
-                           'contract_type': 'swap', 'business_type': param}
+                request = {'contract_code': contract_code, 'support_margin_mode': '', 'pair': contract_code,
+                           'contract_type': 'swap', 'business_type': param, 'trade_partition': trade_partition}
                 r = api_http_get(url, request)
                 pprint(r)
 

@@ -55,7 +55,7 @@ class TestLinearApiSchema_015:
                                                       'settlement_time': int,
                                                       'clawback_ratio': float,
                                                       'settlement_price': float,
-                                                      'settlement_type': 'settlement',
+                                                      'settlement_type': Or('settlement', 'delivery'),
                                                       'trade_partition': trade_partition}, ],
                                'total_page': int,
                                'total_size': int},
