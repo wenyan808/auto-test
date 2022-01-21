@@ -63,26 +63,26 @@ class TestUSDTSwapTriggerOrder_021:
             slorderprice = round((self.price * 0.98), 2)
             pprint(slorderprice)
 
-            r = linear_api.linear_cross_order(contract_code=contract_code,
-                                              client_order_id="",
-                                              price=str(orderprice),
-                                              volume='1',
-                                              direction='buy',
-                                              offset='open',
-                                              lever_rate='5',
-                                              order_price_type='limit',
-                                              sl_trigger_price=sltriggerprice,
-                                              sl_order_price=slorderprice
-                                              )
+            r = linear_api.linear_order(contract_code=contract_code,
+                                        client_order_id="",
+                                        price=str(orderprice),
+                                        volume='1',
+                                        direction='buy',
+                                        offset='open',
+                                        lever_rate='5',
+                                        order_price_type='limit',
+                                        sl_trigger_price=sltriggerprice,
+                                        sl_order_price=slorderprice
+                                        )
             pprint(r)
 
             orderid = r['data']['order_id_str']
             pprint(orderid)
         with allure.step('4、待限价单成交之后，在当前委托-止盈止损界面点击订单右方的撤销按钮有结果A'):
-            linear_api.linear_cross_order(contract_code=contract_code, client_order_id="", price=orderprice, volume='1',
+            linear_api.linear_order(contract_code=contract_code, client_order_id="", price=orderprice, volume='1',
                                     direction='sell', offset='open', lever_rate='5', order_price_type='limit')
             time.sleep(4)
-            r = linear_api.linear_cross_tpsl_openorders(contract_code=contract_code)
+            r = linear_api.linear_tpsl_openorders(contract_code=contract_code)
             actual_orderinfo = r['data']['orders'][0]
             tporderid = actual_orderinfo['order_id']
             expectdic = {'contract_code': contract_code,
@@ -94,22 +94,21 @@ class TestUSDTSwapTriggerOrder_021:
             assert compare_dict(expectdic, actual_orderinfo)
 
         with allure.step('5、查看当前委托-止盈止损页面有结果B'):
-            linear_api.linear_cross_tpsl_cancel(contract_code=contract_code, order_id=tporderid)
+            linear_api.linear_tpsl_cancel(contract_code=contract_code, order_id=tporderid)
             time.sleep(2)
-            r = linear_api.linear_cross_tpsl_openorders(contract_code=contract_code)
+            r = linear_api.linear_tpsl_openorders(contract_code=contract_code)
             totalsize = r['data']['total_size']
             assert totalsize == 0
 
         with allure.step('6、查看历史委托-止盈止损页面有结果C'):
-            r = linear_api.linear_cross_tpsl_hisorders(contract_code=contract_code, status='0', create_date='7')
+            r = linear_api.linear_tpsl_hisorders(contract_code=contract_code, status='0', create_date='7')
             actual_orderinfo = r['data']['orders'][0]
             assert compare_dict(expectdic, actual_orderinfo)
 
     @allure.step('恢复环境')
     def teardown(self):
-        r = linear_api.linear_cross_empty_position(contract_code=self.contract_code, price=self.price)
+        ATP.close_all_position()
         print('\n恢复环境操作完毕')
-        return r
 
 
 if __name__ == '__main__':
