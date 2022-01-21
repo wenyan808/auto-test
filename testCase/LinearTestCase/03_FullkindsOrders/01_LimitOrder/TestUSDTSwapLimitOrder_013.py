@@ -37,7 +37,6 @@ import pytest, allure, random, time
 @allure.epic('正向永续')  # 这里填业务线
 @allure.feature('功能')  # 这里填功能
 @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
-@allure.title('最优10档买入开多卖盘无数据自动撤单')
 @pytest.mark.stable
 class TestUSDTSwapLimitOrder_013:
 
@@ -58,33 +57,33 @@ class TestUSDTSwapLimitOrder_013:
 			print('盘口有卖盘，不满足用例要求')
 			assert False
 
-
+	@allure.title('最优10档买入开多卖盘无数据自动撤单')
 	@allure.step('测试执行')
 	def test_execute(self, contract_code):
 		leverrate = '5'
 		with allure.step('1、盘口无卖盘，最优10档买入开多'):
-			r = linear_api.linear_cross_account_info(margin_account="")
+			r = linear_api.linear_account_info(contract_code=contract_code)
+			pprint(r)
+			frozen1 = r['data'][0]['margin_frozen']
 
-			frozen1 = r['data'][0]['contract_detail'][0]['margin_frozen']
-
-			r = linear_api.linear_cross_openorders(contract_code=contract_code, page_index='', page_size='')
+			r = linear_api.linear_openorders(contract_code=contract_code, page_index='', page_size='')
 			totalsize1 = r['data']['total_size']
 
-			r = linear_api.linear_cross_order(contract_code=contract_code, volume='20', direction='buy', offset='open',
+			r = linear_api.linear_order(contract_code=contract_code, volume='20', direction='buy', offset='open',
 									  lever_rate=leverrate, order_price_type='optimal_10')
 
 		with allure.step('2、观察下单是否成功有结果A'):
 			assert r['err_msg'] == '盘口无数据,请稍后再试'
 		with allure.step('3、观察历史委托-限价委托有结果B'):
 			time.sleep(2)
-			r = linear_api.linear_cross_openorders(contract_code=contract_code, page_index='', page_size='')
+			r = linear_api.linear_openorders(contract_code=contract_code, page_index='', page_size='')
 			totalsize2 = r['data']['total_size']
 			
 			assert totalsize2 == totalsize1
 		with allure.step('4、观察资产信息有结果C'):
-			r = linear_api.linear_cross_account_info(margin_account="")
+			r = linear_api.linear_account_info(contract_code=contract_code)
 
-			frozen2 = r['data'][0]['contract_detail'][0]['margin_frozen']
+			frozen2 = r['data'][0]['margin_frozen']
 			assert frozen2 == frozen1
 
 	@allure.step('恢复环境')
