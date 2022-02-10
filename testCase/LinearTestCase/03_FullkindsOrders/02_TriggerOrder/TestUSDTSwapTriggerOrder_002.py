@@ -34,7 +34,7 @@ from tool.atp import ATP
 
 @allure.epic('正向永续')  # 这里填业务线
 @allure.feature('计划委托')  # 这里填功能
-#@allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+# @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
 class TestUSDTSwapTriggerOrder_002:
 
@@ -64,9 +64,9 @@ class TestUSDTSwapTriggerOrder_002:
         self.contract_code = contract_code
         sltriggerprice = round((self.price * 0.97), 2)
         slorderprice = round((self.price * 0.98), 2)
-        r = linear_api.linear_cross_trigger_openorders(contract_code=contract_code,
-                                                       page_index='',
-                                                       page_size='')
+        r = linear_api.linear_trigger_openorders(contract_code=contract_code,
+                                                 page_index='',
+                                                 page_size='')
         totalsize1 = r['data']['total_size']
 
         with allure.step('1、登录U本位永续界面'):
@@ -80,23 +80,23 @@ class TestUSDTSwapTriggerOrder_002:
         with allure.step('5、输入买入量10张'):
             pass
         with allure.step('6、点击买入平空按钮后弹框确认有结果A'):
-            r = linear_api.linear_cross_trigger_order(contract_code=contract_code,
-                                                      trigger_type='le',
-                                                      trigger_price=sltriggerprice,
-                                                      order_price=slorderprice,
-                                                      order_price_type='limit',
-                                                      volume='10',
-                                                      direction='buy',
-                                                      offset='close',
-                                                      lever_rate=self.leverrate)
+            r = linear_api.linear_trigger_order(contract_code=contract_code,
+                                                trigger_type='le',
+                                                trigger_price=sltriggerprice,
+                                                order_price=slorderprice,
+                                                order_price_type='limit',
+                                                volume='10',
+                                                direction='buy',
+                                                offset='close',
+                                                lever_rate=self.leverrate)
             pprint(r)
             self.orderid = r['data']['order_id_str']
             print(self.orderid)
             assert r['status'] == 'ok'
             time.sleep(2)
-            r = linear_api.linear_cross_trigger_openorders(contract_code=contract_code,
-                                                           page_index='',
-                                                           page_size='')
+            r = linear_api.linear_trigger_openorders(contract_code=contract_code,
+                                                     page_index='',
+                                                     page_size='')
             totalsize2 = r['data']['total_size']
             actual_orderinfo = r['data']['orders'][0]
             pprint(actual_orderinfo)

@@ -29,10 +29,12 @@ from common.util import compare_dict
 from pprint import pprint
 import pytest, allure, random, time
 
+from tool.atp import ATP
+
 
 @allure.epic('正向永续')  # 这里填业务线
 @allure.feature('计划委托')  # 这里填功能
-#@allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
+# @allure.story('子功能')  # 这里填子功能，没有的话就把本行注释掉
 @pytest.mark.stable
 class TestUSDTSwapTriggerOrder_004:
 
@@ -46,11 +48,11 @@ class TestUSDTSwapTriggerOrder_004:
         self.price = r['data'][0]['data'][0]['price']
         self.leverrate = '5'
 
-        linear_api.linear_cross_order(contract_code=contract_code, price=self.price, volume='20', direction='buy',
-                                      offset='open', lever_rate=self.leverrate, order_price_type='limit')
+        linear_api.linear_order(contract_code=contract_code, price=self.price, volume='20', direction='buy',
+                                offset='open', lever_rate=self.leverrate, order_price_type='limit')
         time.sleep(0.5)
-        linear_api.linear_cross_order(contract_code=contract_code, price=self.price, volume='20', direction='sell',
-                                      offset='open', lever_rate=self.leverrate, order_price_type='limit')
+        linear_api.linear_order(contract_code=contract_code, price=self.price, volume='20', direction='sell',
+                                offset='open', lever_rate=self.leverrate, order_price_type='limit')
 
     @allure.title('计划委托最优10挡平仓测试')
     @allure.step('测试执行')
@@ -58,9 +60,9 @@ class TestUSDTSwapTriggerOrder_004:
         self.contract_code = contract_code
         orderpricetype = 'optimal_10'
         sltriggerprice = round((self.price * 0.97), 2)
-        r = linear_api.linear_cross_trigger_openorders(contract_code=contract_code,
-                                                       page_index='',
-                                                       page_size='')
+        r = linear_api.linear_trigger_openorders(contract_code=contract_code,
+                                                 page_index='',
+                                                 page_size='')
         totalsize1 = r['data']['total_size']
 
         with allure.step('1、登录U本位永续界面'):
@@ -74,22 +76,22 @@ class TestUSDTSwapTriggerOrder_004:
         with allure.step('5、输入买入量10张'):
             pass
         with allure.step('6、点击买入平空按钮后弹框确认有结果A'):
-            r = linear_api.linear_cross_trigger_order(contract_code=contract_code,
-                                                      trigger_type='le',
-                                                      trigger_price=sltriggerprice,
-                                            order_price_type=orderpricetype,
-                                                      volume='10',
-                                                      direction='buy',
-                                                      offset='close',
-                                                      lever_rate=self.leverrate)
+            r = linear_api.linear_trigger_order(contract_code=contract_code,
+                                                trigger_type='le',
+                                                trigger_price=sltriggerprice,
+                                                order_price_type=orderpricetype,
+                                                volume='10',
+                                                direction='buy',
+                                                offset='close',
+                                                lever_rate=self.leverrate)
             pprint(r)
             self.orderid = r['data']['order_id_str']
             print(self.orderid)
             assert r['status'] == 'ok'
             time.sleep(2)
-            r = linear_api.linear_cross_trigger_openorders(contract_code=contract_code,
-                                                           page_index='',
-                                                           page_size='')
+            r = linear_api.linear_trigger_openorders(contract_code=contract_code,
+                                                     page_index='',
+                                                     page_size='')
             totalsize2 = r['data']['total_size']
             actual_orderinfo = r['data']['orders'][0]
             pprint(actual_orderinfo)
@@ -109,10 +111,8 @@ class TestUSDTSwapTriggerOrder_004:
     def teardown(self):
         print('\n恢复环境操作')
         if self.orderid:
-            linear_api.linear_cross_trigger_cancel(contract_code=self.contract_code, order_id=self.orderid)
-        r = linear_api.linear_cross_empty_position(contract_code=self.contract_code, price=self.price)
-        print('\n恢复环境操作完毕')
-        return r
+            linear_api.linear_trigger_cancel(contract_code=self.contract_code, order_id=self.orderid)
+        ATP.close_all_position()
 
 
 if __name__ == '__main__':
