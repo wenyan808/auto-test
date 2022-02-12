@@ -82,7 +82,8 @@ class TestLinearApiSchema_077:
                                 'profit_real': Or(int, float),
                                 'profit_unreal': Or(int, float),
                                 'risk_rate': Or(int, None, float),
-                                'withdraw_available': Or(int, None, float)}],
+                                'withdraw_available': Or(int, None, float),
+                                'position_mode': Or('single_side', 'dual_side')}],
                       'status': 'ok',
                       'ts': int}
             Schema(schema).validate(r)

@@ -91,7 +91,8 @@ class TestLinearApiSchema_088:
                         'business_type': 'swap',
                         'contract_type': 'swap',
                         'pair': contract_code,
-                        'trade_partition': trade_partition
+                        'trade_partition': trade_partition,
+                        'reduce_only': int
                     }
                 ],
                 'status': 'ok',

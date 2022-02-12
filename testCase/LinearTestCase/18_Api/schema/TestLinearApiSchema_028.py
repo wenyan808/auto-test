@@ -55,7 +55,7 @@ class TestLinearApiSchema_028:
                         'liquidation_price': Or(int, float, None),
                         'margin_account': str,
                         'margin_asset': trade_partition,
-                        'margin_available': float,
+                        'margin_available': Or(int, float),
                         'margin_balance': Or(int, float),
                         'margin_frozen': Or(int, float),
                         'margin_mode': 'isolated',
@@ -66,7 +66,8 @@ class TestLinearApiSchema_028:
                         'risk_rate': Or(float, None),
                         'symbol': symbol,
                         'withdraw_available': Or(int, float),
-                        'trade_partition': trade_partition
+                        'trade_partition': trade_partition,
+                        'position_mode': Or('single_side', 'dual_side')
                     }
                 ],
                 'status': 'ok',
