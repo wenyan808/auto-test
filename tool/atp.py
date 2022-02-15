@@ -147,7 +147,21 @@ class ATP:
 
     @classmethod
     def get_depth(cls, contract_code=None):
-        json_body = cls.get_base_json_body(contract_code)
+        if not contract_code:
+            contract_code = conf.DEFAULT_CONTRACT_CODE
+        json_body = {}
+        if conf.SYSTEM_TYPE == 'Delivery':
+            contract_types = {'CW': "this_week", 'NW': "next_week",
+                              'CQ': "quarter", 'NQ': "next_quarter"}
+            if '_' in contract_code:
+                json_body['symbol'] = contract_code
+                json_body['contract_type'] = contract_types[contract_code.split('_')[
+                    1]]
+            else:
+                json_body['symbol'] = contract_code
+                json_body['contract_type'] = contract_types['CW']
+        else:
+            json_body['contract_code'] = contract_code
         json_body['type'] = 'step0'
 
         response = cls.get(conf.MARKET_DEPTH_URL, json_body)
