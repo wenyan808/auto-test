@@ -17,15 +17,14 @@
 优先级
     1
 """
-
+from pprint import pprint
 
 import allure
-import common.util
 import pytest
-from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
-from common.ContractServiceAPI import t as contract_api
 from schema import Or, Schema
-from tool.atp import ATP
+
+from common.ContractServiceAPI import t as contract_api
+from common.util import get_contract_type
 
 
 @allure.epic('反向交割')  # 这里填业务线
@@ -39,47 +38,45 @@ class TestApiSchema_009:
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, symbol):
         print("前置条件 {}".format(symbol))
-        print(ATP.make_market_depth())
+
 
     @allure.title('获取平台持仓量')
     @allure.step('测试执行')
-    def test_execute(self):
+    def test_execute(self, symbol, symbol_period):
         with allure.step('1、调用接口：api/v1/contract_his_open_interest'):
             pass
         with allure.step('2、接口返回的json格式、字段名、字段值正确'):
             # 构造持仓量
-            price = ATP.get_current_price()
-            common_contract_api.contract_order(
-                symbol="BTC", contract_type="this_week", price=price, volume=1, direction="buy", offset="open")
-            contract_api.contract_order(
-                symbol="BTC", contract_type="this_week", price=price, volume=1, direction="sell", offset="open")
+            contract_type = get_contract_type(symbol_period)
             res = contract_api.contract_his_open_interest(
-                symbol='BTC', contract_type="this_week", period="1day", amount_type="", size=10)
-            print(res)
-            if res["status"] != 'error':
-                schema = {
-                    "status": "ok",
-                    "data": {
-                        "symbol": "BTC",
-                        "contract_type": str,
-                        "tick": [
-                            {
-                                "volume": Or(float, int),
-                                "amount_type": int,
-                                "ts": int
-                            }
-                        ]
-                    },
-                    "ts": int
-                }
-                Schema(schema).validate(res)
+                symbol=symbol, contract_type=contract_type, period="1day", amount_type="1", size=10)
+            pprint(res)
+
+            schema = {'data': {'contract_type': str,
+                               'symbol': symbol,
+                               'tick': [{'amount_type': 1,
+                                         'ts': int,
+                                         'volume': str}]},
+                      'status': 'ok',
+                      'ts': int}
+            Schema(schema).validate(res)
+
+            res = contract_api.contract_his_open_interest(
+                symbol=symbol, contract_type=contract_type, period="1day", amount_type="2", size=10)
+            pprint(res)
+
+            schema = {'data': {'contract_type': str,
+                               'symbol': symbol,
+                               'tick': [{'amount_type': 2,
+                                         'ts': int,
+                                         'volume': str}]},
+                      'status': 'ok',
+                      'ts': int}
+            Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        print(ATP.clean_market())
-        print(ATP.cancel_all_order())
-
 
 if __name__ == '__main__':
     pytest.main()

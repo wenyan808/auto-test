@@ -311,6 +311,12 @@ def compare_dictkey(expected, result):
     else:
         return False
 
+def get_contract_type(symbol_period):
+    contract_types = {'CW': "this_week", 'NW': "next_week",
+                      'CQ': "quarter", 'NQ': "next_quarter"}
+    result = contract_types[symbol_period.split('_')[1]]
+    return result
+
 
 def rsa_encrpt(password, public_key):
     rsakey = RSA.importKey(public_key)

@@ -17,7 +17,7 @@
 优先级
     1
 """
-
+from pprint import pprint
 
 import allure
 import common.util
@@ -40,23 +40,18 @@ class TestApiSchema_002:
 
     @allure.title('获取合约指数信息')
     @allure.step('测试执行')
-    def test_execute(self):
+    def test_execute(self, symbol):
         with allure.step('1、调用接口：api/v1/contract_index'):
             pass
         with allure.step('2、接口返回的json格式、字段名、字段值正确'):
-            res = contract_api.contract_index(symbol='BTC')
-            print(res)
-            schema = {
-                "status": "ok",
-                "data": [
-                    {
-                        "symbol": "BTC",
-                        "index_price": Or(float, int),
-                        "index_ts": int
-                    }
-                ],
-                "ts": int
-            }
+            res = contract_api.contract_index(symbol=symbol)
+            pprint(res)
+
+            schema = {'data': [{'index_price': Or(float, int),
+                                'index_ts': int,
+                                'symbol': symbol}],
+                      'status': 'ok',
+                      'ts': int}
             Schema(schema).validate(res)
 
     @allure.step('恢复环境')
