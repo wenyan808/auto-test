@@ -17,7 +17,7 @@
 优先级
     1
 """
-
+from pprint import pprint
 
 import allure
 import common.util
@@ -49,22 +49,14 @@ class TestApiSchema_012:
             # 构造持仓量
 
             res = contract_api.contract_elite_position_ratio(symbol=symbol, period="1day")
-            print(res)
+            pprint(res)
 
-            schema = {
-                "status": "ok",
-                "data": {
-                    "list": [
-                        {
-                            "buy_ratio": Or(float, int),
-                            "sell_ratio": Or(float, int),
-                            "ts": int
-                        }
-                    ],
-                    "symbol": symbol
-                },
-                "ts": int
-            }
+            schema = {"data": {"list": [{"buy_ratio": Or(float, int),
+                                         "sell_ratio": Or(float, int),
+                                         "ts": int}],
+                               "symbol": symbol},
+                      "status": "ok",
+                      "ts": int}
             Schema(schema).validate(res)
 
     @allure.step('恢复环境')
