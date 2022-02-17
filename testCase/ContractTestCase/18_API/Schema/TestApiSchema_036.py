@@ -17,7 +17,7 @@
 优先级
     1
 """
-
+from pprint import pprint
 
 import allure
 from common.util import get_contract_type
@@ -50,16 +50,14 @@ class TestApiSchema_036:
             price = ATP.get_current_price()
             res = contract_api.contract_order(
                 symbol=symbol, contract_type=contract_type, price=price, volume=1, direction="sell", offset="open")
-            print(res)
+            pprint(res)
 
-            schema = {
-                "status": "ok",
-                "data": {
-                    "order_id": int,
-                    "order_id_str": str
-                },
-                "ts": int
-            }
+            schema = {"data": {"order_id": int,
+                               "order_id_str": str
+                               },
+                      "status": "ok",
+                      "ts": int
+                      }
             Schema(schema).validate(res)
 
     @allure.step('恢复环境')
