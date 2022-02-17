@@ -20,12 +20,10 @@
 from pprint import pprint
 
 import allure
-import common.util
 import pytest
-from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
-from common.ContractServiceAPI import t as contract_api
 from schema import Or, Schema
-from tool.atp import ATP
+
+from common.ContractServiceAPI import t as contract_api
 
 
 @allure.epic('反向交割')  # 这里填业务线
