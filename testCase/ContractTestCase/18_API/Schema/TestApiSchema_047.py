@@ -20,12 +20,10 @@
 
 
 import allure
-import common.util
 import pytest
-from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
-from common.ContractServiceAPI import t as contract_api
 from schema import Or, Schema
-from tool.atp import ATP
+
+from common.ContractServiceAPI import t as contract_api
 
 
 @allure.epic('反向交割')  # 这里填业务线
@@ -39,69 +37,54 @@ class TestApiSchema_047:
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, symbol):
         print("前置条件 {}".format(symbol))
-        print(ATP.make_market_depth())
-        print(ATP.cancel_all_order())
-        # 切回持仓倍数
-        res = contract_api.contract_switch_lever_rate(
-            symbol="BTC", lever_rate=5)
-        print(res)
 
     @allure.title('组合查询用户历史成交记录')
     @allure.step('测试执行')
-    def test_execute(self, sub_uid):
+    def test_execute(self, symbol):
         with allure.step('1、调用接口：api/v1/contract_matchresults_exact'):
             pass
         with allure.step('2、接口返回的json格式、字段名、字段值正确'):
-            # 构造持仓量
-            price = ATP.get_current_price()
-            common_contract_api.contract_order(
-                symbol="BTC", contract_type="this_week", price=price, volume=1, direction="buy", offset="open")
-            res_sell = contract_api.contract_order(
-                symbol="BTC", contract_type="this_week", price=price, volume=3, direction="sell", offset="open")
-            print(res_sell)
+
             res = contract_api.contract_matchresults_exact(
-                symbol="BTC", trade_type=0)
+                symbol=symbol, trade_type=0)
             print(res)
-            if res["status"] != "error":
-                schema = {
-                    "status": "ok",
-                    "data": {
-                        "trades": [
-                            {
-                                "query_id": int,
-                                "match_id": int,
-                                "order_id": int,
-                                "symbol": str,
-                                "contract_type": str,
-                                "contract_code": str,
-                                "direction": str,
-                                "offset": str,
-                                "trade_volume": Or(float, int),
-                                "trade_price": Or(float, int),
-                                "trade_turnover": Or(float, int),
-                                "trade_fee": Or(float, int),
-                                "offset_profitloss": Or(float, int),
-                                "create_date": int,
-                                "role": str,
-                                "order_source": str,
-                                "order_id_str": str,
-                                "fee_asset": str,
-                                "real_profit": Or(float, int),
-                                "id": str
-                            }
-                        ],
-                        "remain_size": int,
-                        "next_id": int
-                    },
-                    "ts": int
-                }
-                Schema(schema).validate(res)
+            schema = {
+                "status": "ok",
+                "data": {
+                    "trades": [
+                        {
+                            "query_id": int,
+                            "match_id": int,
+                            "order_id": int,
+                            "symbol": str,
+                            "contract_type": str,
+                            "contract_code": str,
+                            "direction": str,
+                            "offset": str,
+                            "trade_volume": Or(float, int),
+                            "trade_price": Or(float, int),
+                            "trade_turnover": Or(float, int),
+                            "trade_fee": Or(float, int),
+                            "offset_profitloss": Or(float, int),
+                            "create_date": int,
+                            "role": str,
+                            "order_source": str,
+                            "order_id_str": str,
+                            "fee_asset": str,
+                            "real_profit": Or(float, int),
+                            "id": str
+                        }
+                    ],
+                    "remain_size": int,
+                    "next_id": int
+                },
+                "ts": int
+            }
+            Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        print(ATP.clean_market())
-        print(ATP.cancel_all_order())
 
 
 if __name__ == '__main__':
