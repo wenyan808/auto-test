@@ -2667,7 +2667,7 @@ class LinearServiceAPI:
 
     def get_trade_partition(self, contract_code):
         if contract_code and '-' in contract_code:
-            return contract_code.split('-')[-1][:4]
+            return contract_code.split('-')[1][:4]
         else:
             print("合约代码错误:", contract_code)
             return None
