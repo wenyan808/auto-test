@@ -82,7 +82,8 @@ class TestLinearApiSchema_052:
                             'trade_volume': float,
                             'update_time': int,
                             'volume': float,
-                            'trade_partition': trade_partition
+                            'trade_partition': trade_partition,
+                            'reduce_only': int
                         }, None)
                     ],
                     'total_page': int,

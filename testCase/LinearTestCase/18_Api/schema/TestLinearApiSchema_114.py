@@ -23,7 +23,7 @@ import allure
 import pytest
 from schema import Schema, Or
 
-from common.LinearServiceAPI import t as linear_api
+from common.LinearServiceAPI import common_user_linear_service_api as linear_api
 
 
 @allure.epic('正向永续')  # 这里填业务线
@@ -54,7 +54,7 @@ class TestLinearApiSchema_114:
 
             Schema(schema).validate(r)
 
-            time.sleep(2)
+            time.sleep(5)
 
             r = linear_api.linear_cross_switch_position_mode(margin_account=margin_account,
                                                              position_mode='dual_side')  # single_side dual_side

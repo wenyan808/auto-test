@@ -45,7 +45,7 @@ class TestLinearApiSchema_005:
                 'data': [
                     {
                         'estimated_clawback': float,
-                        'insurance_fund': float,
+                        'insurance_fund': Or(int, float),
                         'contract_code': contract_code,
                         'business_type': 'swap',
                         'pair': contract_code,

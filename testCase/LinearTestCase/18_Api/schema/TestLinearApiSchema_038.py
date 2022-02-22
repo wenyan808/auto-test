@@ -5,7 +5,7 @@
     用例标题
         获取用户资产和持仓信息（逐仓）
     前置条件
-        
+
     步骤/文本
         调用接口：/linear-swap-api/v1/swap_account_position_info
     预期结果
@@ -76,7 +76,7 @@ class TestLinearApiSchema_038:
                         'margin_balance': Or(float, None),
                         'margin_frozen': Or(float, None, int),
                         'margin_mode': 'isolated',
-                        'margin_position': Or(float, None),
+                        'margin_position': Or(float, int, None),
                         'margin_static': Or(float, None),
                         'trade_partition': trade_partition,
                         'positions': Or([
@@ -98,11 +98,12 @@ class TestLinearApiSchema_038:
                                 'profit_unreal': Or(float, None),
                                 'symbol': symbol,
                                 'volume': Or(float, None),
-                                'trade_partition': trade_partition
+                                'trade_partition': trade_partition,
+                                'position_mode': Or('single_side', 'dual_side')
                             }
                         ], None),
                         'profit_real': Or(float, None),
-                        'profit_unreal': Or(float, None),
+                        'profit_unreal': Or(float, int, None),
                         'risk_rate': Or(float, None),
                         'symbol': symbol,
                         'withdraw_available': Or(float, None),

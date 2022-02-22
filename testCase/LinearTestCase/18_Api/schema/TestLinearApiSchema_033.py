@@ -40,7 +40,7 @@ class TestLinearApiSchema_033:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_cross_user_settlement_records'):
-            contract_code = 'BTC-USDT'
+            #contract_code = 'BTC-USDT'
             trade_partition = linear_api.get_trade_partition(contract_code)
             r = linear_api.linear_cross_user_settlement_records(margin_account=trade_partition,
                                                                 start_time='',
@@ -65,7 +65,7 @@ class TestLinearApiSchema_033:
                                                                                            'cost_open': float,
                                                                                            'settlement_price': float,
                                                                                            'settlement_profit_unreal': float,
-                                                                                           'settlement_type': 'settlement'}, ],
+                                                                                           'settlement_type': Or('settlement', 'delivery')}],
                                                                             'symbol': str,
                                                                             'trade_partition': trade_partition}, ],
                                                        'fee': float,
