@@ -1471,10 +1471,9 @@ class ContractServiceAPI:
 t = ContractServiceAPI(URL, ACCESS_KEY, SECRET_KEY)
 common_user_contract_service_api = ContractServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
 atp_contract_service_api = ContractServiceAPI(URL, ATP_SERVER_ACCESS_KEY, ATP_SERVER_SECRET_KEY)
-userList = eval(USERINFO)
-user01 = ContractServiceAPI(
-    URL, userList[0]['ACCESS_KEY'], userList[0]['SECRET_KEY'])
-user02 = ContractServiceAPI(
-    URL, userList[1]['ACCESS_KEY'], userList[1]['SECRET_KEY'])
-user03 = ContractServiceAPI(
-    URL, userList[2]['ACCESS_KEY'], userList[2]['SECRET_KEY'])
+# userList = eval(USERINFO)
+user01 = ContractServiceAPI(URL, ACCESS_KEY, SECRET_KEY)
+# user02 = ContractServiceAPI(
+#     URL, userList[1]['ACCESS_KEY'], userList[1]['SECRET_KEY'])
+# user03 = ContractServiceAPI(
+#     URL, userList[2]['ACCESS_KEY'], userList[2]['SECRET_KEY'])
