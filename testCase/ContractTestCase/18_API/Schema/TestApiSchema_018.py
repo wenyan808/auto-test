@@ -17,6 +17,7 @@
 优先级
     1
 """
+import time
 from pprint import pprint
 
 import allure
@@ -48,11 +49,12 @@ class TestApiSchema_018:
         with allure.step('2、接口返回的json格式、字段名、字段值正确'):
             # 构造持仓量
             contract_type = get_contract_type(symbol_period)
-            # price = ATP.get_current_price()
-            # contract_api.contract_order(
-            #     symbol=symbol, contract_type=contract_type, price=price, volume=1, direction="buy", offset="open")
-            # contract_api.contract_order(
-            #     symbol=symbol, contract_type=contract_type, price=price, volume=1, direction="sell", offset="open")
+            price = ATP.get_current_price()
+            contract_api.contract_order(
+                symbol=symbol, contract_type=contract_type, price=price, volume=1, direction="buy", offset="open")
+            contract_api.contract_order(
+                symbol=symbol, contract_type=contract_type, price=price, volume=1, direction="sell", offset="open")
+            time.sleep(1)
             res = contract_api.contract_position_info(
                 symbol=symbol)
             pprint(res)
@@ -85,8 +87,8 @@ class TestApiSchema_018:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        # print(ATP.clean_market())
-        # print(ATP.cancel_all_order())
+        print(ATP.cancel_all_order())
+        print(ATP.close_all_position())
 
 
 if __name__ == '__main__':
