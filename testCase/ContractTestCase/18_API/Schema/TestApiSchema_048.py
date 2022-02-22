@@ -17,11 +17,12 @@
 优先级
     1
 """
-
+import time
+from pprint import pprint
 
 import allure
 import pytest
-from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
+from common.util import get_contract_type
 from common.ContractServiceAPI import t as contract_api
 from schema import Or, Schema
 from tool.atp import ATP
@@ -38,45 +39,43 @@ class TestApiSchema_048:
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, symbol):
         print("前置条件 {}".format(symbol))
-        print(ATP.make_market_depth())
-        print(ATP.cancel_all_order())
-        # 切回持仓倍数
-        res = contract_api.contract_switch_lever_rate(
-            symbol="BTC", lever_rate=5)
-        print(res)
+        ATP.make_market_depth(volume=2, depth_count=5)
 
     @allure.title('合约闪电平仓下单')
     @allure.step('测试执行')
-    def test_execute(self, sub_uid):
+    def test_execute(self, symbol, symbol_period):
         with allure.step('1、调用接口：api/v1/lightning_close_position'):
             pass
         with allure.step('2、接口返回的json格式、字段名、字段值正确'):
             # 构造持仓量
             price = ATP.get_current_price()
-            common_contract_api.contract_order(
-                symbol="BTC", contract_type="this_week", price=price, volume=1, direction="buy", offset="open")
-            res_sell = contract_api.contract_order(
-                symbol="BTC", contract_type="this_week", price=price, volume=3, direction="sell", offset="open")
-            print(res_sell)
+            contract_type = get_contract_type(symbol_period)
+            sell_order = contract_api.contract_order(
+                symbol=symbol, contract_type=contract_type, price=price, volume=1, direction="sell", offset="open")
+            pprint(sell_order)
+            buy_order = contract_api.contract_order(
+                symbol=symbol, contract_type=contract_type, price=price, volume=1, direction="buy", offset="open")
+            pprint(buy_order)
+            time.sleep(2)
             res = contract_api.lightning_close_position(
-                symbol="BTC", contract_type="this_week", volume=1, direction="buy")
+                symbol=symbol, contract_type=contract_type, volume=1, direction="buy")
             print(res)
-            if res["status"] != "error":
-                schema = {
-                    "status": "ok",
-                    "data": {
-                        "order_id": int,
-                        "order_id_str": str
-                    },
-                    "ts": int
-                }
-                Schema(schema).validate(res)
+
+            schema = {
+                "status": "ok",
+                "data": {
+                    "order_id": int,
+                    "order_id_str": str
+                },
+                "ts": int
+            }
+            Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        print(ATP.clean_market())
-        print(ATP.cancel_all_order())
+        print(ATP.cancel_all_types_order())
+        print(ATP.close_all_position())
 
 
 if __name__ == '__main__':

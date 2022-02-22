@@ -17,13 +17,14 @@
 优先级
     1
 """
-
+from pprint import pprint
 
 import allure
 import pytest
-from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
+from schema import Schema
+
 from common.ContractServiceAPI import t as contract_api
-from schema import Or, Schema
+from common.util import get_contract_type
 from tool.atp import ATP
 
 
@@ -37,46 +38,55 @@ class TestApiSchema_049:
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, symbol):
-        print("前置条件 {}".format(symbol))
-        print(ATP.make_market_depth())
-        print(ATP.cancel_all_order())
-        # 切回持仓倍数
-        res = contract_api.contract_switch_lever_rate(
-            symbol="BTC", lever_rate=5)
-        print(res)
+        self.buyprice = ATP.get_adjust_price(rate=0.98)
+        self.sellprice = ATP.get_adjust_price(rate=1.02)
 
     @allure.title('合约计划委托下单')
     @allure.step('测试执行')
-    def test_execute(self, sub_uid):
+    def test_execute(self, symbol, symbol_period):
         with allure.step('1、调用接口：api/v1/contract_trigger_order'):
             pass
         with allure.step('2、接口返回的json格式、字段名、字段值正确'):
             # 构造持仓量
-            price = ATP.get_current_price()
-            common_contract_api.contract_order(
-                symbol="BTC", contract_type="this_week", price=price, volume=1, direction="buy", offset="open")
-            res_sell = contract_api.contract_order(
-                symbol="BTC", contract_type="this_week", price=price, volume=3, direction="sell", offset="open")
-            print(res_sell)
-            res = contract_api.contract_trigger_order(
-                symbol="BTC", contract_type="this_week", trigger_type="ge", trigger_price=price, order_price=price, volume=1, direction="buy", offset="open", lever_rate=5)
-            print(res)
-            if res["status"] != "error":
-                schema = {
-                    "status": "ok",
-                    "data": {
-                        "order_id": int,
-                        "order_id_str": str
-                    },
-                    "ts": int
-                }
-                Schema(schema).validate(res)
+            contract_type = get_contract_type(symbol_period)
+            res = contract_api.contract_trigger_order(symbol=symbol,
+                                                      contract_type=contract_type,
+                                                      trigger_type="le",
+                                                      trigger_price=self.buyprice,
+                                                      order_price=self.buyprice,
+                                                      volume=1,
+                                                      direction="buy",
+                                                      offset="open",
+                                                      lever_rate=5)
+            pprint(res)
+
+            schema = {"data": {"order_id": int,
+                               "order_id_str": str},
+                      "status": "ok",
+                      "ts": int}
+
+            res = contract_api.contract_trigger_order(symbol=symbol,
+                                                      contract_type=contract_type,
+                                                      trigger_type="ge",
+                                                      trigger_price=self.sellprice,
+                                                      order_price=self.sellprice,
+                                                      volume=1,
+                                                      direction="sell",
+                                                      offset="open",
+                                                      lever_rate=5)
+            pprint(res)
+
+            schema = {"data": {"order_id": int,
+                               "order_id_str": str},
+                      "status": "ok",
+                      "ts": int}
+
+            Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        print(ATP.clean_market())
-        print(ATP.cancel_all_order())
+        print(ATP.cancel_all_trigger_order())
 
 
 if __name__ == '__main__':
