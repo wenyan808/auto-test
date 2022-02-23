@@ -74,7 +74,8 @@ class TestLinearApiSchema_054:
                             'trade_price': float,
                             'trade_turnover': float,
                             'trade_volume': float,
-                            'trade_partition': trade_partition
+                            'trade_partition': trade_partition,
+                            'reduce_only': int
                         }
                     ]
                 },

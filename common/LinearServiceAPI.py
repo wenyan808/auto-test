@@ -2643,9 +2643,31 @@ class LinearServiceAPI:
         request_path = '/linear-swap-ex/market/overview'
         return api_http_get(self.__url + request_path, {})
 
+    def linear_switch_position_mode(self, margin_account=None, position_mode=None):
+        params = {}
+        if margin_account:
+            params['margin_account'] = margin_account
+        if position_mode:
+            params['position_mode'] = position_mode
+
+        request_path = '/linear-swap-api/v1/swap_switch_position_mode'
+        return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
+
+
+    def linear_cross_switch_position_mode(self, margin_account=None, position_mode=None):
+
+        params = {}
+        if margin_account:
+            params['margin_account'] = margin_account
+        if position_mode:
+            params['position_mode'] = position_mode
+
+        request_path = '/linear-swap-api/v1/swap_cross_switch_position_mode'
+        return api_key_post(self.__url, request_path, params, self.__access_key, self.__secret_key)
+
     def get_trade_partition(self, contract_code):
         if contract_code and '-' in contract_code:
-            return contract_code.split('-')[-1][:4]
+            return contract_code.split('-')[1][:4]
         else:
             print("合约代码错误:", contract_code)
             return None
@@ -2655,7 +2677,7 @@ class LinearServiceAPI:
 t = LinearServiceAPI(URL, ACCESS_KEY, SECRET_KEY)
 common_user_linear_service_api = LinearServiceAPI(URL, COMMON_ACCESS_KEY, COMMON_SECRET_KEY)
 atp_linear_service_api = LinearServiceAPI(URL, ATP_SERVER_ACCESS_KEY, ATP_SERVER_SECRET_KEY)
-userList = eval(USERINFO)
-user01 = LinearServiceAPI(URL, userList[0]['ACCESS_KEY'], userList[0]['SECRET_KEY'])
-user02 = LinearServiceAPI(URL, userList[1]['ACCESS_KEY'], userList[1]['SECRET_KEY'])
-user03 = LinearServiceAPI(URL, userList[2]['ACCESS_KEY'], userList[2]['SECRET_KEY'])
+# userList = eval(USERINFO)
+user01 = LinearServiceAPI(URL, ACCESS_KEY, SECRET_KEY)
+# user02 = LinearServiceAPI(URL, userList[1]['ACCESS_KEY'], userList[1]['SECRET_KEY'])
+# user03 = LinearServiceAPI(URL, userList[2]['ACCESS_KEY'], userList[2]['SECRET_KEY'])

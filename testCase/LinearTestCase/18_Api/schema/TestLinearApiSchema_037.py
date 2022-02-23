@@ -54,7 +54,7 @@ class TestLinearApiSchema_037:
                         'lever_rate': int,
                         'buy_limit_value': float,
                         'sell_limit_value': float,
-                        'mark_price': float,
+                        'mark_price': Or(int, float),
                         'trade_partition': trade_partition
                     }
                 ],

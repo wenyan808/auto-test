@@ -86,7 +86,8 @@ class TestLinearApiSchema_074:
                         'business_type': 'swap',
                         'pair': str,
                         'last_price': Or(float, int),
-                        'trade_partition': trade_partition
+                        'trade_partition': trade_partition,
+                        'position_mode': Or('single_side', 'dual_side')
                     }
                 ],
                 'status': 'ok',

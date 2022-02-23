@@ -63,7 +63,8 @@ class TestLinearApiSchema_023:
                         'risk_rate': Or(float, None),
                         'symbol': symbol,
                         'withdraw_available': Or(float, None, int),
-                        'trade_partition': trade_partition
+                        'trade_partition': trade_partition,
+                        'position_mode': Or('single_side', 'dual_side')
                     }
                 ],
                 'status': 'ok',

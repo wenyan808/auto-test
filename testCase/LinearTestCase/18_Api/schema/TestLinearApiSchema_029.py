@@ -65,13 +65,14 @@ class TestLinearApiSchema_029:
                         'profit_unreal': float,
                         'symbol': symbol,
                         'volume': float,
-                        'trade_partition': trade_partition
+                        'trade_partition': trade_partition,
+                        'position_mode': Or('single_side', 'dual_side')
                     }
                 ],
                 'status': 'ok',
                 'ts': int
             }
-
+            assert r['data']
             Schema(schema).validate(r)
 
     @allure.step('恢复环境')

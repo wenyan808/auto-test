@@ -110,6 +110,7 @@ class TestLinearApiSchema_089:
                     'business_type': 'swap',
                     'pair': str,
                     'trade_partition': trade_partition,
+                    'reduce_only': int,
                     'trades': [
                         {'created_at': int,
                          'fee_asset': trade_partition,

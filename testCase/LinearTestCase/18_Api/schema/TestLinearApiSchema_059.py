@@ -52,16 +52,10 @@ class TestLinearApiSchema_059:
             time.sleep(1)
             r = linear_api.linear_trigger_cancelall(contract_code=contract_code)
             pprint(r)
-            schema = {
-                'data': {
-                    'errors': [
-
-                    ],
-                    'successes': str
-                },
-                'status': 'ok',
-                'ts': int
-            }
+            schema = {'data': {'errors': [],
+                               'successes': str},
+                      'status': 'ok',
+                      'ts': int}
 
             Schema(schema).validate(r)
 

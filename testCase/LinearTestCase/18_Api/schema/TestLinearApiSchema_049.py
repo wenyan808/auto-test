@@ -87,7 +87,8 @@ class TestLinearApiSchema_049:
                         'trade_turnover': Or(float, int),
                         'trade_volume': int,
                         'volume': int,
-                        'trade_partition': trade_partition
+                        'trade_partition': trade_partition,
+                        'reduce_only': int
                     }
                 ],
                 'status': 'ok',

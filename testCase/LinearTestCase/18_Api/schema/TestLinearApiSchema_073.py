@@ -80,7 +80,8 @@ class TestLinearApiSchema_073:
                                  'profit_real': float,
                                  'profit_unreal': Or(int, float),
                                  'withdraw_available': float,
-                                 'risk_rate': float}],
+                                 'risk_rate': float,
+                                 'position_mode': Or('single_side', 'dual_side')}],
                        'status': 'ok',
                        'ts': int}
 

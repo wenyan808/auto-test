@@ -83,7 +83,8 @@ class TestLinearApiSchema_024:#文档没更新，待确认
                         'margin_mode': 'isolated',
                         'direction': str,
                         'last_price': Or(float, int),
-                        'trade_partition': trade_partition
+                        'trade_partition': trade_partition,
+                        'position_mode': Or('single_side', 'dual_side')
                     }
                 ],
                 'status': 'ok',

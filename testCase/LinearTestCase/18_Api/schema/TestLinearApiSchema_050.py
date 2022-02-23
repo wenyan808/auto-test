@@ -106,6 +106,7 @@ class TestLinearApiSchema_050:  # 疑似bug，trades的值为[]
                     'trade_turnover': float,
                     'trade_volume': float,
                     'trade_partition': trade_partition,
+                    'reduce_only': int,
                     'trades': [
                         {'created_at': int,
                          'fee_asset': trade_partition,

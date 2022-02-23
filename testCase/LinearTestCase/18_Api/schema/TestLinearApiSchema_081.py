@@ -98,11 +98,13 @@ class TestLinearApiSchema_081:
                                                'lever_rate': int,
                                                'direction': str,
                                                'last_price': Or(float, int),
-                                               'trade_partition': trade_partition}, ],
+                                               'trade_partition': trade_partition,
+                                               'position_mode': Or('single_side', 'dual_side')}],
                                 'profit_real': float,
                                 'profit_unreal': float,
                                 'risk_rate': float,
-                                'withdraw_available': float},
+                                'withdraw_available': float,
+                                'position_mode': Or('single_side', 'dual_side')},
                        'status': 'ok',
                        'ts': int}
 
