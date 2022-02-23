@@ -79,7 +79,8 @@ class TestLinearApiSchema_061:
                             'triggered_price': Or(int, float, None),
                             'update_time': int,
                             'volume': float,
-                            'trade_partition': trade_partition
+                            'trade_partition': trade_partition,
+                            'reduce_only': int
                         }
                     ],
                     'total_page': int,

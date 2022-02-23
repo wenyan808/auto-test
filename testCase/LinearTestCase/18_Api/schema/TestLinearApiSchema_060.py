@@ -78,7 +78,8 @@ class TestLinearApiSchema_060:
                             'trigger_price': float,
                             'trigger_type': str,
                             'volume': float,
-                            'trade_partition': trade_partition
+                            'trade_partition': trade_partition,
+                            'reduce_only': int
                         }
                     ],
                     'total_page': int,

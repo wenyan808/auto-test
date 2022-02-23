@@ -34,7 +34,7 @@ class WebsocketSevice:
 
 
 t = WebsocketSevice(WSURL,ACCESS_KEY,SECRET_KEY)
-userList = eval(USERINFO)
-user01 = WebsocketSevice(WSURL, userList[0]['ACCESS_KEY'], userList[0]['SECRET_KEY'])
-user02 = WebsocketSevice(WSURL, userList[1]['ACCESS_KEY'], userList[1]['SECRET_KEY'])
-user03 = WebsocketSevice(WSURL, userList[2]['ACCESS_KEY'], userList[2]['SECRET_KEY'])
+# userList = eval(USERINFO)
+user01 = WebsocketSevice(WSURL, ACCESS_KEY,SECRET_KEY)
+# user02 = WebsocketSevice(WSURL, userList[1]['ACCESS_KEY'], userList[1]['SECRET_KEY'])
+# user03 = WebsocketSevice(WSURL, userList[2]['ACCESS_KEY'], userList[2]['SECRET_KEY'])

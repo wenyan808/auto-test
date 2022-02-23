@@ -49,8 +49,11 @@ class TestLinearApiSchema_078:
                 'data': [
                     {
                         'available': float,
+                        'business_type': 'swap',
                         'contract_code': contract_code,
+                        'contract_type': 'swap',
                         "margin_mode": "cross",
+                        'pair': contract_code,
                         "margin_account": trade_partition,
                         'cost_hold': float,
                         'cost_open': float,
