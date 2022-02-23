@@ -143,7 +143,7 @@ class SwapServiceOrder:
 
 # 定义t并传入hbsessionL,供用例直接调用
 t = SwapServiceOrder(URL, MULANURL, hbsession)
-userList = eval(USERINFO)
-user01 = SwapServiceOrder(URL,URL,userList[0]['HB_SESSION'])
-user02 = SwapServiceOrder(URL,URL,userList[1]['HB_SESSION'])
-user03 = SwapServiceOrder(URL,URL,userList[2]['HB_SESSION'])
+# userList = eval(USERINFO)
+user01 = SwapServiceOrder(URL,URL,hbsession)
+# user02 = SwapServiceOrder(URL,URL,userList[1]['HB_SESSION'])
+# user03 = SwapServiceOrder(URL,URL,userList[2]['HB_SESSION'])
