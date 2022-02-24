@@ -17,14 +17,15 @@
 优先级
     1
 """
-
+import time
+from pprint import pprint
 
 import allure
-import common.util
 import pytest
-from common.ContractServiceAPI import common_user_contract_service_api as common_contract_api
+from schema import Schema
+
 from common.ContractServiceAPI import t as contract_api
-from schema import Or, Schema
+from common.util import get_contract_type
 from tool.atp import ATP
 
 
@@ -39,49 +40,42 @@ class TestApiSchema_061:
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, symbol):
         print("前置条件 {}".format(symbol))
-        print(ATP.make_market_depth())
+        self.price = ATP.get_adjust_price(rate=0.98)
 
     @allure.title('跟踪委托撤单')
     @allure.step('测试执行')
-    def test_execute(self, sub_uid):
+    def test_execute(self, symbol, symbol_period):
         with allure.step('1、调用接口：api/v1/contract_track_cancel'):
             pass
         with allure.step('2、接口返回的json格式、字段名、字段值正确'):
-            # 构造持仓量
-            price = ATP.get_current_price()
-            common_contract_api.contract_order(
-                symbol="BTC", contract_type="this_week", price=price, volume=5, direction="buy", offset="open")
-            contract_api.contract_trigger_order(
-                symbol="BTC", contract_type="this_week", trigger_type="ge", trigger_price=price, order_price=price+1, volume=1, direction="buy", offset="open", lever_rate=5)
-            res_sell = contract_api.contract_track_order(
-                symbol="BTC", contract_type="this_week", direction="sell", offset="open", lever_rate=5, volume=1, active_price=price+1, callback_rate=0.01, order_price_type="optimal_5")
-            print(res_sell)
 
-            res = contract_api.contract_track_cancel(
-                symbol="BTC", order_id=res_sell["data"]["order_id"])
-            print(res)
-            if res["status"] != "error":
-                schema = {
-                    "status": "ok",
-                    "data": {
-                        "errors": [
-                            {
-                                "order_id": str,
-                                "err_code": int,
-                                "err_msg": str
-                            }
-                        ],
-                        "successes": str
-                    },
-                    "ts": int
-                }
-                Schema(schema).validate(res)
+            contract_type = get_contract_type(symbol_period)
+
+            a = contract_api.contract_track_order(symbol=symbol,
+                                                  contract_type=contract_type,
+                                                  direction="buy",
+                                                  offset="open",
+                                                  lever_rate=5,
+                                                  volume=1,
+                                                  active_price=self.price,
+                                                  callback_rate=0.01,
+                                                  order_price_type="formula_price")
+            time.sleep(1)
+            order_id = a['data']['order_id']
+
+            res = contract_api.contract_track_cancel(symbol=symbol, order_id=order_id)
+            pprint(res)
+
+            schema = {"data": {"errors": [],
+                               "successes": str},
+                      "status": "ok",
+                      "ts": int}
+            Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        print(ATP.clean_market())
-        print(ATP.cancel_all_order())
+        print(ATP.cancel_all_track_order())
 
 
 if __name__ == '__main__':

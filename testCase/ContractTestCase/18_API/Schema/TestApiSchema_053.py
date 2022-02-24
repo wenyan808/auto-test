@@ -17,7 +17,7 @@
 优先级
     1
 """
-
+from pprint import pprint
 
 import allure
 import common.util
@@ -39,74 +39,60 @@ class TestApiSchema_053:
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, symbol):
         print("前置条件 {}".format(symbol))
-        print(ATP.make_market_depth())
-        # 切回持仓倍数
-        res = contract_api.contract_switch_lever_rate(
-            symbol="BTC", lever_rate=5)
-        print(res)
 
     @allure.title('获取计划委托历史委托')
     @allure.step('测试执行')
-    def test_execute(self, sub_uid):
+    def test_execute(self, symbol):
         with allure.step('1、调用接口：api/v1/contract_trigger_hisorders'):
             pass
         with allure.step('2、接口返回的json格式、字段名、字段值正确'):
             # 构造持仓量
-            price = ATP.get_current_price()
-            common_contract_api.contract_order(
-                symbol="BTC", contract_type="this_week", price=price, volume=5, direction="sell", offset="open")
-            res_sell = contract_api.contract_trigger_order(
-                symbol="BTC", contract_type="this_week", trigger_type="ge", trigger_price=price, order_price=price+1, volume=1, direction="buy", offset="open", lever_rate=5)
-            print(res_sell)
             res = contract_api.contract_trigger_hisorders(
-                symbol="BTC", trade_type=0, status=0, create_date=30)
-            print(res)
-            if res["status"] != "error":
-                schema = {
-                    "status": "ok",
-                    "data": {
-                        "orders": [
-                            {
-                                "symbol": str,
-                                "contract_code": str,
-                                "contract_type": str,
-                                "trigger_type": str,
-                                "volume": Or(float, int),
-                                "order_type": int,
-                                "direction": str,
-                                "offset": str,
-                                "lever_rate": Or(float, int),
-                                "order_id": int,
-                                "order_id_str": str,
-                                "relation_order_id": str,
-                                "order_price_type": str,
-                                "status": int,
-                                "order_source": str,
-                                "trigger_price": Or(float, int),
-                                "triggered_price": Or(float, int, None),
-                                "order_price": Or(float, int),
-                                "created_at": int,
-                                "triggered_at": Or(float, int, None),
-                                "order_insert_at": int,
-                                "update_time": int,
-                                "canceled_at": int,
-                                "fail_code": Or(float, int, None),
-                                "fail_reason": Or(str, None)
-                            }
-                        ],
-                        "total_page": int,
-                        "current_page": int,
-                        "total_size": int
-                    },
-                    "ts": int
-                }
-                Schema(schema).validate(res)
+                symbol=symbol, trade_type=0, status=0, create_date=30)
+            pprint(res)
+            schema = {
+                "status": "ok",
+                "data": {
+                    "orders": [
+                        {
+                            "symbol": str,
+                            "contract_code": str,
+                            "contract_type": str,
+                            "trigger_type": str,
+                            "volume": Or(float, int),
+                            "order_type": int,
+                            "direction": str,
+                            "offset": str,
+                            "lever_rate": Or(float, int),
+                            "order_id": int,
+                            "order_id_str": str,
+                            "relation_order_id": str,
+                            "order_price_type": str,
+                            "status": int,
+                            "order_source": str,
+                            "trigger_price": Or(float, int),
+                            "triggered_price": Or(float, int, None),
+                            "order_price": Or(float, int),
+                            "created_at": int,
+                            "triggered_at": Or(float, int, None),
+                            "order_insert_at": int,
+                            "update_time": int,
+                            "canceled_at": int,
+                            "fail_code": Or(float, int, None),
+                            "fail_reason": Or(str, None)
+                        }
+                    ],
+                    "total_page": int,
+                    "current_page": int,
+                    "total_size": int
+                },
+                "ts": int
+            }
+            Schema(schema).validate(res)
 
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        print(ATP.clean_market())
-        print(ATP.cancel_all_order())
 
 
 if __name__ == '__main__':

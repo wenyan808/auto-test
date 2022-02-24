@@ -17,10 +17,10 @@
 优先级
     1
 """
-
+from pprint import pprint
 
 import allure
-import common.util
+from common.util import get_contract_type
 import pytest
 from schema import Schema, Or
 from common.ContractServiceAPI import t as contract_api
@@ -40,20 +40,21 @@ class TestApiSchema_001:
 
     @allure.title('获取合约信息')
     @allure.step('测试执行')
-    def test_execute(self):
+    def test_execute(self, symbol, symbol_period):
         with allure.step('1、调用接口：api/v1/contract_contract_info'):
             pass
         with allure.step('2、接口返回的json格式、字段名、字段值正确'):
+            contract_type = get_contract_type(symbol_period)
             res = contract_api.contract_contract_info(
-                symbol='BTC', contract_type='this_week')
-            print(res)
+                symbol=symbol, contract_type=contract_type)
+            pprint(res)
             schema = {
                 "status": "ok",
                 "data": [
                     {
-                        "symbol": "BTC",
+                        "symbol": symbol,
                         "contract_code": str,
-                        "contract_type": "this_week",
+                        "contract_type": contract_type,
                         "contract_size": Or(float, int),
                         "price_tick": Or(float, int),
                         "delivery_date": str,

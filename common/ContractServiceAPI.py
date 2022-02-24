@@ -79,9 +79,13 @@ class ContractServiceAPI:
         "contract_code   BTC180928
         备注：如果contract_code填了值，那就按照contract_code去查询，如果contract_code 没有填值，则按照symbol+contract_type去查询
         """
-        params = {'symbol': symbol,
-                  'contract_type': contract_type,
-                  'contract_code': contract_code}
+        params = {}
+        if symbol:
+            params['symbol'] = symbol
+        if contract_type:
+            params['contract_type'] = contract_type
+        if contract_code:
+            params['contract_code'] = contract_code
 
         url = self.__url + '/api/v1/contract_open_interest'
         return api_http_get(url, params)

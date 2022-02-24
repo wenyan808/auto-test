@@ -39,39 +39,32 @@ class TestApiSchema_040:
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, symbol):
         print("前置条件 {}".format(symbol))
-        print(ATP.make_market_depth())
 
     @allure.title('切换杠杆倍数')
     @allure.step('测试执行')
-    def test_execute(self, sub_uid):
+    def test_execute(self, symbol):
         with allure.step('1、调用接口：api/v1/contract_switch_lever_rate'):
             pass
         with allure.step('2、接口返回的json格式、字段名、字段值正确'):
             # 构造持仓量
-            price = ATP.get_current_price()
-            common_contract_api.contract_order(
-                symbol="BTC", contract_type="this_week", price=price, volume=1, direction="buy", offset="open")
-            contract_api.contract_order(
-                symbol="BTC", contract_type="this_week", price=price, volume=1, direction="sell", offset="open")
-            res = contract_api.contract_switch_lever_rate(
-                symbol="BTC", lever_rate=20)
+
+            res = contract_api.contract_switch_lever_rate(symbol=symbol, lever_rate=1)
             print(res)
-            if res["status"] != "error":
-                schema = {
-                    "status": "ok",
-                    "data": {
-                        "symbol": str,
-                        "lever_rate": int
-                    },
-                    "ts": int
-                }
-                Schema(schema).validate(res)
+            schema = {
+                "status": "ok",
+                "data": {
+                    "symbol": str,
+                    "lever_rate": int
+                },
+                "ts": int
+            }
+            Schema(schema).validate(res)
 
     @allure.step('恢复环境')
-    def teardown(self):
+    @pytest.fixture(scope='function', autouse=True)
+    def teardown(self, symbol):
+        contract_api.contract_switch_lever_rate(symbol=symbol, lever_rate=5)
         print('\n恢复环境操作')
-        print(ATP.clean_market())
-        print(ATP.cancel_all_order())
 
 
 if __name__ == '__main__':
