@@ -178,7 +178,7 @@ class GlobalData:
                          'LinearSwap': ''}
         },
         'GH_Test6': {
-            'base_url': 'http://test6-contract-www-hw.dm.huobiapps.com/',
+            'base_url': 'http://test6-contract-www-hw.dm.huobiapps.com',
             'AT_DEFAULT_ACCESS_KEY': '',
             'AT_DEFAULT_SECRET_KEY': '',
             'AT_DEFAULT_HBSESSION': 'xxxxxx',
@@ -242,7 +242,7 @@ class GlobalData:
                          'LinearSwap': ''}
         },
         'HW_Test20': {
-            'base_url': 'http://newtest20-contract-hw.dm.huobiapps.com/',
+            'base_url': 'http://newtest20-contract-hw.dm.huobiapps.com',
             'AT_DEFAULT_ACCESS_KEY': 'bgrveg5tmn-2d28ef22-fa62b540-3b7ca',
             'AT_DEFAULT_SECRET_KEY': '2c88d131-32a26199-3278d60e-1c4da',
             'AT_DEFAULT_HBSESSION': '',
