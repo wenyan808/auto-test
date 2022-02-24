@@ -4,34 +4,34 @@
 # @Author  : 张广南
 
 
-from common.LinearServiceAPI import t as linear_api
-from common.LinearServiceOrder import t as linear_order
-
-from schema import Schema, And, Or, Regex, SchemaError
 from pprint import pprint
-import pytest, allure, random, time
-from tool.get_test_data import case_data
+
+import allure
+import pytest
+import time
+
+from common.LinearServiceAPI import t as linear_api
 
 
 @allure.epic('正向永续')
-@allure.feature('获取用户的合约账户和持仓信息')
+@allure.feature('资金划转（含母子划转，借贷币划转）')  # 这里填功能
+@allure.story('跨账户划转')  # 这里填子功能，没有的话就把本行注释掉
+@allure.tag('Script owner : 张广南', 'Case owner : 张广南')
 @pytest.mark.stable
-class TestUSDTSwapTransfer_003:
+class TestUSDTSwapTransfer_006:
 
-    def setUp(self):
+    def setup(self):
         print('\n前置条件')
 
-
-    def test_contract_account_position_info(self, symbol, contract_code):
+    def test_execute(self, symbol, contract_code):
+        asset = linear_api.get_trade_partition(contract_code)
         from_margin_account = contract_code
-        to_margin_account = 'USDT'
-        amount = '11'
+        to_margin_account = asset
+        amount = '2.1'
 
         expectedresult = (to_margin_account, float(amount))
 
-        self.setUp()
-
-        r = linear_api.linear_transfer_inner(asset='usdt', from_margin_account=from_margin_account,
+        r = linear_api.linear_transfer_inner(asset=asset, from_margin_account=from_margin_account,
                                              to_margin_account=to_margin_account, amount=amount)
         pprint(r)
         time.sleep(3)
@@ -49,6 +49,10 @@ class TestUSDTSwapTransfer_003:
         pprint(financial_record_lastest)
 
         assert actual == expectedresult
+
+    @allure.step('恢复环境')
+    def teardown(self):
+        print('\n恢复环境操作')
 
 
 if __name__ == '__main__':
