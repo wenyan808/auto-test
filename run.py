@@ -103,18 +103,18 @@ def run(system_type=None, run_env='Test6', test_type=''):
 
 if __name__ == '__main__':
     # run cmd ： python3 run.py Test6 ALL 300 stable
-    # test_env = sys.argv[1]
-    # system_type = sys.argv[2]
-    # build_num = sys.argv[3]
-    # if len(sys.argv) > 4:
-    #     test_type = sys.argv[4]
-    # else:
-    #     test_type = ''
+    test_env = sys.argv[1]
+    system_type = sys.argv[2]
+    build_num = sys.argv[3]
+    if len(sys.argv) > 4:
+        test_type = sys.argv[4]
+    else:
+        test_type = ''
     # for debug
-    test_env = 'HW_Test20'
-    system_type = 'Linear'
-    build_num = 30000
-    test_type = 'stable'
+    # test_env = 'Test6'
+    # system_type = 'Linear'
+    # build_num = 30000
+    # test_type = 'stable'
     DingDingMsg.init()
     start = time.time()
     if system_type == 'ALL':
