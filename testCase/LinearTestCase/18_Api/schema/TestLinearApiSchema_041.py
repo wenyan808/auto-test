@@ -42,7 +42,8 @@ class TestLinearApiSchema_041:
         with allure.step('调用接口：/linear-swap-api/v1/swap_transfer_inner'):
             trade_partition = linear_api.get_trade_partition(contract_code)
             symbollist = ['BTC', 'ETH']
-            symbollist.remove(symbol)
+            if symbol in symbollist:
+                symbollist.remove(symbol)
             print("symbollist:", symbollist)
             to_symbol = symbollist[0]
             to_margin_account = to_symbol + '-' + trade_partition
