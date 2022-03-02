@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2021/11/22 10:55 上午
 # @Author  : HuiQing Yu
+from pprint import pprint
 
 import allure
 import pytest
@@ -22,25 +23,17 @@ class TestSwapApiSchema_023:
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
             r = user01.swap_sub_account_list(contract_code=contract_code)
-            pass
+            pprint(r)
         with allure.step('验证：schema响应字段校验'):
             schema = {
                 "status": "ok",
                 "ts": int,
-                "data": [
-                    {
-                        "sub_uid": int,
-                        "list": [
-                            {
-                                "symbol": symbol,
-                                "contract_code": contract_code,
-                                "margin_balance": Or(int,float,0,None),
-                                "liquidation_price": Or(int,float,0,None),
-                                "risk_rate": Or(int,float,None)
-                            }
-                        ]
-                    }
-                ]
-            }
+                "data": [{"sub_uid": int,
+                          "list": [{"symbol": symbol,
+                                    "contract_code": contract_code,
+                                    "margin_balance": Or(int, float, 0, None),
+                                    "liquidation_price": Or(int, float, 0, None),
+                                    "risk_rate": Or(int, float, None)}]
+                          }]}
             Schema(schema).validate(r)
             pass

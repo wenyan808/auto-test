@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2021/11/22 10:55 上午
 # @Author  : HuiQing Yu
+from pprint import pprint
 
 import allure
 import pytest
@@ -22,7 +23,7 @@ class TestSwapApiSchema_022:
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
             r = user01.swap_sub_account_info_list(contract_code=contract_code, page_index=1, page_size=1)
-            pass
+            pprint(r)
         with allure.step('验证：schema响应字段校验'):
             schema = {
                 "status": "ok",
