@@ -446,7 +446,7 @@ class ATP:
             if iscross:
                 order_methods['LinearSwap'] = common_user_linear_service_api.linear_cross_order
 
-        if user == 'atp':
+        elif user == 'atp':
 
             order_methods = {'Delivery': atp_contract_service_api.contract_order,
                              'Swap': atp_swap_service_api.swap_order,
@@ -566,8 +566,8 @@ class ATP:
                 return False
 
         # 按目标价格成交
-        print(cls.common_user_make_order(price=market_price, direction='buy'))
-        print(cls.common_user_make_order(price=market_price, direction='sell'))
+        #print(cls.common_user_make_order(price=market_price, direction='buy'))#必要性待确认，先注释掉
+        #print(cls.common_user_make_order(price=market_price, direction='sell'))#必要性待确认，先注释掉
         for index_depth in range(1, depth_count + 1):
             sell_price = cls.get_adjust_price(
                 1 + (0.001 * index_depth), base_price=market_price)

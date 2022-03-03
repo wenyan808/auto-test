@@ -635,8 +635,9 @@ class SwapService:
         """
 
         params = {'contract_code': contract_code,
-                  'order_id': order_id,
-                  'order_type': order_type}
+                  'order_id': order_id}
+        if order_type:
+            params['order_type'] = order_type
         if created_at:
             params['created_at'] = created_at
         if page_index:

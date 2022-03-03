@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2021/11/22 10:55 上午
 # @Author  : HuiQing Yu
+from pprint import pprint
 
 from common.mysqlComm import mysqlComm as mysqlClient
 
@@ -21,7 +22,7 @@ class TestSwapApiSchema_002:
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
             r = user01.swap_index(contract_code=contract_code)
-            pass
+            pprint(r)
         with allure.step('验证：schema响应字段校验'):
             schema = {
                 "status": "ok",

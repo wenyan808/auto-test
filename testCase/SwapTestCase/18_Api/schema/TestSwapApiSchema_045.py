@@ -2,15 +2,17 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2021/11/22 10:55 上午
 # @Author  : HuiQing Yu
+from pprint import pprint
 
-from common.mysqlComm import mysqlComm as mysqlClient
-
-import pytest, allure, random, time
+import allure
+import pytest
+import time
 from schema import Schema, Or
+
 from common.SwapServiceAPI import user01
-from tool.SwapTools import SwapTool
-from config.conf import DEFAULT_CONTRACT_CODE
-from config.case_content import epic,features
+from config.case_content import epic, features
+from tool.atp import ATP
+
 
 @allure.epic(epic[1])
 @allure.feature(features[17]['feature'])
@@ -21,14 +23,14 @@ class TestSwapApiSchema_045:
 
     @classmethod
     def teardown_class(cls):
-        user01.swap_cancelall(contract_code=DEFAULT_CONTRACT_CODE)
-        pass
+        print(ATP.cancel_all_order())
+
 
     @allure.title("获取用户的合约当前未成交委托")
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
-            self.currentPrice = SwapTool.currentPrice()
-            user01.swap_order(contract_code=contract_code, price=round(self.currentPrice * 0.8, 2), direction='buy')
+            price = ATP.get_current_price()
+            user01.swap_order(contract_code=contract_code, price=round(price * 0.8, 2), direction='buy')
             flag = False
             # 重试3次未返回预期结果则失败
             for i in range(1, 4):
@@ -39,7 +41,7 @@ class TestSwapApiSchema_045:
                 time.sleep(1)
                 print('未返回预期结果，第{}次重试………………………………'.format(i))
             assert flag, '重试3次未返回预期结果'
-            pass
+            pprint(r)
         with allure.step('验证：schema响应字段校验'):
             schema = {
                 'data': {

@@ -2,13 +2,15 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2021/11/22 10:55 上午
 # @Author  : HuiQing Yu
+from pprint import pprint
 
-from common.mysqlComm import mysqlComm as mysqlClient
+import allure
+import pytest
+from schema import Schema
 
-import pytest, allure, random, time
-from schema import Schema, Or
 from common.SwapServiceAPI import user01
-from config.case_content import epic,features
+from config.case_content import epic, features
+
 
 @allure.epic(epic[1])
 @allure.feature(features[17]['feature'])
@@ -20,9 +22,11 @@ class TestSwapApiSchema_034:
     @allure.title("母子账户划转")
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
-            r = user01.swap_master_sub_transfer(contract_code=contract_code,sub_uid='115395803',amount=100,
+            a = user01.swap_sub_account_list(contract_code=contract_code)
+            sub_uid = a['data'][0]['sub_uid']
+            r = user01.swap_master_sub_transfer(contract_code=contract_code, sub_uid=sub_uid, amount=1,
                                                 type='master_to_sub')
-            pass
+            pprint(r)
         with allure.step('验证：schema响应字段校验'):
             schema = {
                 'data': {
