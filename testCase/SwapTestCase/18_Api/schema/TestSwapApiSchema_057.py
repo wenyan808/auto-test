@@ -2,15 +2,18 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2021/11/22 10:55 上午
 # @Author  : HuiQing Yu
+from pprint import pprint
 
-from common.mysqlComm import mysqlComm as mysqlClient
+import allure
+import pytest
+import time
+from schema import Schema
 
-import pytest, allure, random, time
-from schema import Schema, Or
 from common.SwapServiceAPI import user01
-from tool.SwapTools import SwapTool
+from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
-from config.case_content import epic,features
+from tool.atp import ATP
+
 
 @allure.epic(epic[1])
 @allure.feature(features[17]['feature'])
@@ -20,11 +23,13 @@ from config.case_content import epic,features
 class TestSwapApiSchema_057:
 
     @classmethod
-    def setup_class(cls):
-        cls.currentPrice = SwapTool.currentPrice()
+    def setup(self):
+        self.currentPrice = ATP.get_current_price()
+        user01.swap_order(contract_code=DEFAULT_CONTRACT_CODE, price=self.currentPrice, direction='buy')
+        user01.swap_order(contract_code=DEFAULT_CONTRACT_CODE, price=self.currentPrice, direction='sell')
 
     @classmethod
-    def teardown_class(cls):
+    def teardown(self):
         with allure.step(''):
             pass
 
@@ -32,8 +37,8 @@ class TestSwapApiSchema_057:
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：挂单'):
             orderInfo = user01.swap_tpsl_order(contract_code=contract_code, volume=1, direction='sell',
-                                             tp_trigger_price=round(self.currentPrice * 1.01, 2),
-                                             tp_order_price_type='optimal_5', sl_order_price_type='optimal_5')
+                                               tp_trigger_price=round(self.currentPrice * 1.01, 2),
+                                               tp_order_price_type='optimal_5', sl_order_price_type='optimal_5')
             orderId = orderInfo['data']['tp_order']['order_id_str']
             pass
         with allure.step('操作：执行api'):
@@ -45,9 +50,9 @@ class TestSwapApiSchema_057:
                     flag = True
                     break
                 time.sleep(1)
-                print(f'未返回预期结果，第{i+1}次重试………………………………')
+                print(f'未返回预期结果，第{i + 1}次重试………………………………')
             assert flag, '重试3次未返回预期结果'
-            pass
+            pprint(r)
         with allure.step('验证：schema响应字段校验'):
             schema = {
                 'status': 'ok',

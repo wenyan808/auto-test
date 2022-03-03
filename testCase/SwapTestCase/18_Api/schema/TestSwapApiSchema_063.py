@@ -2,15 +2,18 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2021/11/22 10:55 上午
 # @Author  : HuiQing Yu
+from pprint import pprint
 
-from common.mysqlComm import mysqlComm as mysqlClient
+import allure
+import pytest
+import time
+from schema import Schema
 
-import pytest, allure, random, time
-from schema import Schema, Or
 from common.SwapServiceAPI import user01
-from tool.SwapTools import SwapTool
+from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
-from config.case_content import epic,features
+from tool.atp import ATP
+
 
 @allure.epic(epic[1])
 @allure.feature(features[17]['feature'])
@@ -21,7 +24,7 @@ class TestSwapApiSchema_063:
 
     @classmethod
     def setup_class(cls):
-        cls.currentPrice = SwapTool.currentPrice()
+        cls.currentPrice = ATP.get_current_price()
         cls.orderId = user01.swap_track_order(contract_code=DEFAULT_CONTRACT_CODE, volume=1, direction='buy',
                                               order_price_type='optimal_5',
                                               offset='open', lever_rate=5, active_price=round(cls.currentPrice*0.99, 2),
@@ -45,7 +48,7 @@ class TestSwapApiSchema_063:
                 time.sleep(1)
                 print(f'未返回预期结果，第{i+1}次重试………………………………')
             assert flag, '重试3次未返回预期结果'
-            pass
+            pprint(r)
         with allure.step('验证：schema响应字段校验'):
             schema = {
                 'status': 'ok',
