@@ -2,15 +2,16 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2021/11/22 10:55 上午
 # @Author  : HuiQing Yu
+from pprint import pprint
 
-from common.mysqlComm import mysqlComm as mysqlClient
-
-import pytest, allure, random, time
+import allure
+import time
 from schema import Schema, Or
+
 from common.SwapServiceAPI import user01
-from config.conf import DEFAULT_CONTRACT_CODE, DEFAULT_SYMBOL
-from tool.SwapTools import SwapTool
-from config.case_content import epic,features
+from config.case_content import epic, features
+from tool.atp import ATP
+
 
 @allure.epic(epic[1])
 @allure.feature(features[17]['feature'])
@@ -21,26 +22,29 @@ class TestSwapApiSchema_043:
     @classmethod
     def setup_class(cls):
         with allure.step('变量初始化'):
-            cls.contract_code = DEFAULT_CONTRACT_CODE
-            cls.symbol = DEFAULT_SYMBOL
-            cls.latest_price = SwapTool.currentPrice(contract_code=cls.contract_code)
+        #     cls.contract_code = DEFAULT_CONTRACT_CODE
+        #     cls.symbol = DEFAULT_SYMBOL
+        #     cls.latest_price = SwapTool.currentPrice(contract_code=cls.contract_code)
             pass
-        with allure.step('挂盘'):
-            cls.orderId = user01.swap_order(contract_code=cls.contract_code,price=round(cls.latest_price * 0.8, 2),
-                                            direction='buy')['data']['order_id_str']
-            time.sleep(1)  # 等待盘口更新
+        # with allure.step('挂盘'):
+        #     cls.orderId = user01.swap_order(contract_code=cls.contract_code,price=round(cls.latest_price * 0.8, 2),
+        #                                     direction='buy')['data']['order_id_str']
+        #     time.sleep(1)  # 等待盘口更新
 
     @classmethod
     def teardown_class(cls):
         with allure.step('恢复环境：撤单'):
-            user01.swap_cancelall(contract_code=cls.contract_code)
-            pass
+            print(ATP.cancel_all_order())
 
     @allure.title("获取用户的合约订单明细信息")
     def test_execute(self, symbol, contract_code):
         with allure.step('操作：执行api'):
-            r = user01.swap_order_detail(order_id=self.orderId, contract_code=contract_code,created_at=7,order_type=1)
-            pass
+            price = ATP.get_current_price()
+            a = user01.swap_order(contract_code=contract_code, price=round(price * 0.8, 2), direction='buy')
+            orderid = a['data']['order_id_str']
+            time.sleep(1)
+            r = user01.swap_order_detail(order_id=orderid, contract_code=contract_code)
+            pprint(r)
         with allure.step('验证：schema响应字段校验'):
             schema = {
                 "status": "ok",

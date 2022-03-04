@@ -55,7 +55,7 @@ class TestApiSchema_017:
                                 'margin_available': Or(float, int),
                                 'profit_real': Or(float, int),
                                 'profit_unreal': Or(float, int),
-                                'risk_rate': Or(float, int),
+                                'risk_rate': Or(float, int, None),
                                 'withdraw_available': Or(float, int),
                                 'liquidation_price': Or(float, int, None),
                                 'lever_rate': Or(float, int),
