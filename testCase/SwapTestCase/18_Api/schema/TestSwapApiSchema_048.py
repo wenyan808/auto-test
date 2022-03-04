@@ -2,15 +2,16 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2021/11/22 10:55 上午
 # @Author  : HuiQing Yu
+from pprint import pprint
 
-from common.mysqlComm import mysqlComm as mysqlClient
-
-import pytest, allure, random, time
+import allure
+import pytest
+import time
 from schema import Schema, Or
+
 from common.SwapServiceAPI import user01
-from tool.SwapTools import SwapTool
-from config.conf import DEFAULT_CONTRACT_CODE
-from config.case_content import epic,features
+from config.case_content import epic, features
+
 
 @allure.epic(epic[1])
 @allure.feature(features[17]['feature'])
@@ -25,15 +26,14 @@ class TestSwapApiSchema_048:
             flag = False
             # 重试3次未返回预期结果则失败
             for i in range(3):
-                r = user01.swap_matchresults(contract_code=contract_code, trade_type=0, page_size=3, page_index=1,
-                                             create_date=7)
+                r = user01.swap_matchresults(contract_code=contract_code, trade_type=0, create_date=7)
                 if 'ok' in r['status'] and r['data']['trades']:
                     flag = True
                     break
                 time.sleep(1)
                 print(f'未返回预期结果，第{i + 1}次重试………………………………')
             assert flag, '重试3次未返回预期结果'
-            pass
+            pprint(r)
         with allure.step('验证：schema响应字段校验'):
             schema = {
                 "data": {

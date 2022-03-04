@@ -2,15 +2,17 @@
 # -*- coding: utf-8 -*-
 # @Date    : 2021/11/22 10:55 上午
 # @Author  : HuiQing Yu
+from pprint import pprint
 
-from common.mysqlComm import mysqlComm as mysqlClient
-
-import pytest, allure, random, time
+import allure
+import pytest
+import time
 from schema import Schema, Or
+
 from common.SwapServiceAPI import user01
-from tool.SwapTools import SwapTool
-from config.conf import DEFAULT_CONTRACT_CODE
-from config.case_content import epic,features
+from config.case_content import epic, features
+from tool.atp import ATP
+
 
 @allure.epic(epic[1])
 @allure.feature(features[17]['feature'])
@@ -21,12 +23,12 @@ class TestSwapApiSchema_059:
 
     @classmethod
     def setup_class(cls):
-        cls.currentPrice = SwapTool.currentPrice()
+        cls.currentPrice = ATP.get_current_price()
 
     @classmethod
     def teardown_class(cls):
         time.sleep(1)
-        user01.swap_tpsl_cancelall(contract_code=DEFAULT_CONTRACT_CODE)
+        print(ATP.cancel_all_types_order())
         pass
 
     @allure.title("获取止盈止损当前委托")
@@ -47,7 +49,7 @@ class TestSwapApiSchema_059:
                 time.sleep(1)
                 print(f'未返回预期结果，第{i+1}次重试………………………………')
             assert flag, '重试3次未返回预期结果'
-            pass
+            pprint(r)
         with allure.step('验证：schema响应字段校验'):
             schema = {
                 "status": "ok",

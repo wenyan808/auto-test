@@ -3,14 +3,16 @@
 # @Date    : 2021/11/22 10:55 上午
 # @Author  : HuiQing Yu
 
-from common.mysqlComm import mysqlComm as mysqlClient
+import allure
+import pytest
+import time
+from schema import Schema
 
-import pytest, allure, random, time
-from schema import Schema, Or
 from common.SwapServiceAPI import user01
-from tool.SwapTools import SwapTool
+from config.case_content import epic, features
 from config.conf import DEFAULT_CONTRACT_CODE
-from config.case_content import epic,features
+from tool.atp import ATP
+
 
 @allure.epic(epic[1])
 @allure.feature(features[17]['feature'])
@@ -32,10 +34,10 @@ class TestSwapApiSchema_051:
             flag = False
             # 重试3次未返回预期结果则失败
             for i in range(3):
-                self.currentPrice = SwapTool.currentPrice()
+                price = ATP.get_current_price()
                 r = user01.swap_trigger_order(contract_code=contract_code, volume=1,
-                                              trigger_price=round(self.currentPrice * 1.01, 2),
-                                              order_price=round(self.currentPrice * 0.99, 2), trigger_type="ge",
+                                              trigger_price=round(price * 1.01, 2),
+                                              order_price=round(price * 0.99, 2), trigger_type="ge",
                                               direction="buy")
                 if 'ok' in r['status'] and r['data']['order_id']:
                     flag = True

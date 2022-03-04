@@ -17,7 +17,7 @@
 优先级
     1
 """
-
+from pprint import pprint
 
 import allure
 import common.util
@@ -38,6 +38,7 @@ class TestApiSchema_040:
     @allure.step('前置条件')
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, symbol):
+        print(ATP.cancel_all_types_order())
         print("前置条件 {}".format(symbol))
 
     @allure.title('切换杠杆倍数')
@@ -48,8 +49,8 @@ class TestApiSchema_040:
         with allure.step('2、接口返回的json格式、字段名、字段值正确'):
             # 构造持仓量
 
-            res = contract_api.contract_switch_lever_rate(symbol=symbol, lever_rate=1)
-            print(res)
+            res = contract_api.contract_switch_lever_rate(symbol=symbol, lever_rate=5)
+            pprint(res)
             schema = {
                 "status": "ok",
                 "data": {
@@ -61,9 +62,8 @@ class TestApiSchema_040:
             Schema(schema).validate(res)
 
     @allure.step('恢复环境')
-    @pytest.fixture(scope='function', autouse=True)
-    def teardown(self, symbol):
-        contract_api.contract_switch_lever_rate(symbol=symbol, lever_rate=5)
+
+    def teardown(self):
         print('\n恢复环境操作')
 
 
