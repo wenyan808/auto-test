@@ -25,11 +25,12 @@
 """
 
 
-from common.LinearServiceAPI import t as linear_api
 from pprint import pprint
-import pytest
+
 import allure
-from tool.atp import ATP
+import pytest
+
+from common.LinearServiceAPI import t as linear_api
 
 
 @allure.epic('正向永续')  # 这里填业务线
@@ -40,13 +41,12 @@ from tool.atp import ATP
 class TestUSDTSwapTransfer_034:
 
     @allure.step('前置条件')
-    @pytest.fixture(scope='function', autouse=True)
-    def setup(self, sub_uid):
-        print("前置条件  {}".format(sub_uid))
+    def setup(self):
+        print("前置条件")
 
     @allure.title('逐仓划转到逐仓')
     @allure.step('测试执行')
-    def test_execute(self, sub_uid):
+    def test_execute(self, symbol, contract_code):
         with allure.step('1、登入合约界面'):
             pass
         with allure.step('2、进入子账号管理界面，点击“划转”按钮'):
@@ -59,10 +59,14 @@ class TestUSDTSwapTransfer_034:
             pass
         with allure.step('6、点击“确定按钮”'):
             # 逐仓
-            contract_code = 'BTC-USDT'
+            contract_code = contract_code
+            asset = linear_api.get_trade_partition(contract_code)
+            symbollist = ["BTC", "ETH"]
+            to_symbol = symbollist[1] if symbol == symbollist[0] else symbollist[0]
+            to_margin_account = to_symbol + "-" + asset
+            from_margin_account = contract_code
             master_account_info = linear_api.linear_account_info(
                 contract_code=contract_code)
-
             pprint(master_account_info)
             # 可划转数量
             withdraw_available = -1
@@ -71,18 +75,14 @@ class TestUSDTSwapTransfer_034:
                     master_account_info['data'][0]['withdraw_available'])
             # 划转金额大于可转数量
             amount = round(withdraw_available+2, 2)
-            res = linear_api.linear_transfer_inner(from_margin_account=contract_code, to_margin_account='ETH-USDT',
-                                                   amount=amount, asset="USDT")
+            res = linear_api.linear_transfer_inner(from_margin_account=from_margin_account, to_margin_account=to_margin_account,
+                                                   amount=amount, asset=asset)
             pprint(res)
             assert res['status'] == 'error', "划转金额大于可转数量执行成功！"
 
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        print(ATP.clean_market())
-        # 撤销当前用户 某个品种所有限价挂单
-        print(ATP.cancel_all_order())
-        print(ATP.make_market_depth())
 
 
 if __name__ == '__main__':

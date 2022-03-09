@@ -46,7 +46,7 @@ class TestUSDTSwapTransfer_030:
 
     @allure.title('跨账户划转,全仓划转到逐仓')
     @allure.step('测试执行')
-    def test_execute(self):
+    def test_execute(self, symbol, contract_code):
         with allure.step('1、登入合约界面'):
             pass
         with allure.step('2、进入子账号管理界面，点击“划转”按钮'):
@@ -59,7 +59,7 @@ class TestUSDTSwapTransfer_030:
             pass
         with allure.step('6、点击“确定按钮”'):
             # 全仓
-            margin_account = 'USDT'
+            margin_account = linear_api.get_trade_partition(contract_code)
             master_account_info = linear_api.linear_cross_account_info(
                 margin_account=margin_account)
 
@@ -71,18 +71,14 @@ class TestUSDTSwapTransfer_030:
                     master_account_info['data'][0]['margin_balance'])
             # 划转金额大于可转数量
             amount = round(margin_balance+2, 2)
-            res = linear_api.linear_transfer_inner(from_margin_account='USDT', to_margin_account='BTC-USDT',
-                                                   amount=amount, asset="USDT")
+            res = linear_api.linear_transfer_inner(from_margin_account=margin_account, to_margin_account=contract_code,
+                                                   amount=amount, asset=margin_account)
             pprint(res)
             assert res['status'] == 'error', "划转金额大于可转数量执行成功！"
 
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        print(ATP.clean_market())
-        # 撤销当前用户 某个品种所有限价挂单
-        print(ATP.cancel_all_order())
-        print(ATP.make_market_depth())
 
 
 if __name__ == '__main__':
