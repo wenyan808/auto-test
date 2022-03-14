@@ -40,13 +40,12 @@ from tool.atp import ATP
 class TestUSDTSwapTransfer_075:
 
     @allure.step('前置条件')
-    @pytest.fixture(scope='function', autouse=True)
-    def setup(self, sub_uid):
-        print("前置条件  {}".format(sub_uid))
+    def setup(self):
+        print("前置条件")
 
     @allure.title('子账户逐仓划转到母账户逐仓（挂多单）')
     @allure.step('测试执行')
-    def test_execute(self, sub_uid):
+    def test_execute(self, sub_uid, symbol, contract_code):
         with allure.step('1、登入合约界面'):
             pass
         with allure.step('2、进入子账号管理界面，点击“划转”按钮'):
@@ -59,14 +58,17 @@ class TestUSDTSwapTransfer_075:
             pass
         with allure.step('6、点击“确定按钮”'):
             # 挂多单
-            contract_code = 'ETH-USDT'
             current = ATP.get_current_price(contract_code=contract_code)
             offset = 'open'
             direction = 'buy'
             res = ATP.current_user_make_order(
                 contract_code=contract_code, price=current, volume=10, direction=direction, offset=offset, iscross=False)
             pprint(res)
-
+            asset = linear_api.get_trade_partition(contract_code)
+            symbollist = ["BTC", "ETH"]
+            to_symbol = symbollist[1] if symbol == symbollist[0] else symbollist[0]
+            to_margin_account = to_symbol + "-" + asset
+            from_margin_account = contract_code
             master_account_info = linear_api.linear_sub_account_info(
                 contract_code=contract_code, sub_uid=sub_uid)
 
@@ -86,10 +88,10 @@ class TestUSDTSwapTransfer_075:
             if margin_balance > withdraw_available:
                 amount = round(
                     withdraw_available+(margin_balance-withdraw_available)/2, 4)
-            res = linear_api.linear_master_sub_transfer(from_margin_account='ETH-USDT', to_margin_account='BTC-USDT',
+            res = linear_api.linear_master_sub_transfer(from_margin_account=from_margin_account, to_margin_account=to_margin_account,
                                                         amount=amount,
                                                         sub_uid=sub_uid,
-                                                        type='sub_to_master', asset="USDT")
+                                                        type='sub_to_master', asset=asset)
 
             pprint(res)
             assert res['status'] == 'error', "划转金额大于可转数量执行成功！"
@@ -97,10 +99,7 @@ class TestUSDTSwapTransfer_075:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        print(ATP.clean_market())
-        # 撤销当前用户 某个品种所有限价挂单
         print(ATP.cancel_all_order())
-        print(ATP.make_market_depth())
 
 
 if __name__ == '__main__':
