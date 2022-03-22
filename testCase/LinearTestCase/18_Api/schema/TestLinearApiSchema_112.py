@@ -15,12 +15,11 @@
     用例别名
         TestLinearApiSchema_112
 """
-
 from pprint import pprint
 
 import allure
 import pytest
-from schema import Schema, Or
+from schema import Schema
 
 from common.LinearServiceAPI import t as linear_api
 
@@ -40,15 +39,17 @@ class TestLinearApiSchema_112:
     @allure.step('测试执行')
     def test_execute(self, contract_code, symbol):
         with allure.step('调用接口：/linear-swap-api/v1/swap_balance_valuation'):
-            r = linear_api.linear_balance_valuation(valuation_asset="USDT")
-            pprint(r)
-            schema = {'data': [{'valuation_asset': Or("BTC", "USDT", "USD", "CNY", "EUR", "GBP", "VND", "HKD", "TWD",
-                                                      "MYR", "SGD", "KRW", "RUB", "TRY"),
-                                'balance': str}],
-                      'status': 'ok',
-                      'ts': int}
+            assetlist = ["BTC", "USDT", "HUSD", "USD", "CNY", "EUR", "GBP", "VND", "HKD", "TWD",
+                         "MYR", "SGD", "KRW", "RUB", "TRY"]
 
-            Schema(schema).validate(r)
+            for valuation_asset in assetlist:
+                r = linear_api.linear_balance_valuation(valuation_asset=valuation_asset)
+                pprint(r)
+                schema = {'data': [{'valuation_asset': valuation_asset,
+                                    'balance': str}],
+                          'status': 'ok',
+                          'ts': int}
+                Schema(schema).validate(r)
 
     @allure.step('恢复环境')
     def teardown(self):

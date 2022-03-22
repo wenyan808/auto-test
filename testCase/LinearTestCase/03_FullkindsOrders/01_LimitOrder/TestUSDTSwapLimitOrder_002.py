@@ -40,14 +40,13 @@
 		TestUSDTSwapLimitOrder_002
 '''
 
+import time
 from pprint import pprint
 
 import allure
 import pytest
-import time
 
 from common.LinearServiceAPI import t as linear_api
-from common.util import compare_dict
 from tool.atp import ATP
 
 
