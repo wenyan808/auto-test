@@ -70,10 +70,7 @@ class TestUSDTSwapLimitOrder_007:
         ATP.cancel_all_order(contract_code=contract_code)
         # 修改当前品种杠杆 默认5倍
         ATP.switch_level(contract_code=contract_code)
-        # 清除盘口所有卖单
-        ATP.clean_market(contract_code=contract_code, direction='sell')
-        # 清除盘口所有买单
-        ATP.clean_market(contract_code=contract_code, direction='buy')
+        ATP.clean_market()
 
     @allure.title('FOK卖出开空下单后自动撤单测试')
     @allure.step('测试执行')
@@ -98,7 +95,7 @@ class TestUSDTSwapLimitOrder_007:
                                     lever_rate=lever_rate,
                                     order_price_type="limit")
         pprint(r)
-        time.sleep(3)
+        time.sleep(1)
         print('\n步骤一:获取盘口卖一价\n')
         r_trend_req = linear_api.linear_depth(
             contract_code=contract_code, type="step5")
@@ -121,7 +118,7 @@ class TestUSDTSwapLimitOrder_007:
             current_time = int(str(time.time()).split(".")[0])
             pprint(r_order_buy)
             generated_order_id = r_order_buy['data']['order_id']
-            time.sleep(1)
+            time.sleep(10)
         with allure.step('3、观察历史委托-限价委托有结果B'):
             history_orders = linear_api.linear_hisorders(contract_code=contract_code, trade_type=0, type=1, status=0,
                                                          create_date=7)
@@ -138,7 +135,7 @@ class TestUSDTSwapLimitOrder_007:
                         str(order.get("create_date"))[0:10])
                     assert (actual_time_from_query - current_time) <= 180, "时间不一致, 限价单%d创建时间: %s, 查询到的时间: %s" % (
                         generated_order_id, current_time, actual_time_from_query)
-                    # assert compare_dict(expected_info_dic, order)
+                    assert compare_dict(expected_info_dic, order)
                     return
             raise BaseException(
                 "在{all_order_ids}中未找到历史订单含有订单号: {generated_order_id}".format(all_order_ids=all_order_ids,
@@ -147,13 +144,7 @@ class TestUSDTSwapLimitOrder_007:
     @allure.step('恢复环境')
     def teardown(self):
         print('\n恢复环境操作')
-        r = linear_api.linear_cancel(
-            contract_code=self.contract_code, order_id=self.orderid1)
-        pprint(r)
-        time.sleep(1)
-        r = linear_api.linear_cancel(
-            contract_code=self.contract_code, order_id=self.orderid2)
-        pprint(r)
+        ATP.cancel_all_order()
 
 
 if __name__ == '__main__':

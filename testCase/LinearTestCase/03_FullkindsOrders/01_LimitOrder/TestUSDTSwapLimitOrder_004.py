@@ -34,16 +34,14 @@
 		TestUSDTSwapLimitOrder_004
 '''
 
-from common.ContractServiceAPI import t as contract_api
-from common.ContractServiceOrder import t as contract_order
-from common.LinearServiceAPI import t as linear_api
-from common.LinearServiceOrder import t as linear_order
-from common.SwapServiceAPI import t as swap_api
-from common.SwapServiceOrder import t as swap_order
-from common.util import compare_dict
 from pprint import pprint
-import pytest, allure, random, time
 
+import allure
+import pytest
+import time
+
+from common.LinearServiceAPI import t as linear_api
+from common.util import compare_dict
 from tool.atp import ATP
 
 
@@ -70,9 +68,9 @@ class TestUSDTSwapLimitOrder_004:
     @allure.step('测试执行')
     def test_execute(self, contract_code):
 
-        self.contract_code = contract_code;
-        self.orderid1 = 0;
-        self.orderid2 = 0;
+        self.contract_code = contract_code
+        self.orderid1 = 0
+        self.orderid2 = 0
         """ 只做maker 卖出开空下单后自动撤单测试 """
         lever_rate = 5
         print('\n新建一个买单\n')
@@ -131,7 +129,7 @@ class TestUSDTSwapLimitOrder_004:
                     actual_time_from_query = int(str(order.get("create_date"))[0:10])
                     assert (actual_time_from_query - current_time) <= 180, "时间不一致, 限价单%d创建时间: %s, 查询到的时间: %s" % (
                         generated_order_id, current_time, actual_time_from_query)
-                    # assert compare_dict(expected_info_dic, order)
+                    assert compare_dict(expected_info_dic, order)
                     return
             raise BaseException(
                 "在{all_order_ids}中未找到历史订单含有订单号: {generated_order_id}".format(all_order_ids=all_order_ids,
